@@ -8,6 +8,19 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
+  /* Colori delle caratteristiche / stili */
+  --c-mediterraneo:#D9A521;   /* sole */
+  --c-agrumato:#D9761E;       /* scorza */
+  --c-marino:#2E7D9A;         /* mare */
+  --c-secco:#2F6B57;          /* ginepro */
+  --c-erbaceo:#5E8C4A;        /* salvia */
+  --c-floreale:#B5568C;       /* petalo */
+  --c-speziato:#A8502A;       /* cannella */
+  --c-resinoso:#2A5946;       /* pino */
+  --c-siciliano:#A8325A;      /* fico d'India */
+  --c-dolce:#6E4A2A;          /* miele scuro */
+  --c-neutro:#5C6B60;         /* personalizzato */
+
   --paper:#EDF1EC;
   --paper-2:#E1E8E1;
   --ink:#1B2620;
@@ -29,16 +42,23 @@
 html,body{margin:0;padding:0;}
 body{
   background-color:var(--paper);
-  background-image:
-    url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='240'%20height='240'%20viewBox='0%200%20240%20240'%3E%3Cg%20fill='none'%20stroke='%231F4A3A'%20stroke-opacity='0.16'%20stroke-width='3'%20stroke-linecap='round'%3E%3Cpath%20d='M60%2040%20C90%2055%2C%2090%2095%2C%2060%20115%20C30%2095%2C%2030%2055%2C%2060%2040%20Z'/%3E%3Cpath%20d='M60%2042%20L60%20112'/%3E%3C/g%3E%3Cg%20fill='%231F4A3A'%20fill-opacity='0.16'%3E%3Cpath%20d='M170%20130%20L170%20190'%20stroke='%231F4A3A'%20stroke-opacity='0.16'%20stroke-width='3'/%3E%3Ccircle%20cx='162'%20cy='140'%20r='8'/%3E%3Ccircle%20cx='180'%20cy='144'%20r='8'/%3E%3Ccircle%20cx='170'%20cy='126'%20r='8'/%3E%3C/g%3E%3C/svg%3E");
-  background-repeat:repeat;
-  background-size:240px 240px;
-  background-attachment:scroll;
   color:var(--ink);
   font-family:'Public Sans', -apple-system, sans-serif;
   font-size:15px;
   line-height:1.5;
   min-height:100vh;
+}
+/* Filigrana su livello fisso: stesso comportamento in web e in app installata */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background-image:
+    url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='240'%20height='240'%20viewBox='0%200%20240%20240'%3E%3Cg%20fill='none'%20stroke='%231F4A3A'%20stroke-opacity='0.16'%20stroke-width='3'%20stroke-linecap='round'%3E%3Cpath%20d='M60%2040%20C90%2055%2C%2090%2095%2C%2060%20115%20C30%2095%2C%2030%2055%2C%2060%2040%20Z'/%3E%3Cpath%20d='M60%2042%20L60%20112'/%3E%3C/g%3E%3Cg%20fill='%231F4A3A'%20fill-opacity='0.16'%3E%3Cpath%20d='M170%20130%20L170%20190'%20stroke='%231F4A3A'%20stroke-opacity='0.16'%20stroke-width='3'/%3E%3Ccircle%20cx='162'%20cy='140'%20r='8'/%3E%3Ccircle%20cx='180'%20cy='144'%20r='8'/%3E%3Ccircle%20cx='170'%20cy='126'%20r='8'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat:repeat;
+  background-size:240px 240px;
+  pointer-events:none;
+  z-index:-1;
 }
 h1,h2,h3,.display{
   font-family:'Fraunces', Georgia, serif;
@@ -48,13 +68,30 @@ h1,h2,h3,.display{
 }
 ::selection{background:var(--ochre-soft);color:#fff;}
 
-.wrap{max-width:1180px;margin:0 auto;padding:0 24px 80px;}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px 80px;position:relative;z-index:1;}
+
+.sticky-head{
+  position:sticky;
+  top:0;
+  z-index:30;
+  background:var(--paper);
+  margin:0 -24px;
+  padding:0 24px;
+  padding-top:env(safe-area-inset-top);
+  transition:box-shadow .2s ease;
+}
+body.scrolled .sticky-head{box-shadow:0 8px 20px -14px rgba(27,38,32,.65);}
 
 header.top{
   border-bottom:1px solid var(--line);
   padding:40px 0 24px;
   margin-bottom:0;
+  transition:padding .18s ease, border-color .18s ease;
 }
+body.scrolled header.top{padding:12px 0 8px;border-bottom-color:transparent;}
+body.scrolled header.top h1{font-size:22px;margin-bottom:0;}
+body.scrolled header.top .kicker,
+body.scrolled header.top p:not(.kicker){display:none;}
 header.top .kicker{
   font-size:13px;
   color:var(--ochre);
@@ -65,6 +102,7 @@ header.top h1{
   font-size:40px;
   margin:0 0 10px;
   line-height:1.05;
+  transition:font-size .18s ease, margin .18s ease;
 }
 header.top p{
   max-width:600px;
@@ -77,7 +115,7 @@ nav.tabs{
   display:flex;
   gap:2px;
   border-bottom:1px solid var(--line);
-  margin-bottom:28px;
+  margin-bottom:0;
   overflow-x:auto;
 }
 nav.tabs button{
@@ -98,8 +136,89 @@ nav.tabs button.active{
   border-bottom:2px solid var(--ochre);
 }
 
-section.panel{display:none;padding-top:8px;}
+section.panel{display:none;padding-top:28px;}
 section.panel.active{display:block;}
+
+/* --- Home --- */
+.home-hero{
+  background:var(--card);border:1px solid var(--line);border-left:5px solid var(--c-mediterraneo);
+  border-radius:var(--radius);padding:26px 28px;margin-bottom:18px;cursor:pointer;
+  transition:border-color .15s ease;
+}
+.home-hero:hover{border-color:var(--ochre);border-left-color:var(--c-mediterraneo);}
+.home-hero .hero-kicker{
+  font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;
+  color:var(--ochre);font-weight:700;margin:0 0 6px;
+}
+.home-hero h2{font-size:28px;margin:0 0 8px;}
+.home-hero p{margin:0;color:var(--ink-soft);font-size:14.5px;max-width:720px;}
+.home-hero .hero-go{display:inline-block;margin-top:14px;font-size:13px;font-weight:700;color:var(--c-mediterraneo);}
+
+.home-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;}
+.home-card{
+  --c:var(--c-neutro);
+  background:var(--card);border:1px solid var(--line);border-top:3px solid var(--c);
+  border-radius:var(--radius);padding:18px;cursor:pointer;transition:border-color .15s ease;
+}
+.home-card:hover{border-color:var(--c);}
+.home-card .hc-icon{font-size:26px;line-height:1;margin-bottom:8px;}
+.home-card h3{margin:0 0 6px;font-size:18px;color:var(--c);}
+.home-card p{margin:0;font-size:13.5px;color:var(--ink-soft);line-height:1.45;}
+.home-note{margin-top:24px;font-size:13px;color:var(--ink-soft);font-style:italic;max-width:700px;}
+
+/* --- Cocktail --- */
+.ck-filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px;}
+.ck-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:14px;}
+.ck-card{
+  --c:var(--c-neutro);
+  background:var(--card);border:1px solid var(--line);border-top:3px solid var(--c);
+  border-radius:var(--radius);padding:18px 18px 16px;
+}
+.ck-card h3{margin:0 0 2px;font-size:19px;color:var(--c);}
+.ck-card .ck-origin{font-size:11.5px;color:var(--ink-soft);margin:0 0 10px;text-transform:uppercase;letter-spacing:.03em;}
+.ck-card .ck-desc{font-size:13.5px;margin:0 0 12px;line-height:1.5;}
+.ck-ing{list-style:none;margin:0 0 12px;padding:0;border-top:1px solid var(--line);}
+.ck-ing li{
+  display:flex;justify-content:space-between;gap:12px;font-size:13px;
+  padding:5px 0;border-bottom:1px solid var(--line);
+}
+.ck-ing li span:last-child{color:var(--ink-soft);white-space:nowrap;}
+.ck-meta{font-size:12.5px;color:var(--ink-soft);line-height:1.55;}
+.ck-meta strong{color:var(--juniper-deep);font-weight:600;}
+.ck-style{margin-top:11px;}
+
+/* --- Come si usa --- */
+details.howto{
+  background:var(--card);border:1px solid var(--line);border-left:3px solid var(--ochre);
+  border-radius:var(--radius);padding:11px 15px;margin-bottom:22px;font-size:13.5px;
+}
+details.howto summary{
+  cursor:pointer;font-weight:700;color:var(--ochre);font-size:12px;
+  text-transform:uppercase;letter-spacing:.04em;list-style:none;
+}
+details.howto summary::-webkit-details-marker{display:none;}
+details.howto summary::before{content:"›  ";}
+details.howto[open] summary::before{content:"⌄  ";}
+details.howto .howto-body{margin-top:10px;color:var(--ink);line-height:1.55;}
+details.howto .howto-body p{margin:0 0 8px;}
+details.howto ol, details.howto ul{margin:8px 0 0;padding-left:20px;}
+details.howto li{margin-bottom:5px;}
+
+/* --- Storia del gin --- */
+.storia{max-width:760px;}
+.storia h2{font-size:30px;margin:0 0 6px;}
+.storia .storia-sub{color:var(--ink-soft);font-size:14.5px;margin:0 0 24px;}
+.storia h3{font-size:21px;margin:34px 0 10px;padding-top:18px;border-top:1px solid var(--line);}
+.storia p{margin:0 0 12px;font-size:15px;line-height:1.62;}
+.storia ul{margin:0 0 12px;padding-left:20px;}
+.storia li{margin-bottom:7px;font-size:15px;line-height:1.55;}
+.storia strong{color:var(--juniper-deep);}
+.storia .pull{
+  border-left:3px solid var(--c-mediterraneo);background:var(--card);
+  padding:14px 16px;margin:20px 0;font-family:'Fraunces',serif;
+  font-size:16px;line-height:1.5;color:var(--juniper-deep);
+}
+.storia-actions{margin-top:34px;padding-top:18px;border-top:1px solid var(--line);display:flex;gap:10px;flex-wrap:wrap;}
 
 /* --- Libreria --- */
 .controls{
@@ -175,11 +294,12 @@ section.panel.active{display:block;}
   color:var(--ink-soft);
   background:var(--paper);
 }
-.tag.carattere{border-color:var(--salt);color:var(--salt);}
+.tag.carattere{--c:var(--salt);border-color:var(--c);color:var(--c);}
 .tag.potenza{border-color:var(--ochre);color:var(--ochre);}
 .tag.cautela{border-color:var(--orange-sym);color:var(--orange-sym);}
 
 .detail{
+  scroll-margin-top:130px;
   margin-top:22px;
   background:var(--card);
   border:1px solid var(--line);
@@ -255,11 +375,15 @@ table.ar-table tr:hover td{background:var(--card);}
 .style-picker{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px;}
 .style-btn{
   font-family:'Public Sans',sans-serif;font-size:13.5px;font-weight:600;
-  padding:9px 16px;border:1px solid var(--line);border-radius:20px;
-  background:var(--card);color:var(--ink-soft);cursor:pointer;
+  padding:9px 16px;border-radius:20px;cursor:pointer;
+  --c:var(--c-neutro); --on:#fff;
+  border:1.5px solid var(--c);
+  background:var(--card);
+  color:var(--c);
+  transition:background .15s ease,color .15s ease;
 }
-.style-btn:hover{border-color:var(--ochre);}
-.style-btn.active{background:var(--juniper);color:#fff;border-color:var(--juniper);}
+.style-btn:hover{background:var(--paper-2);}
+.style-btn.active{background:var(--c);color:var(--on);border-color:var(--c);}
 
 .builder-head{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:10px;margin-bottom:18px;}
 .builder-head h2{margin:0;font-size:26px;}
@@ -366,8 +490,27 @@ footer.note{
   border:1px solid var(--line);border-radius:var(--radius);background:var(--card);width:100%;
 }
 .test-form-inner textarea{resize:vertical;margin-top:4px;}
+.bot-head{
+  display:grid;grid-template-columns:1fr 92px 1.3fr 30px;gap:10px;
+  font-size:11px;text-transform:uppercase;letter-spacing:.03em;
+  color:var(--ochre);font-weight:700;margin-bottom:6px;
+}
 .bot-row{
-  display:grid;grid-template-columns:1fr 110px 90px auto;gap:10px;align-items:center;margin-bottom:8px;
+  display:grid;grid-template-columns:1fr 92px 1.3fr 30px;gap:10px;align-items:center;margin-bottom:8px;
+}
+.bot-row-derived{font-size:12.5px;color:var(--ink-soft);line-height:1.35;}
+.bot-row-derived strong{color:var(--juniper-deep);font-weight:600;}
+.bot-row-derived .muted{opacity:.6;font-style:italic;}
+.tf-mix-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;}
+.mix-summary{
+  margin-top:14px;padding:12px 15px;background:var(--paper-2);
+  border:1px solid var(--line);border-radius:var(--radius);font-size:13px;
+}
+.mix-line{display:flex;justify-content:space-between;gap:14px;padding:3px 0;}
+.mix-line strong{color:var(--juniper-deep);white-space:nowrap;}
+.mix-warn{
+  margin-top:9px;color:#7A2E22;background:#FBE1DD;
+  border-left:3px solid var(--red-sym);padding:8px 10px;font-size:12.5px;
 }
 .bot-row select, .bot-row input{
   font-size:13.5px;padding:7px 9px;border:1px solid var(--line);border-radius:var(--radius);background:var(--card);
@@ -379,15 +522,23 @@ footer.note{
 
 @media (max-width:640px){
   header.top h1{font-size:30px;}
+  .home-hero{padding:20px;}
+  .home-hero h2{font-size:23px;}
+  .storia h2{font-size:24px;}
+  .storia h3{font-size:19px;}
   .detail-grid{grid-template-columns:1fr;}
   .role-row{grid-template-columns:1fr;}
   .tf-grid, .tf-grid.tf-eval{grid-template-columns:1fr;}
-  .bot-row{grid-template-columns:1fr 1fr;grid-template-areas:"a a" "b c" "d d";}
+  .bot-head{display:none;}
+  .bot-row{grid-template-columns:1fr 76px 30px;}
+  .bot-row-derived{grid-column:1/-1;margin-top:-2px;}
 }
 
 .print-only{display:none;}
 @media print{
   body{background:#fff !important;}
+  body::before{display:none !important;}
+  .sticky-head{position:static !important;box-shadow:none !important;}
   body *{visibility:hidden;}
   #print-area, #print-area *{visibility:visible;}
   #print-area{
@@ -412,6 +563,7 @@ footer.note{
 </head>
 <body>
 <div class="wrap">
+  <div class="sticky-head">
   <header class="top">
     <p class="kicker">Compound gin · libreria botanica interattiva</p>
     <h1>GinBuilder</h1>
@@ -419,15 +571,175 @@ footer.note{
   </header>
 
   <nav class="tabs">
-    <button data-tab="builder" class="active">🎯 Gin Builder</button>
+    <button data-tab="home" class="active">🏠 Inizio</button>
+    <button data-tab="storia">📖 Storia del gin</button>
+    <button data-tab="builder">🎯 Gin Builder</button>
     <button data-tab="compat">🧬 Compatibilità</button>
     <button data-tab="ridondanza">⚠️ Anti-ridondanza</button>
     <button data-tab="prove">🧪 Schede di prova</button>
-    <button data-tab="libreria">📚 Libreria</button>
+    <button data-tab="libreria">🌿 Botaniche</button>
+    <button data-tab="cocktail">🍸 Cocktail</button>
   </nav>
+  </div>
 
-  <!-- LIBRERIA -->
+  <!-- HOME -->
+  <section class="panel active" id="panel-home">
+    <div class="home-hero" data-goto="storia">
+      <p class="hero-kicker">Per cominciare</p>
+      <h2>Piccola storia del gin</h2>
+      <p>Dal jenever dei Paesi Bassi alla Gin Craze londinese, fino al London Dry e al gin italiano.
+        Gli ingredienti che non possono mancare, la differenza fra distillato e compound, e il lavoro
+        paziente di chi cerca l'equilibrio fra le botaniche.</p>
+      <span class="hero-go">Leggi →</span>
+    </div>
+
+    <div class="home-grid">
+      <div class="home-card" data-goto="builder" style="--c:var(--c-secco)">
+        <div class="hc-icon">🎯</div>
+        <h3>Gin Builder</h3>
+        <p>Scegli uno stile e componi la struttura per ruoli: base, legante, freschezza, firma.
+          È il punto di partenza di ogni ricetta.</p>
+      </div>
+      <div class="home-card" data-goto="compat" style="--c:var(--c-marino)">
+        <div class="hc-icon">🧬</div>
+        <h3>Compatibilità</h3>
+        <p>Due botaniche alla volta: sinergia, convivenza da dosare o conflitto.
+          Da consultare prima di aggiungere un ingrediente nuovo.</p>
+      </div>
+      <div class="home-card" data-goto="ridondanza" style="--c:var(--c-speziato)">
+        <div class="hc-icon">⚠️</div>
+        <h3>Anti-ridondanza</h3>
+        <p>Chi somiglia a chi, cosa si può sostituire e cosa è meglio non accumulare.
+          Serve a togliere, non ad aggiungere.</p>
+      </div>
+      <div class="home-card" data-goto="prove" style="--c:var(--c-siciliano)">
+        <div class="hc-icon">🧪</div>
+        <h3>Schede di prova</h3>
+        <p>Il banco di lavoro: percentuali degli infusi, calcolo della diluizione,
+          valutazione all'assaggio e correzioni per la volta successiva.</p>
+      </div>
+      <div class="home-card" data-goto="libreria" style="--c:var(--c-erbaceo)">
+        <div class="hc-icon">🌿</div>
+        <h3>Botaniche</h3>
+        <p>Le 84 schede dell'erbario: profilo aromatico, potenza, dose per 100 ml,
+          tempo di infusione, periodo di raccolta e zone italiane.</p>
+      </div>
+      <div class="home-card" data-goto="cocktail" style="--c:var(--c-floreale)">
+        <div class="hc-icon">🍸</div>
+        <h3>I cocktail classici</h3>
+        <p>Venti grandi drink a base gin con le dosi standard, dal Martini al Negroni:
+          il banco di prova finale di ogni ricetta.</p>
+      </div>
+    </div>
+
+    <p class="home-note">Il percorso naturale è questo: si studia una botanica nelle schede, si verifica con chi sta bene,
+      si costruisce la struttura nel Builder e si registra tutto in una scheda di prova. Poi si assaggia, si corregge e si ricomincia.</p>
+  </section>
+
+  <!-- STORIA DEL GIN -->
+  <section class="panel" id="panel-storia">
+    <div class="storia">
+      <h2>Piccola storia del gin</h2>
+      <p class="storia-sub">Da rimedio di farmacia a distillato d'autore, passando per una città intera ubriaca.</p>
+
+      <h3>Dal jenever al gin</h3>
+      <p>Il capostipite è il <strong>jenever</strong>, acquavite di cereali aromatizzata al ginepro prodotta nei Paesi Bassi
+        e nelle Fiandre almeno dal Cinquecento. Il ginepro però non nasce come aroma: nasce come medicina. La farmacopea
+        medievale lo impiegava contro febbri, disturbi renali e peste, e la distillazione era semplicemente il modo più
+        efficace per estrarne i principi attivi e conservarli. Dalla spezieria alla taverna il passo fu breve.</p>
+      <p>In Inghilterra il gusto arriva con i soldati che combattevano nelle Fiandre — da lì l'espressione <em>Dutch courage</em>,
+        il coraggio olandese bevuto prima della battaglia — ma la vera svolta è politica. Con <strong>Guglielmo III d'Orange</strong>,
+        nel 1688, Londra colpisce con i dazi i distillati francesi e libera di fatto la distillazione domestica. Nel giro di
+        trent'anni la città produce gin a fiumi.</p>
+      <p>È la stagione della <strong>Gin Craze</strong> (1720-1751): alcol pessimo, spesso corretto con trementina o zucchero
+        per coprire i difetti, venduto ovunque a prezzi irrisori. Hogarth la immortala in <em>Gin Lane</em>. Occorrono otto
+        leggi successive, i Gin Acts, per riportare il fenomeno dentro un argine.</p>
+      <p>L'Ottocento cambia tutto con due invenzioni. L'<strong>alambicco a colonna</strong> di Aeneas Coffey (1830-31) produce
+        un alcol neutro finalmente pulito: non c'è più niente da mascherare, e lo zucchero dell'<em>Old Tom</em> diventa
+        superfluo. Nasce il <strong>London Dry</strong>, secco e verticale. Nello stesso periodo il chinino usato come
+        antimalarico nelle colonie genera l'acqua tonica, e con essa il matrimonio più longevo della storia del bere.</p>
+
+      <h3>Gli ingredienti chiave</h3>
+      <p>Perché un distillato possa chiamarsi gin, il ginepro deve essere l'aroma <strong>prevalente</strong>: è l'unico vincolo
+        davvero rigido (in Europa, con un minimo di 37,5% vol). Tutto il resto è scelta dell'autore. Attorno al ginepro si è
+        però consolidata una triade classica:</p>
+      <ul>
+        <li><strong>Ginepro</strong> — struttura resinosa e balsamica, la spina dorsale.</li>
+        <li><strong>Coriandolo</strong> — agrumato e leggermente speziato, fa da ponte fra il ginepro e tutto il resto.</li>
+        <li><strong>Angelica</strong> — radice terrosa e asciutta: aggiunge poco profumo e molta tenuta, è il fissativo che
+          impedisce agli altri aromi di disperdersi.</li>
+      </ul>
+      <p>Accanto a questi, i comprimari storici: <strong>iris</strong> (altro fissativo, di taglio floreale e cipriato),
+        <strong>scorze di agrumi</strong>, <strong>liquirizia</strong> per una dolcezza senza zucchero,
+        <strong>cardamomo</strong>, <strong>cannella</strong>, <strong>semi di finocchio</strong>, <strong>cubebe</strong>.</p>
+
+      <h3>Distillato o compound</h3>
+      <p>Esistono due modi di fare gin, ed è bene non confonderli.</p>
+      <ul>
+        <li><strong>Distillazione</strong> — le botaniche macerano nell'alcol e vengono ridistillate, oppure si aromatizza
+          il vapore facendolo passare attraverso un cesto (<em>vapour infusion</em>). Il calore fissa l'equilibrio una volta
+          per tutte: il risultato è limpido e stabile, ma per correggere un dosaggio bisogna rifare la distillazione.</li>
+        <li><strong>Compound</strong> — si parte da alcol neutro e si aggiungono infusi, senza ridistillare. Storicamente
+          era il <em>bathtub gin</em>, sinonimo di scorciatoia. Lavorando però per <strong>infusi singoli</strong> — una
+          botanica per volta, ciascuna con il proprio tempo e la propria dose — il compound diventa esattamente il contrario:
+          il metodo più controllabile che esista.</li>
+      </ul>
+      <div class="pull">Ogni infuso si assaggia da solo, si dosa a percentuale e si corregge senza rifare nulla del resto.
+        È su questo metodo che è costruita quest'applicazione.</div>
+
+      <h3>La ricerca dell'equilibrio</h3>
+      <p>Arricchire un gin non significa aggiungere botaniche: significa assegnare a ciascuna un compito e verificare che
+        non ci sia sovrapposizione. Una ricetta leggibile ha in genere una <strong>base</strong> (il ginepro), un
+        <strong>legante</strong> che tiene insieme, uno o due elementi di <strong>freschezza</strong>, una
+        <strong>firma</strong> riconoscibile e al massimo una <strong>rifinitura</strong>.</p>
+      <p>I rischi da sorvegliare sono sempre gli stessi: l'<strong>accumulo</strong> — tre agrumi diversi che si annullano a
+        vicenda invece di sommarsi — e la <strong>potenza</strong>, perché una botanica dominante a dose sbagliata cancella
+        cinque comprimari ben scelti. Vale più la persistenza dell'intensità: un aroma che si apre tardi e resta è quasi
+        sempre preferibile a uno che esplode e sparisce.</p>
+      <p>Qualche regola pratica: assaggiare sempre alla stessa gradazione, diluendo il campione; confrontare due versioni
+        affiancate e non a distanza di giorni; lasciar riposare la miscela almeno 24-48 ore prima del giudizio definitivo,
+        perché gli infusi continuano a integrarsi; annotare tutto subito, perché il ricordo di un aroma dura pochissimo.</p>
+
+      <h3>Il gin italiano</h3>
+      <p>L'Italia arriva tardi al gin ma con un vantaggio evidente: qui la macerazione delle erbe in alcol è una tradizione
+        continua e mai interrotta — vermouth, amari, rosoli, elisir monastici — e il ginepro cresce spontaneo lungo quasi
+        tutta la penisola. Quando, dagli anni Duemiladieci, nasce il movimento dei gin artigianali, il terreno culturale
+        era già pronto.</p>
+      <p>La reinterpretazione italiana passa dalla <strong>biodiversità mediterranea</strong>, che è un erbario a cielo aperto:</p>
+      <ul>
+        <li><strong>Agrumi</strong> — limone di Siracusa, bergamotto di Calabria, cedro, chinotto, arancia amara, mandarino tardivo.</li>
+        <li><strong>Macchia mediterranea</strong> — mirto, lentisco, elicriso, rosmarino, timo, origano, alloro, finocchietto selvatico, salvia.</li>
+        <li><strong>Note marine</strong> — salicornia, capperi, alghe: la sapidità che nessun gin nordico possiede.</li>
+        <li><strong>Frutti e gastronomia</strong> — fico d'India, mandorla, pistacchio, melograno, uva, zafferano.</li>
+      </ul>
+      <p>Qui però si annida anche la tentazione più pericolosa. Una ricchezza simile invita a metterci tutto, e il risultato
+        è spesso un profumo confuso che non appartiene a nessun luogo. I gin italiani riusciti non sono quelli con più
+        botaniche: sono quelli in cui, bevendo, se ne riconoscono due o tre e si capisce da dove vengono.</p>
+      <div class="pull">La creatività, in questo mestiere, si misura più in sottrazioni che in aggiunte.</div>
+
+      <div class="storia-actions">
+        <button class="ghost-btn" data-goto="home">← Torna al menù</button>
+        <button class="primary-btn" data-goto="builder">🎯 Vai al Gin Builder</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOTANICHE -->
   <section class="panel" id="panel-libreria">
+    <details class="howto">
+      <summary>Come si usa</summary>
+      <div class="howto-body">
+        <p>L'erbario: 84 botaniche con profilo aromatico, funzione nel gin, potenza, dose e tempo di infusione.</p>
+        <ol>
+          <li>Filtra per famiglia, carattere o potenza minima, oppure cerca per nome o per descrizione del profilo.</li>
+          <li>Tocca una scheda per aprire il dettaglio: dose operativa in grammi per 100 ml di infuso, tempo di infusione,
+            periodo di raccolta e zone italiane in cui trovarla.</li>
+          <li>Modifica grado alcolico e temperatura nella barra "condizioni di infusione simulate": tempi e dosi si
+            ricalcolano rispetto al riferimento di 43° a 20°C.</li>
+          <li>Leggi sempre il riquadro <em>Da non accumulare con</em> prima di portare una botanica in ricetta.</li>
+        </ol>
+      </div>
+    </details>
     <div class="controls">
       <input type="text" id="search" placeholder="Cerca botanica…" />
       <label>Famiglia
@@ -457,6 +769,20 @@ footer.note{
 
   <!-- ANTI-RIDONDANZA -->
   <section class="panel" id="panel-ridondanza">
+    <details class="howto">
+      <summary>Come si usa</summary>
+      <div class="howto-body">
+        <p>Questa tabella serve a togliere, non ad aggiungere. Cerca una botanica e leggi le quattro colonne:</p>
+        <ul>
+          <li><strong>Simili</strong> — occupano lo stesso spazio aromatico: insieme non raddoppiano l'effetto, lo confondono.</li>
+          <li><strong>Sostitutive</strong> — se una manca o non è di stagione, queste ne fanno le veci.</li>
+          <li><strong>Complementari</strong> — lavorano in direzioni diverse e si valorizzano a vicenda.</li>
+          <li><strong>Da non accumulare</strong> — la combinazione satura il profilo: scegline una sola.</li>
+        </ul>
+        <p>Regola pratica: se due botaniche compaiono l'una fra le "simili" dell'altra, tienine una e alza la percentuale
+          invece di usarle entrambe a metà dose.</p>
+      </div>
+    </details>
     <div class="controls">
       <input type="text" id="ar-search" placeholder="Cerca botanica…" />
       <span class="count-tag" id="ar-count"></span>
@@ -472,6 +798,17 @@ footer.note{
 
   <!-- COMPATIBILITA -->
   <section class="panel" id="panel-compat">
+    <details class="howto">
+      <summary>Come si usa</summary>
+      <div class="howto-body">
+        <p>Confronto a coppie: scegli due botaniche e leggi il semaforo. Verde indica sinergia, giallo convivenza possibile
+          ma da dosare con attenzione, arancione sovrapposizione, rosso conflitto.</p>
+        <p>Il giudizio è dettagliato per le 24 botaniche più ricorrenti; per tutte le altre coppie vale la regola generale:
+          stessa famiglia aromatica significa rischio di sovrapposizione, famiglie diverse nessun conflitto noto.</p>
+        <p>Usalo prima di inserire un ingrediente nuovo in una ricetta già equilibrata, verificandolo contro le due o tre
+          botaniche dominanti della miscela.</p>
+      </div>
+    </details>
     <div class="legend-strip">
       <span><span class="dot" style="background:var(--green-sym)"></span> forte sinergia</span>
       <span><span class="dot" style="background:var(--yellow-sym)"></span> compatibili, da dosare</span>
@@ -502,7 +839,22 @@ footer.note{
   </section>
 
   <!-- GIN BUILDER -->
-  <section class="panel active" id="panel-builder">
+  <section class="panel" id="panel-builder">
+    <details class="howto">
+      <summary>Come si usa</summary>
+      <div class="howto-body">
+        <p>Qui si disegna la struttura della ricetta, prima di toccare l'alcol.</p>
+        <ol>
+          <li>Scegli uno stile fra i pulsanti colorati: ciascuno propone un'intensità target e una serie di ruoli da riempire.</li>
+          <li>Per ogni ruolo — base, legante, freschezza, firma, rifinitura — seleziona la botanica che vuoi provare.
+            Il suggerimento accanto al nome del ruolo indica le scelte più comuni.</li>
+          <li>Controlla gli avvisi in fondo: segnalano accumuli di sottofamiglia e coppie a rischio.</li>
+          <li>Con <strong>Personalizzato</strong> definisci tu i ruoli, aggiungendone quanti ne servono.</li>
+          <li>Quando la struttura ti convince, premi <em>Invia al banco di prova</em>: nasce una scheda con le percentuali
+            di partenza già calcolate.</li>
+        </ol>
+      </div>
+    </details>
     <div class="style-picker" id="style-picker"></div>
     <div class="builder-head">
       <h2 id="builder-title">—</h2>
@@ -522,6 +874,24 @@ footer.note{
 
   <!-- SCHEDE DI PROVA -->
   <section class="panel" id="panel-prove">
+    <details class="howto">
+      <summary>Come si usa</summary>
+      <div class="howto-body">
+        <p>Il banco di lavoro. Qui si parte da <strong>infusi già pronti</strong> — una botanica per volta, preparata con la
+          dose e il tempo indicati nelle schede Botaniche — e si compone la miscela.</p>
+        <ol>
+          <li>Il calcolatore in alto ti dice quanta acqua aggiungere per portare l'alcol al grado di lavoro.</li>
+          <li>Apri una scheda e indica per ogni infuso la <strong>percentuale sul volume finale</strong>. Accanto compaiono
+            i millilitri corrispondenti e i grammi di botanica che finiscono davvero nel bicchiere.</li>
+          <li>Il riepilogo mostra il totale degli infusi e quanta base neutra serve per arrivare a 100. Il pulsante
+            <em>Bilancia al 100%</em> normalizza le percentuali mantenendo i rapporti fra loro.</li>
+          <li>Dopo l'assaggio compila la valutazione e, soprattutto, le correzioni per il test successivo.</li>
+          <li><em>Duplica come nuova versione</em> crea la v2 conservando la ricetta e azzerando i giudizi: è così che si
+            costruisce una serie confrontabile.</li>
+        </ol>
+        <p>Le schede restano su questo dispositivo: non vengono inviate da nessuna parte.</p>
+      </div>
+    </details>
     <div class="calc-box">
       <h3>Calcolatore diluizione alcol</h3>
       <div class="calc-row">
@@ -555,15 +925,19 @@ footer.note{
             <select id="tf-style"><option value="">— nessuno —</option></select>
           </label>
           <label>Volume del campione (ml)<input type="number" id="tf-volume" value="100"></label>
-          <label>Grado alcolico dell'infusione (%)<input type="number" id="tf-abv" value="43" step="1" min="20" max="96"></label>
-          <label>Temperatura di infusione (°C)<input type="number" id="tf-temp" value="20" step="1" min="0" max="60"></label>
+          <label>Grado alcolico degli infusi (%)<input type="number" id="tf-abv" value="43" step="1" min="20" max="96"></label>
         </div>
-        <p class="cond-hint" style="margin:6px 0 0;">I tempi e le dosi delle botaniche qui sotto si adattano automaticamente a questi due valori
-          (riferimento: 43° / 20°C). È una stima orientativa, non una misura di laboratorio.</p>
+        <p class="cond-hint" style="margin:6px 0 0;">Qui si compone la miscela: per ogni infuso già pronto indica la percentuale sul volume finale.
+          I tempi di infusione e i grammi di botanica per 100 ml restano nella Libreria.</p>
 
-        <h4>Botaniche impiegate</h4>
+        <h4>Miscela degli infusi</h4>
+        <div class="bot-head"><span>Infuso</span><span>%</span><span>Corrisponde a</span><span></span></div>
         <div id="tf-botaniche"></div>
-        <button class="ghost-btn" id="tf-add-row">+ Aggiungi botanica</button>
+        <div class="tf-mix-actions">
+          <button class="ghost-btn" id="tf-add-row">+ Aggiungi infuso</button>
+          <button class="ghost-btn" id="tf-balance">⚖ Bilancia al 100%</button>
+        </div>
+        <div class="mix-summary" id="tf-mix-summary"></div>
 
         <h4>Note di preparazione</h4>
         <textarea id="tf-prep-notes" rows="3" placeholder="Ordine di assemblaggio, tempi di riposo, osservazioni durante l'estrazione…"></textarea>
@@ -598,6 +972,29 @@ footer.note{
     </div>
   </section>
 
+  <!-- COCKTAIL -->
+  <section class="panel" id="panel-cocktail">
+    <details class="howto">
+      <summary>Come si usa</summary>
+      <div class="howto-body">
+        <p>Venti classici in cui il gin è protagonista, con le dosi standard per un drink. Servono a due cose: avere un
+          riferimento affidabile al banco e capire come si comporta il proprio gin una volta messo in ricetta.</p>
+        <ul>
+          <li>Usa i pulsanti per filtrare per famiglia: i mescolati, gli amari da aperitivo, i sour e i long drink.</li>
+          <li>In fondo a ogni scheda trovi lo <strong>stile di gin consigliato</strong>: ritrova lo stesso nome nel Gin Builder
+            se vuoi costruire una ricetta pensata per quel cocktail.</li>
+          <li>Un gin si giudica davvero in tre prove: liscio a temperatura di cantina, in gin tonic e in un mescolato secco
+            come il Martini. Il primo racconta la materia, il secondo l'apertura aromatica, il terzo la struttura.</li>
+        </ul>
+      </div>
+    </details>
+
+    <div class="ck-filters" id="ck-filters"></div>
+    <div class="ck-grid" id="ck-grid"></div>
+    <p class="home-note">Le dosi sono quelle consolidate nella letteratura di bar: sono un punto di partenza, non un dogma.
+      Il rapporto fra gin e vermouth nel Martini, per dire, è cambiato di dieci volte in un secolo.</p>
+  </section>
+
   <footer class="note">
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di compatibilità e anti-ridondanza sono stime qualitative,
@@ -619,6 +1016,32 @@ const STYLES = DATA.styles;
 
 const byName = {};
 MASTER.forEach(d => byName[d.botanica] = d);
+
+// ---------- Colori delle caratteristiche ----------
+// [colore, colore del testo quando il pulsante e attivo]
+const STYLE_COLORS = {
+  'Mediterraneo':        ['var(--c-mediterraneo)', '#3A2B00'],
+  'Agrumato':            ['var(--c-agrumato)',     '#fff'],
+  'Marino':              ['var(--c-marino)',       '#fff'],
+  'Secco (London Dry)':  ['var(--c-secco)',        '#fff'],
+  'Erbaceo':             ['var(--c-erbaceo)',      '#fff'],
+  'Floreale':            ['var(--c-floreale)',     '#fff'],
+  'Speziato':            ['var(--c-speziato)',     '#fff'],
+  'Resinoso':            ['var(--c-resinoso)',     '#fff'],
+  'Siciliano':           ['var(--c-siciliano)',    '#fff'],
+  'Dolce aromatico':     ['var(--c-dolce)',        '#fff'],
+  'Personalizzato':      ['var(--c-neutro)',       '#fff'],
+};
+const CARATTERE_COLORS = {
+  'Mediterraneo':          'var(--c-mediterraneo)',
+  'Dolce / Gastronomico':  'var(--c-dolce)',
+  'Esotico / Speziato':    'var(--c-speziato)',
+  'Classico / London Dry': 'var(--c-secco)',
+  'Costiero / Salino':     'var(--c-marino)',
+  'Floreale / Elegante':   'var(--c-floreale)',
+  'Nordico / Resinoso':    'var(--c-resinoso)',
+};
+function coloreCarattere(nome){ return CARATTERE_COLORS[nome] || 'var(--salt)'; }
 
 // ---------- Modello tempo/dose in funzione di grado alcolico e temperatura ----------
 // Riferimento: 43% vol, 20°C (le condizioni su cui sono calibrati i dati del MASTER).
@@ -669,13 +1092,20 @@ function adjustedDose(baseDose, abv, temp){
 
 
 // ---------- Tabs ----------
+function showTab(name){
+  const panel = document.getElementById('panel-' + name);
+  if (!panel) return;
+  document.querySelectorAll('nav.tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+  document.querySelectorAll('section.panel').forEach(p => p.classList.remove('active'));
+  panel.classList.add('active');
+  window.scrollTo(0, 0);
+}
 document.querySelectorAll('nav.tabs button').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('nav.tabs button').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('section.panel').forEach(p => p.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
-  });
+  btn.addEventListener('click', () => showTab(btn.dataset.tab));
+});
+// pulsanti e riquadri del menu iniziale
+document.querySelectorAll('[data-goto]').forEach(el => {
+  el.addEventListener('click', () => showTab(el.dataset.goto));
 });
 
 // ---------- Libreria ----------
@@ -719,7 +1149,7 @@ function renderGrid(){
       <p class="meta">${d.categoria} · ${d.parte || ''}</p>
       <p class="profilo">${d.profilo || ''}</p>
       <div class="tagrow">
-        <span class="tag carattere">${d.carattere || ''}</span>
+        <span class="tag carattere" style="--c:${coloreCarattere(d.carattere)}">${d.carattere || ''}</span>
         <span class="tag potenza">Potenza ${d.potenza10 ?? '—'}/10</span>
         ${d.edibile === 'Sì, con cautela' ? '<span class="tag cautela">⚠️ Con cautela</span>' : ''}
       </div>`;
@@ -754,7 +1184,7 @@ function showDetail(name){
       <div class="field"><div class="k">Profilo aromatico</div><div class="v">${d.profilo || '—'}</div></div>
       <div class="field"><div class="k">Direzione</div><div class="v">${d.direzione || '—'}</div></div>
       <div class="field"><div class="k">Funzione operativa</div><div class="v">${d.funzione_op || '—'}</div></div>
-      <div class="field"><div class="k">Carattere</div><div class="v">${d.carattere || '—'}</div></div>
+      <div class="field"><div class="k">Carattere</div><div class="v"><span class="tag carattere" style="--c:${coloreCarattere(d.carattere)}">${d.carattere || '—'}</span></div></div>
       <div class="field"><div class="k">Potenza</div><div class="v">${d.potenza10 ?? '—'}/10 (intensità ${d.intensita ?? '—'}/5, persistenza ${d.persistenza ?? '—'}/5)</div></div>
       <div class="field"><div class="k">Dose operativa (rif. 43°/20°C)</div><div class="v">test ${ds.test ?? d.dose ?? '—'} g · range ${ds.min ?? '—'}–${ds.max ?? '—'} g / 100 ml</div></div>
       <div class="field"><div class="k">Tempo di infusione (rif. 43°/20°C)</div><div class="v">${baseTempo || '—'}</div></div>
@@ -872,6 +1302,9 @@ STYLES.forEach((s, i) => {
   const btn = document.createElement('button');
   btn.className = 'style-btn' + (i === 0 ? ' active' : '');
   btn.textContent = s[0];
+  const col = STYLE_COLORS[s[0]] || ['var(--c-neutro)', '#fff'];
+  btn.style.setProperty('--c', col[0]);
+  btn.style.setProperty('--on', col[1]);
   btn.addEventListener('click', () => {
     document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
@@ -927,6 +1360,7 @@ function addCustomRoleRow(label, botanica){
 function renderBuilder(styleIndex){
   const [name, intensity, maxBot, roles] = STYLES[styleIndex];
   builderTitle.textContent = name;
+  builderTitle.style.color = (STYLE_COLORS[name] || ['var(--juniper-deep)'])[0];
   roleList.innerHTML = '';
   const addRoleBtn = document.getElementById('add-role-btn');
   if (roles.length === 0){
@@ -1050,11 +1484,31 @@ document.querySelectorAll('.eval-select').forEach(sel => {
 });
 
 const tfAbvInput = document.getElementById('tf-abv');
-const tfTempInput = document.getElementById('tf-temp');
+const tfVolumeInput = document.getElementById('tf-volume');
 const activeSyncFns = [];
 
-function currentTestConditions(){
-  return { abv: parseFloat(tfAbvInput.value) || REF_ABV, temp: parseFloat(tfTempInput.value) || REF_TEMP };
+// Grammi di botanica per 100 ml di infuso: dato della Libreria.
+function doseLibreria(nome){
+  const ds = DOSE[nome] || {};
+  const d = byName[nome];
+  const v = ds.test ?? (d ? d.dose : undefined);
+  return (typeof v === 'number') ? v : null;
+}
+function volumeCampione(){ return parseFloat(tfVolumeInput.value) || 100; }
+function nf(n, dec){
+  const f = Math.pow(10, dec);
+  return (Math.round(n * f) / f).toLocaleString('it-IT');
+}
+
+// Schede salvate con il vecchio modello (dose in grammi): le dosi vengono
+// convertite in percentuali proporzionali, cosi nessuna scheda va persa.
+function migraBotaniche(list){
+  if (!list || !list.length) return [];
+  const haPerc = list.some(b => b.perc !== undefined && b.perc !== null && b.perc !== '');
+  if (haPerc) return list.map(b => ({ botanica: b.botanica, perc: b.perc ?? 0 }));
+  const somma = list.reduce((t,b) => t + (parseFloat(b.dose) || 0), 0);
+  if (!somma) return list.map(b => ({ botanica: b.botanica, perc: Math.round(1000/list.length)/10 }));
+  return list.map(b => ({ botanica: b.botanica, perc: Math.round((parseFloat(b.dose)||0) * 1000 / somma)/10 }));
 }
 
 function addBotRow(prefill){
@@ -1065,49 +1519,95 @@ function addBotRow(prefill){
   allBotNames.forEach(n => {
     const o = document.createElement('option'); o.value = n; o.textContent = n; sel.appendChild(o);
   });
-  const doseInput = document.createElement('input');
-  doseInput.type = 'number'; doseInput.step = '0.05'; doseInput.placeholder = 'g';
-  doseInput.className = 'bot-row-dose';
-  const tempoSpan = document.createElement('input');
-  tempoSpan.type = 'text'; tempoSpan.readOnly = true; tempoSpan.className = 'bot-row-tempo';
+  const percInput = document.createElement('input');
+  percInput.type = 'number'; percInput.step = '0.5'; percInput.min = '0'; percInput.max = '100';
+  percInput.className = 'bot-row-perc'; percInput.placeholder = '%';
+  const derived = document.createElement('div');
+  derived.className = 'bot-row-derived';
   const rmBtn = document.createElement('button');
-  rmBtn.className = 'rm-row'; rmBtn.textContent = '✕';
+  rmBtn.className = 'rm-row'; rmBtn.textContent = '\u2715'; rmBtn.title = 'Rimuovi infuso';
   rmBtn.addEventListener('click', () => {
     row.remove();
-    const idx = activeSyncFns.indexOf(syncTempo);
+    const idx = activeSyncFns.indexOf(syncRow);
     if (idx > -1) activeSyncFns.splice(idx, 1);
+    renderMixSummary();
   });
 
-  function syncTempo(){
-    const d = byName[sel.value];
-    const ds = DOSE[sel.value] || {};
-    const { abv, temp } = currentTestConditions();
-    const baseTempo = ds.tempo || (d ? d.tempo : '') || '';
-    const baseDose = ds.test ?? (d ? d.dose : undefined);
-    tempoSpan.value = adjustedTempo(baseTempo, abv, temp) + (abv===REF_ABV && temp===REF_TEMP ? '' : ' (adattato)');
-    tempoSpan.title = `Riferimento (43°/20°C): ${baseTempo || '—'}`;
-    if (!doseInput.dataset.userSet){
-      doseInput.value = baseDose ?? '';
-      doseInput.placeholder = baseDose !== undefined ? `sugg. ${baseDose} g` : 'g';
+  function syncRow(){
+    const perc = parseFloat(percInput.value) || 0;
+    const ml = volumeCampione() * perc / 100;
+    const g = doseLibreria(sel.value);
+    if (perc > 0){
+      derived.innerHTML = `<strong>${nf(ml,1)} ml</strong> di infuso` +
+        (g !== null ? ` \u00b7 \u2248 ${nf(g * ml / 100, 2)} g di botanica` : '');
+    } else {
+      derived.innerHTML = '<span class="muted">indica una percentuale</span>';
     }
+    derived.title = g !== null ? `Libreria: ${g} g di botanica per 100 ml di infuso` : '';
   }
-  sel.addEventListener('change', syncTempo);
-  doseInput.addEventListener('input', () => doseInput.dataset.userSet = '1');
-  activeSyncFns.push(syncTempo);
+  sel.addEventListener('change', () => { syncRow(); renderMixSummary(); });
+  percInput.addEventListener('input', () => { syncRow(); renderMixSummary(); });
+  activeSyncFns.push(syncRow);
 
-  row.appendChild(sel); row.appendChild(doseInput); row.appendChild(tempoSpan); row.appendChild(rmBtn);
+  row.appendChild(sel); row.appendChild(percInput); row.appendChild(derived); row.appendChild(rmBtn);
   tfBotaniche.appendChild(row);
 
   if (prefill){
     sel.value = prefill.botanica || allBotNames[0];
-    if (prefill.dose !== undefined){ doseInput.value = prefill.dose; doseInput.dataset.userSet = '1'; }
+    if (prefill.perc !== undefined && prefill.perc !== null && prefill.perc !== ''){
+      percInput.value = prefill.perc;
+    }
   }
-  syncTempo();
+  syncRow();
+  renderMixSummary();
 }
+
+function readMixRows(){
+  return [...tfBotaniche.querySelectorAll('.bot-row')].map(r => ({
+    botanica: r.querySelector('.bot-row-select').value,
+    perc: parseFloat(r.querySelector('.bot-row-perc').value) || 0,
+  }));
+}
+
+function renderMixSummary(){
+  const el = document.getElementById('tf-mix-summary');
+  if (!el) return;
+  const rows = readMixRows();
+  const vol = volumeCampione();
+  const somma = rows.reduce((t,r) => t + r.perc, 0);
+  const resto = 100 - somma;
+  const gTot = rows.reduce((t,r) => {
+    const g = doseLibreria(r.botanica);
+    return t + (g === null ? 0 : g * (vol * r.perc / 100) / 100);
+  }, 0);
+  const abv = parseFloat(tfAbvInput.value) || 43;
+
+  let html = `<div class="mix-line"><span>Totale infusi</span><strong>${nf(somma,1)}% \u00b7 ${nf(vol*somma/100,1)} ml</strong></div>`;
+  if (resto > 0.05){
+    html += `<div class="mix-line"><span>Base neutra da aggiungere (alcol/acqua a ${abv}\u00b0)</span><strong>${nf(resto,1)}% \u00b7 ${nf(vol*resto/100,1)} ml</strong></div>`;
+  }
+  html += `<div class="mix-line"><span>Botanica effettiva nella miscela</span><strong>\u2248 ${nf(gTot,2)} g su ${nf(vol,0)} ml</strong></div>`;
+  if (somma > 100.05){
+    html += `<div class="mix-warn">\u26a0\ufe0f La somma supera il 100%: riduci qualche percentuale oppure usa \u201cBilancia al 100%\u201d.</div>`;
+  }
+  el.innerHTML = html;
+}
+
 document.getElementById('tf-add-row').addEventListener('click', () => addBotRow());
-[tfAbvInput, tfTempInput].forEach(el => el.addEventListener('input', () => {
+document.getElementById('tf-balance').addEventListener('click', () => {
+  const rowsEl = [...tfBotaniche.querySelectorAll('.bot-row')];
+  if (!rowsEl.length) return;
+  const vals = rowsEl.map(r => parseFloat(r.querySelector('.bot-row-perc').value) || 0);
+  const somma = vals.reduce((a,b) => a + b, 0);
+  rowsEl.forEach((r, i) => {
+    const v = somma > 0 ? vals[i] * 100 / somma : 100 / rowsEl.length;
+    r.querySelector('.bot-row-perc').value = Math.round(v * 10) / 10;
+  });
   activeSyncFns.forEach(fn => fn());
-}));
+  renderMixSummary();
+});
+tfVolumeInput.addEventListener('input', () => { activeSyncFns.forEach(fn => fn()); renderMixSummary(); });
+tfAbvInput.addEventListener('input', renderMixSummary);
 
 function clearForm(){
   document.getElementById('tf-name').value = '';
@@ -1115,9 +1615,9 @@ function clearForm(){
   tfStyleSelect.value = '';
   document.getElementById('tf-volume').value = 100;
   tfAbvInput.value = 43;
-  tfTempInput.value = 20;
   activeSyncFns.length = 0;
   tfBotaniche.innerHTML = '';
+  renderMixSummary();
   document.getElementById('tf-prep-notes').value = '';
   document.getElementById('tf-corrections').value = '';
   ['tf-aroma','tf-gusto','tf-persistenza','tf-equilibrio','tf-sapidita'].forEach(id => document.getElementById(id).value = '');
@@ -1138,9 +1638,9 @@ function openForm(test){
     tfStyleSelect.value = test.style || '';
     document.getElementById('tf-volume').value = test.volume || 100;
     tfAbvInput.value = test.abv || 43;
-    tfTempInput.value = test.temp ?? 20;
     tfBotaniche.innerHTML = '';
-    (test.botaniche || []).forEach(b => addBotRow(b));
+    migraBotaniche(test.botaniche || []).forEach(b => addBotRow(b));
+    renderMixSummary();
     document.getElementById('tf-prep-notes').value = test.prepNotes || '';
     document.getElementById('tf-corrections').value = test.corrections || '';
     document.getElementById('tf-aroma').value = test.eval?.aroma ?? '';
@@ -1159,17 +1659,13 @@ function openForm(test){
 }
 
 function collectFormData(){
-  const rows = [...tfBotaniche.querySelectorAll('.bot-row')].map(r => ({
-    botanica: r.querySelector('.bot-row-select').value,
-    dose: parseFloat(r.querySelector('.bot-row-dose').value) || 0,
-  }));
+  const rows = readMixRows();
   return {
     name: document.getElementById('tf-name').value.trim() || 'Senza nome',
     date: document.getElementById('tf-date').value,
     style: tfStyleSelect.value,
     volume: parseFloat(document.getElementById('tf-volume').value) || 100,
     abv: parseFloat(tfAbvInput.value) || 43,
-    temp: parseFloat(tfTempInput.value) ?? 20,
     botaniche: rows,
     prepNotes: document.getElementById('tf-prep-notes').value,
     corrections: document.getElementById('tf-corrections').value,
@@ -1214,20 +1710,27 @@ document.getElementById('tf-delete').addEventListener('click', () => {
 document.getElementById('tf-print').addEventListener('click', () => {
   const data = collectFormData();
   const printArea = document.getElementById('print-area');
+  const vol = data.volume || 100;
   const rowsHtml = (data.botaniche || []).map(b => {
-    const ds = DOSE[b.botanica] || {};
-    return `<tr><td>${b.botanica}</td><td>${b.dose} g</td><td>${ds.tempo || byName[b.botanica]?.tempo || '—'}</td></tr>`;
+    const g = doseLibreria(b.botanica);
+    const ml = vol * (b.perc || 0) / 100;
+    return `<tr><td>${b.botanica}</td><td>${nf(b.perc || 0, 1)}%</td><td>${nf(ml, 1)} ml</td>` +
+           `<td>${g === null ? '—' : '≈ ' + nf(g * ml / 100, 2) + ' g'}</td></tr>`;
   }).join('');
+  const sommaPerc = (data.botaniche || []).reduce((t,b) => t + (b.perc || 0), 0);
+  const restoPerc = 100 - sommaPerc;
   printArea.innerHTML = `
     <h2>${data.name}</h2>
     <div class="print-meta">
       Data: ${data.date || '—'} &nbsp;·&nbsp; Stile: ${data.style || '—'} &nbsp;·&nbsp;
-      Volume campione: ${data.volume} ml &nbsp;·&nbsp; Condizioni: ${data.abv}% / ${data.temp}°C
+      Volume campione: ${vol} ml &nbsp;·&nbsp; Grado degli infusi: ${data.abv}%
     </div>
     <div class="print-section">
-      <h4>Botaniche impiegate</h4>
-      <table><thead><tr><th>Botanica</th><th>Dose</th><th>Tempo di infusione</th></tr></thead>
-      <tbody>${rowsHtml || '<tr><td colspan="3">Nessuna botanica inserita</td></tr>'}</tbody></table>
+      <h4>Miscela degli infusi</h4>
+      <table><thead><tr><th>Infuso</th><th>%</th><th>Volume</th><th>Botanica effettiva</th></tr></thead>
+      <tbody>${rowsHtml || '<tr><td colspan="4">Nessun infuso inserito</td></tr>'}</tbody></table>
+      <p style="font-size:12px;color:#555;">Totale infusi: ${nf(sommaPerc,1)}% (${nf(vol*sommaPerc/100,1)} ml)${
+        restoPerc > 0.05 ? ` · base neutra a ${data.abv}°: ${nf(restoPerc,1)}% (${nf(vol*restoPerc/100,1)} ml)` : ''}</p>
     </div>
     <div class="print-section"><h4>Note di preparazione</h4><p>${(data.prepNotes || '—').replace(/\n/g,'<br>')}</p></div>
     <div class="print-section"><h4>Valutazione</h4>
@@ -1263,7 +1766,7 @@ function renderTestList(){
   testListEl.innerHTML = filtered.slice().reverse().map(t => `
     <div class="test-card" data-id="${t.id}">
       <p class="tname">${t.name}</p>
-      <p class="tmeta">${t.date || ''} ${t.style ? '· ' + t.style : ''} · ${(t.botaniche||[]).length} botaniche</p>
+      <p class="tmeta">${t.date || ''} ${t.style ? '· ' + t.style : ''} · ${(t.botaniche||[]).length} infusi</p>
       <span class="tgiudizio">${t.giudizio || 'da valutare'}</span>
     </div>`).join('');
   testListEl.querySelectorAll('.test-card').forEach(card => {
@@ -1276,28 +1779,206 @@ function renderTestList(){
 testSearch.addEventListener('input', renderTestList);
 renderTestList();
 
+// ---------- Cocktail classici ----------
+const CK_FAM = [
+  ["tutti",    "Tutti",                "var(--c-neutro)"],
+  ["stirred",  "Mescolati & classici", "var(--c-secco)"],
+  ["amari",    "Amari & aperitivi",    "var(--c-siciliano)"],
+  ["sour",     "Sour & agrumati",      "var(--c-agrumato)"],
+  ["long",     "Long & effervescenti", "var(--c-marino)"],
+];
+const CK_COLORS = { stirred:"var(--c-secco)", amari:"var(--c-siciliano)", sour:"var(--c-agrumato)", long:"var(--c-marino)" };
+
+const COCKTAILS = [
+  { n:"Dry Martini", fam:"stirred", or:"Stati Uniti, fine Ottocento",
+    d:"Il più nudo dei cocktail: due ingredienti e nessun posto dove nascondersi. Qui un gin si giudica davvero.",
+    ing:[["Gin","60 ml"],["Vermouth dry","10 ml"]],
+    m:"Mescolato nel mixing glass con ghiaccio, 20 secondi", g:"Coppa ghiacciata, scorza di limone oppure oliva",
+    s:"Secco (London Dry), Resinoso" },
+
+  { n:"Martinez", fam:"stirred", or:"California, anni Ottanta dell Ottocento",
+    d:"Il progenitore del Martini, più dolce e rotondo: nato quando i gin erano ancora zuccherati.",
+    ing:[["Gin (meglio Old Tom)","45 ml"],["Vermouth rosso","45 ml"],["Maraschino","5 ml"],["Bitter aromatico","2 gocce"]],
+    m:"Mescolato con ghiaccio", g:"Coppa, scorza di arancia",
+    s:"Dolce aromatico, Speziato" },
+
+  { n:"Vesper", fam:"stirred", or:"Londra, 1953",
+    d:"Inventato da Ian Fleming per il primo romanzo di James Bond. Potente, freddissimo, poco perdonante.",
+    ing:[["Gin","60 ml"],["Vodka","20 ml"],["Lillet Blanc","10 ml"]],
+    m:"Agitato, contro ogni ortodossia, come vuole il testo", g:"Coppa, scorza larga di limone",
+    s:"Secco (London Dry)" },
+
+  { n:"Pink Gin", fam:"stirred", or:"Marina britannica, metà Ottocento",
+    d:"Nato come rimedio di bordo: il bitter era medicina, il gin lo rendeva bevibile. Minimo e austero.",
+    ing:[["Gin","60 ml"],["Angostura","4 gocce"]],
+    m:"Mescolato con ghiaccio oppure servito a temperatura ambiente", g:"Coppa piccola",
+    s:"Resinoso, Secco (London Dry)" },
+
+  { n:"Negroni", fam:"amari", or:"Firenze, 1919",
+    d:"Tre parti uguali e un equilibrio perfetto fra amaro, dolce e botanico. Il cocktail italiano per eccellenza.",
+    ing:[["Gin","30 ml"],["Bitter Campari","30 ml"],["Vermouth rosso","30 ml"]],
+    m:"Costruito direttamente nel bicchiere con ghiaccio", g:"Tumbler basso, mezza fetta di arancia",
+    s:"Secco (London Dry), Resinoso, Speziato" },
+
+  { n:"Gin & It", fam:"amari", or:"Londra, primo Novecento",
+    d:"Gin e vermouth italiano, senza ghiaccio come si usava allora. Il Negroni prima del Campari.",
+    ing:[["Gin","45 ml"],["Vermouth rosso","45 ml"]],
+    m:"Mescolato", g:"Coppa, ciliegia sotto spirito",
+    s:"Dolce aromatico, Mediterraneo" },
+
+  { n:"Gimlet", fam:"sour", or:"Marina britannica, fine Ottocento",
+    d:"Nato per combattere lo scorbuto a bordo: il lime era obbligatorio per legge, il gin lo rendeva gradevole.",
+    ing:[["Gin","60 ml"],["Lime cordial","20 ml"]],
+    m:"Agitato o mescolato, molto freddo", g:"Coppa, spicchio di lime",
+    s:"Agrumato, Secco (London Dry)" },
+
+  { n:"Aviation", fam:"sour", or:"New York, 1916",
+    d:"Il colore azzurro tenue viene dal liquore di violetta, che va dosato con parsimonia estrema.",
+    ing:[["Gin","45 ml"],["Maraschino","15 ml"],["Succo di limone","15 ml"],["Crème de violette","5 ml"]],
+    m:"Agitato con ghiaccio", g:"Coppa, ciliegia",
+    s:"Floreale, Secco (London Dry)" },
+
+  { n:"Last Word", fam:"sour", or:"Detroit, anni del proibizionismo",
+    d:"Quattro ingredienti in parti uguali. Sulla carta non dovrebbe funzionare: funziona benissimo.",
+    ing:[["Gin","22 ml"],["Chartreuse verde","22 ml"],["Maraschino","22 ml"],["Succo di lime","22 ml"]],
+    m:"Agitato con ghiaccio", g:"Coppa",
+    s:"Erbaceo, Resinoso" },
+
+  { n:"Bramble", fam:"sour", or:"Londra, 1984",
+    d:"Creato da Dick Bradsell pensando alle more raccolte da bambino. Il liquore si versa alla fine, a cascata.",
+    ing:[["Gin","50 ml"],["Succo di limone","25 ml"],["Sciroppo di zucchero","12 ml"],["Crème de mûre","15 ml"]],
+    m:"Agitato, poi il liquore colato sul ghiaccio tritato", g:"Tumbler basso, mora e fetta di limone",
+    s:"Mediterraneo, Floreale" },
+
+  { n:"White Lady", fam:"sour", or:"Parigi, anni Venti",
+    d:"Un sour pulitissimo dove l albume dà consistenza cremosa senza aggiungere sapore.",
+    ing:[["Gin","40 ml"],["Triple sec","20 ml"],["Succo di limone","20 ml"],["Albume","1"]],
+    m:"Agitato prima senza ghiaccio, poi con ghiaccio", g:"Coppa, scorza di limone",
+    s:"Agrumato, Secco (London Dry)" },
+
+  { n:"Clover Club", fam:"sour", or:"Filadelfia, inizio Novecento",
+    d:"Rosa, schiumoso e ingiustamente dimenticato per decenni. Lo sciroppo di lampone va fatto in casa.",
+    ing:[["Gin","45 ml"],["Succo di limone","15 ml"],["Sciroppo di lampone","15 ml"],["Albume","1"]],
+    m:"Agitato a secco e poi con ghiaccio", g:"Coppa, lampone fresco",
+    s:"Floreale, Mediterraneo" },
+
+  { n:"Bee's Knees", fam:"sour", or:"Stati Uniti, proibizionismo",
+    d:"Il miele serviva a coprire i gin clandestini. Oggi serve a farne risaltare le note più morbide.",
+    ing:[["Gin","50 ml"],["Succo di limone","20 ml"],["Miele sciolto in poca acqua","20 ml"]],
+    m:"Agitato con ghiaccio", g:"Coppa, scorza di limone",
+    s:"Mediterraneo, Dolce aromatico" },
+
+  { n:"Southside", fam:"sour", or:"New York / Chicago, anni Venti",
+    d:"Un Mojito senza rum e senza bolle: la menta va schiacciata appena, mai ridotta in poltiglia.",
+    ing:[["Gin","50 ml"],["Succo di limone","25 ml"],["Sciroppo di zucchero","15 ml"],["Menta","6 foglie"]],
+    m:"Agitato con ghiaccio e filtrato due volte", g:"Coppa, foglia di menta",
+    s:"Erbaceo, Mediterraneo" },
+
+  { n:"Corpse Reviver n.2", fam:"sour", or:"Londra, 1930",
+    d:"Nato come rimedio del mattino dopo. Il velo di assenzio nel bicchiere cambia tutto il profumo.",
+    ing:[["Gin","22 ml"],["Cointreau","22 ml"],["Lillet Blanc","22 ml"],["Succo di limone","22 ml"],["Assenzio","risciacquo"]],
+    m:"Agitato, versato in coppa risciacquata di assenzio", g:"Coppa, scorza di arancia",
+    s:"Agrumato, Erbaceo" },
+
+  { n:"Gin & Tonic", fam:"long", or:"India coloniale, Ottocento",
+    d:"Il chinino era un antimalarico, il gin lo rendeva bevibile. La prova del nove per ogni gin nuovo.",
+    ing:[["Gin","50 ml"],["Acqua tonica","150 ml"]],
+    m:"Costruito nel bicchiere colmo di ghiaccio, tonica versata piano", g:"Balloon o tumbler alto, scorza o botanica della ricetta",
+    s:"Mediterraneo, Agrumato, Marino" },
+
+  { n:"Tom Collins", fam:"long", or:"Londra, metà Ottocento",
+    d:"Un sour allungato con la soda: lungo, dissetante, il capostipite di tutta una famiglia.",
+    ing:[["Gin","50 ml"],["Succo di limone","25 ml"],["Sciroppo di zucchero","15 ml"],["Soda","a colmare"]],
+    m:"Agitato e allungato con soda", g:"Bicchiere alto, fetta di limone e ciliegia",
+    s:"Agrumato, Secco (London Dry)" },
+
+  { n:"Gin Fizz", fam:"long", or:"New Orleans, 1888",
+    d:"Fratello del Collins ma con albume: la schiuma deve reggersi in cima come un cappello.",
+    ing:[["Gin","50 ml"],["Succo di limone","25 ml"],["Sciroppo di zucchero","15 ml"],["Albume","1"],["Soda","a colmare"]],
+    m:"Agitato a lungo a secco, poi con ghiaccio, infine soda", g:"Bicchiere stretto e alto, senza ghiaccio",
+    s:"Agrumato, Floreale" },
+
+  { n:"French 75", fam:"long", or:"Parigi, 1915",
+    d:"Prende il nome da un cannone da campo della Grande Guerra, per via del contraccolpo.",
+    ing:[["Gin","30 ml"],["Succo di limone","15 ml"],["Sciroppo di zucchero","10 ml"],["Champagne","a colmare"]],
+    m:"Agitato e allungato con spumante freddo", g:"Flûte, scorza di limone",
+    s:"Agrumato, Floreale" },
+
+  { n:"Singapore Sling", fam:"long", or:"Singapore, 1915",
+    d:"Nato al Raffles Hotel. Ha molti ingredienti e altrettante versioni discordanti: questa è la più citata.",
+    ing:[["Gin","30 ml"],["Cherry Heering","15 ml"],["Bénédictine","7 ml"],["Cointreau","7 ml"],["Succo di ananas","60 ml"],["Succo di lime","15 ml"],["Granatina","10 ml"],["Angostura","1 goccia"]],
+    m:"Agitato energicamente con ghiaccio", g:"Bicchiere alto, ananas e ciliegia",
+    s:"Speziato, Dolce aromatico" },
+];
+
+let ckFilter = "tutti";
+const ckFiltersEl = document.getElementById("ck-filters");
+const ckGridEl = document.getElementById("ck-grid");
+
+CK_FAM.forEach(([key, label, color]) => {
+  const b = document.createElement("button");
+  b.className = "style-btn" + (key === "tutti" ? " active" : "");
+  b.textContent = label;
+  b.style.setProperty("--c", color);
+  b.style.setProperty("--on", "#fff");
+  b.addEventListener("click", () => {
+    ckFilter = key;
+    ckFiltersEl.querySelectorAll(".style-btn").forEach(x => x.classList.remove("active"));
+    b.classList.add("active");
+    renderCocktails();
+  });
+  ckFiltersEl.appendChild(b);
+});
+
+function renderCocktails(){
+  const list = COCKTAILS.filter(c => ckFilter === "tutti" || c.fam === ckFilter);
+  ckGridEl.innerHTML = list.map(c => `
+    <div class="ck-card" style="--c:${CK_COLORS[c.fam]}">
+      <h3>${c.n}</h3>
+      <p class="ck-origin">${c.or}</p>
+      <p class="ck-desc">${c.d}</p>
+      <ul class="ck-ing">
+        ${c.ing.map(i => `<li><span>${i[0]}</span><span>${i[1]}</span></li>`).join("")}
+      </ul>
+      <div class="ck-meta">
+        <div><strong>Metodo</strong> · ${c.m}</div>
+        <div><strong>Servizio</strong> · ${c.g}</div>
+      </div>
+      <div class="ck-style"><span class="tag carattere" style="--c:${CK_COLORS[c.fam]}">Gin consigliato: ${c.s}</span></div>
+    </div>`).join("");
+}
+renderCocktails();
+
+// ---------- Intestazione fissa: compattamento allo scroll ----------
+(function(){
+  const onScroll = () => {
+    document.body.classList.toggle('scrolled', window.scrollY > 8);
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+
 // ---------- Collegamento Gin Builder -> Schede di prova ----------
 document.getElementById('send-to-test').addEventListener('click', () => {
   const selects = roleList.querySelectorAll('select');
   const styleName = builderTitle.textContent;
-  const rows = [...selects].map(s => {
-    const ds = DOSE[s.value] || {};
-    return { botanica: s.value, dose: ds.test ?? (byName[s.value] ? byName[s.value].dose : 1) };
-  });
+  // Il peso relativo suggerito dalla Libreria diventa la percentuale di partenza
+  // dell'infuso nella miscela (normalizzata a 100%).
+  const rows = [...selects].map(s => ({ botanica: s.value, peso: doseLibreria(s.value) ?? 1 }));
   // rimuove duplicati mantenendo il primo
   const seen = new Set();
-  const uniqueRows = rows.filter(r => { if (seen.has(r.botanica)) return false; seen.add(r.botanica); return true; });
+  const base = rows.filter(r => { if (seen.has(r.botanica)) return false; seen.add(r.botanica); return true; });
+  const totPeso = base.reduce((t,r) => t + r.peso, 0) || 1;
+  const uniqueRows = base.map(r => ({ botanica: r.botanica, perc: Math.round(r.peso * 1000 / totPeso) / 10 }));
 
-  document.querySelectorAll('nav.tabs button').forEach(b => b.classList.remove('active'));
-  document.querySelector('nav.tabs button[data-tab="prove"]').classList.add('active');
-  document.querySelectorAll('section.panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('panel-prove').classList.add('active');
+  showTab('prove');
 
   openForm(null);
   document.getElementById('tf-name').value = styleName + ' — bozza';
   tfStyleSelect.value = styleName;
   tfBotaniche.innerHTML = '';
   uniqueRows.forEach(r => addBotRow(r));
+  renderMixSummary();
 });
 
 document.getElementById('print-builder').addEventListener('click', () => {
