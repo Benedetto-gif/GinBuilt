@@ -1,11 +1,11 @@
 {
-  "name": "Erbario — Gin Builder",
-  "short_name": "Erbario",
+  "name": "Gin Builder",
+  "short_name": "GinBuilder",
   "description": "Libreria botanica interattiva per compound gin: filtri, anti-ridondanza, compatibilità e builder per stile.",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#EDEAD9",
-  "theme_color": "#1F3A2D",
+  "theme_color": "#123A3D",
   "orientation": "portrait",
   "icons": [
     { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
