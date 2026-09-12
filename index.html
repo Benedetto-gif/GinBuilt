@@ -9,7 +9,7 @@
 <style>
 :root{
   /* Colori delle caratteristiche / stili */
-  --c-mediterraneo:#D9A521;   /* sole */
+  --c-mediterraneo:#BD8C14;   /* sole */
   --c-agrumato:#D9761E;       /* scorza */
   --c-marino:#2E7D9A;         /* mare */
   --c-secco:#2F6B57;          /* ginepro */
@@ -56,7 +56,8 @@ body::before{
   background-image:
     url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='240'%20height='240'%20viewBox='0%200%20240%20240'%3E%3Cg%20fill='none'%20stroke='%231F4A3A'%20stroke-opacity='0.16'%20stroke-width='3'%20stroke-linecap='round'%3E%3Cpath%20d='M60%2040%20C90%2055%2C%2090%2095%2C%2060%20115%20C30%2095%2C%2030%2055%2C%2060%2040%20Z'/%3E%3Cpath%20d='M60%2042%20L60%20112'/%3E%3C/g%3E%3Cg%20fill='%231F4A3A'%20fill-opacity='0.16'%3E%3Cpath%20d='M170%20130%20L170%20190'%20stroke='%231F4A3A'%20stroke-opacity='0.16'%20stroke-width='3'/%3E%3Ccircle%20cx='162'%20cy='140'%20r='8'/%3E%3Ccircle%20cx='180'%20cy='144'%20r='8'/%3E%3Ccircle%20cx='170'%20cy='126'%20r='8'/%3E%3C/g%3E%3C/svg%3E");
   background-repeat:repeat;
-  background-size:240px 240px;
+  background-size:160px 160px;
+  opacity:.42;
   pointer-events:none;
   z-index:-1;
 }
@@ -374,16 +375,20 @@ table.ar-table tr:hover td{background:var(--card);}
 /* --- Gin Builder --- */
 .style-picker{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px;}
 .style-btn{
-  font-family:'Public Sans',sans-serif;font-size:13.5px;font-weight:600;
+  font-family:'Public Sans',sans-serif;font-size:13.5px;font-weight:700;
   padding:9px 16px;border-radius:20px;cursor:pointer;
-  --c:var(--c-neutro); --on:#fff;
-  border:1.5px solid var(--c);
-  background:var(--card);
-  color:var(--c);
-  transition:background .15s ease,color .15s ease;
+  --c:var(--c-neutro);
+  border:none;
+  background:var(--c);
+  color:#fff;
+  opacity:.82;
+  transition:opacity .15s ease,box-shadow .15s ease;
 }
-.style-btn:hover{background:var(--paper-2);}
-.style-btn.active{background:var(--c);color:var(--on);border-color:var(--c);}
+.style-btn:hover{opacity:1;}
+.style-btn.active{
+  opacity:1;
+  box-shadow:0 0 0 2px var(--paper), 0 0 0 3.5px var(--c);
+}
 
 .builder-head{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:10px;margin-bottom:18px;}
 .builder-head h2{margin:0;font-size:26px;}
@@ -515,9 +520,11 @@ footer.note{
 .bot-row select, .bot-row input{
   font-size:13.5px;padding:7px 9px;border:1px solid var(--line);border-radius:var(--radius);background:var(--card);
 }
-.bot-row .rm-row{
-  background:none;border:none;color:var(--red-sym);cursor:pointer;font-size:16px;
+.rm-row{
+  background:none;border:none;color:var(--red-sym);
+  cursor:pointer;font-size:16px;padding:0 4px;line-height:1;
 }
+.rm-row:hover{color:#7A2E22;}
 .tf-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px;}
 
 @media (max-width:640px){
@@ -567,7 +574,7 @@ footer.note{
   <header class="top">
     <p class="kicker">Compound gin · libreria botanica interattiva</p>
     <h1>GinBuilder</h1>
-    <p>Filtra, confronta e costruisci: 84 botaniche, funzione aromatica, rischio di ridondanza e strutture di partenza per stile.</p>
+    <p>Filtra, confronta e costruisci: <span class="bot-count">84</span> botaniche, funzione aromatica, rischio di ridondanza e strutture di partenza per stile.</p>
   </header>
 
   <nav class="tabs">
@@ -621,7 +628,7 @@ footer.note{
       <div class="home-card" data-goto="libreria" style="--c:var(--c-erbaceo)">
         <div class="hc-icon">🌿</div>
         <h3>Botaniche</h3>
-        <p>Le 84 schede dell'erbario: profilo aromatico, potenza, dose per 100 ml,
+        <p>Le <span class="bot-count">84</span> schede dell'erbario: profilo aromatico, potenza, dose per 100 ml,
           tempo di infusione, periodo di raccolta e zone italiane.</p>
       </div>
       <div class="home-card" data-goto="cocktail" style="--c:var(--c-floreale)">
@@ -729,7 +736,7 @@ footer.note{
     <details class="howto">
       <summary>Come si usa</summary>
       <div class="howto-body">
-        <p>L'erbario: 84 botaniche con profilo aromatico, funzione nel gin, potenza, dose e tempo di infusione.</p>
+        <p>L'erbario: <span class="bot-count">84</span> botaniche con profilo aromatico, funzione nel gin, potenza, dose e tempo di infusione.</p>
         <ol>
           <li>Filtra per famiglia, carattere o potenza minima, oppure cerca per nome o per descrizione del profilo.</li>
           <li>Tocca una scheda per aprire il dettaglio: dose operativa in grammi per 100 ml di infuso, tempo di infusione,
@@ -848,7 +855,10 @@ footer.note{
           <li>Scegli uno stile fra i pulsanti colorati: ciascuno propone un'intensità target e una serie di ruoli da riempire.</li>
           <li>Per ogni ruolo — base, legante, freschezza, firma, rifinitura — seleziona la botanica che vuoi provare.
             Il suggerimento accanto al nome del ruolo indica le scelte più comuni.</li>
-          <li>Controlla gli avvisi in fondo: segnalano accumuli di sottofamiglia e coppie a rischio.</li>
+          <li>Controlla i messaggi in fondo. Quelli azzurri ricordano che lo stile stesso prevede più botaniche
+            della stessa famiglia — uno stile Floreale nasce dall'accostamento di più fiori, è il suo carattere.
+            Quelli arancioni segnalano invece un accumulo oltre a quanto previsto, o una coppia a rischio.</li>
+          <li>Ogni ruolo si può eliminare con la ✕ e se ne possono aggiungere di nuovi: nessuna struttura è obbligatoria.</li>
           <li>Con <strong>Personalizzato</strong> definisci tu i ruoli, aggiungendone quanti ne servono.</li>
           <li>Quando la struttura ti convince, premi <em>Invia al banco di prova</em>: nasce una scheda con le percentuali
             di partenza già calcolate.</li>
@@ -1016,6 +1026,9 @@ const STYLES = DATA.styles;
 
 const byName = {};
 MASTER.forEach(d => byName[d.botanica] = d);
+
+// Il numero di botaniche viene dalla libreria, non da un testo fisso.
+document.querySelectorAll('.bot-count').forEach(el => el.textContent = MASTER.length);
 
 // ---------- Colori delle caratteristiche ----------
 // [colore, colore del testo quando il pulsante e attivo]
@@ -1298,6 +1311,12 @@ const buildWarnings = document.getElementById('build-warnings');
 
 const allBotNames = uniqueSorted(MASTER.map(d => d.botanica));
 
+// Accumuli di sottofamiglia gia previsti dallo stile scelto: servono a distinguere
+// una sovrapposizione voluta (uno stile Floreale ha piu fiori per definizione)
+// da una introdotta cambiando le botaniche.
+let baselineSf = {};
+let currentStyleName = '';
+
 STYLES.forEach((s, i) => {
   const btn = document.createElement('button');
   btn.className = 'style-btn' + (i === 0 ? ' active' : '');
@@ -1313,20 +1332,33 @@ STYLES.forEach((s, i) => {
   stylePicker.appendChild(btn);
 });
 
-function guessDefaultBotanica(suggestionText){
-  // prende la prima botanica nominata nel testo di suggerimento che esiste nel MASTER
-  const cleaned = suggestionText.replace(/\(.*?\)/g, '');
-  const candidates = cleaned.split(/,| o /).map(s => s.trim()).filter(Boolean);
-  for (const c of candidates){
-    const match = allBotNames.find(n => n.toLowerCase() === c.toLowerCase());
-    if (match) return match;
-  }
-  // fallback: cerca contenimento parziale
-  for (const c of candidates){
-    const match = allBotNames.find(n => c.toLowerCase().includes(n.toLowerCase()) || n.toLowerCase().includes(c.toLowerCase()));
-    if (match) return match;
-  }
-  return allBotNames[0];
+// Tutte le botaniche nominate nel testo di suggerimento che esistono nel MASTER.
+function candidatiDaSuggerimento(suggestionText){
+  const cleaned = (suggestionText || '').replace(/\(.*?\)/g, '');
+  const parts = cleaned.split(/,| o /).map(s => s.trim()).filter(Boolean);
+  const out = [];
+  parts.forEach(c => {
+    let match = allBotNames.find(n => n.toLowerCase() === c.toLowerCase());
+    if (!match) match = allBotNames.find(n =>
+      c.toLowerCase().includes(n.toLowerCase()) || n.toLowerCase().includes(c.toLowerCase()));
+    if (match && !out.includes(match)) out.push(match);
+  });
+  return out;
+}
+
+// Sceglie il default evitando, dove possibile, di ripetere una botanica gia usata
+// o di accumulare due ruoli della stessa sottofamiglia.
+function guessDefaultBotanica(suggestionText, used, usedSf){
+  const cand = candidatiDaSuggerimento(suggestionText);
+  if (!cand.length) return allBotNames[0];
+  used = used || new Set();
+  usedSf = usedSf || new Set();
+  let pick = cand.find(n => {
+    const sf = (byName[n] || {}).sottofamiglia;
+    return !used.has(n) && !(sf && usedSf.has(sf));
+  });
+  if (!pick) pick = cand.find(n => !used.has(n));
+  return pick || cand[0];
 }
 
 function addCustomRoleRow(label, botanica){
@@ -1359,6 +1391,8 @@ function addCustomRoleRow(label, botanica){
 
 function renderBuilder(styleIndex){
   const [name, intensity, maxBot, roles] = STYLES[styleIndex];
+  baselineSf = {};
+  currentStyleName = name;
   builderTitle.textContent = name;
   builderTitle.style.color = (STYLE_COLORS[name] || ['var(--juniper-deep)'])[0];
   roleList.innerHTML = '';
@@ -1371,8 +1405,9 @@ function renderBuilder(styleIndex){
     addCustomRoleRow('Legante', 'Angelica');
     addCustomRoleRow('Freschezza', allBotNames.includes('Coriandolo') ? 'Coriandolo' : allBotNames[0]);
   } else {
-    addRoleBtn.style.display = 'none';
+    addRoleBtn.style.display = 'inline-block';
     builderMeta.textContent = `Intensità target: ${intensity}/5 · max ${maxBot} botaniche oltre alla triade base`;
+    const used = new Set(), usedSf = new Set();
     roles.forEach((role, ri) => {
       const [roleName, suggestion] = role;
       const row = document.createElement('div');
@@ -1382,10 +1417,23 @@ function renderBuilder(styleIndex){
       allBotNames.forEach(n => {
         const o = document.createElement('option'); o.value = n; o.textContent = n; select.appendChild(o);
       });
-      select.value = guessDefaultBotanica(suggestion);
+      const scelta = guessDefaultBotanica(suggestion, used, usedSf);
+      select.value = scelta;
+      used.add(scelta);
+      const sf = (byName[scelta] || {}).sottofamiglia;
+      if (sf){
+        usedSf.add(sf);
+        baselineSf[sf] = (baselineSf[sf] || 0) + 1;
+      }
       select.addEventListener('change', renderSummary);
       row.innerHTML = `<div class="role-name">${roleName}<br><span style="font-weight:400;color:var(--ink-soft);font-size:12px;">${suggestion}</span></div>`;
-      row.appendChild(select);
+      const right = document.createElement('div');
+      right.style.display = 'flex'; right.style.gap = '8px'; right.style.alignItems = 'center';
+      const rmBtn = document.createElement('button');
+      rmBtn.className = 'rm-row'; rmBtn.textContent = '\u2715'; rmBtn.title = 'Rimuovi questo ruolo';
+      rmBtn.addEventListener('click', () => { row.remove(); renderSummary(); });
+      right.appendChild(select); right.appendChild(rmBtn);
+      row.appendChild(right);
       roleList.appendChild(row);
     });
   }
@@ -1410,10 +1458,14 @@ function renderSummary(){
     const sf = d.sottofamiglia || 'n/d';
     (bySf[sf] = bySf[sf] || []).push(n);
   });
-  let warnHtml = '';
+  let noteHtml = '', warnHtml = '';
   Object.entries(bySf).forEach(([sf, names]) => {
-    if (names.length > 1){
-      warnHtml += `<div class="warn-box">⚠️ ${names.length} botaniche della sottofamiglia <strong>${sf}</strong> selezionate insieme: ${names.join(', ')} — rischio di sovrapposizione, valuta se ridurne il numero.</div>`;
+    if (names.length <= 1) return;
+    const previste = baselineSf[sf] || 0;
+    if (names.length <= previste){
+      noteHtml += `<div class="adj-box">🎨 Lo stile <strong>${currentStyleName}</strong> nasce proprio dall'accumulo di <strong>${sf}</strong> (${names.join(', ')}): qui la sovrapposizione è voluta, non un errore. Se preferisci una ricetta più asciutta, togli un ruolo con la ✕.</div>`;
+    } else {
+      warnHtml += `<div class="warn-box">⚠️ ${names.length} botaniche della sottofamiglia <strong>${sf}</strong> selezionate insieme: ${names.join(', ')} — più di quante ne preveda lo stile, valuta se ridurne il numero.</div>`;
     }
   });
   // controlla override espliciti tra coppie selezionate
@@ -1425,7 +1477,7 @@ function renderSummary(){
       }
     }
   }
-  buildWarnings.innerHTML = warnHtml;
+  buildWarnings.innerHTML = noteHtml + warnHtml;
 }
 
 renderBuilder(0);
