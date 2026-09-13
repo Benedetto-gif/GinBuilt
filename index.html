@@ -76,6 +76,9 @@
   --ease:cubic-bezier(.22,1,.36,1);
   --dur:.22s;
 
+  /* Spazio che l intestazione riserva al pulsante della luce */
+  --sp-luce:150px;
+
   /* Sfondo: opacità della filigrana, sua inversione, intensità del gradiente */
   --fil-op:.30;
   --fil-inv:0;
@@ -244,6 +247,7 @@ h1,h2,h3,.display{
 
 /* ---------------- Intestazione in vetro ---------------- */
 .theme-btn{
+  display:inline-flex;align-items:center;gap:7px;
   position:absolute;
   right:22px;
   top:calc(env(safe-area-inset-top) + 20px);
@@ -263,6 +267,7 @@ h1,h2,h3,.display{
              border-color var(--dur) var(--ease), transform .12s var(--ease);
 }
 .theme-btn:active{transform:scale(.93);}
+.tb-icona{font-size:13px;line-height:1;}
 .theme-pop{
   position:absolute;
   right:22px;
@@ -329,11 +334,11 @@ body.scrolled .sticky-head{
 }
 
 header.top{
-  padding:44px 0 22px;
+  padding:44px var(--sp-luce) 22px 0;
   margin-bottom:0;
   transition:padding var(--dur) var(--ease);
 }
-body.scrolled header.top{padding:10px 0 8px;}
+body.scrolled header.top{padding:10px var(--sp-luce) 8px 0;}
 body.scrolled header.top h1{font-size:19px;margin-bottom:0;letter-spacing:-0.01em;}
 body.scrolled header.top .kicker,
 body.scrolled header.top p:not(.kicker){display:none;}
@@ -1081,11 +1086,14 @@ footer.note{
   body{font-size:15px;}
   .wrap{padding:0 16px 80px;}
   .sticky-head{margin:0 -16px;padding:0 16px;}
-  .theme-btn{right:16px;top:calc(env(safe-area-inset-top) + 14px);font-size:11px;padding:6px 11px;}
+  .theme-btn{right:16px;top:calc(env(safe-area-inset-top) + 14px);font-size:11px;padding:8px 10px;}
+  .tb-nome{display:none;}
+  .tb-icona{font-size:15px;}
   body.scrolled .theme-btn{top:calc(env(safe-area-inset-top) + 8px);}
   .theme-pop{right:16px;left:16px;width:auto;top:calc(env(safe-area-inset-top) + 50px);}
   body.scrolled .theme-pop{top:calc(env(safe-area-inset-top) + 42px);}
-  header.top{padding:30px 0 18px;}
+  :root{--sp-luce:58px;}
+  header.top{padding:30px var(--sp-luce) 18px 0;}
   .home-hero{padding:24px 22px;border-radius:var(--r-md);}
   .home-hero p{max-width:100%;}
   .hero-art{width:84px;height:84px;right:10px;top:auto;bottom:16px;transform:none;opacity:.35;}
@@ -2983,7 +2991,8 @@ renderCocktails();
     let nome = 'Notte';
     for (const [soglia, etichetta] of LIVELLI){ if (t < soglia){ nome = etichetta; break; } }
     if (lvl) lvl.textContent = nome;
-    btn.textContent = (k >= .5 ? '\u263D  ' : '\u2600  ') + nome;
+    btn.innerHTML = '<span class="tb-icona">' + (k >= .5 ? '\u263D' : '\u2600') +
+                    '</span><span class="tb-nome">' + nome + '</span>';
 
     const meta = document.getElementById('meta-theme-color');
     if (meta) meta.setAttribute('content', hslHex(140, 10, clamp(L)));
