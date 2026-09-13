@@ -1097,9 +1097,34 @@ footer.note{
   .home-hero{padding:24px 22px;border-radius:var(--r-md);}
   .home-hero p{max-width:100%;}
   .hero-art{width:84px;height:84px;right:10px;top:auto;bottom:16px;transform:none;opacity:.35;}
-  .home-grid{gap:12px;}
-  .home-card:nth-child(n){grid-column:span 6;}
-  .home-card{padding:20px 18px;}
+  .home-grid{gap:10px;}
+  .home-card{padding:18px 16px;}
+
+  /* Bento in verticale: una tessera larga, due file da due, una larga.
+     Le tessere strette tengono solo icona e titolo, cosi restano leggibili
+     anche a 360 px senza mandare il testo a capo ogni due parole. */
+  .home-card:nth-child(1),
+  .home-card:nth-child(6){grid-column:span 6;}
+  .home-card:nth-child(2),
+  .home-card:nth-child(3),
+  .home-card:nth-child(4),
+  .home-card:nth-child(5){grid-column:span 3;}
+
+  .home-card:nth-child(n+2):nth-child(-n+5) p{display:none;}
+  .home-card:nth-child(n+2):nth-child(-n+5) h3{font-size:16px;margin:0;line-height:1.2;}
+  .home-card:nth-child(n+2):nth-child(-n+5) .hc-icon{width:42px;height:42px;margin-bottom:10px;}
+  .home-card:nth-child(n+2):nth-child(-n+5) .hc-icon svg{width:26px;height:26px;}
+
+  /* La tessera dei cocktail si sdraia: icona a sinistra, testo a destra. */
+  .home-card:nth-child(6){
+    display:grid;
+    grid-template-columns:48px 1fr;
+    grid-template-areas:"icona titolo" "icona testo";
+    column-gap:14px;align-items:center;
+  }
+  .home-card:nth-child(6) .hc-icon{grid-area:icona;margin-bottom:0;width:48px;height:48px;}
+  .home-card:nth-child(6) h3{grid-area:titolo;margin:0 0 2px;font-size:17px;}
+  .home-card:nth-child(6) p{grid-area:testo;font-size:12.5px;}
   .storia p, .storia li{font-size:16px;}
   .detail{padding:24px 20px;}
   .detail-grid{grid-template-columns:1fr;}
