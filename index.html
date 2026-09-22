@@ -896,40 +896,6 @@ function guessDefaultBotanica(suggestionText){
   return allBotNames[0];
 }
 
-// Fattore di riduzione applicato alle botaniche indicate "(tracce)" nel testo del ruolo:
-// una traccia è realmente una quantità minima (≈15% della dose di riferimento), non la dose piena.
-const TRACE_FACTOR = 0.15;
-const TRACE_MIN_G = 0.05;
-
-function traceDose(baseDose){
-  return Math.max(TRACE_MIN_G, Math.round(baseDose * TRACE_FACTOR * 100) / 100);
-}
-
-// Interpreta il testo di un ruolo suddividendolo nei suoi componenti "E" (uniti da virgola,
-// da usare TUTTI insieme, es. "Bacche di ginepro, Angelica") mantenendo distinte eventuali
-// alternative "O" (es. "Lentisco o Mirto" = scegline una). Ogni componente "E" genera una
-// riga propria, cosi' nessuna botanica elencata nella ricetta viene scartata silenziosamente.
-function parseRoleGroups(suggestionText){
-  const groups = suggestionText.split(',').map(s => s.trim()).filter(Boolean);
-  return groups.map(g => {
-    const trace = /tracce/i.test(g);
-    const cleaned = g.replace(/\(.*?\)/g, '').trim();
-    const orCandidates = cleaned.split(/\s+o\s+/i).map(s => s.trim()).filter(Boolean);
-    let match = null;
-    for (const c of orCandidates){
-      match = allBotNames.find(n => n.toLowerCase() === c.toLowerCase());
-      if (match) break;
-    }
-    if (!match){
-      for (const c of orCandidates){
-        match = allBotNames.find(n => c.toLowerCase().includes(n.toLowerCase()) || n.toLowerCase().includes(c.toLowerCase()));
-        if (match) break;
-      }
-    }
-    return { text: g, match: match || allBotNames[0], trace };
-  });
-}
-
 function addCustomRoleRow(label, botanica){
   const row = document.createElement('div');
   row.className = 'role-row role-row-custom';
@@ -975,22 +941,18 @@ function renderBuilder(styleIndex){
     builderMeta.textContent = `Intensità target: ${intensity}/5 · max ${maxBot} botaniche oltre alla triade base`;
     roles.forEach((role, ri) => {
       const [roleName, suggestion] = role;
-      const groups = parseRoleGroups(suggestion);
-      groups.forEach(grp => {
-        const row = document.createElement('div');
-        row.className = 'role-row';
-        const select = document.createElement('select');
-        select.dataset.role = roleName;
-        if (grp.trace) select.dataset.trace = '1';
-        allBotNames.forEach(n => {
-          const o = document.createElement('option'); o.value = n; o.textContent = n; select.appendChild(o);
-        });
-        select.value = grp.match;
-        select.addEventListener('change', renderSummary);
-        row.innerHTML = `<div class="role-name">${roleName}<br><span style="font-weight:400;color:var(--ink-soft);font-size:12px;">${grp.text}</span></div>`;
-        row.appendChild(select);
-        roleList.appendChild(row);
+      const row = document.createElement('div');
+      row.className = 'role-row';
+      const select = document.createElement('select');
+      select.dataset.role = roleName;
+      allBotNames.forEach(n => {
+        const o = document.createElement('option'); o.value = n; o.textContent = n; select.appendChild(o);
       });
+      select.value = guessDefaultBotanica(suggestion);
+      select.addEventListener('change', renderSummary);
+      row.innerHTML = `<div class="role-name">${roleName}<br><span style="font-weight:400;color:var(--ink-soft);font-size:12px;">${suggestion}</span></div>`;
+      row.appendChild(select);
+      roleList.appendChild(row);
     });
   }
   renderSummary();
@@ -1005,27 +967,6 @@ function renderSummary(){
   const chosen = [...selects].map(s => s.value);
   const uniqueChosen = [...new Set(chosen)];
   buildCount.textContent = `${uniqueChosen.length} botaniche selezionate`;
-
-  // quota reale del ginepro sul totale (tracce già ridotte alla loro quantità effettiva)
-  let total = 0, juniper = 0;
-  const seenForTotal = new Set();
-  [...selects].forEach(s => {
-    if (seenForTotal.has(s.value)) return;
-    seenForTotal.add(s.value);
-    const ds = DOSE[s.value] || {};
-    const base = ds.test ?? (byName[s.value] ? byName[s.value].dose : 0) ?? 0;
-    const dose = s.dataset.trace === '1' ? traceDose(base) : base;
-    total += dose;
-    if (s.value === 'Bacche di ginepro') juniper += dose;
-  });
-  let juniperHtml = '';
-  if (total > 0){
-    const pct = Math.round(100 * juniper / total);
-    const color = pct >= 45 ? 'var(--green-sym)' : (pct >= 30 ? 'var(--orange-sym)' : 'var(--red-sym)');
-    const label = juniper === 0 ? '⚠️ Nessuna bacca di ginepro selezionata — non è un gin.' :
-      `🫙 Quota ginepro sul totale botaniche: <strong>${pct}%</strong> (${juniper.toFixed(2)} g su ${total.toFixed(2)} g)`;
-    juniperHtml = `<div style="margin-top:6px;font-size:12.5px;color:${color};">${label}</div>`;
-  }
 
   // raggruppa per sottofamiglia per individuare accumuli
   const bySf = {};
@@ -1050,7 +991,7 @@ function renderSummary(){
       }
     }
   }
-  buildWarnings.innerHTML = juniperHtml + warnHtml;
+  buildWarnings.innerHTML = warnHtml;
 }
 
 renderBuilder(0);
@@ -1341,9 +1282,7 @@ document.getElementById('send-to-test').addEventListener('click', () => {
   const styleName = builderTitle.textContent;
   const rows = [...selects].map(s => {
     const ds = DOSE[s.value] || {};
-    const base = ds.test ?? (byName[s.value] ? byName[s.value].dose : 1);
-    const dose = s.dataset.trace === '1' ? traceDose(base) : base;
-    return { botanica: s.value, dose };
+    return { botanica: s.value, dose: ds.test ?? (byName[s.value] ? byName[s.value].dose : 1) };
   });
   // rimuove duplicati mantenendo il primo
   const seen = new Set();
@@ -1368,15 +1307,13 @@ document.getElementById('print-builder').addEventListener('click', () => {
     const labelInput = row.querySelector('.role-label-input');
     const roleName = roleNameEl ? roleNameEl.childNodes[0].textContent.trim() : (labelInput ? labelInput.value : '');
     const select = row.querySelector('select');
-    return { ruolo: roleName || '—', botanica: select ? select.value : '', trace: select ? select.dataset.trace === '1' : false };
+    return { ruolo: roleName || '—', botanica: select ? select.value : '' };
   });
   const printArea = document.getElementById('print-area');
   const rowsHtml = roleRows.map(r => {
     const ds = DOSE[r.botanica] || {};
     const bd = byName[r.botanica];
-    const base = ds.test ?? bd?.dose;
-    const dose = base !== undefined ? (r.trace ? traceDose(base) : base) : '—';
-    return `<tr><td>${r.ruolo}</td><td>${r.botanica}${r.trace ? ' <em>(tracce)</em>' : ''}</td><td>${dose} g</td><td>${ds.tempo || bd?.tempo || '—'}</td></tr>`;
+    return `<tr><td>${r.ruolo}</td><td>${r.botanica}</td><td>${ds.test ?? bd?.dose ?? '—'} g</td><td>${ds.tempo || bd?.tempo || '—'}</td></tr>`;
   }).join('');
   printArea.innerHTML = `
     <h2>Gin Builder — ${styleName}</h2>
