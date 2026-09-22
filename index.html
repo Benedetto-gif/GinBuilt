@@ -2129,6 +2129,31 @@ function candidatiDaSuggerimento(suggestionText){
   return out;
 }
 
+// Una "tracce" indicata nel testo del ruolo è una quantità realmente minima
+// (~15% della dose di riferimento), non la dose piena della botanica.
+const TRACE_FACTOR = 0.15;
+const TRACE_MIN_G = 0.05;
+function traceDose(baseDose){
+  if (typeof baseDose !== 'number') return baseDose;
+  return Math.max(TRACE_MIN_G, Math.round(baseDose * TRACE_FACTOR * 100) / 100);
+}
+
+// Interpreta il testo di un ruolo suddividendolo nei componenti "E" separati da
+// virgola (da usare TUTTI insieme, es. "Bacche di ginepro, Angelica") mantenendo
+// distinte eventuali alternative "O" all'interno dello stesso componente
+// (es. "Lentisco o Mirto" = scegline una). Ogni componente "E" genera una riga
+// propria nel builder, cosi' nessuna botanica elencata nella ricetta viene
+// scartata silenziosamente come accadeva prima (Angelica, Bergamotto, ecc. erano
+// perse perché il testo del ruolo generava una sola select).
+function gruppiRuolo(suggestionText){
+  const groups = (suggestionText || '').split(',').map(s => s.trim()).filter(Boolean);
+  return groups.map(g => ({
+    testo: g,
+    tracce: /tracce/i.test(g),
+    candidati: candidatiDaSuggerimento(g)
+  }));
+}
+
 // Sceglie il default evitando, dove possibile, di ripetere una botanica gia usata
 // o di accumulare due ruoli della stessa sottofamiglia.
 function guessDefaultBotanica(suggestionText, used, usedSf){
@@ -2197,35 +2222,39 @@ function renderBuilder(styleIndex){
     const used = new Set(), usedSf = new Set();
     roles.forEach((role, ri) => {
       const [roleName, suggestion] = role;
-      const row = document.createElement('div');
-      row.className = 'role-row';
-      const select = document.createElement('select');
-      select.dataset.role = roleName;
-      allBotNames.forEach(n => {
-        const o = document.createElement('option'); o.value = n; o.textContent = n; select.appendChild(o);
+      const gruppi = gruppiRuolo(suggestion);
+      gruppi.forEach(grp => {
+        const row = document.createElement('div');
+        row.className = 'role-row';
+        const select = document.createElement('select');
+        select.dataset.role = roleName;
+        if (grp.tracce) select.dataset.trace = '1';
+        allBotNames.forEach(n => {
+          const o = document.createElement('option'); o.value = n; o.textContent = n; select.appendChild(o);
+        });
+        const scelta = grp.candidati.length ? guessDefaultBotanica(grp.testo, used, usedSf) : allBotNames[0];
+        select.value = scelta;
+        used.add(scelta);
+        const sf = (byName[scelta] || {}).sottofamiglia;
+        if (sf){
+          usedSf.add(sf);
+          baselineSf[sf] = (baselineSf[sf] || 0) + 1;
+        }
+        select.addEventListener('change', renderSummary);
+        row.innerHTML = `<div class="role-name">${roleName}<br><span style="font-weight:400;color:var(--ink-soft);font-size:12px;">${grp.testo}</span></div>`;
+        const right = document.createElement('div');
+        right.style.display = 'flex'; right.style.gap = '8px'; right.style.alignItems = 'center';
+        const rmBtn = document.createElement('button');
+        rmBtn.className = 'rm-row';
+        rmBtn.addEventListener('click', () => {
+          chiediRimozione(select.value, () => { row.remove(); renderSummary(); });
+        });
+        select.addEventListener('change', () => aggiornaProtezione(rmBtn, select.value));
+        aggiornaProtezione(rmBtn, select.value);
+        right.appendChild(select); right.appendChild(rmBtn);
+        row.appendChild(right);
+        roleList.appendChild(row);
       });
-      const scelta = guessDefaultBotanica(suggestion, used, usedSf);
-      select.value = scelta;
-      used.add(scelta);
-      const sf = (byName[scelta] || {}).sottofamiglia;
-      if (sf){
-        usedSf.add(sf);
-        baselineSf[sf] = (baselineSf[sf] || 0) + 1;
-      }
-      select.addEventListener('change', renderSummary);
-      row.innerHTML = `<div class="role-name">${roleName}<br><span style="font-weight:400;color:var(--ink-soft);font-size:12px;">${suggestion}</span></div>`;
-      const right = document.createElement('div');
-      right.style.display = 'flex'; right.style.gap = '8px'; right.style.alignItems = 'center';
-      const rmBtn = document.createElement('button');
-      rmBtn.className = 'rm-row';
-      rmBtn.addEventListener('click', () => {
-        chiediRimozione(select.value, () => { row.remove(); renderSummary(); });
-      });
-      select.addEventListener('change', () => aggiornaProtezione(rmBtn, select.value));
-      aggiornaProtezione(rmBtn, select.value);
-      right.appendChild(select); right.appendChild(rmBtn);
-      row.appendChild(right);
-      roleList.appendChild(row);
     });
   }
   renderSummary();
@@ -2240,6 +2269,26 @@ function renderSummary(){
   const chosen = [...selects].map(s => s.value);
   const uniqueChosen = [...new Set(chosen)];
   buildCount.textContent = `${uniqueChosen.length} botaniche selezionate`;
+
+  // quota reale del ginepro sul totale (tracce già ridotte alla quantità effettiva)
+  let totPeso = 0, pesoGinepro = 0;
+  const vistiPerPeso = new Set();
+  [...selects].forEach(s => {
+    if (vistiPerPeso.has(s.value)) return;
+    vistiPerPeso.add(s.value);
+    const base = doseLibreria(s.value) ?? 0;
+    const peso = s.dataset.trace === '1' ? traceDose(base) : base;
+    totPeso += peso;
+    if (s.value === 'Bacche di ginepro') pesoGinepro += peso;
+  });
+  let juniperHtml = '';
+  if (totPeso > 0){
+    const pct = Math.round(100 * pesoGinepro / totPeso);
+    const color = pct >= 45 ? 'var(--green-sym, #2e7d32)' : (pct >= 30 ? 'var(--orange-sym, #b26a00)' : 'var(--red-sym, #c62828)');
+    const label = pesoGinepro === 0 ? '⚠️ Nessuna bacca di ginepro selezionata — non è un gin.' :
+      `🫙 Quota ginepro sul totale botaniche: <strong>${pct}%</strong>`;
+    juniperHtml = `<div style="margin-top:6px;font-size:12.5px;color:${color};">${label}</div>`;
+  }
 
   // raggruppa per sottofamiglia per individuare accumuli
   const bySf = {};
@@ -2268,7 +2317,7 @@ function renderSummary(){
       }
     }
   }
-  buildWarnings.innerHTML = noteHtml + warnHtml;
+  buildWarnings.innerHTML = juniperHtml + noteHtml + warnHtml;
 }
 
 renderBuilder(0);
@@ -3055,7 +3104,11 @@ document.getElementById('send-to-test').addEventListener('click', () => {
   const styleName = builderTitle.textContent;
   // Il peso relativo suggerito dalla Libreria diventa la percentuale di partenza
   // dell'infuso nella miscela (normalizzata a 100%).
-  const rows = [...selects].map(s => ({ botanica: s.value, peso: doseLibreria(s.value) ?? 1 }));
+  const rows = [...selects].map(s => {
+    const base = doseLibreria(s.value) ?? 1;
+    const peso = s.dataset.trace === '1' ? traceDose(base) : base;
+    return { botanica: s.value, peso };
+  });
   // rimuove duplicati mantenendo il primo
   const seen = new Set();
   const base = rows.filter(r => { if (seen.has(r.botanica)) return false; seen.add(r.botanica); return true; });
@@ -3079,13 +3132,15 @@ document.getElementById('print-builder').addEventListener('click', () => {
     const labelInput = row.querySelector('.role-label-input');
     const roleName = roleNameEl ? roleNameEl.childNodes[0].textContent.trim() : (labelInput ? labelInput.value : '');
     const select = row.querySelector('select');
-    return { ruolo: roleName || '—', botanica: select ? select.value : '' };
+    return { ruolo: roleName || '—', botanica: select ? select.value : '', trace: select ? select.dataset.trace === '1' : false };
   });
   const printArea = document.getElementById('print-area');
   const rowsHtml = roleRows.map(r => {
     const ds = DOSE[r.botanica] || {};
     const bd = byName[r.botanica];
-    return `<tr><td>${r.ruolo}</td><td>${r.botanica}</td><td>${ds.test ?? bd?.dose ?? '—'} g</td><td>${ds.tempo || bd?.tempo || '—'}</td></tr>`;
+    const base = ds.test ?? bd?.dose;
+    const dose = base !== undefined ? (r.trace ? traceDose(base) : base) : '—';
+    return `<tr><td>${r.ruolo}</td><td>${r.botanica}${r.trace ? ' <em>(tracce)</em>' : ''}</td><td>${dose} g</td><td>${ds.tempo || bd?.tempo || '—'}</td></tr>`;
   }).join('');
   printArea.innerHTML = `
     <h2>Gin Builder — ${styleName}</h2>
