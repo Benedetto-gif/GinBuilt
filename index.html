@@ -1181,6 +1181,23 @@ footer.note{
 .inf-table td.dose{font-weight:750;color:var(--juniper-deep);}
 .inf-table .inf-cau{display:block;font-size:11.5px;color:var(--orange-sym);margin-top:3px;}
 .inf-table .inf-sub{display:block;font-size:11.5px;color:var(--ink-faint);}
+
+.sel-wrap{display:flex;flex-direction:column;gap:6px;flex:1;min-width:0;width:100%;max-width:440px;}
+.sel-wrap select{width:100%;max-width:none;}
+.sel-wrap input.sel-ric{font-family:inherit;font-size:13.5px;padding:8px 12px;width:100%;
+  border:1px solid var(--line-strong);border-radius:var(--r-xs);background:var(--surface);color:var(--ink);
+  appearance:none;-webkit-appearance:none;}
+.sel-wrap input.sel-ric:focus{outline:none;border-color:var(--juniper);box-shadow:0 0 0 3.5px color-mix(in srgb, var(--juniper) 18%, transparent);}
+.sel-wrap input.sel-ric.nessuno{border-color:var(--red-sym);}
+
+.ruolo-hint{font-size:12px;color:var(--ink-faint);margin-top:6px;line-height:1.4;font-weight:400;}
+.sem-box{margin-top:16px;padding:16px 18px;border:1px solid var(--line);border-radius:var(--r-md);background:var(--surface-2);}
+.sem-box h4{margin:0 0 10px;font-family:'Public Sans',sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--ochre);font-weight:800;}
+.sem-tot{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;font-weight:700;margin-bottom:6px;color:var(--ink-soft);}
+.sem-dot{display:inline-block;width:13px;height:13px;border-radius:50%;margin-right:6px;vertical-align:-1px;}
+.sem-row{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--line);font-size:13.5px;line-height:1.45;color:var(--ink-soft);}
+.sem-row .sem-dot{flex:0 0 13px;margin-top:4px;margin-right:0;}
+.sem-row strong{color:var(--ink);}
 </style>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0C110E" id="meta-theme-color">
@@ -1621,10 +1638,25 @@ footer.note{
       <h2 id="builder-title">—</h2>
       <span class="builder-meta" id="builder-meta"></span>
     </div>
+    <details class="howto" id="vademecum" open hidden>
+      <summary>Vademecum: i ruoli delle botaniche</summary>
+      <div class="howto-body">
+        <p>In uno stile personalizzato ogni botanica ha un compito. Scegli il ruolo dal menù accanto alla botanica:</p>
+        <ul>
+          <li><strong>Base e sapore dominante.</strong> Il ginepro (<em>Juniperus communis</em>) è l'ingrediente obbligatorio per legge e l'anima del gin: note balsamiche, resinose e pungenti.</li>
+          <li><strong>Supporto aromatico e freschezza.</strong> Semi come il coriandolo sono il secondo elemento chiave: aggiungono note speziate, calde o agrumate che completano il ginepro.</li>
+          <li><strong>Struttura e legante.</strong> Radici come l'angelica o l'iris (giaggiolo) fanno da fissativi e da spina dorsale: trattengono gli aromi volatili, danno persistenza al palato e legano le componenti della ricetta.</li>
+          <li><strong>Caratterizzazione e identità territoriale.</strong> Agrumi, fiori, spezie esotiche o erbe locali (come il rosmarino; la liquirizia per la rotondità di fondo) personalizzano il gin con note di testa, di cuore o di fondo che lo distinguono dagli altri.</li>
+          <li><strong>Firma.</strong> La botanica fuori dal comune, magari unica o misteriosa, che rende il gin riconoscibile. Una sola, in dose misurata: deve farsi notare senza coprire il resto. Il ruolo è facoltativo.</li>
+        </ul>
+        <p>Sotto la combinazione compaiono i semafori: <strong>rosso</strong> ridondanza, <strong>arancio</strong> rischio se messe insieme (o da dosare), <strong>verde</strong> complementari.</p>
+      </div>
+    </details>
     <div id="role-list"></div>
     <button class="ghost-btn" id="add-role-btn" style="display:none;margin-top:8px;">+ Aggiungi ruolo</button>
     <div class="build-summary">
       <div class="count" id="build-count">0 botaniche selezionate</div>
+      <div id="build-semafori"></div>
       <div class="build-warnings" id="build-warnings"></div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;">
         <button class="primary-btn" id="send-to-test">🧪 Invia al banco di prova</button>
@@ -2251,11 +2283,14 @@ function guessDefaultBotanica(suggestionText, used, usedSf){
 function addCustomRoleRow(label, botanica){
   const row = document.createElement('div');
   row.className = 'role-row role-row-custom';
-  const labelInput = document.createElement('input');
-  labelInput.type = 'text';
+  const labelInput = document.createElement('select');
   labelInput.className = 'role-label-input';
-  labelInput.placeholder = 'Nome ruolo (es. Firma, Rifinitura…)';
-  labelInput.value = label || '';
+  RUOLI.forEach(r => { const o = document.createElement('option'); o.value = r; o.textContent = r; labelInput.appendChild(o); });
+  labelInput.value = RUOLI.includes(label) ? label : (RUOLI_LEGACY[label] || RUOLI[3]);
+  const hint = document.createElement('div'); hint.className = 'ruolo-hint';
+  const aggHint = () => { hint.textContent = RUOLI_DESC[labelInput.value] || ''; };
+  labelInput.addEventListener('change', () => { aggHint(); renderSummary(); });
+  aggHint();
   const select = document.createElement('select');
   allBotNames.forEach(n => {
     const o = document.createElement('option'); o.value = n; o.textContent = n; select.appendChild(o);
@@ -2272,6 +2307,7 @@ function addCustomRoleRow(label, botanica){
 
   const left = document.createElement('div');
   left.appendChild(labelInput);
+  left.appendChild(hint);
   row.appendChild(left);
   const right = document.createElement('div');
   right.style.display = 'flex'; right.style.gap = '8px'; right.style.alignItems = 'center';
@@ -2284,6 +2320,7 @@ function renderBuilder(styleIndex){
   const [name, intensity, maxBot, roles] = STYLES[styleIndex];
   baselineSf = {};
   currentStyleName = name;
+  document.getElementById('vademecum').hidden = (name !== 'Personalizzato');
   builderTitle.textContent = name;
   builderTitle.style.color = (STYLE_COLORS[name] || ['var(--juniper-deep)'])[0];
   roleList.innerHTML = '';
@@ -2344,7 +2381,7 @@ document.getElementById('add-role-btn').addEventListener('click', () => {
 });
 
 function renderSummary(){
-  const selects = roleList.querySelectorAll('select');
+  const selects = roleList.querySelectorAll('select:not(.role-label-input)');
   const chosen = [...selects].map(s => s.value);
   const uniqueChosen = [...new Set(chosen)];
   buildCount.textContent = `${uniqueChosen.length} botaniche selezionate`;
@@ -2396,7 +2433,9 @@ function renderSummary(){
       }
     }
   }
-  buildWarnings.innerHTML = juniperHtml + noteHtml + warnHtml;
+  const personalizzato = currentStyleName === 'Personalizzato';
+  buildWarnings.innerHTML = juniperHtml + (personalizzato ? '' : noteHtml + warnHtml);
+  renderSemafori(uniqueChosen);
 }
 
 renderBuilder(0);
@@ -3172,6 +3211,134 @@ function infusoRiga(d, abv, temp, vol, mod, stato){
   calcola();
 })();
 
+// ---------- Ricerca nei menù delle botaniche ----------
+// Ogni menù lungo (oltre 40 voci) riceve una casella di ricerca: scrivendo poche lettere
+// il menù si restringe alle botaniche che corrispondono; Invio sceglie la prima.
+(function(){
+  const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  function potenzia(sel){
+    if (sel.dataset.ric || sel.options.length < 40 || !sel.parentNode) return;
+    sel.dataset.ric = '1';
+    const tutte = [...sel.options].map(o => o.value);
+    const wrap = document.createElement('div'); wrap.className = 'sel-wrap';
+    const inp = document.createElement('input');
+    inp.type = 'search'; inp.className = 'sel-ric'; inp.placeholder = 'Cerca botanica…';
+    inp.autocomplete = 'off'; inp.setAttribute('enterkeyhint', 'done'); inp.setAttribute('aria-label', 'Cerca botanica');
+    sel.parentNode.insertBefore(wrap, sel);
+    wrap.appendChild(inp); wrap.appendChild(sel);
+    function riempi(lista, cur, marca){
+      sel.innerHTML = '';
+      lista.forEach(n => {
+        const o = document.createElement('option'); o.value = n;
+        o.textContent = (marca && n === cur) ? '✓ ' + n + ' (scelta attuale)' : n;
+        sel.appendChild(o);
+      });
+      sel.value = cur;
+    }
+    function corrispondenze(){
+      const q = norm(inp.value.trim());
+      return q ? tutte.filter(n => norm(n).includes(q)) : tutte;
+    }
+    inp.addEventListener('input', () => {
+      const cur = sel.value, m = corrispondenze();
+      inp.classList.toggle('nessuno', !m.length);
+      if (m.length === tutte.length) { riempi(tutte, cur); return; }
+      if (!m.length) { riempi([cur], cur, true); return; }
+      riempi(m.includes(cur) ? m : [cur].concat(m), cur, !m.includes(cur));
+    });
+    inp.addEventListener('keydown', e => {
+      if (e.key !== 'Enter') return;
+      e.preventDefault();
+      const m = corrispondenze();
+      if (!m.length || !inp.value.trim()) return;
+      const prima = sel.value;
+      inp.value = ''; inp.classList.remove('nessuno');
+      riempi(tutte, m[0]);
+      inp.blur();
+      if (m[0] !== prima) sel.dispatchEvent(new Event('change', {bubbles: true}));
+    });
+    sel.addEventListener('change', () => {
+      if (!inp.value) return;
+      const cur = sel.value;
+      inp.value = ''; inp.classList.remove('nessuno');
+      riempi(tutte, cur);
+    });
+  }
+  const scan = root => root.querySelectorAll('select').forEach(potenzia);
+  new MutationObserver(ms => ms.forEach(m => m.addedNodes.forEach(n => {
+    if (n.nodeType !== 1 || n.tagName === 'OPTION') return;
+    if (n.tagName === 'SELECT') potenzia(n); else scan(n);
+  }))).observe(document.body, {childList: true, subtree: true});
+  scan(document);
+})();
+
+// ---------- Ruoli e semafori del Gin Builder personalizzato ----------
+const RUOLI = ['Base e sapore dominante', 'Supporto aromatico e freschezza', 'Struttura e legante', 'Caratterizzazione e identità', 'Firma'];
+const RUOLI_LEGACY = {'Base': RUOLI[0], 'Freschezza': RUOLI[1], 'Legante': RUOLI[2]};
+const RUOLI_DESC = {
+  'Base e sapore dominante': 'Il ginepro: obbligatorio, dà le note balsamiche, resinose e pungenti.',
+  'Supporto aromatico e freschezza': 'Semi come il coriandolo: note speziate, calde o agrumate che completano il ginepro.',
+  'Struttura e legante': 'Radici come angelica o iris: fissano gli aromi, danno persistenza e legano la ricetta.',
+  'Caratterizzazione e identità': 'Agrumi, fiori, spezie esotiche, erbe locali: note di testa, cuore o fondo che distinguono il gin.',
+  'Firma': 'La botanica fuori dal comune, magari unica o misteriosa, che rende il gin riconoscibile. Una sola, in dose misurata.'
+};
+function elencoContiene(lista, nome){
+  return !!lista && lista.split(',').map(s => s.trim()).some(s => s === nome || nome.indexOf(s + ' ') === 0);
+}
+// Giudizio su una coppia: rosso = ridondanza, arancio = rischio/da dosare, verde = complementari.
+function semaforoCoppia(a, b){
+  const da = byName[a], db = byName[b];
+  if (!da || !db) return null;
+  const ov = findOverride(a, b);
+  if (ov) return { c: ov[1] === 'verde' ? 'verde' : (ov[1] === 'rosso' ? 'rosso' : 'arancio'), t: ov[2] };
+  const ra = REDUND[a] || {}, rb = REDUND[b] || {};
+  if (da.sottofamiglia && da.sottofamiglia === db.sottofamiglia)
+    return { c: 'rosso', t: 'Stessa sottofamiglia (' + da.sottofamiglia + '): si sovrappongono, ne basta una.' };
+  if (elencoContiene(ra.complementari, b) || elencoContiene(rb.complementari, a))
+    return { c: 'verde', t: 'Complementari: lavorano in direzioni diverse e si valorizzano a vicenda.' };
+  if (elencoContiene(ra.simili, b) || elencoContiene(rb.simili, a))
+    return { c: 'arancio', t: 'Profili simili: rischio di sovrapposizione, dosare con attenzione.' };
+  return null;
+}
+function renderSemafori(nomi){
+  const box = document.getElementById('build-semafori');
+  if (!box) return;
+  if (currentStyleName !== 'Personalizzato'){ box.innerHTML = ''; return; }
+  const righe = [];
+  for (let i = 0; i < nomi.length; i++) for (let j = i + 1; j < nomi.length; j++){
+    const s = semaforoCoppia(nomi[i], nomi[j]);
+    if (s) righe.push({ c: s.c, tit: nomi[i] + ' + ' + nomi[j], t: s.t });
+  }
+  const perRuolo = {};
+  roleList.querySelectorAll('.role-row-custom').forEach(row => {
+    const r = row.querySelector('.role-label-input'), b = row.querySelector('select:not(.role-label-input)');
+    if (r && b) (perRuolo[r.value] = perRuolo[r.value] || []).push(b.value);
+  });
+  if (nomi.indexOf('Bacche di ginepro') < 0)
+    righe.push({ c: 'rosso', tit: RUOLI[0], t: 'Manca il ginepro: senza non è un gin.' });
+  if ((perRuolo[RUOLI[4]] || []).length > 1)
+    righe.push({ c: 'arancio', tit: RUOLI[4], t: 'La firma è una sola: più botaniche firma si coprono a vicenda.' });
+  RUOLI.slice(1, 4).forEach(r => {
+    if (!(perRuolo[r] || []).length)
+      righe.push({ c: 'arancio', tit: r, t: 'Nessuna botanica con questo ruolo: la ricetta potrebbe risultare sbilanciata.' });
+  });
+  nomi.forEach(n => {
+    const d = byName[n];
+    if (d && d.edibile === 'Sì, con cautela') righe.push({ c: 'arancio', tit: n, t: d.sicurezza || 'Usare con cautela.' });
+  });
+  const ordine = { rosso: 0, arancio: 1, verde: 2 };
+  righe.sort((x, y) => ordine[x.c] - ordine[y.c]);
+  const col = { rosso: 'var(--red-sym)', arancio: 'var(--orange-sym)', verde: 'var(--green-sym)' };
+  const n = c => righe.filter(r => r.c === c).length;
+  let html = '<div class="sem-box"><h4>Valutazione della combinazione</h4><div class="sem-tot">' +
+    ['rosso', 'arancio', 'verde'].map(c => '<span><i class="sem-dot" style="background:' + col[c] + '"></i>' + n(c) + ' ' +
+      (c === 'rosso' ? 'ridondanze' : c === 'arancio' ? 'rischi' : 'complementari') + '</span>').join('') + '</div>';
+  if (!n('rosso') && !n('arancio'))
+    html += '<div class="sem-row"><i class="sem-dot" style="background:' + col.verde + '"></i><div>Nessuna ridondanza o rischio rilevato.</div></div>';
+  html += righe.map(r => '<div class="sem-row"><i class="sem-dot" style="background:' + col[r.c] + '"></i><div><strong>' + r.tit + '</strong> — ' + r.t + '</div></div>').join('') + '</div>';
+  box.innerHTML = html;
+}
+
 // ---------- Schermata d apertura ----------
 (function(){
   const splash = document.getElementById('splash');
@@ -3388,7 +3555,7 @@ function infusoRiga(d, abv, temp, vol, mod, stato){
 
 // ---------- Collegamento Gin Builder -> Schede di prova ----------
 document.getElementById('send-to-test').addEventListener('click', () => {
-  const selects = roleList.querySelectorAll('select');
+  const selects = roleList.querySelectorAll('select:not(.role-label-input)');
   const styleName = builderTitle.textContent;
   // Il peso relativo suggerito dalla Libreria diventa la percentuale di partenza
   // dell'infuso nella miscela (normalizzata a 100%).
@@ -3419,7 +3586,7 @@ document.getElementById('print-builder').addEventListener('click', () => {
     const roleNameEl = row.querySelector('.role-name');
     const labelInput = row.querySelector('.role-label-input');
     const roleName = roleNameEl ? roleNameEl.childNodes[0].textContent.trim() : (labelInput ? labelInput.value : '');
-    const select = row.querySelector('select');
+    const select = row.querySelector('select:not(.role-label-input)');
     return { ruolo: roleName || '—', botanica: select ? select.value : '', trace: select ? select.dataset.trace === '1' : false };
   });
   const printArea = document.getElementById('print-area');
