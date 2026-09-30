@@ -1172,6 +1172,13 @@ footer.note{
   #print-area .print-section{margin-top:16px;}
   #print-area .print-section h4{margin:0 0 6px;font-size:14px;}
 }
+
+.inf-wrap{overflow-x:auto;border-radius:var(--r-md);}
+.inf-wrap table.ar-table{min-width:720px;}
+.inf-table td.num{white-space:nowrap;font-variant-numeric:tabular-nums;}
+.inf-table td.dose{font-weight:750;color:var(--juniper-deep);}
+.inf-table .inf-cau{display:block;font-size:11.5px;color:var(--orange-sym);margin-top:3px;}
+.inf-table .inf-sub{display:block;font-size:11.5px;color:var(--ink-faint);}
 </style>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0C110E" id="meta-theme-color">
@@ -1273,6 +1280,7 @@ footer.note{
     <button data-tab="builder">🎯 Gin Builder</button>
     <button data-tab="compat">🧬 Compatibilità</button>
     <button data-tab="ridondanza">⚠️ Anti-ridondanza</button>
+    <button data-tab="infusi">🧫 Infusi</button>
     <button data-tab="prove">🧪 Schede di prova</button>
     <button data-tab="libreria">🌿 Botaniche</button>
     <button data-tab="cocktail">🍸 Cocktail</button>
@@ -1620,6 +1628,45 @@ footer.note{
         <button class="primary-btn" id="send-to-test">🧪 Invia al banco di prova</button>
         <button class="ghost-btn" id="print-builder">🖨️ Stampa combinazione</button>
       </div>
+    </div>
+  </section>
+
+  <!-- INFUSI -->
+  <section class="panel" id="panel-infusi">
+    <details class="howto">
+      <summary>Come si usa</summary>
+      <div class="howto-body">
+        <p>Pagina di lavoro per preparare gli infusi, una botanica alla volta.</p>
+        <ol>
+          <li>Imposta grado alcolico, temperatura del liquido e volume di alcol.</li>
+          <li>La tabella dà per ogni botanica i grammi da mettere e il tempo di estrazione. Con <em>dose fissa</em> si corregge il tempo, con <em>tempo fisso</em> si corregge la dose.</li>
+          <li>Assaggia al <strong>primo assaggio</strong> e poi a intervalli: gli estremi dell'intervallo sono limiti, non obiettivi.</li>
+          <li>Le dosi sono per un infuso concentrato, da miscelare a percentuale nelle Schede di prova.</li>
+        </ol>
+        <p>I fattori sono stime orientative, uguali a quelle della Libreria: vanno tarate con assaggi.</p>
+      </div>
+    </details>
+    <div class="cond-box">
+      <span class="cond-label">Condizioni:</span>
+      <label>Grado alcolico (%)<input type="number" id="inf-abv" value="43" step="1" min="20" max="96"></label>
+      <label>Temperatura (°C)<input type="number" id="inf-temp" value="20" step="1" min="0" max="60"></label>
+      <label>Volume di alcol (ml)<input type="number" id="inf-vol" value="100" step="10" min="10"></label>
+      <label>Cosa correggere
+        <select id="inf-mod"><option value="tempo">Dose fissa, correggi il tempo</option><option value="dose">Tempo fisso, correggi la dose</option></select>
+      </label>
+    </div>
+    <div class="controls">
+      <input type="text" id="inf-q" placeholder="Cerca botanica…" />
+      <label>Famiglia<select id="inf-cat"><option value="">Tutte</option></select></label>
+      <button class="ghost-btn" id="inf-print" type="button">🖨️ Stampa elenco</button>
+      <span class="count-tag" id="inf-count"></span>
+    </div>
+    <div id="inf-info"></div>
+    <div class="inf-wrap">
+      <table class="ar-table inf-table">
+        <thead><tr><th>Botanica</th><th>Botanica da usare</th><th>Tempo di estrazione</th><th>Primo assaggio</th></tr></thead>
+        <tbody id="inf-body"></tbody>
+      </table>
     </div>
   </section>
 
@@ -2908,6 +2955,82 @@ function renderCocktails(){
     </div>`).join("");
 }
 renderCocktails();
+
+// ---------- Preparazione infusi ----------
+const INF_ASSAGGIO = 0.5;
+function infFmt(v){ return (v >= 10 ? Math.round(v) : Math.round(v * 10) / 10).toLocaleString('it-IT'); }
+function infFmtG(v){ return v.toLocaleString('it-IT', {maximumFractionDigits: v < 1 ? 3 : 2}); }
+function infRange(a, b){
+  return b >= 72 ? infFmt(a / 24) + '–' + infFmt(b / 24) + ' giorni' : infFmt(a) + '–' + infFmt(b) + ' h';
+}
+// Dose e tempo di una botanica alle condizioni date.
+// mod 'tempo': la dose resta quella di riferimento e cambia il tempo; 'dose': il contrario.
+function infusoRiga(d, abv, temp, vol, mod){
+  const ds = DOSE[d.botanica] || {};
+  const base = (ds.test !== undefined) ? ds.test : d.dose;
+  const dmin = (ds.min !== undefined) ? ds.min : base * 0.4;
+  const dmax = (ds.max !== undefined) ? ds.max : base * 1.6;
+  const f = timeFactor(abv, temp, d.categoria);
+  const fd = mod === 'dose' ? f : 1, ft = mod === 'dose' ? 1 : f;
+  const k = vol / 100;
+  const p = parseTempoRange(ds.tempo || d.tempo);
+  let tmin = null, tmax = null;
+  if (p){ tmin = toHours(p.min, p.unit) * ft; tmax = toHours(p.max, p.unit) * ft; }
+  return { f, g: base * fd * k, gmin: dmin * fd * k, gmax: dmax * fd * k, tmin, tmax,
+           assaggio: tmin === null ? null : tmin * INF_ASSAGGIO, tempoRef: ds.tempo || d.tempo || '' };
+}
+(function(){
+  const $ = id => document.getElementById(id);
+  const iAbv = $('inf-abv'), iTemp = $('inf-temp'), iVol = $('inf-vol'), iMod = $('inf-mod'),
+        iCat = $('inf-cat'), iQ = $('inf-q'), body = $('inf-body'), info = $('inf-info'), cnt = $('inf-count');
+  if (!body) return;
+  uniqueSorted(MASTER.map(d => d.categoria)).forEach(c => {
+    const o = document.createElement('option'); o.value = c; o.textContent = c; iCat.appendChild(o);
+  });
+  let visibili = [];
+  function leggi(){
+    const t = parseFloat(iTemp.value);
+    return { abv: parseFloat(iAbv.value) || REF_ABV, temp: isNaN(t) ? REF_TEMP : t,
+             vol: parseFloat(iVol.value) || 100, mod: iMod.value };
+  }
+  function calcola(){
+    const c = leggi(), q = iQ.value.trim().toLowerCase(), cat = iCat.value;
+    visibili = MASTER.filter(d => (!cat || d.categoria === cat) &&
+      (!q || d.botanica.toLowerCase().includes(q) || (d.profilo || '').toLowerCase().includes(q)))
+      .map(d => ({ d, r: infusoRiga(d, c.abv, c.temp, c.vol, c.mod) }));
+    cnt.textContent = visibili.length + ' / ' + MASTER.length + ' botaniche';
+    const fs = Object.keys(ABV_ESP).map(k => timeFactor(c.abv, c.temp, k));
+    const fmin = Math.min.apply(null, fs), fmax = Math.max.apply(null, fs);
+    let html = '<div class="adj-box">A <strong>' + c.abv + '°</strong> e <strong>' + c.temp + ' °C</strong> il fattore di correzione va da <strong>' +
+      fmin.toFixed(2) + '</strong> a <strong>' + fmax.toFixed(2) + '</strong> a seconda della famiglia (1 = condizioni di riferimento 43° / 20 °C). ' +
+      (c.mod === 'dose' ? 'Il tempo resta quello di riferimento e si corregge la dose.' : 'La dose resta quella di riferimento e si corregge il tempo.') + '</div>';
+    if (c.abv < 43 || c.abv > 66 || c.temp < 20 || c.temp > 35){
+      html += '<div class="warn-box">Fuori dall\u2019intervallo di lavoro previsto (43–66°, 20–35 °C): la stima \u00e8 meno affidabile.</div>';
+    }
+    info.innerHTML = html;
+    body.innerHTML = visibili.map(({d, r}) => {
+      const g = infFmtG(r.g) + ' g <span class="inf-sub">(' + infFmtG(r.gmin) + '–' + infFmtG(r.gmax) + ' g)</span>';
+      const t = r.tmin === null ? (r.tempoRef || '—') : infRange(r.tmin, r.tmax);
+      const a = r.assaggio === null ? '—' : (r.assaggio >= 72 ? infFmt(r.assaggio / 24) + ' giorni' : infFmt(r.assaggio) + ' h');
+      const cau = d.edibile === 'Sì, con cautela' ? '<span class="inf-cau">⚠️ ' + (d.sicurezza || 'usare con cautela') + '</span>' : '';
+      return '<tr><td><strong>' + d.botanica + '</strong><span class="inf-sub">' + d.categoria + ' · ' + (d.parte || '') + '</span>' + cau + '</td>' +
+             '<td class="num dose">' + g + '</td><td class="num">' + t + '</td><td class="num">' + a + '</td></tr>';
+    }).join('');
+  }
+  [iAbv, iTemp, iVol, iMod, iCat, iQ].forEach(el => el.addEventListener('input', calcola));
+  $('inf-print').addEventListener('click', () => {
+    const c = leggi();
+    const righe = visibili.map(({d, r}) => '<tr><td>' + d.botanica + '</td><td>' + infFmtG(r.g) + ' g</td><td>' +
+      (r.tmin === null ? (r.tempoRef || '—') : infRange(r.tmin, r.tmax)) + '</td><td>' +
+      (r.assaggio === null ? '—' : infFmt(r.assaggio) + ' h') + '</td></tr>').join('');
+    $('print-area').innerHTML = '<h2>Preparazione infusi</h2><div class="print-meta">Grado ' + c.abv + '° · ' + c.temp +
+      ' °C · ' + c.vol + ' ml di alcol · ' + (c.mod === 'dose' ? 'tempo fisso, dose corretta' : 'dose fissa, tempo corretto') +
+      '</div><table><thead><tr><th>Botanica</th><th>Quantit\u00e0</th><th>Tempo di estrazione</th><th>Primo assaggio</th></tr></thead><tbody>' +
+      righe + '</tbody></table><p style="font-size:12px;color:#555;">Stime orientative: da validare con assaggi.</p>';
+    window.print();
+  });
+  calcola();
+})();
 
 // ---------- Schermata d apertura ----------
 (function(){
