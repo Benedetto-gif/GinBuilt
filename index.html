@@ -1765,6 +1765,25 @@ const CORE = DATA.core;
 const OVERRIDES = DATA.overrides;
 const STYLES = DATA.styles;
 
+// Correzione: "Mirto" compariva due volte (foglie e bacche) con lo stesso nome,
+// quindi menu, dosi e ridondanze vedevano una sola voce. Le separiamo qui.
+(function(){
+  const voci = MASTER.filter(d => d.botanica === 'Mirto');
+  if (voci.length < 2) return;
+  voci.forEach(d => { d.botanica = (d.parte === 'bacche') ? 'Mirto bacche' : 'Mirto foglie'; });
+  const rd = REDUND['Mirto'], ds = DOSE['Mirto'];
+  const fix = t => (typeof t === 'string') ? t.replace(/Mirto, Mirto/g, 'Mirto foglie, Mirto bacche') : t;
+  const copia = o => { const c = {}; for (const k in o) c[k] = fix(o[k]); return c; };
+  REDUND['Mirto foglie'] = copia(rd); REDUND['Mirto bacche'] = copia(rd);
+  DOSE['Mirto bacche'] = ds;                                        // 2 g, 48-120 h
+  DOSE['Mirto foglie'] = {test:1.5, min:0.6, max:2.4, tempo:'24-72 h'};
+  delete REDUND['Mirto']; delete DOSE['Mirto'];
+  for (const k in REDUND) for (const c in REDUND[k]) REDUND[k][c] = fix(REDUND[k][c]);
+  STYLES.forEach(s => (s[3] || []).forEach(r => {
+    r[1] = r[1].replace(/Mirto(?! bacche| foglie)/g, 'Mirto foglie');
+  }));
+})();
+
 const byName = {};
 MASTER.forEach(d => byName[d.botanica] = d);
 
@@ -1840,16 +1859,22 @@ const CARATTERE_COLORS = {
 function coloreCarattere(nome){ return CARATTERE_COLORS[nome] || 'var(--salt)'; }
 
 // ---------- Modello tempo/dose in funzione di grado alcolico e temperatura ----------
-// Riferimento: 43% vol, 20°C (le condizioni su cui sono calibrati i dati del MASTER).
-// Euristica trasparente, non una misura di laboratorio:
-// - grado alcolico più alto => estrazione più efficiente => tempo minore
-// - temperatura più alta => estrazione più veloce (regola Q10, ~raddoppio ogni 10°C)
+// Riferimento: 43% vol, 20°C. Euristica trasparente, non una misura di laboratorio.
+// - temperatura: regola Q10 (~raddoppio ogni 10°C), uguale per tutte le botaniche
+// - grado alcolico: l'effetto dipende dalla famiglia. Resine, oli essenziali e scorze
+//   rispondono molto al grado; fiori e frutti (componenti polari) molto meno.
+//   Gli esponenti sono ipotesi di lavoro da tarare con assaggi comparativi.
 const REF_ABV = 43, REF_TEMP = 20;
+const ABV_ESP = {
+  'Agrumi':0.6, 'Semi e spezie':0.6, 'Radici e rizomi':0.5, 'Erbe aromatiche':0.4,
+  'Specialità e gastronomiche':0.4, 'Marine e saline':0.3, 'Fiori':0.2, 'Frutti e bacche':0.2
+};
 
-function timeFactor(abv, temp){
+function timeFactor(abv, temp, cat){
   abv = Math.max(20, Math.min(96, abv || REF_ABV));
   temp = Math.max(0, Math.min(60, temp === undefined || temp === null || temp === '' ? REF_TEMP : temp));
-  const abvFactor = Math.sqrt(REF_ABV / abv);
+  const esp = (ABV_ESP[cat] !== undefined) ? ABV_ESP[cat] : 0.5;
+  const abvFactor = Math.pow(REF_ABV / abv, esp);
   const tempFactor = Math.pow(2, (REF_TEMP - temp) / 10);
   return Math.max(0.15, Math.min(6, abvFactor * tempFactor));
 }
@@ -1870,19 +1895,19 @@ function formatRange(min, max, unit){
   return `${Math.round(min)}-${Math.round(max)} h`;
 }
 
-// Calcola il tempo adattato alle condizioni date, mantenendo la dose di riferimento.
-function adjustedTempo(baseTempoText, abv, temp){
+// Tempo adattato alle condizioni date, mantenendo la dose di riferimento.
+function adjustedTempo(baseTempoText, abv, temp, cat){
   const parsed = parseTempoRange(baseTempoText);
   if (!parsed) return baseTempoText || '—';
-  const f = timeFactor(abv, temp);
+  const f = timeFactor(abv, temp, cat);
   const minH = toHours(parsed.min, parsed.unit) * f;
   const maxH = toHours(parsed.max, parsed.unit) * f;
   return formatRange(fromHours(minH, parsed.unit), fromHours(maxH, parsed.unit), parsed.unit);
 }
 // Dose alternativa mantenendo invece il tempo di riferimento (stesso fattore).
-function adjustedDose(baseDose, abv, temp){
+function adjustedDose(baseDose, abv, temp, cat){
   if (baseDose === undefined || baseDose === null || baseDose === '') return null;
-  const f = timeFactor(abv, temp);
+  const f = timeFactor(abv, temp, cat);
   return Math.round(baseDose * f * 100) / 100;
 }
 
@@ -1969,8 +1994,8 @@ function showDetail(name){
   const abv = parseFloat(libAbvInput.value) || REF_ABV;
   const temp = parseFloat(libTempInput.value) || REF_TEMP;
   const isRef = (abv === REF_ABV && temp === REF_TEMP);
-  const adjTempo = adjustedTempo(baseTempo, abv, temp);
-  const adjDose = adjustedDose(baseDose, abv, temp);
+  const adjTempo = adjustedTempo(baseTempo, abv, temp, d.categoria);
+  const adjDose = adjustedDose(baseDose, abv, temp, d.categoria);
   detail.classList.add('active');
   detail.innerHTML = `
     <div class="detail-icon">${d.icona || '🌿'}</div>
