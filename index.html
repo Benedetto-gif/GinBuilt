@@ -1174,8 +1174,10 @@ footer.note{
 }
 
 .inf-wrap{overflow-x:auto;border-radius:var(--r-md);}
-.inf-wrap table.ar-table{min-width:720px;}
+.inf-wrap table.ar-table{min-width:980px;}
+.inf-table td.how{min-width:300px;font-size:13px;line-height:1.5;}
 .inf-table td.num{white-space:nowrap;font-variant-numeric:tabular-nums;}
+.inf-table select.inf-stato{font-size:12.5px;padding:6px 26px 6px 8px;}
 .inf-table td.dose{font-weight:750;color:var(--juniper-deep);}
 .inf-table .inf-cau{display:block;font-size:11.5px;color:var(--orange-sym);margin-top:3px;}
 .inf-table .inf-sub{display:block;font-size:11.5px;color:var(--ink-faint);}
@@ -1640,6 +1642,8 @@ footer.note{
         <ol>
           <li>Imposta grado alcolico, temperatura del liquido e volume di alcol.</li>
           <li>La tabella dà per ogni botanica i grammi da mettere e il tempo di estrazione. Con <em>dose fissa</em> si corregge il tempo, con <em>tempo fisso</em> si corregge la dose.</li>
+          <li>Per ogni botanica scegli lo <strong>Stato</strong>: fresca (appena raccolta) o secca. Peso e tempo si ricalcolano; con «Stato delle botaniche» li imposti tutti insieme. Le botaniche fresche portano acqua e abbassano un po' la gradazione.</li>
+          <li>Leggi la colonna <strong>Come prepararla e usarla</strong>: dice come trattare la botanica e a cosa si riferisce il peso (senza altra indicazione, botanica secca).</li>
           <li>Assaggia al <strong>primo assaggio</strong> e poi a intervalli: gli estremi dell'intervallo sono limiti, non obiettivi.</li>
           <li>Le dosi sono per un infuso concentrato, da miscelare a percentuale nelle Schede di prova.</li>
         </ol>
@@ -1654,6 +1658,9 @@ footer.note{
       <label>Cosa correggere
         <select id="inf-mod"><option value="tempo">Dose fissa, correggi il tempo</option><option value="dose">Tempo fisso, correggi la dose</option></select>
       </label>
+      <label>Stato delle botaniche
+        <select id="inf-stato"><option value="ref">Come da libreria</option><option value="secco">Tutte secche</option><option value="fresco">Tutte fresche</option></select>
+      </label>
     </div>
     <div class="controls">
       <input type="text" id="inf-q" placeholder="Cerca botanica…" />
@@ -1664,7 +1671,7 @@ footer.note{
     <div id="inf-info"></div>
     <div class="inf-wrap">
       <table class="ar-table inf-table">
-        <thead><tr><th>Botanica</th><th>Botanica da usare</th><th>Tempo di estrazione</th><th>Primo assaggio</th></tr></thead>
+        <thead><tr><th>Botanica</th><th>Stato</th><th>Quantità</th><th>Tempo di estrazione</th><th>Primo assaggio</th><th>Come prepararla e usarla</th></tr></thead>
         <tbody id="inf-body"></tbody>
       </table>
     </div>
@@ -2956,6 +2963,105 @@ function renderCocktails(){
 }
 renderCocktails();
 
+// ---------- Come preparare e usare ogni botanica ----------
+// Indicazioni di pratica generale, non risultati sperimentali. Se non altrimenti indicato,
+// i pesi si intendono di botanica secca.
+const COME_AGRUME = `Solo la parte colorata, pelata a strisce sottili senza la parte bianca (amara). Il peso è della scorza pelata. Frutti non trattati.`;
+const COME_FRUTTA = `Tagliare o spezzare a pezzetti piccoli. Il peso è della polpa essiccata, senza noccioli né semi. Da fresco serve molto più peso e l'acqua abbassa la gradazione.`;
+const COME_FIORI = `Fiori o petali essiccati, interi o appena sbriciolati, senza gambi né parti verdi. Il peso è dei soli fiori.`;
+const COME_RADICE = `Radice secca tagliata in pezzetti o fettine sottili, non in polvere (intorbida). Il peso è a secco.`;
+const COME_CORTECCIA = `Spezzare in pezzetti, non in polvere. Il peso è della sola corteccia.`;
+const COME_SEMI = `Schiacciare appena al mortaio, senza ridurre in polvere. Il peso è dei semi interi, prima di schiacciarli.`;
+const COME_ERBE = `Foglie e sommità spezzettate a mano, senza rametti legnosi. Il peso è a secco: da fresca serve più peso e l'acqua abbassa la gradazione.`;
+const COME_MARE = `Sbriciolare o spezzettare. Il peso è a secco. Molto sapida: dosare con precisione.`;
+const COME_BASE = `Ridurre in pezzetti piccoli. Il peso è a secco.`;
+const COME_PEPE = `Grani schiacciati appena, non macinati. Il peso è dei grani interi.`;
+const COME_VANIGLIA = `Incidere il baccello per il lungo, raschiare i semi e mettere nell'alcol semi e baccello a pezzetti. Il peso è del baccello intero.`;
+const COME = {
+  'Bacche di ginepro': `Schiacciare leggermente ogni bacca, senza polvere. Il peso è delle bacche intere secche.`,
+  'Coriandolo': `Semi interi, appena frantumati al mortaio. Il peso è dei semi prima di frantumarli.`,
+  'Cardamomo verde': `Aprire il baccello e schiacciarlo appena; si immergono semi e buccia insieme. Il peso indicato è dei soli semi: usando il baccello intero servono circa 1,3 volte tanto (i semi sono circa tre quarti del baccello).`,
+  'Cardamomo nero': `Aprire il baccello e schiacciare i semi. Il peso è dei soli semi. La buccia è molto affumicata: aggiungerla solo per una nota più marcata.`,
+  'Angelica': `Radice secca a pezzetti o fettine sottili, non in polvere. Il peso è a secco.`,
+  'Finocchio di mare': `Foglie carnose e cime tenere, intere o spezzettate a mano; scartare i gambi legnosi. Il peso è a secco: da fresco serve molto più peso e l'acqua abbassa la gradazione.`,
+  'Foglie di cappero': `Solo le foglie (non i boccioli), meglio se giovani, spezzettate. Il peso è a secco.`,
+  'Cappero': `Boccioli dissalati e asciugati, perché il sale altera gusto e peso; schiacciarli appena. Il peso è dei boccioli asciutti.`,
+  'Liquirizia': `Radice secca in pezzetti piccoli, non in polvere (intorbida). Il peso è a secco.`,
+  'Iris': `Rizoma stagionato, grattugiato grossolanamente o a scaglie. Il peso è a secco. Estrazione lunga.`,
+  'Genziana': `Radice secca in pezzetti piccolissimi. Dose minima: amaro potente.`,
+  'Zafferano': `Stimmi interi, senza tritarli. Pesare con bilancia da 0,001 g e dosare sempre in tracce.`,
+  'Vaniglia': COME_VANIGLIA, 'Vaniglia bourbon': COME_VANIGLIA,
+  'Pepe nero': COME_PEPE, 'Cubebe': COME_PEPE, 'Pepe di giava': COME_PEPE, 'Grani del paradiso': COME_PEPE,
+  'Pepe rosa': `Bacche intere schiacciate appena. Usare solo prodotto alimentare. Il peso è delle bacche intere.`,
+  'Pepe di Sichuan': `Solo il guscio (pericarpo) schiacciato appena; scartare i semini neri. Il peso è del solo guscio.`,
+  'Noce moscata': `Grattugiare una piccola quantità o rompere un frammento. Bilancia di precisione: dose minima.`,
+  'Macis': `Arilli interi rotti a pezzetti. Il peso è dell'arillo secco.`,
+  'Chiodo di garofano': `Boccioli interi, non pestati. Il peso è dei boccioli.`,
+  'Cannella Ceylon': `Stecca spezzata in pezzetti, non in polvere. Il peso è della sola corteccia.`,
+  'Cassia': `Stecca spezzata in pezzetti, non in polvere. Il peso è della sola corteccia. Dose minima.`,
+  'Fave di tonka': `Grattugiare una minima parte o spezzare la fava. Bilancia di precisione: dose minima.`,
+  'Stella di anice': `Rompere la stella in punte. Il peso è della stella secca.`,
+  'Senape gialla': `Semi schiacciati appena. Il peso è dei semi interi.`,
+  'Zenzero': `Rizoma secco a fettine sottili; se fresco, sbucciare e affettare, e servirà più peso. Il peso è a secco.`,
+  'Galanga': `Rizoma secco a fettine sottili; se fresco, sbucciare e affettare, e servirà più peso. Il peso è a secco.`,
+  'Curcuma': `Rizoma secco a fettine sottili; se fresco, sbucciare e affettare, e servirà più peso. Colora molto.`,
+  'Mirto foglie': `Foglie intere o spezzate, senza rametti. Il peso è a secco.`,
+  'Mirto bacche': `Bacche schiacciate appena. Il peso è a secco. Colorano l'infuso.`,
+  'Lavanda': `Fiori essiccati interi, non pestati, senza gambi. Il peso è dei soli fiori.`,
+  'Sambuco': `Solo i fiori, senza gambi né parti verdi. Il peso è dei soli fiori secchi.`,
+  'Ibisco': `Calici essiccati, spezzati a metà. Il peso è dei calici secchi. Colora di rosso.`,
+  'Ginestra': `Solo i fiori; niente baccelli, semi o parti verdi. Il peso è dei soli fiori.`,
+  'Asparago': `Solo i turioni (germogli); mai le bacche rosse (tossiche). Il peso è a secco.`,
+  'Artemisia': `Solo le foglie, spezzettate. Dose minima (tujone).`,
+  'Poseidonia': `Solo foglie spiaggiate da fonte legale (mai la pianta viva); lavare, asciugare, spezzettare.`,
+  'Salicornia': `Giovani cime, fresche o essiccate, spezzettate. Il peso è a secco.`,
+  'Spirulina alimentare': `Polvere o scaglie, da dosare a bilancia di precisione. Colora molto.`,
+  'Mandorla amara': `Un frammento minimo, con bilancia di precisione. Mai al posto della mandorla dolce.`,
+  'Mandorla dolce': `Spezzettare grossolanamente. Può lasciare un velo oleoso: filtrare a freddo.`,
+  'Caffè': `Chicchi tostati interi o appena rotti. Infusione breve per non estrarre amaro.`,
+  'Cacao': `Fave tostate rotte a pezzetti. Il peso è delle fave sgusciate.`,
+  'Sesamo': `Semi appena tostati, non macinati.`,
+  'Sommacco': `Frutti secchi schiacciati appena. Il peso è dei frutti secchi.`,
+  'Carruba polpa': `Polpa del baccello senza i semi, a pezzetti. Il peso è della polpa secca.`,
+  'Manna': `Scaglie ridotte in pezzetti piccoli. Il peso è a secco.`,
+  'Cocco': `Polpa essiccata a scaglie. Può lasciare un velo oleoso: filtrare a freddo.`,
+  'Durian': `Polpa essiccata, in quantità minima.`,
+  'Cetriolo': `Buccia e polpa a fettine sottili. Fresco e ricco d'acqua: abbassa la gradazione.`,
+  'Kumquat': `Frutto intero a fettine sottili, buccia compresa, senza semi. Il peso è del frutto.`,
+  'Lime nero': `Rompere il frutto essiccato in pezzi. Il peso è del frutto secco intero.`,
+  'Finger lime': `Scorza sottile senza parte bianca; le perle si possono aggiungere intere. Il peso è della scorza.`,
+  'Scorza di bergamotto disidratata': `Già essiccata: spezzettare. Il peso è della scorza secca.`,
+  'Scorza di arancia disidratata': `Già essiccata: spezzettare. Il peso è della scorza secca.`,
+  'Corbezzolo': `Frutti molto maturi, schiacciati. Il peso è della polpa.`,
+  'Sorbo': `Solo frutti bletti (molto maturi), schiacciati. Il peso è della polpa.`,
+  'Castagna': `Frutto secco spezzato, tostatura leggera facoltativa. Il peso è del frutto sgusciato.`,
+};
+function comeBase(d){
+  if (COME[d.botanica]) return COME[d.botanica];
+  const p = (d.parte || '').toLowerCase(), c = d.categoria;
+  if (c === 'Agrumi') return COME_AGRUME;
+  if (c === 'Frutti e bacche') return COME_FRUTTA;
+  if (c === 'Fiori') return COME_FIORI;
+  if (c === 'Radici e rizomi') return COME_RADICE;
+  if (c === 'Marine e saline') return COME_MARE;
+  if (/corteccia/.test(p)) return COME_CORTECCIA;
+  if (c === 'Semi e spezie') return COME_SEMI;
+  if (c === 'Erbe aromatiche') return COME_ERBE;
+  return COME_BASE;
+}
+
+// Adegua il testo allo stato scelto e dice a cosa si riferisce il peso.
+function comeUsare(d, stato, K, abvEff){
+  let t = comeBase(d)
+    .replace(/ ?Il peso è a secco:[^.]*\./g, '').replace(/ ?Da fresco serve[^.]*\./g, '')
+    .replace(/ ?Fresco e ricco d'acqua:[^.]*\./g, '').replace(/ ?Il peso è a secco\./g, '')
+    .replace(/, e servirà più peso/g, '');
+  if (stato === 'fresco') t = t.replace(/ ?\b(secca|secco|secche|secchi|essiccata|essiccato|essiccati)\b/g, '');
+  if (stato === 'fresco') t += ` Peso riferito a botanica fresca, appena raccolta (circa ${K} volte il peso da secca). L'acqua che porta abbassa la gradazione a circa ${infFmt(abvEff)}°.`;
+  else if (stato === 'secco') t += ' Peso riferito a botanica secca.';
+  return t;
+}
+
 // ---------- Preparazione infusi ----------
 const INF_ASSAGGIO = 0.5;
 function infFmt(v){ return (v >= 10 ? Math.round(v) : Math.round(v * 10) / 10).toLocaleString('it-IT'); }
@@ -2965,19 +3071,41 @@ function infRange(a, b){
 }
 // Dose e tempo di una botanica alle condizioni date.
 // mod 'tempo': la dose resta quella di riferimento e cambia il tempo; 'dose': il contrario.
-function infusoRiga(d, abv, temp, vol, mod){
+// Stato della botanica: fresca (appena raccolta) o secca. Le dosi della libreria sono riferite
+// a botanica secca, tranne agrumi (scorza fresca) e pochi altri, elencati qui sotto.
+// Rapporto peso fresco / peso secco e effetto sul tempo sono regole pratiche, da tarare
+// pesando un campione prima e dopo l'essiccazione.
+const INF_RIF_FRESCO = new Set(['Cetriolo', 'Portulaca', 'Melograno']);
+const INF_K_CAT = {'Erbe aromatiche':4, 'Marine e saline':5, 'Fiori':5, 'Radici e rizomi':3, 'Agrumi':3,
+                   'Frutti e bacche':4, 'Semi e spezie':4, 'Specialità e gastronomiche':4};
+const INF_K_NOME = {'Finocchio di mare':5, 'Cetriolo':15, 'Portulaca':10, 'Melograno':6, 'Salicornia':6};
+const INF_FRESCO_T = 0.6;   // la botanica fresca è già idratata: estrae prima
+function infRif(d){
+  const fresca = INF_RIF_FRESCO.has(d.botanica) ||
+    (d.categoria === 'Agrumi' && !/essiccat|disidrat/.test((d.parte || '') + ' ' + d.botanica));
+  return fresca ? 'fresco' : 'secco';
+}
+function infK(d){ return INF_K_NOME[d.botanica] || INF_K_CAT[d.categoria] || 4; }
+function infusoRiga(d, abv, temp, vol, mod, stato){
   const ds = DOSE[d.botanica] || {};
   const base = (ds.test !== undefined) ? ds.test : d.dose;
   const dmin = (ds.min !== undefined) ? ds.min : base * 0.4;
   const dmax = (ds.max !== undefined) ? ds.max : base * 1.6;
-  const f = timeFactor(abv, temp, d.categoria);
-  const fd = mod === 'dose' ? f : 1, ft = mod === 'dose' ? 1 : f;
+  const ref = infRif(d), K = infK(d);
+  stato = stato || ref;
+  const cambia = stato !== ref;
+  const wf = !cambia ? 1 : (stato === 'fresco' ? K : 1 / K);
+  const tfr = (!cambia || mod === 'dose') ? 1 : (stato === 'fresco' ? INF_FRESCO_T : 1 / INF_FRESCO_T);
   const k = vol / 100;
+  const acqua = stato === 'fresco' ? base * wf * k * (1 - 1 / K) : 0;   // acqua portata dalla botanica (ml)
+  const abvEff = abv * vol / (vol + acqua);
+  const f = timeFactor(abvEff, temp, d.categoria);
+  const fd = mod === 'dose' ? f : 1, ft = mod === 'dose' ? 1 : f;
   const p = parseTempoRange(ds.tempo || d.tempo);
   let tmin = null, tmax = null;
-  if (p){ tmin = toHours(p.min, p.unit) * ft; tmax = toHours(p.max, p.unit) * ft; }
-  return { f, g: base * fd * k, gmin: dmin * fd * k, gmax: dmax * fd * k, tmin, tmax,
-           assaggio: tmin === null ? null : tmin * INF_ASSAGGIO, tempoRef: ds.tempo || d.tempo || '' };
+  if (p){ tmin = toHours(p.min, p.unit) * ft * tfr; tmax = toHours(p.max, p.unit) * ft * tfr; }
+  return { f, stato, K, abvEff, g: base * fd * wf * k, gmin: dmin * fd * wf * k, gmax: dmax * fd * wf * k,
+           tmin, tmax, assaggio: tmin === null ? null : tmin * INF_ASSAGGIO, tempoRef: ds.tempo || d.tempo || '' };
 }
 (function(){
   const $ = id => document.getElementById(id);
@@ -2987,6 +3115,10 @@ function infusoRiga(d, abv, temp, vol, mod){
   uniqueSorted(MASTER.map(d => d.categoria)).forEach(c => {
     const o = document.createElement('option'); o.value = c; o.textContent = c; iCat.appendChild(o);
   });
+  const iSt = $('inf-stato'), statoMap = {};
+  const statoDi = d => statoMap[d.id] || infRif(d);
+  const selStato = (d, s) => '<select class="inf-stato" data-i="' + d.id + '"><option value="secco"' + (s === 'secco' ? ' selected' : '') +
+    '>Secca</option><option value="fresco"' + (s === 'fresco' ? ' selected' : '') + '>Fresca</option></select>';
   let visibili = [];
   function leggi(){
     const t = parseFloat(iTemp.value);
@@ -2997,7 +3129,7 @@ function infusoRiga(d, abv, temp, vol, mod){
     const c = leggi(), q = iQ.value.trim().toLowerCase(), cat = iCat.value;
     visibili = MASTER.filter(d => (!cat || d.categoria === cat) &&
       (!q || d.botanica.toLowerCase().includes(q) || (d.profilo || '').toLowerCase().includes(q)))
-      .map(d => ({ d, r: infusoRiga(d, c.abv, c.temp, c.vol, c.mod) }));
+      .map(d => ({ d, r: infusoRiga(d, c.abv, c.temp, c.vol, c.mod, statoDi(d)) }));
     cnt.textContent = visibili.length + ' / ' + MASTER.length + ' botaniche';
     const fs = Object.keys(ABV_ESP).map(k => timeFactor(c.abv, c.temp, k));
     const fmin = Math.min.apply(null, fs), fmax = Math.max.apply(null, fs);
@@ -3013,19 +3145,27 @@ function infusoRiga(d, abv, temp, vol, mod){
       const t = r.tmin === null ? (r.tempoRef || '—') : infRange(r.tmin, r.tmax);
       const a = r.assaggio === null ? '—' : (r.assaggio >= 72 ? infFmt(r.assaggio / 24) + ' giorni' : infFmt(r.assaggio) + ' h');
       const cau = d.edibile === 'Sì, con cautela' ? '<span class="inf-cau">⚠️ ' + (d.sicurezza || 'usare con cautela') + '</span>' : '';
-      return '<tr><td><strong>' + d.botanica + '</strong><span class="inf-sub">' + d.categoria + ' · ' + (d.parte || '') + '</span>' + cau + '</td>' +
-             '<td class="num dose">' + g + '</td><td class="num">' + t + '</td><td class="num">' + a + '</td></tr>';
+      return '<tr><td><strong>' + d.botanica + '</strong><span class="inf-sub">' + d.categoria + ' · ' + (d.parte || '') + '</span>' + cau + '</td><td>' + selStato(d, r.stato) + '</td>' +
+             '<td class="num dose">' + g + '</td><td class="num">' + t + '</td><td class="num">' + a + '</td><td class="how">' + comeUsare(d, r.stato, r.K, r.abvEff) + '</td></tr>';
     }).join('');
   }
   [iAbv, iTemp, iVol, iMod, iCat, iQ].forEach(el => el.addEventListener('input', calcola));
+  iSt.addEventListener('change', () => {
+    MASTER.forEach(d => { if (iSt.value === 'ref') delete statoMap[d.id]; else statoMap[d.id] = iSt.value; });
+    calcola();
+  });
+  body.addEventListener('change', e => {
+    const s = e.target.closest('.inf-stato'); if (!s) return;
+    statoMap[s.dataset.i] = s.value; calcola();
+  });
   $('inf-print').addEventListener('click', () => {
     const c = leggi();
-    const righe = visibili.map(({d, r}) => '<tr><td>' + d.botanica + '</td><td>' + infFmtG(r.g) + ' g</td><td>' +
+    const righe = visibili.map(({d, r}) => '<tr><td>' + d.botanica + ' (' + (r.stato === 'fresco' ? 'fresca' : 'secca') + ')</td><td>' + infFmtG(r.g) + ' g</td><td>' +
       (r.tmin === null ? (r.tempoRef || '—') : infRange(r.tmin, r.tmax)) + '</td><td>' +
-      (r.assaggio === null ? '—' : infFmt(r.assaggio) + ' h') + '</td></tr>').join('');
+      (r.assaggio === null ? '—' : infFmt(r.assaggio) + ' h') + '</td><td>' + comeUsare(d, r.stato, r.K, r.abvEff) + '</td></tr>').join('');
     $('print-area').innerHTML = '<h2>Preparazione infusi</h2><div class="print-meta">Grado ' + c.abv + '° · ' + c.temp +
       ' °C · ' + c.vol + ' ml di alcol · ' + (c.mod === 'dose' ? 'tempo fisso, dose corretta' : 'dose fissa, tempo corretto') +
-      '</div><table><thead><tr><th>Botanica</th><th>Quantit\u00e0</th><th>Tempo di estrazione</th><th>Primo assaggio</th></tr></thead><tbody>' +
+      '</div><table><thead><tr><th>Botanica</th><th>Quantit\u00e0</th><th>Tempo di estrazione</th><th>Primo assaggio</th><th>Come prepararla e usarla</th></tr></thead><tbody>' +
       righe + '</tbody></table><p style="font-size:12px;color:#555;">Stime orientative: da validare con assaggi.</p>';
     window.print();
   });
