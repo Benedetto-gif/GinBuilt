@@ -2594,6 +2594,7 @@ function renderBuilder(styleIndex){
           usedSf.add(sf);
           baselineSf[sf] = (baselineSf[sf] || 0) + 1;
         }
+        proteggiSostituzione(select, roleName);
         select.addEventListener('change', renderSummary);
         row.innerHTML = `<div class="role-name">${roleName}<br><span style="font-weight:400;color:var(--ink-soft);font-size:12px;">${grp.testo}</span></div>`;
         const right = document.createElement('div');
@@ -3153,6 +3154,32 @@ function chiediRimozione(nome, poi){
       ? '<div class="avviso-sost">Se non la trovi, la stessa funzione pu\u00f2 essere svolta da: <strong>' + sost + '</strong>. Meglio sostituirla che lasciare il posto vuoto.</div>'
       : '<div class="avviso-sost">In libreria non risulta una sostituta equivalente: togliendola, quella funzione resta scoperta.</div>');
   mostraAvviso(nome + ': botanica fondamentale', corpo, 'Rimuovi comunque', poi);
+}
+
+// Negli stili preordinati una botanica fondamentale (o una Base) si sostituisce solo con le sue sostitutive,
+// e solo dopo un avviso che ne ricorda la funzione. Il ginepro non si sostituisce.
+function proteggiSostituzione(select, ruolo){
+  let prev = select.value;
+  const f = FONDAMENTALI[prev];
+  const sost = sostituteDi(prev).split(/,|;/).map(x => x.trim()).filter(n => n && byName[n] && n !== prev);
+  if (f && f.blocco){ select.disabled = true; select.title = 'Botanica fondamentale: non sostituibile'; return; }
+  if (!f && !(ruolo === 'Base' && sost.length)) return;
+  if (!sost.length){ select.disabled = true; select.title = 'Nessuna sostituta equivalente in libreria: per cambiarla rimuovi la riga'; return; }
+  const nomi = [prev].concat(sost);
+  select.innerHTML = '';
+  nomi.forEach(n => { const o = document.createElement('option'); o.value = n; o.textContent = n; select.appendChild(o); });
+  select.value = prev; select.title = 'Si può sostituire solo con: ' + sost.join(', ');
+  select.addEventListener('change', e => {
+    if (select._ok){ select._ok = false; prev = select.value; return; }
+    const nuovo = select.value; select.value = prev; e.stopImmediatePropagation();
+    if (nuovo === prev) return;
+    const perche = (FONDAMENTALI[prev] && FONDAMENTALI[prev].perche) || notaRuolo(prev, 'Base');
+    const dn = byName[nuovo] || {};
+    mostraAvviso(prev + ' → ' + nuovo,
+      '<p>' + perche + '</p><div class="avviso-sost"><strong>' + nuovo + '</strong> può svolgere la stessa funzione' + (dn.profilo ? ' (profilo: ' + dn.profilo + ')' : '') +
+      ', ma con un carattere diverso: la ricetta cambierà. Vuoi sostituirla?</div>',
+      'Sostituisci', () => { select._ok = true; select.value = nuovo; select.dispatchEvent(new Event('change')); });
+  }, true);
 }
 
 // ---------- Cocktail classici ----------
