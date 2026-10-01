@@ -1182,6 +1182,19 @@ footer.note{
 .inf-table td.dose{font-weight:750;color:var(--juniper-deep);}
 .inf-table .inf-cau{display:block;font-size:11.5px;color:var(--orange-sym);margin-top:3px;}
 .inf-table .inf-sub{display:block;font-size:11.5px;color:var(--ink-faint);}
+.inf-list{display:flex;flex-direction:column;gap:6px;margin-top:10px;}
+.inf-item{border:1px solid var(--line);border-radius:12px;background:var(--surface);scroll-margin-top:96px;}
+.inf-item>summary{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;list-style:none;}
+.inf-item>summary::-webkit-details-marker{display:none;}
+.inf-item>summary::after{content:'▾';color:var(--ink-faint);font-size:12px;margin-left:4px;}
+.inf-item[open]>summary::after{content:'▴';}
+.inf-nome{display:flex;flex-direction:column;min-width:0;}
+.inf-riass{font-size:12.5px;color:var(--juniper-deep);text-align:right;white-space:nowrap;margin-left:auto;}
+.inf-item.trovata{border-color:var(--juniper-deep);box-shadow:0 0 0 2px var(--surface-2);}
+.inf-corpo{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px 14px;padding:4px 12px 12px;border-top:1px solid var(--line);}
+.inf-corpo .inf-cau,.inf-corpo .inf-how{grid-column:1/-1;}
+.inf-f .k{font-size:11.5px;color:var(--ink-faint);margin-bottom:2px;}
+.inf-f .v{font-size:13.5px;}
 .inf-table td.est{min-width:96px;}
 .inf-table .inf-est-nota{display:block;margin-top:5px;font-size:12px;color:var(--ink-faint);}
 .cond-box label.chk{display:flex;align-items:center;gap:8px;}
@@ -1708,7 +1721,7 @@ footer.note{
           <li><strong>Firma.</strong> La botanica fuori dal comune, magari unica o misteriosa, che rende il gin riconoscibile: elicriso, grani del paradiso, kumquat, rosa. Una sola, in dose misurata: deve farsi notare senza coprire il resto. Il ruolo è facoltativo.</li>
           <li><strong>Rifinitura.</strong> Il tocco finale, in dose minima, che chiude il sorso e rifinisce la coda: timo, alloro, cannella, cardamomo, mandorla. Il ruolo è facoltativo.</li>
         </ul>
-        <p><strong>Il ruolo cambia la quantità.</strong> Ogni ruolo usa una frazione della dose di riferimento della Libreria: <em>Base</em> e <em>Freschezza</em> 100%, <em>Identità</em> 80%, <em>Cuore</em> 70%, <em>Firma</em> 30%, <em>Rifinitura</em> 15% (tracce). Sotto ogni botanica vedi i grammi per 100 ml che ne risultano; la quota di ginepro, la scheda di prova e la stampa usano questi stessi valori. Sono valori di partenza, da correggere con gli assaggi.</p>
+        <p><strong>Il ruolo cambia la quantità.</strong> Ogni ruolo usa una frazione della dose di riferimento della Libreria: <em>Base</em> e <em>Freschezza</em> 100%, <em>Identità</em> 80%, <em>Cuore</em> 70%, <em>Firma</em> 30%, <em>Rifinitura</em> 15% (tracce). Sotto ogni botanica vedi la percentuale applicata; i grammi li trovi nella pagina Infusi. La quota di ginepro, la scheda di prova e la stampa usano questi stessi pesi. Sono valori di partenza, da correggere con gli assaggi.</p>
         <p><strong>Il ginepro deve superare il 50%?</strong> No: il 50% non è una regola. La normativa europea sul gin chiede che il sapore di ginepro sia <em>predominante</em>, senza indicare nessuna percentuale in peso: il criterio è sensoriale. Il peso dice poco su cosa si sente, perché una botanica potente (cedro, chiodo di garofano) pesa pochissimo ma si fa notare molto. Per questo molti gin moderni hanno una quota di ginepro ben sotto il 50% e restano riconoscibili come gin. Nel Builder la quota di ginepro sul totale è verde da 45% in su, arancio tra 30% e 44%, rossa sotto il 30%: sono soglie pratiche di lavoro, non di legge. Se all'assaggio il ginepro è la prima nota riconoscibile, la miscela è a posto; se è coperto, alza il ginepro o riduci le botaniche potenti. Se il gin è destinato alla vendita, verifica la definizione legale e l'etichetta con le autorità competenti.</p>
         <p>Sotto la combinazione compaiono i semafori: <strong>rosso</strong> ridondanza, <strong>arancio</strong> rischio se messe insieme (o da dosare), <strong>verde</strong> complementari.</p>
       </div>
@@ -1764,18 +1777,13 @@ footer.note{
       </label>
     </div>
     <div class="controls">
-      <input type="text" id="inf-q" placeholder="Cerca botanica…" />
+      <input type="text" id="inf-q" placeholder="Scrivi la lettera: l'elenco ci porta lì…" />
       <label>Famiglia<select id="inf-cat"><option value="">Tutte</option></select></label>
       <button class="ghost-btn" id="inf-print" type="button">🖨️ Stampa elenco</button>
       <span class="count-tag" id="inf-count"></span>
     </div>
     <div id="inf-info"></div>
-    <div class="inf-wrap">
-      <table class="ar-table inf-table">
-        <thead><tr><th>Botanica</th><th>Stato</th><th>Gradazione consigliata</th><th>Diluizione (alcol 96° + acqua)</th><th>Quantità</th><th>Tempo di estrazione</th><th>Primo assaggio</th><th>Come prepararla e usarla</th></tr></thead>
-        <tbody id="inf-body"></tbody>
-      </table>
-    </div>
+    <div class="inf-list" id="inf-body"></div>
   </section>
 
   <!-- SCHEDE DI PROVA -->
@@ -2522,9 +2530,7 @@ function addCustomRoleRow(label, botanica){
     const base = doseLibreria(select.value);
     if (base === null){ quant.textContent = ''; return; }
     const f = RUOLO_DOSE[labelInput.value] === undefined ? 1 : RUOLO_DOSE[labelInput.value];
-    const g = f === 1 ? base : Math.max(TRACE_MIN_G, Math.round(base * f * 1000) / 1000);
-    quant.innerHTML = 'Quantità: <strong>' + g.toLocaleString('it-IT', {maximumFractionDigits: 3}) + ' g</strong> per 100 ml ' +
-      (f === 1 ? '(dose di riferimento)' : '(' + Math.round(f * 100) + '% della dose di riferimento)');
+    quant.innerHTML = f === 1 ? '' : 'Peso nella ricetta: <strong>' + Math.round(f * 100) + '%</strong> della dose di riferimento';
   };
   labelInput.addEventListener('change', () => { aggHint(); aggQuant(); renderSummary(); });
   const select = document.createElement('select');
@@ -2693,12 +2699,17 @@ function renderCalc(){
     calcResult.textContent = to > from ? 'Il grado desiderato non può superare quello di partenza.' : 'Inserisci valori validi.';
     return;
   }
-  const alcol = (to * vol) / from;
-  const acqua = vol - alcol;
-  calcResult.innerHTML = `${alcol.toFixed(1)} ml di alcol a ${from}° &nbsp;+&nbsp; ${acqua.toFixed(1)} ml di acqua &nbsp;→&nbsp; ${vol} ml a ${to}°`;
+  if (from > 100){ calcResult.textContent = 'Il grado di partenza non può superare 100°.'; return; }
+  const d = diluizione(to, vol, from);
+  calcResult.innerHTML =
+    `<div><strong>Alcol a ${from}°:</strong> ${nf(d.alcMl, 1)} ml &nbsp;·&nbsp; ${nf(d.alcG, 1)} g</div>` +
+    `<div><strong>Acqua demineralizzata potabile:</strong> ${nf(d.acquaMl, 1)} ml &nbsp;·&nbsp; ${nf(d.acquaG, 1)} g</div>` +
+    `<div>→ ${nf(vol, 0)} ml a ${to}° &nbsp;·&nbsp; peso totale ${nf(d.massaG, 1)} g</div>` +
+    `<div style="font-size:12px;color:var(--ink-faint);margin-top:6px;">Calcolo a 20 °C con la contrazione di volume: alcol e acqua sommati in ml superano il volume finale. I grammi sono la misura più precisa: pesa l'acqua e l'alcol sulla bilancia.</div>`;
 }
 [calcFrom, calcTo, calcVol].forEach(el => el.addEventListener('input', renderCalc));
-renderCalc();
+// le tabelle di densità sono definite più avanti: si calcola a pagina caricata
+document.addEventListener('DOMContentLoaded', renderCalc);
 
 // ---------- Schede di prova ----------
 const STORAGE_KEY = 'erbario_test_sheets_v1';
@@ -3457,6 +3468,7 @@ const INF_ASSAGGIO = 0.5;
 function infFmt(v){ return (v >= 10 ? Math.round(v) : Math.round(v * 10) / 10).toLocaleString('it-IT'); }
 function infFmtG(v){ return v.toLocaleString('it-IT', {maximumFractionDigits: v < 1 ? 3 : 2}); }
 function infRange(a, b){
+  if (Math.round(a * 10) === Math.round(b * 10)) return b >= 72 ? infFmt(b / 24) + ' giorni' : infFmt(b) + ' h';
   return b >= 72 ? infFmt(a / 24) + '–' + infFmt(b / 24) + ' giorni' : infFmt(a) + '–' + infFmt(b) + ' h';
 }
 // Dose e tempo di una botanica alle condizioni date.
@@ -3528,9 +3540,10 @@ function interp(xs, ys, x){
 const wDaVol = v => interp(V_GRID, W_GRID, v) / 100;                     // frazione in massa
 const rhoDaVol = v => interp(W_GRID, RHO_GRID, interp(V_GRID, W_GRID, v)); // g/ml
 const ALCOL_PARTENZA = 96;
-function diluizione(abvT, volMl){
-  const M = volMl * rhoDaVol(abvT), me = wDaVol(abvT) * M, Ms = me / wDaVol(ALCOL_PARTENZA), Mw = Math.max(0, M - Ms);
-  return { alcMl: Ms / rhoDaVol(ALCOL_PARTENZA), acquaG: Mw, acquaMl: Mw / 0.99823 };
+function diluizione(abvT, volMl, abvS){
+  const a = abvS || ALCOL_PARTENZA;
+  const M = volMl * rhoDaVol(abvT), me = wDaVol(abvT) * M, Ms = me / wDaVol(a), Mw = Math.max(0, M - Ms);
+  return { alcMl: Ms / rhoDaVol(a), alcG: Ms, acquaG: Mw, acquaMl: Mw / 0.99823, massaG: M };
 }
 function estAbvTxt(a){ return a[0] === a[1] ? a[0] + ' % vol' : a[0] + '–' + a[1] + ' % vol'; }
 function estTempoTxt(t){
@@ -3577,6 +3590,7 @@ function infusoRiga(d, abv, temp, vol, mod, stato, ott){
   const selStato = (d, s) => '<select class="inf-stato" data-i="' + d.id + '"><option value="secco"' + (s === 'secco' ? ' selected' : '') +
     '>Secca</option><option value="fresco"' + (s === 'fresco' ? ' selected' : '') + '>Fresca</option></select>';
   let visibili = [];
+  const aperte = new Set();
   function leggi(){
     const t = parseFloat(iTemp.value);
     return { abv: parseFloat(iAbv.value) || REF_ABV, temp: isNaN(t) ? REF_TEMP : t,
@@ -3584,8 +3598,7 @@ function infusoRiga(d, abv, temp, vol, mod, stato, ott){
   }
   function calcola(){
     const c = leggi(), q = iQ.value.trim().toLowerCase(), cat = iCat.value;
-    visibili = MASTER.filter(d => (!cat || d.categoria === cat) &&
-      (!q || d.botanica.toLowerCase().includes(q) || (d.profilo || '').toLowerCase().includes(q)))
+    visibili = MASTER.filter(d => !cat || d.categoria === cat).slice().sort((x, y) => x.botanica.localeCompare(y.botanica, 'it'))
       .map(d => ({ d, r: infusoRiga(d, c.abv, c.temp, c.vol, c.mod, statoDi(d), c.ott) }));
     cnt.textContent = visibili.length + ' / ' + MASTER.length + ' botaniche';
     let html = '<div class="adj-box">Gradazione e tempo derivano dalla botanica scelta; qui indichi solo la temperatura di conservazione e il volume di infuso che vuoi ottenere. Il tempo consigliato si corregge con la temperatura (raddoppia ogni 10 °C in meno, dimezza ogni 10 °C in più). La diluizione è calcolata con alcol a ' + ALCOL_PARTENZA + '% vol e acqua demineralizzata potabile a 20 °C, tenendo conto della contrazione di volume: per l\u2019acqua usa i ml o i grammi, sono quasi uguali.</div>';
@@ -3596,13 +3609,30 @@ function infusoRiga(d, abv, temp, vol, mod, stato, ott){
       const t = r.tmin === null ? (r.tempoRef || '—') : infRange(r.tmin, r.tmax);
       const a = r.assaggio === null ? '—' : (r.assaggio >= 72 ? infFmt(r.assaggio / 24) + ' giorni' : infFmt(r.assaggio) + ' h');
       const cau = d.edibile === 'Sì, con cautela' ? '<span class="inf-cau">⚠️ ' + (d.sicurezza || 'usare con cautela') + '</span>' : '';
-      return '<tr><td><strong>' + d.botanica + '</strong><span class="inf-sub">' + d.categoria + ' · ' + (d.parte || '') + '</span>' + cau + '</td><td>' + selStato(d, r.stato) + '</td>' +
-             '<td class="num est">' + (r.est ? '<strong>' + estAbvTxt(r.est.a) + '</strong><span class="inf-sub">' + estTempoTxt(r.est.t) + '</span>' : '—') + '</td>' +
-             '<td class="num dil">' + (r.dil ? '<strong>' + nf(r.dil.alcMl, 1) + ' ml</strong> alcol 96°<span class="inf-sub">+ ' + nf(r.dil.acquaMl, 1) + ' ml acqua (' + nf(r.dil.acquaG, 1) + ' g)</span>' : '—') + '</td>' +
-             '<td class="num dose">' + g + '</td><td class="num">' + t + '</td><td class="num">' + a + '</td><td class="how">' + comeUsare(d, r.stato, r.K, r.abvEff) + (r.est ? ' <em class="inf-est-nota">Estrazione: ' + r.est.n + '</em>' : '') + '</td></tr>';
+      const riass = r.est ? estAbvTxt(r.est.a) + ' · ' + estTempoTxt(r.est.t) : t;
+      const f = (k, v) => '<div class="inf-f"><div class="k">' + k + '</div><div class="v">' + v + '</div></div>';
+      return '<details class="inf-item" data-i="' + d.id + '"' + (aperte.has(String(d.id)) ? ' open' : '') + '><summary><span class="inf-nome"><strong>' + d.botanica + '</strong>' +
+        '<span class="inf-sub">' + d.categoria + ' · ' + (d.parte || '') + '</span></span><span class="inf-riass">' + riass + '</span></summary>' +
+        '<div class="inf-corpo">' + cau +
+        f('Stato', selStato(d, r.stato)) +
+        f('Gradazione consigliata', r.est ? '<strong>' + estAbvTxt(r.est.a) + '</strong>' : '—') +
+        f('Diluizione (alcol 96° + acqua)', r.dil ? '<strong>' + nf(r.dil.alcMl, 1) + ' ml</strong> di alcol + <strong>' + nf(r.dil.acquaMl, 1) + ' ml</strong> di acqua (' + nf(r.dil.acquaG, 1) + ' g)' : '—') +
+        f('Quantità di botanica', g) + f('Tempo di estrazione', t) + f('Primo assaggio', a) +
+        '<div class="inf-f inf-how"><div class="k">Come prepararla e usarla</div><div class="v">' + comeUsare(d, r.stato, r.K, r.abvEff) + (r.est ? ' <em class="inf-est-nota">Estrazione: ' + r.est.n + '</em>' : '') + '</div></div>' +
+        '</div></details>';
     }).join('');
   }
-  [iAbv, iTemp, iVol, iMod, iCat, iQ].forEach(el => el.addEventListener('input', calcola));
+  [iAbv, iTemp, iVol, iMod, iCat].forEach(el => el.addEventListener('input', calcola));
+  body.addEventListener('toggle', e => { const it = e.target.closest && e.target.closest('.inf-item'); if (it) it.open ? aperte.add(it.dataset.i) : aperte.delete(it.dataset.i); }, true);
+  // La ricerca non restringe l'elenco: lo porta sulla prima botanica che inizia con le lettere scritte.
+  const nrm = x => x.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  iQ.addEventListener('input', () => {
+    const q = nrm(iQ.value.trim()); if (!q) return;
+    const els = [...body.querySelectorAll('.inf-item')], nome = el => nrm(el.querySelector('strong').textContent);
+    const el = els.find(e => nome(e).startsWith(q)) || els.find(e => nome(e).split(/[\s\/\-(]+/).some(w => w.startsWith(q))) || els.find(e => nome(e).includes(q));
+    body.querySelectorAll('.inf-item.trovata').forEach(x => x.classList.remove('trovata'));
+    if (el){ el.classList.add('trovata'); el.scrollIntoView({ block: 'start' }); }
+  });
   if (iOtt) iOtt.addEventListener('change', calcola);
   iSt.addEventListener('change', () => {
     MASTER.forEach(d => { if (iSt.value === 'ref') delete statoMap[d.id]; else statoMap[d.id] = iSt.value; });
