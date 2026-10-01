@@ -1197,6 +1197,11 @@ footer.note{
 .sel-wrap input.sel-ric.nessuno{border-color:var(--red-sym);}
 
 .ruolo-hint{font-size:12px;color:var(--ink-faint);margin-top:6px;line-height:1.4;font-weight:400;}
+.est-cal{font-size:13px;}
+.cmp-sel{display:flex;gap:6px;margin-bottom:8px;}.cmp-sel select{flex:1;min-width:0;}
+.cmp{width:100%;border-collapse:collapse;font-size:12.5px;}.cmp td,.cmp th{padding:4px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;}
+.cmp tr.diff td{background:var(--surface-2);font-weight:600;}.cmp-nota{font-size:12px;color:var(--ink-faint);}
+.est-cal summary{cursor:pointer;color:var(--juniper-deep);}
 .backup-box{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0;}
 .bk-info{font-size:12.5px;color:var(--ink-faint);}
 .bk-info.bk-warn{color:var(--orange-sym);}
@@ -1854,6 +1859,7 @@ footer.note{
     <div class="backup-box" id="backup-box">
       <button class="ghost-btn" id="bk-export" type="button">⬇ Esporta schede (backup)</button>
       <button class="ghost-btn" id="bk-import" type="button">⬆ Importa schede</button>
+      <button class="ghost-btn" id="bk-confronta" type="button">⇄ Confronta versioni</button>
       <input type="file" id="bk-file" accept="application/json,.json" hidden>
       <span class="bk-info" id="bk-info"></span>
     </div>
@@ -2013,6 +2019,23 @@ const FONDAMENTALI = {
     perche: 'L\u2019angelica \u00e8 il fissativo: trattiene gli aromi e d\u00e0 tenuta al finale. Senza, il profumo si apre subito e svanisce in fretta.'
   },
 };
+// Nota di ruolo per lo stile Personalizzato: aderente alla botanica scelta.
+// Le fondamentali usano lo stesso testo dell'avviso di rimozione, ma solo nel ruolo che gli è proprio.
+const RUOLO_CLASSICO = {'Bacche di ginepro': 'Base', 'Angelica': 'Base', 'Coriandolo': 'Freschezza', 'Iris': 'Base', 'Liquirizia': 'Base'};
+const NOTA_AGGIUNTIVA = {
+  'Iris': 'Il giaggiolo (iris) \u00e8 il fissativo pi\u00f9 raffinato: trattiene gli aromi volatili e d\u00e0 rotondit\u00e0 e tenuta al finale. \u00c8 molto potente, ne basta poco.',
+  'Liquirizia': 'La liquirizia porta dolcezza naturale e rotondit\u00e0 e lega le note speziate. Ne basta poca: copre facilmente le altre botaniche.'
+};
+function notaRuolo(nome, ruolo){
+  if (RUOLO_CLASSICO[nome] === ruolo){
+    if (FONDAMENTALI[nome]) return FONDAMENTALI[nome].perche;
+    if (NOTA_AGGIUNTIVA[nome]) return NOTA_AGGIUNTIVA[nome];
+  }
+  const d = byName[nome], gen = RUOLI_DESC[ruolo] || '';
+  if (!d) return gen;
+  const spec = nome + ': ' + d.profilo + (d.funzione_compound ? ' (funzione tipica: ' + d.funzione_compound + ')' : '') + '.';
+  return spec + ' Come ' + ruolo + ' \u2014 ' + gen;
+}
 
 function sostituteDi(nome){
   const r = REDUND[nome] || {};
@@ -2206,6 +2229,15 @@ function showDetail(name){
   const adjDose = adjustedDose(baseDose, abv, temp, d.categoria);
   const E = estPer(d, infRif(d));
   const Ef = (E && EST[name].f) ? estPer(d, 'fresco') : null;
+  const cal = tarature()[name], q = name.replace(/"/g, '&quot;');
+  const calHtml = E ? `<details class="field full est-cal"><summary>${cal ? '✓ Usi la tua taratura' : 'La mia taratura'}</summary>
+        <div class="tf-grid"><label>% vol min<input type="number" id="cal-a0" value="${cal ? cal.a[0] : E.a[0]}"></label><label>% vol max<input type="number" id="cal-a1" value="${cal ? cal.a[1] : E.a[1]}"></label>
+        <label>Ore min<input type="number" id="cal-t0" value="${cal ? cal.t[0] : Math.round(E.t[0])}"></label><label>Ore max<input type="number" id="cal-t1" value="${cal ? cal.t[1] : Math.round(E.t[1])}"></label></div>
+        <label>Nota<input type="text" id="cal-n" value="${cal ? (cal.n || '').replace(/"/g, '&quot;') : ''}" placeholder="es. a 62° meglio 36 h"></label>
+        <button class="ghost-btn" type="button" data-n="${q}" onclick="salvaTaratura(this.dataset.n)">Salva</button>${cal ? ` <button class="ghost-btn" type="button" data-n="${q}" onclick="rimuoviTaratura(this.dataset.n)">Torna ai valori di base</button>` : ''}</details>
+      <details class="field full est-cal"><summary>${prezzi()[name] ? '✓ Prezzo: ' + prezzi()[name].toLocaleString('it-IT') + ' € per 100 g' : 'Prezzo (per il costo della ricetta)'}</summary>
+        <label>€ per 100 g<input type="number" id="prezzo-v" step="0.01" min="0" value="${prezzi()[name] || ''}"></label>
+        <button class="ghost-btn" type="button" data-n="${q}" onclick="salvaPrezzo(this.dataset.n)">Salva (vuoto = toglie il prezzo)</button></details>` : '';
   const estHtml = E ? `<div class="field full est-box"><div class="k">Estrazione consigliata (${infRif(d) === 'fresco' ? 'botanica fresca' : 'botanica secca'})</div>
         <div class="v"><strong>${estAbvTxt(E.a)}</strong> · <strong>${estTempoTxt(E.t)}</strong> di macerazione<span class="est-nota">${E.n}</span>
         ${Ef ? `<span class="est-nota"><strong>Fresca:</strong> ${estAbvTxt(Ef.a)} · ${estTempoTxt(Ef.t)}. ${Ef.n}</span>` : ''}</div></div>` : '';
@@ -2222,7 +2254,7 @@ function showDetail(name){
       <div class="field"><div class="k">Potenza</div><div class="v">${d.potenza10 ?? '—'}/10 (intensità ${d.intensita ?? '—'}/5, persistenza ${d.persistenza ?? '—'}/5)</div></div>
       <div class="field"><div class="k">Dose operativa (rif. 43°/20°C)</div><div class="v">test ${ds.test ?? d.dose ?? '—'} g · range ${ds.min ?? '—'}–${ds.max ?? '—'} g / 100 ml</div></div>
       <div class="field"><div class="k">Tempo di infusione (rif. 43°/20°C)</div><div class="v">${baseTempo || '—'}</div></div>
-      ${estHtml}
+      ${estHtml}${calHtml}
       <div class="field"><div class="k">Parte utilizzata</div><div class="v">${d.parte || '—'}</div></div>
       <div class="field"><div class="k">Edibile</div><div class="v">${d.edibile || 'Sì'}</div></div>
       <div class="field"><div class="k">🌾 Periodo di raccolta</div><div class="v">${d.periodo_raccolta || '—'}</div></div>
@@ -2435,7 +2467,7 @@ function addCustomRoleRow(label, botanica){
   RUOLI.forEach(r => { const o = document.createElement('option'); o.value = r; o.textContent = r; labelInput.appendChild(o); });
   labelInput.value = RUOLI.includes(label) ? label : (RUOLI_LEGACY[label] || RUOLI[2]);
   const hint = document.createElement('div'); hint.className = 'ruolo-hint';
-  const aggHint = () => { hint.textContent = RUOLI_DESC[labelInput.value] || ''; };
+  const aggHint = () => { hint.textContent = notaRuolo(select.value, labelInput.value); };
   const quant = document.createElement('div'); quant.className = 'ruolo-quant';
   const aggQuant = () => {
     const base = doseLibreria(select.value);
@@ -2446,14 +2478,13 @@ function addCustomRoleRow(label, botanica){
       (f === 1 ? '(dose di riferimento)' : '(' + Math.round(f * 100) + '% della dose di riferimento)');
   };
   labelInput.addEventListener('change', () => { aggHint(); aggQuant(); renderSummary(); });
-  aggHint();
   const select = document.createElement('select');
   allBotNames.forEach(n => {
     const o = document.createElement('option'); o.value = n; o.textContent = n; select.appendChild(o);
   });
   select.value = botanica || allBotNames[0];
-  select.addEventListener('change', () => { aggQuant(); renderSummary(); });
-  aggQuant();
+  select.addEventListener('change', () => { aggHint(); aggQuant(); renderSummary(); });
+  aggHint(); aggQuant();
   const rmBtn = document.createElement('button');
   rmBtn.className = 'rm-row';
   rmBtn.addEventListener('click', () => {
@@ -2757,6 +2788,20 @@ function renderMixSummary(){
   if (resto > 0.05){
     html += `<div class="mix-line"><span>Base neutra da aggiungere (alcol/acqua a ${abv}\u00b0)</span><strong>${nf(resto,1)}% \u00b7 ${nf(vol*resto/100,1)} ml</strong></div>`;
   }
+  if (rows.length){
+    let sa = 0; rows.forEach(r => { const d = byName[r.botanica], e = d ? estPer(d) : null; sa += r.perc * (e ? (e.a[0] + e.a[1]) / 2 : abv); });
+    const gm = (sa + Math.max(resto, 0) * abv) / 100, acqua = gm > 43 ? vol * (gm / 43 - 1) : 0;
+    html += `<div class="mix-line"><span>Grado stimato (infusi alla gradazione consigliata)</span><strong>≈ ${nf(gm,1)}° vol</strong></div>`;
+    html += `<div class="mix-line"><span>Acqua da aggiungere per scendere a 43°</span><strong>${gm > 43 ? '≈ ' + nf(acqua,1) + ' ml su ' + nf(vol,0) + ' ml' : 'nessuna'}</strong></div>`;
+  }
+  const P = prezzi();
+  if (Object.keys(P).length){
+    let costo = 0, senza = [];
+    rows.forEach(r => { const g = doseLibreria(r.botanica); if (g === null) return;
+      if (P[r.botanica]) costo += g * (vol * r.perc / 100) / 100 * P[r.botanica] / 100; else senza.push(r.botanica); });
+    html += `<div class="mix-line"><span>Costo delle botaniche</span><strong>≈ ${nf(costo,2)} € su ${nf(vol,0)} ml · ≈ ${nf(costo * 700 / vol,2)} € per 700 ml</strong></div>`;
+    if (senza.length) html += `<div class="mix-warn">Senza prezzo (non contate): ${senza.join(', ')}.</div>`;
+  }
   html += `<div class="mix-line"><span>Botanica effettiva nella miscela</span><strong>\u2248 ${nf(gTot,2)} g su ${nf(vol,0)} ml</strong></div>`;
   if (somma > 100.05){
     html += `<div class="mix-warn">\u26a0\ufe0f La somma supera il 100%: riduci qualche percentuale oppure usa \u201cBilancia al 100%\u201d.</div>`;
@@ -2871,7 +2916,7 @@ document.getElementById('new-test-btn').addEventListener('click', () => openForm
     info.classList.toggle('bk-warn', !d || giorni > 30);
   }
   document.getElementById('bk-export').addEventListener('click', () => {
-    const dati = { app: 'GinBuilder', versione: 1, esportato: new Date().toISOString(), schede: loadTests() };
+    const dati = { app: 'GinBuilder', versione: 1, esportato: new Date().toISOString(), schede: loadTests(), tarature: tarature(), prezzi: prezzi() };
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([JSON.stringify(dati, null, 1)], {type: 'application/json'}));
     a.download = 'ginbuilder-schede-' + new Date().toISOString().slice(0, 10) + '.json';
@@ -2891,11 +2936,34 @@ document.getElementById('new-test-btn').addEventListener('click', () => openForm
         const att = loadTests(), viste = new Set(att.map(chiave));
         const agg = nuove.filter(t => t && typeof t === 'object' && !viste.has(chiave(t)));
         if (!confirm('Il file contiene ' + nuove.length + ' schede: ' + agg.length + ' nuove da aggiungere, ' + (nuove.length - agg.length) + ' già presenti (restano come sono). Procedo?')) return;
-        saveTests(att.concat(agg)); renderTestList(); aggInfo();
+        saveTests(att.concat(agg)); tests = loadTests();
+        if (dati.tarature && typeof dati.tarature === 'object'){ try { localStorage.setItem('gb-tarature', JSON.stringify(Object.assign({}, dati.tarature, tarature()))); } catch(e){} }
+        if (dati.prezzi && typeof dati.prezzi === 'object'){ try { localStorage.setItem('gb-prezzi', JSON.stringify(Object.assign({}, dati.prezzi, prezzi()))); } catch(e){} }
+        renderTestList(); aggInfo();
       } catch(e){ alert('File non valido: serve un backup esportato da GinBuilder.'); }
       file.value = '';
     };
     r.readAsText(f);
+  });
+  document.getElementById('bk-confronta').addEventListener('click', () => {
+    if (tests.length < 2){ mostraAvviso('Confronto', 'Servono almeno due schede salvate.', '', null); return; }
+    const opt = i => tests.map((t, k) => '<option value="' + k + '"' + (k === i ? ' selected' : '') + '>' + (t.name || 'Senza nome') + (t.date ? ' · ' + t.date : '') + '</option>').join('');
+    mostraAvviso('Confronta due schede',
+      '<div class="cmp-sel"><select id="cmp-a">' + opt(tests.length - 2) + '</select><select id="cmp-b">' + opt(tests.length - 1) + '</select></div><div id="cmp-out"></div>', '', null);
+    const a = document.getElementById('cmp-a'), b = document.getElementById('cmp-b');
+    const disegna = () => {
+      const A = tests[a.value], B = tests[b.value], pc = (t, n) => { const r = (t.botaniche || []).find(x => x.botanica === n); return r ? r.perc : null; };
+      const nomi = [...new Set((A.botaniche || []).concat(B.botaniche || []).map(x => x.botanica))];
+      const f = v => v === null || v === undefined || v === '' ? '—' : v;
+      let h = '<table class="cmp"><tr><th></th><th>A</th><th>B</th></tr>';
+      nomi.forEach(n => { const x = pc(A, n), y = pc(B, n); h += '<tr class="' + (x !== y ? 'diff' : '') + '"><td>' + n + '</td><td>' + (x === null ? '—' : x + '%') + '</td><td>' + (y === null ? '—' : y + '%') + '</td></tr>'; });
+      [['Aroma', t => t.eval && t.eval.aroma], ['Gusto', t => t.eval && t.eval.gusto], ['Persistenza', t => t.eval && t.eval.persistenza], ['Equilibrio', t => t.eval && t.eval.equilibrio],
+       ['Sapidità', t => t.eval && t.eval.sapidita], ['Giudizio', t => t.giudizio], ['Limpidezza', t => t.aspetto && t.aspetto.limpidezza], ['Louche', t => t.aspetto && t.aspetto.louche],
+       ['Colore', t => t.aspetto && t.aspetto.colore], ['Filtrazione', t => t.aspetto && t.aspetto.filtrazione], ['Correzioni', t => t.corrections]].forEach(([k, g]) => {
+        const x = g(A), y = g(B); h += '<tr class="' + (f(x) !== f(y) ? 'diff' : '') + '"><td>' + k + '</td><td>' + f(x) + '</td><td>' + f(y) + '</td></tr>'; });
+      document.getElementById('cmp-out').innerHTML = h + '</table><p class="cmp-nota">Le righe evidenziate sono quelle che cambiano tra A e B.</p>';
+    };
+    a.addEventListener('change', disegna); b.addEventListener('change', disegna); disegna();
   });
   aggInfo();
   const orig = renderTestList; window.renderTestList = function(){ orig.apply(this, arguments); aggInfo(); };
@@ -3337,8 +3405,22 @@ function infK(d){ return INF_K_NOME[d.botanica] || INF_K_CAT[d.categoria] || 4; 
 // (secca; scorza fresca per gli agrumi). 'f' = variante da fresca. Stime di lavoro, da tarare con assaggi.
 const EST_N = {"resina": "Resine e oli pesanti: l'alcol alto scioglie le note resinose e balsamiche.", "agrume": "Solo la parte colorata della scorza (flavedo), senza la parte bianca. Gli oli agrumati escono in fretta: tempi lunghi portano note amare.", "agrume_sec": "Scorza già secca: serve un po' più di tempo e un grado un poco più basso per riportare in soluzione gli oli, senza estrarre amaro.", "struttura": "Botanica di struttura: a 60% estrae bene gli oli e i componenti pesanti senza trascinare troppi tannini.", "spezia": "Semi e spezie ricchi di oli essenziali: a questa gradazione danno l'aroma pieno senza trascinare troppi tannini.", "spezia_forte": "Spezia molto aromatica o piccante: tempo corto e assaggi frequenti, perché in poco diventa dominante.", "radice": "Le radici cedono lentamente: gradazione medio-alta e tempo lungo per estrarre sia gli oli sia i componenti più pesanti.", "radice_amara": "Principi amari molto potenti: gradazione media e tempo corto, si assaggia spesso.", "erba": "Erba essiccata: gradazione medio-alta e tempo breve; più a lungo si estraggono note di fieno e tannini.", "erba_amara": "Erba con composti amari e tujone: tempo breve e dosi misurate, si assaggia spesso.", "fiore": "Fiori e petali delicati: gradazione più bassa e tempi brevi; con alcol alto e contatto lungo vengono note vegetali e amare.", "frutto": "Frutta essiccata: gradazione media per estrarre aromi e zuccheri senza note cotte o troppo alcoliche.", "bacca": "Bacche aromatiche: gradazione medio-alta per gli oli della buccia, tempo medio-lungo.", "alga": "Alghe e piante marine: gradazione media e tempo molto breve; cedono presto il sapore salino e marino, poi diventano vegetali.", "tostato": "Ingrediente tostato: tempo breve, altrimenti prevalgono note amare e bruciate.", "baccello": "La vaniglia cede piano: gradazione media (50–60%) e tempo lungo, con il baccello inciso.", "seme_grasso": "Semi oleosi: gradazione medio-alta per sciogliere la parte grassa e aromatica; filtra bene a freddo.", "zuccheri": "Componenti zuccherine e idrosolubili: bastano gradazioni basse, con alcol alto se ne estrae poco.", "fresca_erba": "Se fresca: alcol molto alto (80–90%) per disidratare la cellula ed estrarre gli oli essenziali senza troppa clorofilla e acqua, che darebbero note di erba tagliata o fieno. Macerazione breve, al buio.", "fresca_mare": "Se fresco: alcol altissimo (80–95%) per disidratare la cellula vegetale ed estrarre gli oli essenziali senza troppa clorofilla e acqua, che darebbero note di erba tagliata o fieno. Macerazione breve: 24-48 ore al buio.", "fresca_fiore": "Se freschi: gradazione medio-alta e poche ore, al buio; a lungo diventano vegetali.", "fresca_marina": "Se fresca: gradazione alta e poche ore; l'acqua della pianta abbassa il grado, quindi si parte più alti."};
 const EST = {"Limone": {"a": [80, 80], "t": [12, 24], "n": "agrume"}, "Bergamotto": {"a": [80, 80], "t": [12, 24], "n": "agrume"}, "Arancia dolce": {"a": [80, 80], "t": [24, 36], "n": "agrume"}, "Arancia amara": {"a": [80, 80], "t": [24, 36], "n": "agrume"}, "Mandarino": {"a": [80, 80], "t": [12, 24], "n": "agrume"}, "Mandarino verde": {"a": [80, 80], "t": [12, 24], "n": "agrume"}, "Lime": {"a": [80, 80], "t": [12, 24], "n": "agrume"}, "Yuzu": {"a": [80, 80], "t": [12, 24], "n": "agrume"}, "Cedro": {"a": [80, 80], "t": [24, 24], "n": "Solo il flavedo (la buccia gialla). L'estrazione dei citrici è rapidissima; tempi lunghi estraggono note amare."}, "Pompelmo": {"a": [80, 80], "t": [12, 24], "n": "Solo il flavedo: la parte bianca del pompelmo è molto amara. Gli oli escono in fretta, non allungare i tempi."}, "Kumquat": {"a": [70, 80], "t": [24, 48], "n": "Frutto a fettine: l'olio sta nella buccia, la polpa porta acidità e zuccheri. Grado medio-alto, due giorni al massimo."}, "Lime nero": {"a": [60, 70], "t": [48, 96], "n": "Frutto essiccato e fermentato: note affumicate e acide che escono più lentamente della scorza fresca."}, "Scorza di bergamotto disidratata": {"a": [70, 80], "t": [24, 48], "n": "agrume_sec"}, "Scorza di arancia disidratata": {"a": [70, 80], "t": [24, 48], "n": "agrume_sec"}, "Finger lime": {"a": [60, 70], "t": [12, 24], "n": "Le perle sono delicate: gradazione media e poche ore, per non estrarre amaro dalla buccia."}, "Coriandolo": {"a": [60, 60], "t": [96, 120], "n": "struttura"}, "Cardamomo verde": {"a": [60, 70], "t": [72, 120], "n": "spezia"}, "Cubebe": {"a": [60, 70], "t": [72, 120], "n": "spezia"}, "Grani del paradiso": {"a": [60, 70], "t": [72, 120], "n": "spezia"}, "Cardamomo nero": {"a": [60, 70], "t": [72, 120], "n": "Semi ricchi di oli e di note fumé: a questa gradazione danno tutto l'aroma senza trascinare tannini."}, "Pepe nero": {"a": [60, 70], "t": [48, 72], "n": "La piperina in più di tre giorni diventa piccante e ruvida: tempo contenuto e assaggio presto."}, "Pepe rosa": {"a": [50, 60], "t": [12, 48], "n": "Bacche delicate e resinose: con tempi lunghi virano verso note di trementina e amaro."}, "Cumino": {"a": [60, 60], "t": [24, 72], "n": "spezia"}, "Carvi": {"a": [60, 60], "t": [24, 72], "n": "spezia"}, "Finocchio": {"a": [60, 60], "t": [24, 72], "n": "spezia"}, "Anice verde": {"a": [60, 60], "t": [24, 72], "n": "spezia"}, "Stella di anice": {"a": [60, 60], "t": [24, 72], "n": "L'anetolo si scioglie facilmente: bastano poche ore per dominare, assaggia presto."}, "Macis": {"a": [60, 70], "t": [24, 72], "n": "spezia"}, "Noce moscata": {"a": [60, 70], "t": [24, 48], "n": "spezia_forte"}, "Chiodo di garofano": {"a": [60, 70], "t": [12, 48], "n": "L'eugenolo è molto solubile: in due giorni è già dominante, assaggia a intervalli brevi."}, "Cannella Ceylon": {"a": [60, 60], "t": [24, 72], "n": "spezia"}, "Cassia": {"a": [60, 60], "t": [24, 48], "n": "spezia_forte"}, "Fave di tonka": {"a": [60, 70], "t": [24, 72], "n": "La cumarina si scioglie bene tra 50 e 70%: poche fave, tempo contenuto."}, "Senape gialla": {"a": [50, 60], "t": [12, 48], "n": "Con alcol alto l'enzima che genera il piccante non si attiva: si estrae soprattutto aroma, non pungenza."}, "Pepe di giava": {"a": [60, 70], "t": [48, 120], "n": "spezia"}, "Pepe di Sichuan": {"a": [60, 70], "t": [24, 72], "n": "spezia_forte"}, "Zafferano": {"a": [50, 50], "t": [24, 72], "n": "I pigmenti e gli aromi dello zafferano sono molto idrosolubili: un grado medio basta, a gradazioni alte se ne estrae meno."}, "Angelica": {"a": [60, 60], "t": [96, 120], "n": "struttura"}, "Liquirizia": {"a": [50, 60], "t": [24, 120], "n": "La glicirrizina si scioglie meglio con un po' d'acqua: grado medio e tempo medio-lungo."}, "Genziana": {"a": [50, 60], "t": [12, 72], "n": "radice_amara"}, "Iris": {"a": [60, 70], "t": [120, 336], "n": "Il giaggiolo cede molto lentamente: gradazione medio-alta e fino a due settimane."}, "Zenzero": {"a": [60, 70], "t": [24, 72], "n": "radice"}, "Galanga": {"a": [60, 70], "t": [72, 120], "n": "radice"}, "Curcuma": {"a": [60, 70], "t": [24, 72], "n": "Colora molto e in fretta: tempo contenuto per non tingere l'infuso."}, "Tarassaco": {"a": [50, 60], "t": [48, 168], "n": "radice"}, "Mirto foglie": {"a": [60, 70], "t": [24, 72], "n": "erba", "f": {"a": [80, 90], "t": [12, 24], "n": "fresca_erba"}}, "Mirto bacche": {"a": [60, 60], "t": [48, 120], "n": "bacca"}, "Elicriso": {"a": [60, 70], "t": [12, 48], "n": "erba", "f": {"a": [80, 90], "t": [12, 24], "n": "fresca_erba"}}, "Elicriso delle scogliere": {"a": [60, 70], "t": [12, 48], "n": "erba", "f": {"a": [80, 90], "t": [12, 24], "n": "fresca_erba"}}, "Rosmarino": {"a": [70, 70], "t": [12, 48], "n": "erba", "f": {"a": [80, 90], "t": [12, 24], "n": "fresca_erba"}}, "Timo": {"a": [60, 70], "t": [12, 48], "n": "erba", "f": {"a": [80, 90], "t": [12, 24], "n": "fresca_erba"}}, "Timo limonato": {"a": [60, 70], "t": [12, 48], "n": "erba", "f": {"a": [80, 90], "t": [12, 24], "n": "fresca_erba"}}, "Santoreggia": {"a": [60, 70], "t": [12, 48], "n": "erba", "f": {"a": [80, 90], "t": [12, 24], "n": "fresca_erba"}}, "Origano": {"a": [60, 70], "t": [12, 48], "n": "erba", "f": {"a": [80, 90], "t": [12, 24], "n": "fresca_erba"}}, "Maggiorana": {"a": [60, 70], "t": [12, 48], "n": "erba", "f": {"a": [80, 90], "t": [12, 24], "n": "fresca_erba"}}, "Salvia": {"a": [60, 70], "t": [12, 48], "n": "erba", "f": {"a": [80, 90], "t": [12, 24], "n": "fresca_erba"}}, "Melissa": {"a": [50, 60], "t": [12, 48], "n": "erba", "f": {"a": [70, 80], "t": [6, 24], "n": "fresca_erba"}}, "Verbena odorosa": {"a": [50, 60], "t": [12, 36], "n": "erba", "f": {"a": [70, 80], "t": [6, 24], "n": "fresca_erba"}}, "Alloro": {"a": [60, 70], "t": [24, 72], "n": "erba", "f": {"a": [80, 90], "t": [24, 48], "n": "fresca_erba"}}, "Lentisco": {"a": [60, 70], "t": [24, 72], "n": "resina", "f": {"a": [80, 90], "t": [24, 48], "n": "fresca_erba"}}, "Finocchio di mare": {"a": [60, 70], "t": [24, 48], "n": "Foglie e sommità aromatiche: se secche, gradazione medio-alta e un paio di giorni.", "f": {"a": [80, 95], "t": [24, 48], "n": "fresca_mare"}}, "Levistico": {"a": [60, 70], "t": [12, 48], "n": "erba", "f": {"a": [80, 90], "t": [12, 24], "n": "fresca_erba"}}, "Dragoncello": {"a": [60, 70], "t": [12, 36], "n": "erba", "f": {"a": [80, 90], "t": [12, 24], "n": "fresca_erba"}}, "Portulaca": {"a": [80, 90], "t": [12, 36], "n": "Molto ricca d'acqua: si parte con alcol alto perché l'acqua della pianta abbassa il grado."}, "Betulla corteccia": {"a": [50, 60], "t": [120, 336], "n": "Corteccia tannica: gradazione media e tempo lungo; l'alcol alto estrarrebbe troppo tannino."}, "Aneto": {"a": [60, 60], "t": [24, 72], "n": "erba", "f": {"a": [80, 90], "t": [12, 24], "n": "fresca_erba"}}, "Basilico": {"a": [70, 80], "t": [6, 24], "n": "erba", "f": {"a": [85, 95], "t": [6, 12], "n": "fresca_erba"}}, "Gelso": {"a": [50, 60], "t": [24, 72], "n": "erba"}, "Moringa": {"a": [50, 60], "t": [24, 72], "n": "erba"}, "Artemisia": {"a": [60, 70], "t": [24, 72], "n": "erba_amara"}, "Abrotano": {"a": [60, 70], "t": [24, 72], "n": "erba_amara"}, "Asparago": {"a": [60, 70], "t": [24, 72], "n": "Germogli ricchi d'acqua: gradazione medio-alta e tempo breve per non portare note vegetali."}, "Cardo": {"a": [50, 60], "t": [48, 120], "n": "erba"}, "Carciofo": {"a": [50, 60], "t": [48, 120], "n": "Foglie amare (cinarina): gradazione media e tempo medio, si assaggia presto."}, "Cetriolo": {"a": [70, 80], "t": [6, 24], "n": "Molto ricco d'acqua: si parte con alcol alto perché l'acqua abbassa il grado, e si lascia poco."}, "Menta": {"a": [60, 70], "t": [6, 24], "n": "erba", "f": {"a": [80, 90], "t": [6, 24], "n": "fresca_erba"}}, "Achillea": {"a": [50, 60], "t": [12, 48], "n": "erba_amara"}, "Cappero": {"a": [50, 60], "t": [12, 48], "n": "Se è sotto sale, sciacqua e asciuga prima. Gradazione media: l'alcol alto estrae troppa sapidità."}, "Foglie di cappero": {"a": [60, 70], "t": [12, 24], "n": "Se secche, gradazione medio-alta e poche ore.", "f": {"a": [80, 95], "t": [24, 48], "n": "fresca_mare"}}, "Salicornia": {"a": [50, 60], "t": [6, 24], "n": "alga", "f": {"a": [70, 80], "t": [6, 24], "n": "fresca_marina"}}, "Alga verde alimentare": {"a": [50, 60], "t": [2, 12], "n": "alga"}, "Spirulina alimentare": {"a": [50, 50], "t": [1, 6], "n": "alga"}, "Alga nori": {"a": [50, 60], "t": [24, 72], "n": "alga"}, "Poseidonia": {"a": [60, 60], "t": [48, 120], "n": "alga"}, "Lavanda": {"a": [50, 60], "t": [6, 24], "n": "fiore", "f": {"a": [60, 70], "t": [2, 12], "n": "fresca_fiore"}}, "Rosa": {"a": [50, 60], "t": [6, 24], "n": "fiore", "f": {"a": [60, 70], "t": [2, 12], "n": "fresca_fiore"}}, "Camomilla": {"a": [50, 60], "t": [12, 48], "n": "fiore", "f": {"a": [60, 70], "t": [2, 12], "n": "fresca_fiore"}}, "Sambuco": {"a": [50, 60], "t": [6, 24], "n": "fiore", "f": {"a": [60, 70], "t": [2, 12], "n": "fresca_fiore"}}, "Ibisco": {"a": [40, 50], "t": [2, 12], "n": "fiore", "f": {"a": [60, 70], "t": [2, 12], "n": "fresca_fiore"}}, "Fiordaliso": {"a": [40, 50], "t": [2, 12], "n": "fiore", "f": {"a": [60, 70], "t": [2, 12], "n": "fresca_fiore"}}, "Gelsomino": {"a": [50, 60], "t": [2, 12], "n": "fiore", "f": {"a": [60, 70], "t": [2, 12], "n": "fresca_fiore"}}, "Malva": {"a": [40, 50], "t": [6, 24], "n": "fiore", "f": {"a": [60, 70], "t": [2, 12], "n": "fresca_fiore"}}, "Ginestra": {"a": [50, 60], "t": [6, 24], "n": "fiore", "f": {"a": [60, 70], "t": [2, 12], "n": "fresca_fiore"}}, "Bacche di ginepro": {"a": [60, 70], "t": [72, 120], "n": "L'alcol alto estrae le note resinose e balsamiche."}, "Bacche della passione": {"a": [50, 60], "t": [24, 72], "n": "frutto"}, "Fico": {"a": [50, 60], "t": [24, 72], "n": "frutto"}, "Uva passa": {"a": [50, 60], "t": [24, 72], "n": "frutto"}, "Mela": {"a": [50, 60], "t": [24, 72], "n": "frutto"}, "Pera": {"a": [50, 60], "t": [24, 72], "n": "frutto"}, "Ciliegia": {"a": [50, 60], "t": [24, 72], "n": "frutto"}, "Prugna": {"a": [50, 60], "t": [24, 72], "n": "frutto"}, "Ribes nero": {"a": [50, 60], "t": [24, 72], "n": "frutto"}, "Mirtillo": {"a": [50, 60], "t": [24, 72], "n": "frutto"}, "Ribes rosso": {"a": [50, 60], "t": [24, 72], "n": "frutto"}, "Mora": {"a": [50, 60], "t": [24, 72], "n": "frutto"}, "Fragola": {"a": [50, 60], "t": [24, 72], "n": "frutto"}, "Lamponi": {"a": [50, 60], "t": [24, 72], "n": "frutto"}, "Rosa canina": {"a": [50, 60], "t": [24, 72], "n": "frutto"}, "Ananas": {"a": [50, 60], "t": [24, 72], "n": "frutto"}, "Mango": {"a": [50, 60], "t": [24, 72], "n": "frutto"}, "Papaya": {"a": [50, 60], "t": [24, 72], "n": "frutto"}, "Litchi": {"a": [50, 60], "t": [24, 72], "n": "frutto"}, "Rambutan": {"a": [50, 60], "t": [24, 72], "n": "frutto"}, "Alchechengi": {"a": [50, 60], "t": [24, 72], "n": "frutto"}, "Pitaya (dragon fruit)": {"a": [50, 60], "t": [24, 72], "n": "frutto"}, "Guava": {"a": [50, 60], "t": [24, 72], "n": "frutto"}, "Feijoa": {"a": [50, 60], "t": [24, 72], "n": "frutto"}, "Uva Cataratto": {"a": [50, 60], "t": [24, 72], "n": "frutto"}, "Melograno": {"a": [40, 50], "t": [2, 12], "n": "Arilli freschi e succosi: poco tempo e gradazione media; col tempo i semi portano tannini."}, "Alloro bacca": {"a": [60, 70], "t": [48, 120], "n": "bacca"}, "Spina santa": {"a": [50, 60], "t": [48, 120], "n": "bacca"}, "Corbezzolo": {"a": [50, 60], "t": [48, 120], "n": "frutto"}, "Sorbo": {"a": [50, 60], "t": [48, 120], "n": "frutto"}, "Castagna": {"a": [50, 60], "t": [48, 120], "n": "frutto"}, "Caffè": {"a": [60, 60], "t": [2, 12], "n": "tostato"}, "Cacao": {"a": [60, 60], "t": [12, 48], "n": "tostato"}, "Vaniglia bourbon": {"a": [50, 60], "t": [120, 504], "n": "baccello"}, "Vaniglia": {"a": [50, 60], "t": [120, 504], "n": "baccello"}, "Mandorla dolce": {"a": [60, 70], "t": [24, 72], "n": "seme_grasso"}, "Sesamo": {"a": [60, 70], "t": [24, 72], "n": "seme_grasso"}, "Mandorla amara": {"a": [60, 70], "t": [24, 72], "n": "Dose minima: contiene amigdalina. Gradazione medio-alta per le note di nocciolo, tempo breve."}, "Sommacco": {"a": [50, 60], "t": [2, 12], "n": "Frutti acidi e idrosolubili: poche ore e gradazione media."}, "Carruba polpa": {"a": [50, 60], "t": [48, 120], "n": "zuccheri"}, "Manna": {"a": [40, 50], "t": [48, 120], "n": "zuccheri"}, "Cocco": {"a": [60, 60], "t": [24, 72], "n": "seme_grasso"}, "Durian": {"a": [50, 60], "t": [6, 24], "n": "Aroma molto intenso e sulfureo: poche ore e gradazione media, si assaggia spesso."}, "Kiwano": {"a": [50, 60], "t": [24, 72], "n": "frutto"}};
+EST['Elicriso'].n = "Non è un doppione di «Elicriso delle scogliere»: quella è la sottospecie costiera, più salina e più potente (dose più bassa).";
+EST['Elicriso delle scogliere'].n = "Sottospecie costiera dell'elicriso: più salina e più potente, per questo la dose è la metà di quella dell'Elicriso comune.";
+EST['Vaniglia'].n = "Stessa specie della «Vaniglia bourbon» (origine Madagascar e Riunione): le due schede differiscono per dose e profilo, usane una sola nella ricetta. " + EST_N.baccello;
+EST['Vaniglia bourbon'].n = "Stessa specie della «Vaniglia» generica, di origine Madagascar e Riunione: usane una sola nella ricetta. " + EST_N.baccello;
+function prezzi(){ try { return JSON.parse(localStorage.getItem('gb-prezzi')) || {}; } catch(e){ return {}; } }
+function salvaPrezzo(n){
+  const v = parseFloat(String(document.getElementById('prezzo-v').value).replace(',', '.')), P = prezzi();
+  if (isFinite(v) && v > 0) P[n] = v; else delete P[n];
+  try { localStorage.setItem('gb-prezzi', JSON.stringify(P)); } catch(e){}
+  showDetail(n);
+}
+function tarature(){ try { return JSON.parse(localStorage.getItem('gb-tarature')) || {}; } catch(e){ return {}; } }
 function estPer(d, stato){
-  const e = EST[d.botanica]; if (!e) return null;
+  const e0 = EST[d.botanica]; if (!e0) return null;
+  const cal = tarature()[d.botanica];
+  const e = cal ? Object.assign({}, e0, { a: cal.a, t: cal.t, n: cal.n || 'La tua taratura.' }) : e0;
   const ref = infRif(d); stato = stato || ref;
   let a = e.a.slice(), t = e.t.slice(), n = e.n, fr = false;
   if (stato !== ref){
@@ -3349,6 +3431,15 @@ function estPer(d, stato){
   }
   return { a: a, t: t, n: EST_N[n] || n, fr: fr };
 }
+function salvaTaratura(n){
+  const v = id => parseFloat(document.getElementById(id).value);
+  const a = [v('cal-a0'), v('cal-a1')], t = [v('cal-t0'), v('cal-t1')];
+  if (a.concat(t).some(x => !isFinite(x) || x <= 0) || a[0] > a[1] || t[0] > t[1] || a[1] > 96){ alert('Controlla i valori: il minimo non può superare il massimo, la gradazione al massimo 96.'); return; }
+  const T = tarature(); T[n] = { a: a, t: t, n: document.getElementById('cal-n').value.trim() };
+  try { localStorage.setItem('gb-tarature', JSON.stringify(T)); } catch(e){}
+  showDetail(n);
+}
+function rimuoviTaratura(n){ const T = tarature(); delete T[n]; try { localStorage.setItem('gb-tarature', JSON.stringify(T)); } catch(e){} showDetail(n); }
 function estAbvTxt(a){ return a[0] === a[1] ? a[0] + ' % vol' : a[0] + '–' + a[1] + ' % vol'; }
 function estTempoTxt(t){
   const g = t[1] >= 72, k = g ? 24 : 1, u = g ? ' giorni' : ' h';
@@ -3523,7 +3614,7 @@ const RUOLI_LEGACY = {
   'Botanica firma': RUOLI[4]
 };
 const RUOLI_DESC = {
-  'Base': 'Il ginepro, obbligatorio e in dose piena: è l\u2019anima del gin (balsamico, resinoso, pungente). Accanto a lui il legante, angelica o iris (o liquirizia), che fissa gli aromi e d\u00e0 tenuta al finale.',
+  'Base': 'Il fondo del gin: il ginepro in dose piena e i leganti (angelica, iris, liquirizia) che fissano gli aromi e danno tenuta al finale.',
   'Freschezza': 'Le note di testa che aprono il profilo: coriandolo, di solito con un agrume (limone, bergamotto). Completano il ginepro con un lato speziato e agrumato.',
   'Identità': 'La botanica che d\u00e0 carattere allo stile e, se serve, al territorio (finocchio di mare, bergamotto, timo, lavanda, zenzero, iris). Quella che si riconosce subito dopo il ginepro.',
   'Cuore': 'Il corpo centrale del profilo, le note di mezzo che danno rotondit\u00e0 e continuit\u00e0 (mirto, lentisco, cedro, cardamomo, rosmarino, sambuco).',
@@ -3564,6 +3655,9 @@ function renderSemafori(nomi){
   });
   if (nomi.indexOf('Bacche di ginepro') < 0)
     righe.push({ c: 'rosso', tit: RUOLI[0], t: 'Manca il ginepro: senza non è un gin.' });
+  const tuj = ['Artemisia', 'Abrotano', 'Salvia'].filter(n => nomi.indexOf(n) >= 0);
+  if (tuj.length)
+    righe.push({ c: 'arancio', tit: 'Tujone', t: tuj.join(', ') + (tuj.length > 1 ? ' contengono' : ' contiene') + ' tujone in quantità variabile: tienile in dose minima (Rifinitura) ed evita l\u2019uso prolungato.' });
   if ((perRuolo[RUOLI[4]] || []).length > 1)
     righe.push({ c: 'arancio', tit: RUOLI[4], t: 'La firma è una sola: più botaniche firma si coprono a vicenda.' });
   RUOLI.slice(1, 4).forEach(r => {
