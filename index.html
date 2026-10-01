@@ -814,6 +814,7 @@ input:focus, select:focus, textarea:focus{
 .adj-box strong, .warn-box strong, .risk-box strong{color:inherit;font-weight:800;}
 
 /* ---------------- Botaniche ---------------- */
+.grid-group{grid-column:1/-1;font-weight:600;color:var(--juniper-deep);border-bottom:1px solid var(--line);padding:6px 2px 4px;margin-top:8px;}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:16px;}
 .bot-card{
   padding:22px;
@@ -1539,6 +1540,22 @@ footer.note{
       <label>Carattere
         <select id="f-carattere"><option value="">Tutti</option></select>
       </label>
+      <label>Ordina per
+        <select id="f-ordine">
+          <option value="">Predefinito</option>
+          <option value="alfa">Alfabetico A→Z</option><option value="alfa-desc">Alfabetico Z→A</option>
+          <option value="pot-desc">Potenza: più forti prima</option><option value="pot-asc">Potenza: più delicate prima</option>
+          <option value="int-desc">Intensità aromatica</option><option value="pers-desc">Persistenza</option>
+          <option value="dose-asc">Dose: poca → tanta</option>
+          <option value="abv-desc">Gradazione consigliata: alta → bassa</option><option value="tempo-asc">Macerazione: breve → lunga</option>
+          <option value="g:categoria">Raggruppa per famiglia</option><option value="g:sottofamiglia">Raggruppa per sottofamiglia</option>
+          <option value="g:carattere">Raggruppa per carattere</option><option value="g:funzione_compound">Raggruppa per funzione nel compound</option>
+          <option value="g:parte">Raggruppa per parte utilizzata</option>
+        </select>
+      </label>
+      <label>Stile
+        <select id="f-stile"><option value="">Tutti</option></select>
+      </label>
       <label>Potenza minima
         <select id="f-potenza">
           <option value="0">Qualsiasi</option>
@@ -2168,6 +2185,37 @@ const searchInput = document.getElementById('search');
 const fCategoria = document.getElementById('f-categoria');
 const fCarattere = document.getElementById('f-carattere');
 const fPotenza = document.getElementById('f-potenza');
+const fOrdine = document.getElementById('f-ordine'), fStile = document.getElementById('f-stile');
+STYLES.filter(st => st[0] !== 'Personalizzato').forEach(st => { const o = document.createElement('option'); o.value = st[0]; o.textContent = st[0]; fStile.appendChild(o); });
+// Botaniche citate in ciascuno stile preordinato (per il filtro "Stile")
+let _stileBot = null;
+function botDelloStile(nome){
+  if (!_stileBot){
+    _stileBot = {};
+    STYLES.forEach(st => { const set = new Set(); (st[3] || []).forEach(r => String(r[1]).split(/,| o /).forEach(t => set.add(t.replace(/\(.*?\)/g, '').trim()))); _stileBot[st[0]] = set; });
+  }
+  return _stileBot[nome] || new Set();
+}
+// Ordina o raggruppa l'elenco filtrato; per i raggruppamenti restituisce anche le intestazioni.
+function ordinaBotaniche(lista){
+  const o = fOrdine.value, nm = (a, b) => a.botanica.localeCompare(b.botanica, 'it');
+  if (!o) return lista;
+  if (o.indexOf('g:') === 0){
+    const k = o.slice(2), gr = {};
+    lista.forEach(d => (gr[d[k] || 'Altro'] = gr[d[k] || 'Altro'] || []).push(d));
+    return Object.keys(gr).sort((a, b) => a.localeCompare(b, 'it')).reduce((acc, g) => acc.concat([{ gruppo: g, n: gr[g].length }], gr[g].sort(nm)), []);
+  }
+  const v = {
+    'pot-desc': d => -(d.potenza10 || 0), 'pot-asc': d => (d.potenza10 || 0), 'int-desc': d => -(d.intensita || 0), 'pers-desc': d => -(d.persistenza || 0),
+    'dose-asc': d => { const g = doseLibreria(d.botanica); return g === null ? 1e9 : g; },
+    'abv-desc': d => { const e = estPer(d); return e ? -(e.a[0] + e.a[1]) / 2 : 1e9; },
+    'tempo-asc': d => { const e = estPer(d); return e ? e.t[0] : 1e9; }
+  }[o];
+  const l = lista.slice();
+  if (o === 'alfa') return l.sort(nm);
+  if (o === 'alfa-desc') return l.sort((a, b) => nm(b, a));
+  return l.sort((a, b) => (v(a) - v(b)) || nm(a, b));
+}
 
 function uniqueSorted(arr){ return [...new Set(arr)].filter(Boolean).sort((a,b)=>a.localeCompare(b,'it')); }
 
@@ -2187,12 +2235,13 @@ function renderGrid(){
     if (cat && d.categoria !== cat) return false;
     if (car && d.carattere !== car) return false;
     if (pot && (d.potenza10 || 0) < pot) return false;
+    if (fStile.value && !botDelloStile(fStile.value).has(d.botanica)) return false;
     if (q && !(d.botanica.toLowerCase().includes(q) || (d.profilo||'').toLowerCase().includes(q))) return false;
     return true;
   });
   countTag.textContent = filtered.length + ' / ' + MASTER.length + ' botaniche';
   grid.innerHTML = '';
-  filtered.forEach(d => {
+  const aggiungi = d => {
     const card = document.createElement('div');
     card.className = 'bot-card';
     card.innerHTML = `
@@ -2207,6 +2256,10 @@ function renderGrid(){
       </div>`;
     card.addEventListener('click', () => showDetail(d.botanica));
     grid.appendChild(card);
+  };
+  ordinaBotaniche(filtered).forEach(x => {
+    if (x.gruppo === undefined){ aggiungi(x); return; }
+    const h = document.createElement('div'); h.className = 'grid-group'; h.textContent = x.gruppo + ' (' + x.n + ')'; grid.appendChild(h);
   });
 }
 
@@ -2271,7 +2324,7 @@ function showDetail(name){
   detail.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 
-[searchInput, fCategoria, fCarattere, fPotenza].forEach(el => el.addEventListener('input', renderGrid));
+[searchInput, fCategoria, fCarattere, fPotenza, fOrdine, fStile].forEach(el => el.addEventListener('input', renderGrid));
 renderGrid();
 [libAbvInput, libTempInput].forEach(el => el.addEventListener('input', () => {
   if (currentDetailName) showDetail(currentDetailName);
