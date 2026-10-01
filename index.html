@@ -363,7 +363,24 @@ header.top p{
   font-size:16px;
 }
 
-/* ---------------- Barra a segmenti ---------------- */
+/* ---------------- Menu a tendina (riquadri colorati) ---------------- */
+nav.tabs{display:none !important;}
+.menu-bar{position:relative;margin:0 0 6px;}
+.menu-btn{width:100%;display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:var(--r-pill);border:1px solid var(--line);
+  background:var(--glass-strong);-webkit-backdrop-filter:saturate(160%) blur(14px);backdrop-filter:saturate(160%) blur(14px);box-shadow:var(--sh-1), var(--sh-inset);
+  font-family:'Public Sans',sans-serif;font-size:15px;font-weight:650;color:var(--ink);cursor:pointer;text-align:left;}
+.menu-ic{font-size:18px;line-height:1;}.menu-cur{flex:1;}.menu-car{color:var(--ink-faint);transition:transform .2s;}
+.menu-btn[aria-expanded="true"] .menu-car{transform:rotate(180deg);}
+.menu-pop{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:60;max-height:72vh;overflow-y:auto;padding:10px;border-radius:22px;
+  border:1px solid var(--line);background:var(--surface);box-shadow:0 12px 36px rgba(0,0,0,.25);display:grid;grid-template-columns:1fr 1fr;grid-auto-flow:dense;gap:8px;}
+.menu-pop[hidden]{display:none;}
+.menu-tile{--h:#2F7259;display:flex;flex-direction:column;justify-content:space-between;gap:10px;min-height:76px;padding:12px;border-radius:16px;cursor:pointer;text-align:left;
+  font-family:'Public Sans',sans-serif;font-size:14px;font-weight:650;color:var(--ink);border:1px solid var(--h);
+  background:var(--surface);background:color-mix(in srgb, var(--h) 20%, var(--surface));border-color:color-mix(in srgb, var(--h) 45%, var(--surface));}
+.menu-tile.wide{grid-column:1/-1;flex-direction:row;align-items:center;justify-content:flex-start;gap:14px;min-height:58px;}
+.menu-tile .mt-ic{font-size:24px;line-height:1;}
+.menu-tile.active{background:var(--h);color:#fff;border-color:var(--h);}
+.menu-tile:active{transform:scale(.97);}
 nav.tabs{
   display:flex;
   gap:4px;
@@ -1212,6 +1229,7 @@ footer.note{
 
 .ruolo-hint{font-size:12px;color:var(--ink-faint);margin-top:6px;line-height:1.4;font-weight:400;}
 .est-cal{font-size:13px;}
+.voc-dl dt{font-weight:600;margin-top:8px;}.voc-dl dd{margin:0 0 4px 0;color:var(--ink-faint);}
 .cmp-sel{display:flex;gap:6px;margin-bottom:8px;}.cmp-sel select{flex:1;min-width:0;}
 .cmp{width:100%;border-collapse:collapse;font-size:12.5px;}.cmp td,.cmp th{padding:4px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;}
 .cmp tr.diff td{background:var(--surface-2);font-weight:600;}.cmp-nota{font-size:12px;color:var(--ink-faint);}
@@ -1331,6 +1349,7 @@ footer.note{
     <button data-tab="infusi">🧫 Infusi</button>
     <button data-tab="prove">🧪 Schede di prova</button>
     <button data-tab="libreria">🌿 Botaniche</button>
+    <button data-tab="vocabolario">📚 Vocabolario</button>
     <button data-tab="cocktail">🍸 Cocktail</button>
   </nav>
   </div>
@@ -1615,6 +1634,30 @@ footer.note{
   </section>
 
   <!-- ANTI-RIDONDANZA -->
+  <section class="panel" id="panel-vocabolario">
+    <div class="storia">
+      <h2>Vocabolario del gin</h2>
+      <p class="storia-sub">Le parole che si usano nella preparazione del gin, spiegate con esempi.</p>
+      <h3>I sei ruoli delle botaniche</h3>
+    <details class="howto" open><summary>Base</summary><div class="howto-body"><p>È il fondo del gin: la botanica che regge tutte le altre e dà identità di gin. Comprende il <strong>ginepro</strong> (obbligatorio, aroma prevalente: note balsamiche, resinose, pungenti) e i <strong>leganti</strong> o fissativi come angelica, iris e liquirizia, che trattengono gli aromi volatili e danno tenuta e rotondità al finale. Peso nella ricetta: 100%.</p><p><em>Esempi:</em> bacche di ginepro, angelica, iris, liquirizia.</p></div></details>
+    <details class="howto"><summary>Freschezza</summary><div class="howto-body"><p>Una botanica porta freschezza quando alleggerisce la percezione dell'alcol, pulisce il palato e stimola i lati della lingua con note pungenti, balsamiche o agrumate. Nel gin compound l'effetto è più marcato che nel distillato, perché l'infusione a freddo conserva intatte molecole termosensibili che col calore cambierebbero profilo. Ha tre sfumature:</p><ul><li><strong>Agrumata (citrica).</strong> Scorze di limone, arancia amara, pompelmo, bergamotto, lime, lemongrass. Gli oli essenziali (limonene) tagliano la morbidezza e il calore dell'alcol e danno una sferzata acida e verticale che rende il gin dissetante.</li><li><strong>Balsamica / resinosa.</strong> Ginepro (che è Base ma porta anche questa freschezza), cardamomo, aghi di pino, menta, eucalipto. Danno una sensazione di «aria fredda» in bocca, simile al mentolo; il cardamomo regala un colpo esotico e molto volatile già al primo naso.</li><li><strong>Erbacea / verde.</strong> Coriandolo (ponte fra agrumato ed erbaceo), basilico, rosmarino, timo, tè verde. Ricordano erba tagliata o rugiada e danno orizzontalità e profondità, agganciandosi alle note terrose di angelica e iris per evitare un gin cupo, pesante o fangoso.</li></ul><p>Peso nella ricetta: 100%. Alcune botaniche citate non sono ancora nella libreria.</p></div></details>
+    <details class="howto"><summary>Identità</summary><div class="howto-body"><p>È la botanica che dà carattere allo stile e, quando è legata a un luogo, al territorio: quella che si riconosce subito dopo il ginepro. Cambiando l'identità cambia il tipo di gin, non solo il suo profilo. Peso: 80%.</p><p><em>Esempi:</em> finocchio di mare (Marino), bergamotto (Agrumato), lavanda (Floreale), zenzero, iris in tracce (Secco).</p></div></details>
+    <details class="howto"><summary>Cuore</summary><div class="howto-body"><p>È il corpo centrale del profilo: le note di mezzo, che si aprono dopo la testa e danno rotondità e continuità fra la freschezza iniziale e il fondo. Peso: 70%.</p><p><em>Esempi:</em> mirto, lentisco, cedro, cardamomo verde (nel Secco), rosmarino o salvia (Erbaceo), sambuco.</p></div></details>
+    <details class="howto"><summary>Firma</summary><div class="howto-body"><p>È la botanica fuori dal comune che rende il gin riconoscibile e diverso dagli altri. Una sola, in dose misurata: si nota senza coprire il resto; più firme si coprono a vicenda. Facoltativa. Peso: 30%.</p><p><em>Esempi:</em> elicriso, grani del paradiso, kumquat, rosa.</p></div></details>
+    <details class="howto"><summary>Rifinitura</summary><div class="howto-body"><p>È il tocco finale, in dose minima («tracce»), che chiude il sorso e rifinisce la coda del gusto. Facoltativa. Peso: 15%.</p><p><em>Esempi:</em> timo o rosmarino in tracce, alloro, cannella, cardamomo, mandorla.</p><p>Il ruolo non è fisso: la stessa botanica cambia ruolo da uno stile all'altro (bergamotto: Freschezza nel Mediterraneo, Identità nell'Agrumato).</p></div></details>
+      <h3>La solubilità: cosa si estrae e cosa rovina il gusto</h3>
+    <details class="howto"><summary>Terpeni, oli essenziali, resine e cere</summary><div class="howto-body"><p><strong>Terpeni e oli essenziali</strong> (limonene degli agrumi, pinene del ginepro, linalolo del coriandolo): molecole apolari che si sciolgono bene in alcol medio-alto, poco in acqua. Sono l'aroma buono; alla diluizione possono precipitare e dare torbidità (effetto louche). <strong>Resine e cere:</strong> richiedono alcol alto e, in eccesso, danno note di trementina, ruvidità e velature.</p></div></details>
+    <details class="howto"><summary>Clorofilla e pigmenti</summary><div class="howto-body"><p>La <strong>clorofilla</strong> è lipofila: si estrae bene con alcol alto e dà colore verde e note di erba tagliata o fieno. Per questo sulle foglie conviene una gradazione media, poche ore e il buio. Gli <strong>antociani</strong> (ibisco, frutti rossi) e i <strong>carotenoidi</strong> (curcuma, zafferano) sono più idrosolubili e colorano anche a gradazioni basse.</p></div></details>
+    <details class="howto"><summary>Tannini, zuccheri, acidi e sali</summary><div class="howto-body"><p>Sostanze polari che passano con l'acqua della miscela, soprattutto sotto il 45–50%. I <strong>tannini</strong> (cortecce, foglie, semi, bucce) danno astringenza e secchezza; zuccheri e acidi danno sapore ma anche torbidità e fermentazioni se presenti in eccesso.</p></div></details>
+    <details class="howto"><summary>Amari e altre sostanze che danneggiano il gusto</summary><div class="howto-body"><ul><li><strong>Albedo degli agrumi</strong> (parte bianca): amaro netto, dalla naringina e dalla limonina. Si usa solo il flavedo.</li><li><strong>Principi amari</strong> di genziana, artemisia, abrotano, carciofo, cardo: potenti, bastano tempi brevi.</li><li><strong>Tujone</strong> (artemisia, abrotano, salvia): dose minima ed evitare l'uso prolungato.</li><li><strong>Eugenolo e piperina</strong> (chiodo di garofano, pepe): in poco tempo diventano dominanti o ruvidi.</li><li><strong>Ossidazione</strong>: colore bruno e note di cartone; bottiglie piene, chiuse, al buio.</li></ul><p>Regola: un solvente troppo forte trascina cere, resine e amari; uno troppo debole lascia gli oli e porta tannini. Ogni botanica ha la sua gradazione e la sua soglia nelle schede.</p></div></details>
+      <h3>Filtrazione e apparecchiature</h3>
+    <details class="howto"><summary>Metodi di filtrazione</summary><div class="howto-body"><ul><li><strong>Setaccio, tela di cotone, mussola:</strong> tolgono i pezzi grossi. Si usano sempre prima di mescolare gli estratti.</li><li><strong>Filtro da caffè o carta a pieghe, per gravità:</strong> lento ma semplice, per piccoli volumi.</li><li><strong>Büchner sotto vuoto:</strong> filtrazione fine e rapida con carta da laboratorio (8–11 µm, poi 2–3 µm).</li><li><strong>Coadiuvanti</strong> (cellulosa, terra di diatomee): strato filtrante che evita di intasare la carta; non respirare le polveri secche.</li><li><strong>Siringa con filtro a membrana</strong> (0,45 µm): per i campioni di prova.</li><li><strong>Cartucce o filtri a piastre con pompa:</strong> per volumi grandi.</li><li><strong>Filtrazione a freddo:</strong> dopo 24–72 ore in frigo o freezer, ancora freddo, per togliere gli oli che si separano. Il gin non deve intorbidarsi alla temperatura di servizio.</li><li><strong>Carbone attivo alimentare:</strong> schiarisce e toglie note vegetali ma assorbe anche aroma; si prova su un campione.</li><li><strong>Sifone / travaso:</strong> togli il limpido dal deposito, senza filtrare, per conservare più corpo.</li></ul></div></details>
+    <details class="howto"><summary>Apparecchiature</summary><div class="howto-body"><ul><li><strong>Bilancia da 0,01 g</strong> per le botaniche e per pesare alcol e acqua (più precisa dei ml).</li><li><strong>Cilindri o becher graduati</strong>, barattoli di vetro scuro con chiusura ermetica, bottiglie scure.</li><li><strong>Termometro</strong> e un luogo buio a temperatura stabile.</li><li><strong>Alcolometro (densimetro):</strong> misura il grado solo su miscele di alcol e acqua, con zuccheri o estratti dà errori.</li><li><strong>Mortaio o macina</strong> per semi e spezie; <strong>coltello o pelapatate</strong> per il solo flavedo.</li><li><strong>Imbuto Büchner, beuta da vuoto, pompa</strong> (a membrana o ad acqua), tubi e guarnizioni. Alcol infiammabile: ambiente ventilato, niente fiamme, vetreria da vuoto integra.</li></ul></div></details>
+      <h3>Glossario</h3>
+    <details class="howto" open><summary>Glossario A–Z</summary><div class="howto-body"><dl class="voc-dl"><dt>Albedo</dt><dd>parte bianca sotto la scorza degli agrumi, amara; da evitare.</dd><dt>Alcol di partenza</dt><dd>l'alcol alimentare da cui si parte (96% vol qui), poi diluito con acqua.</dd><dt>Base neutra</dt><dd>alcol e acqua alla gradazione di lavoro, senza botaniche.</dd><dt>Botanica</dt><dd>qualsiasi parte vegetale usata per aromatizzare.</dd><dt>Chill haze</dt><dd>velatura che compare quando il gin si raffredda.</dd><dt>Compound gin</dt><dd>gin ottenuto aromatizzando l'alcol con estratti e infusi, senza distillare le botaniche.</dd><dt>Contrazione di volume</dt><dd>l'alcol mescolato con acqua occupa meno della somma dei volumi.</dd><dt>Dose di riferimento</dt><dd>grammi di botanica per 100 ml di infuso dati dalla libreria.</dd><dt>Effetto louche</dt><dd>intorbidamento per oli che si separano quando si diluisce l'alcol.</dd><dt>Estratto / infuso</dt><dd>liquido aromatico ottenuto dalla macerazione di una botanica.</dd><dt>Flavedo</dt><dd>parte colorata della scorza, ricca di oli essenziali.</dd><dt>Gradazione (% vol)</dt><dd>percentuale di alcol in volume.</dd><dt>Idrofilo / idrofobo (lipofilo)</dt><dd>che si scioglie in acqua, oppure in alcol e grassi.</dd><dt>Legante / fissativo</dt><dd>botanica che trattiene gli aromi volatili e allunga il finale.</dd><dt>Macerazione</dt><dd>contatto della botanica con il solvente per estrarne le sostanze.</dd><dt>Micro-emulsione</dt><dd>oli dispersi in goccioline finissime: il velo bianco della torbidità.</dd><dt>Mouthfeel</dt><dd>sensazione in bocca: densità, oleosità, rotondità.</dd><dt>Note di testa, cuore e fondo</dt><dd>l'ordine in cui si percepiscono gli aromi: prima i volatili, poi i medi, infine i persistenti.</dd><dt>Persistenza</dt><dd>quanto a lungo l'aroma resta in bocca dopo il sorso.</dd><dt>Potenza</dt><dd>forza aromatica di una botanica: più è alta, meno se ne usa.</dd><dt>Tannini</dt><dd>sostanze che danno astringenza.</dd><dt>Terpeni</dt><dd>molecole aromatiche degli oli essenziali (limonene, pinene).</dd><dt>Tracce</dt><dd>dose ridotta (circa il 15%) per le botaniche di rifinitura.</dd><dt>Tujone</dt><dd>composto di artemisia, abrotano e salvia, da dosare con cautela.</dd></dl></div></details>
+    </div>
+  </section>
+
   <section class="panel" id="panel-ridondanza">
     <details class="howto">
       <summary>Come si usa</summary>
@@ -2207,6 +2250,33 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   btn.addEventListener('click', () => showTab(btn.dataset.tab));
 });
 // pulsanti e riquadri del menu iniziale
+// ---------- Menu a tendina a riquadri (sostituisce la barra orizzontale) ----------
+(function(){
+  const nav = document.querySelector('nav.tabs'); if (!nav) return;
+  const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
+  const bar = document.createElement('div'); bar.className = 'menu-bar';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  nav.parentNode.insertBefore(bar, nav);
+  const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
+  btns.forEach((b, i) => {
+    const t = b.textContent.trim(), sp = t.indexOf(' '), ic = t.slice(0, sp), lab = t.slice(sp + 1);
+    const el = document.createElement('button'); el.type = 'button'; el.className = 'menu-tile' + (['home', 'builder'].indexOf(b.dataset.tab) >= 0 ? ' wide' : '');
+    el.dataset.tab = b.dataset.tab; el.style.setProperty('--h', HUES[i % HUES.length]);
+    el.innerHTML = '<span class="mt-ic">' + ic + '</span><span class="mt-l">' + lab + '</span>';
+    el.addEventListener('click', () => { showTab(b.dataset.tab); chiudi(); });
+    pop.appendChild(el);
+  });
+  function chiudi(){ pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); }
+  btn.addEventListener('click', e => { e.stopPropagation(); pop.hidden = !pop.hidden; btn.setAttribute('aria-expanded', String(!pop.hidden)); });
+  document.addEventListener('click', e => { if (!bar.contains(e.target)) chiudi(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') chiudi(); });
+  function aggiorna(name){
+    pop.querySelectorAll('.menu-tile').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+    const b = btns.find(x => x.dataset.tab === name); if (b) cur.textContent = b.textContent.trim();
+  }
+  const orig = showTab; window.showTab = function(name){ orig(name); aggiorna(name); };
+  const att = btns.find(x => x.classList.contains('active')); aggiorna(att ? att.dataset.tab : 'home');
+})();
 document.querySelectorAll('[data-goto]').forEach(el => {
   el.addEventListener('click', () => showTab(el.dataset.goto));
 });
