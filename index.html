@@ -326,6 +326,7 @@ body.scrolled .theme-btn{top:calc(env(safe-area-inset-top) + 9px);}
   background:transparent;
   transition:background var(--dur) var(--ease), box-shadow var(--dur) var(--ease), backdrop-filter var(--dur) var(--ease);
 }
+html,body{overflow-anchor:none;}
 body.scrolled .sticky-head{
   background:var(--glass);
   -webkit-backdrop-filter:saturate(180%) blur(22px);
@@ -336,7 +337,6 @@ body.scrolled .sticky-head{
 header.top{
   padding:44px var(--sp-luce) 22px 0;
   margin-bottom:0;
-  transition:padding var(--dur) var(--ease);
 }
 body.scrolled header.top{padding:10px var(--sp-luce) 8px 0;}
 body.scrolled header.top h1{font-size:19px;margin-bottom:0;letter-spacing:-0.01em;}
@@ -3940,12 +3940,23 @@ function renderSemafori(nomi){
 })();
 
 // ---------- Intestazione fissa: compattamento allo scroll ----------
+// Isteresi: l'intestazione si compatta solo oltre una soglia alta e si riespande solo vicino alla cima.
+// Compattandosi l'intestazione cambia altezza: con una soglia unica (8 px) il cambio di altezza spostava
+// lo scroll attraverso la soglia e la pagina sfarfallava senza riuscire a salire.
 (function(){
-  const onScroll = () => {
-    document.body.classList.toggle('scrolled', window.scrollY > 8);
+  const SU = 160, GIU = 24, PAUSA = 350;
+  let ultimo = 0, attesa = false;
+  const valuta = () => {
+    attesa = false;
+    const y = window.scrollY, compatta = document.body.classList.contains('scrolled');
+    if (Date.now() - ultimo < PAUSA) return;
+    if (!compatta && y > SU){ document.body.classList.add('scrolled'); ultimo = Date.now(); }
+    else if (compatta && y < GIU){ document.body.classList.remove('scrolled'); ultimo = Date.now(); }
   };
+  const onScroll = () => { if (!attesa){ attesa = true; requestAnimationFrame(valuta); } };
   window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
+  window.addEventListener('scrollend', valuta);
+  valuta();
 })();
 
 // ---------- Collegamento Gin Builder -> Schede di prova ----------
