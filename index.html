@@ -920,15 +920,25 @@ input:focus, select:focus, textarea:focus{
 .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
 
 /* ---------------- Anti-ridondanza ---------------- */
+.ar-scrollwrap{
+  max-height:72vh;overflow-y:auto;overflow-x:auto;
+  border-radius:var(--r-md);border:1px solid var(--line);box-shadow:var(--sh-1);
+}
+.ar-scrollwrap .controls{
+  position:sticky;top:0;z-index:3;margin:0;
+  padding:14px 16px;border-bottom:1px solid var(--line);
+  background:var(--glass-strong);-webkit-backdrop-filter:saturate(160%) blur(14px);backdrop-filter:saturate(160%) blur(14px);
+}
 table.ar-table{
   width:100%;border-collapse:separate;border-spacing:0;font-size:13.5px;
-  background:var(--surface);border:1px solid var(--line);
-  border-radius:var(--r-md);overflow:hidden;box-shadow:var(--sh-1);
+  background:var(--surface);
+  border-radius:0;overflow:visible;box-shadow:none;border:none;
 }
 table.ar-table th{
   text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;
   color:var(--ink-faint);font-weight:800;background:var(--surface-2);
   border-bottom:1px solid var(--line);padding:14px 16px;
+  position:sticky;top:var(--ar-head-h,52px);z-index:2;
 }
 table.ar-table td{border-bottom:1px solid var(--line);padding:14px 16px;vertical-align:top;color:var(--ink-soft);}
 table.ar-table tr:last-child td{border-bottom:none;}
@@ -1680,17 +1690,19 @@ footer.note{
           invece di usarle entrambe a metà dose.</p>
       </div>
     </details>
-    <div class="controls">
-      <input type="text" id="ar-search" placeholder="Cerca botanica…" />
-      <span class="count-tag" id="ar-count"></span>
+    <div class="ar-scrollwrap" id="ar-scrollwrap">
+      <div class="controls">
+        <input type="text" id="ar-search" placeholder="Cerca botanica…" />
+        <span class="count-tag" id="ar-count"></span>
+      </div>
+      <table class="ar-table">
+        <thead><tr>
+          <th>Botanica</th><th>Simili</th><th>Sostitutive</th><th>Complementari</th>
+          <th>Da non accumulare con</th><th>Rischio principale</th>
+        </tr></thead>
+        <tbody id="ar-body"></tbody>
+      </table>
     </div>
-    <table class="ar-table">
-      <thead><tr>
-        <th>Botanica</th><th>Simili</th><th>Sostitutive</th><th>Complementari</th>
-        <th>Da non accumulare con</th><th>Rischio principale</th>
-      </tr></thead>
-      <tbody id="ar-body"></tbody>
-    </table>
   </section>
 
   <!-- COMPATIBILITA -->
@@ -1813,7 +1825,7 @@ footer.note{
       <div class="howto-body">
         <p>Pagina di lavoro per preparare gli infusi, una botanica alla volta.</p>
         <ol>
-          <li>Imposta solo la temperatura di conservazione (al buio) e il volume di infuso che vuoi ottenere: la gradazione e il tempo sono quelli consigliati per ciascuna botanica. Per ognuna trovi quanto alcol a 96° e quanta acqua demineralizzata (in ml o in grammi) servono per arrivare a quella gradazione.</li>
+          <li>Imposta la temperatura di conservazione (al buio) e il volume di infuso che vuoi ottenere. Per ogni botanica trovi quanto alcol di partenza e quanta acqua demineralizzata (in ml o in grammi) servono per arrivare al grado di estrazione. Per impostazione predefinita gradazione e tempo sono quelli consigliati per ciascuna botanica; togliendo la spunta a «Grado consigliato per botanica» scegli tu sia il grado dell'alcol di partenza sia il grado di estrazione desiderato, e il tempo si corregge anche in base a quanto il grado scelto si allontana da quello ottimale per la famiglia della botanica.</li>
           <li>La tabella dà per ogni botanica i grammi da mettere e il tempo di estrazione. Con <em>dose fissa</em> si corregge il tempo, con <em>tempo fisso</em> si corregge la dose.</li>
           <li>Per ogni botanica scegli lo <strong>Stato</strong>: fresca (appena raccolta) o secca. Peso e tempo si ricalcolano; con «Stato delle botaniche» li imposti tutti insieme. Le botaniche fresche portano acqua e abbassano un po' la gradazione.</li>
           <li>Leggi la colonna <strong>Come prepararla e usarla</strong>: dice come trattare la botanica e a cosa si riferisce il peso (senza altra indicazione, botanica secca).</li>
@@ -1853,7 +1865,10 @@ footer.note{
       <span class="cond-label">Condizioni:</span>
       <label>Temperatura di conservazione, al buio (°C)<input type="number" id="inf-temp" value="20" step="1" min="0" max="60"></label>
       <label>Volume di infuso da ottenere (ml)<input type="number" id="inf-vol" value="100" step="10" min="10"></label>
-      <input type="hidden" id="inf-abv" value="43"><input type="hidden" id="inf-mod" value="tempo"><input type="checkbox" id="inf-ott" checked hidden>
+      <label class="inf-ott-label" style="flex-direction:row;align-items:center;gap:8px;text-transform:none;font-weight:650;font-size:13px;"><input type="checkbox" id="inf-ott" checked style="width:auto;"> Grado consigliato per botanica</label>
+      <label id="inf-abvS-wrap" hidden>Alcol di partenza (°)<input type="number" id="inf-abvS" value="96" step="0.5" min="40" max="96"></label>
+      <label id="inf-abv-wrap" hidden>Grado di estrazione desiderato (%)<input type="number" id="inf-abv" value="43" step="1" min="20" max="96"></label>
+      <input type="hidden" id="inf-mod" value="tempo">
       <label>Stato delle botaniche
         <select id="inf-stato"><option value="ref">Come da libreria</option><option value="secco">Tutte secche</option><option value="fresco">Tutte fresche</option></select>
       </label>
@@ -2473,6 +2488,17 @@ function renderAr(){
 }
 arSearch.addEventListener('input', renderAr);
 renderAr();
+// La riga dei titoli resta fissa subito sotto la barra di ricerca: ne misuriamo l'altezza reale
+// (cambia con la larghezza dello schermo) invece di usare un valore fisso.
+(function(){
+  const wrap = document.getElementById('ar-scrollwrap');
+  const bar = wrap && wrap.querySelector('.controls');
+  if (!wrap || !bar) return;
+  function syncAltezza(){ wrap.style.setProperty('--ar-head-h', bar.offsetHeight + 'px'); }
+  syncAltezza();
+  window.addEventListener('resize', syncAltezza);
+  if (window.ResizeObserver) new ResizeObserver(syncAltezza).observe(bar);
+})();
 
 // ---------- Compatibilita ----------
 const compatA = document.getElementById('compat-a');
@@ -3711,7 +3737,8 @@ function estTempoTxt(t){
   const f = v => (Math.round(v / k * 10) / 10).toLocaleString('it-IT');
   return (Math.round(t[0]) === Math.round(t[1]) ? f(t[0]) : f(t[0]) + '–' + f(t[1])) + u;
 }
-function infusoRiga(d, abv, temp, vol, mod, stato, ott){
+function infusoRiga(d, abv, temp, vol, mod, stato, ott, abvS){
+  abvS = abvS || ALCOL_PARTENZA;
   const ds = DOSE[d.botanica] || {};
   const base = (ds.test !== undefined) ? ds.test : d.dose;
   const dmin = (ds.min !== undefined) ? ds.min : base * 0.4;
@@ -3735,13 +3762,20 @@ function infusoRiga(d, abv, temp, vol, mod, stato, ott){
   if (usaEst){ tmin = est.t[0] * ft; tmax = est.t[1] * ft; }
   else if (p){ tmin = toHours(p.min, p.unit) * ft * tfr; tmax = toHours(p.max, p.unit) * ft * tfr; }
   return { f, stato, K, abvEff, g: base * fd * wf * k, gmin: dmin * fd * wf * k, gmax: dmax * fd * wf * k,
-           tmin, tmax, assaggio: tmin === null ? null : tmin * INF_ASSAGGIO, tempoRef: ds.tempo || d.tempo || '', est, dil: est ? diluizione((est.a[0] + est.a[1]) / 2, vol) : null };
+           tmin, tmax, assaggio: tmin === null ? null : tmin * INF_ASSAGGIO, tempoRef: ds.tempo || d.tempo || '', est, dil: diluizione(abv, vol, abvS) };
 }
 (function(){
   const $ = id => document.getElementById(id);
-  const iAbv = $('inf-abv'), iTemp = $('inf-temp'), iVol = $('inf-vol'), iMod = $('inf-mod'),
-        iCat = $('inf-cat'), iQ = $('inf-q'), iOtt = $('inf-ott'), body = $('inf-body'), info = $('inf-info'), cnt = $('inf-count');
+  const iAbv = $('inf-abv'), iAbvS = $('inf-abvS'), iTemp = $('inf-temp'), iVol = $('inf-vol'), iMod = $('inf-mod'),
+        iCat = $('inf-cat'), iQ = $('inf-q'), iOtt = $('inf-ott'), body = $('inf-body'), info = $('inf-info'), cnt = $('inf-count'),
+        wAbv = $('inf-abv-wrap'), wAbvS = $('inf-abvS-wrap');
   if (!body) return;
+  function syncModo(){
+    const manuale = !iOtt.checked;
+    if (wAbv) wAbv.hidden = !manuale;
+    if (wAbvS) wAbvS.hidden = !manuale;
+  }
+  syncModo();
   uniqueSorted(MASTER.map(d => d.categoria)).forEach(c => {
     const o = document.createElement('option'); o.value = c; o.textContent = c; iCat.appendChild(o);
   });
@@ -3753,16 +3787,19 @@ function infusoRiga(d, abv, temp, vol, mod, stato, ott){
   const aperte = new Set();
   function leggi(){
     const t = parseFloat(iTemp.value);
-    return { abv: parseFloat(iAbv.value) || REF_ABV, temp: isNaN(t) ? REF_TEMP : t,
+    return { abv: parseFloat(iAbv.value) || REF_ABV, abvS: parseFloat(iAbvS.value) || ALCOL_PARTENZA, temp: isNaN(t) ? REF_TEMP : t,
              vol: parseFloat(iVol.value) || 100, mod: iMod.value, ott: !!(iOtt && iOtt.checked) };
   }
   function calcola(){
     const c = leggi(), q = iQ.value.trim().toLowerCase(), cat = iCat.value;
     visibili = MASTER.filter(d => !cat || d.categoria === cat).slice().sort((x, y) => x.botanica.localeCompare(y.botanica, 'it'))
-      .map(d => ({ d, r: infusoRiga(d, c.abv, c.temp, c.vol, c.mod, statoDi(d), c.ott) }));
+      .map(d => ({ d, r: infusoRiga(d, c.abv, c.temp, c.vol, c.mod, statoDi(d), c.ott, c.abvS) }));
     cnt.textContent = visibili.length + ' / ' + MASTER.length + ' botaniche';
-    let html = '<div class="adj-box">Gradazione e tempo derivano dalla botanica scelta; qui indichi solo la temperatura di conservazione e il volume di infuso che vuoi ottenere. Il tempo consigliato si corregge con la temperatura (raddoppia ogni 10 °C in meno, dimezza ogni 10 °C in più). La diluizione è calcolata con alcol a ' + ALCOL_PARTENZA + '% vol e acqua demineralizzata potabile a 20 °C, tenendo conto della contrazione di volume: per l\u2019acqua usa i ml o i grammi, sono quasi uguali.</div>';
+    let html = c.ott
+      ? '<div class="adj-box">Gradazione e tempo derivano dalla botanica scelta; qui indichi la temperatura di conservazione e il volume di infuso che vuoi ottenere. Il tempo consigliato si corregge con la temperatura (raddoppia ogni 10 °C in meno, dimezza ogni 10 °C in più). La diluizione è calcolata con alcol a ' + c.abvS + '% vol e acqua demineralizzata potabile a 20 °C, tenendo conto della contrazione di volume: per l\u2019acqua usa i ml o i grammi, sono quasi uguali.</div>'
+      : '<div class="adj-box">Stai scegliendo tu il grado di estrazione (' + c.abv + '% vol) e il grado dell\u2019alcol di partenza (' + c.abvS + '% vol). Il tempo si corregge sia con la temperatura sia con quanto il grado scelto si allontana da quello di riferimento (43% vol): più ti allontani, più il tempo cambia, secondo la famiglia della botanica. Controlla i \u201climiti della gradazione\u201d di ogni scheda per evitare di estrarre sostanze indesiderate.</div>';
     if (c.temp < 15 || c.temp > 35) html += '<div class="warn-box">Temperatura fuori dall\u2019intervallo di lavoro previsto (15–35 °C): la stima \u00e8 meno affidabile.</div>';
+    if (!c.ott && c.abv >= c.abvS) html += '<div class="warn-box">Il grado di estrazione desiderato deve essere pi\u00f9 basso del grado dell\u2019alcol di partenza: con l\u2019acqua si pu\u00f2 solo abbassare il grado, non alzarlo.</div>';
     info.innerHTML = html;
     body.innerHTML = visibili.map(({d, r}) => {
       const g = infFmtG(r.g) + ' g <span class="inf-sub">(' + infFmtG(r.gmin) + '–' + infFmtG(r.gmax) + ' g)</span>';
@@ -3779,13 +3816,13 @@ function infusoRiga(d, abv, temp, vol, mod, stato, ott){
         f('Diluizione (alcol 96° + acqua)', r.dil ? '<strong>' + nf(r.dil.alcMl, 1) + ' ml</strong> di alcol + <strong>' + nf(r.dil.acquaMl, 1) + ' ml</strong> di acqua (' + nf(r.dil.acquaG, 1) + ' g)' : '—') +
         f('Quantità di botanica', g) + f('Tempo di estrazione', t) + f('Primo assaggio', a) +
         '<div class="inf-f inf-how"><div class="k">Prova a tre gradazioni (campioni identici da ' + nf(Math.min(c.vol, 50), 0) + ' ml)</div><div class="v">' +
-          [40, 60, 80].map(gr => { const x = diluizione(gr, Math.min(c.vol, 50)); return '<strong>' + gr + '%</strong>: ' + nf(x.alcMl, 1) + ' ml alcol 96° + ' + nf(x.acquaG, 1) + ' g acqua'; }).join(' · ') + '</div></div>' +
+          [40, 60, 80].map(gr => { const x = diluizione(gr, Math.min(c.vol, 50), c.abvS); return '<strong>' + gr + '%</strong>: ' + nf(x.alcMl, 1) + ' ml alcol ' + c.abvS + '° + ' + nf(x.acquaG, 1) + ' g acqua'; }).join(' · ') + '</div></div>' +
         '<div class="inf-f inf-how"><div class="k">Limiti della gradazione</div><div class="v">' + limitiEst(d) + '</div></div>' +
         '<div class="inf-f inf-how"><div class="k">Come prepararla e usarla</div><div class="v">' + comeUsare(d, r.stato, r.K, r.abvEff) + (r.est ? ' <em class="inf-est-nota">Estrazione: ' + r.est.n + '</em>' : '') + '</div></div>' +
         '</div></details>';
     }).join('');
   }
-  [iAbv, iTemp, iVol, iMod, iCat].forEach(el => el.addEventListener('input', calcola));
+  [iAbv, iAbvS, iTemp, iVol, iMod, iCat].forEach(el => el.addEventListener('input', calcola));
   body.addEventListener('toggle', e => { const it = e.target.closest && e.target.closest('.inf-item'); if (it) it.open ? aperte.add(it.dataset.i) : aperte.delete(it.dataset.i); }, true);
   // La ricerca non restringe l'elenco: lo porta sulla prima botanica che inizia con le lettere scritte.
   const nrm = x => x.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -3796,7 +3833,7 @@ function infusoRiga(d, abv, temp, vol, mod, stato, ott){
     body.querySelectorAll('.inf-item.trovata').forEach(x => x.classList.remove('trovata'));
     if (el){ el.classList.add('trovata'); el.scrollIntoView({ block: 'start' }); }
   });
-  if (iOtt) iOtt.addEventListener('change', calcola);
+  if (iOtt) iOtt.addEventListener('change', () => { syncModo(); calcola(); });
   iSt.addEventListener('change', () => {
     MASTER.forEach(d => { if (iSt.value === 'ref') delete statoMap[d.id]; else statoMap[d.id] = iSt.value; });
     calcola();
