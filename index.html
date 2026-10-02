@@ -874,6 +874,8 @@ input:focus, select:focus, textarea:focus{
   box-shadow:var(--sh-2), var(--sh-inset);
 }
 .detail.active{display:block;animation:panelIn .3s var(--ease) both;}
+.grid.is-hidden{display:none;}
+.bot-back{margin-bottom:18px;}
 .detail-icon{
   display:inline-flex;align-items:center;justify-content:center;
   width:64px;height:64px;border-radius:var(--r-md);
@@ -2579,7 +2581,9 @@ function showDetail(name){
         <span class="est-nota">${limitiEst(d)}</span>
         ${Ef ? `<span class="est-nota"><strong>Fresca:</strong> ${estAbvTxt(Ef.a)} · ${estTempoTxt(Ef.t)}. ${Ef.n}</span>` : ''}</div></div>` : '';
   detail.classList.add('active');
+  grid.classList.add('is-hidden');
   detail.innerHTML = `
+    <button class="ghost-btn bot-back" type="button" onclick="chiudiDetail()">← Torna all'elenco</button>
     <div class="detail-icon">${d.icona || '🌿'}</div>
     <h3>${d.botanica}</h3>
     <div class="sub">${d.nome_botanico ? d.nome_botanico + ' · ' : ''}${d.categoria} — ${d.sottofamiglia || ''}</div>
@@ -2606,6 +2610,13 @@ function showDetail(name){
     ${d.edibile === 'Sì, con cautela' ? `<div class="risk-box">🔺 Attenzione: ${d.sicurezza}</div>` : ''}
   `;
   detail.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+function chiudiDetail(){
+  currentDetailName = null;
+  detail.classList.remove('active');
+  detail.innerHTML = '';
+  grid.classList.remove('is-hidden');
+  grid.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 
 [searchInput, fCategoria, fCarattere, fPotenza, fOrdine, fStile].forEach(el => el.addEventListener('input', renderGrid));
