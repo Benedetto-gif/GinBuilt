@@ -1229,6 +1229,15 @@ footer.note{
 
 .ruolo-hint{font-size:12px;color:var(--ink-faint);margin-top:6px;line-height:1.4;font-weight:400;}
 .est-cal{font-size:13px;}
+.legend-click button{font:inherit;color:inherit;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+.legend-click button b{font-weight:600;color:var(--ink-faint);}
+.legend-click button.on{border-color:var(--juniper-deep);box-shadow:0 0 0 2px var(--surface-2);font-weight:650;}
+.compat-hint{font-size:12.5px;color:var(--ink-faint);margin:6px 0 10px;}
+.compat-list{margin-top:14px;display:flex;flex-direction:column;gap:6px;}
+.cl-title{font-size:14px;margin-bottom:2px;}
+.cl-row{display:flex;flex-direction:column;gap:2px;text-align:left;font:inherit;color:inherit;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:9px 12px;cursor:pointer;}
+.cl-row span{font-size:12.5px;color:var(--ink-faint);}
+.cl-nota,.cl-vuoto{font-size:12px;color:var(--ink-faint);}
 .voc-dl dt{font-weight:600;margin-top:8px;}.voc-dl dd{margin:0 0 4px 0;color:var(--ink-faint);}
 .cmp-sel{display:flex;gap:6px;margin-bottom:8px;}.cmp-sel select{flex:1;min-width:0;}
 .cmp{width:100%;border-collapse:collapse;font-size:12.5px;}.cmp td,.cmp th{padding:4px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;}
@@ -1697,12 +1706,13 @@ footer.note{
           botaniche dominanti della miscela.</p>
       </div>
     </details>
-    <div class="legend-strip">
-      <span><span class="dot" style="background:var(--green-sym)"></span> forte sinergia</span>
-      <span><span class="dot" style="background:var(--yellow-sym)"></span> compatibili, da dosare</span>
-      <span><span class="dot" style="background:var(--orange-sym)"></span> possibile sovrapposizione</span>
-      <span><span class="dot" style="background:var(--red-sym)"></span> rischio di conflitto</span>
+    <div class="legend-strip legend-click" id="compat-legend">
+      <button type="button" data-lv="verde"><span class="dot" style="background:var(--green-sym)"></span> forte sinergia <b></b></button>
+      <button type="button" data-lv="giallo"><span class="dot" style="background:var(--yellow-sym)"></span> compatibili, da dosare <b></b></button>
+      <button type="button" data-lv="arancio"><span class="dot" style="background:var(--orange-sym)"></span> possibile sovrapposizione <b></b></button>
+      <button type="button" data-lv="rosso"><span class="dot" style="background:var(--red-sym)"></span> rischio di conflitto <b></b></button>
     </div>
+    <p class="compat-hint">Scegli la botanica A, poi tocca un colore per vedere tutte le botaniche con quel giudizio.</p>
     <div class="compat-picker">
       <div class="field">
         <label>Botanica A</label>
@@ -1720,6 +1730,7 @@ footer.note{
         <div class="note" id="compat-note">Seleziona due botaniche per vedere il grado di compatibilità.</div>
       </div>
     </div>
+    <div class="compat-list" id="compat-list" hidden></div>
     <p style="font-size:12.5px;color:var(--ink-soft);margin-top:16px;max-width:640px;">
       Il confronto copre in dettaglio 24 botaniche "core" più discusse; per le altre coppie vale la regola:
       stessa famiglia aromatica → 🟡 (rischio di sovrapposizione), famiglie diverse → 🟢 di default.
@@ -2482,8 +2493,40 @@ function findOverride(a, b){
   return OVERRIDES.find(([pair]) => (pair[0]===a && pair[1]===b) || (pair[0]===b && pair[1]===a));
 }
 
+// Giudizio di una coppia: [livello, nota]
+function giudizioCoppia(a, b){
+  const ov = findOverride(a, b);
+  if (ov) return [ov[1], ov[2]];
+  const catA = byName[a] ? byName[a].categoria : null, catB = byName[b] ? byName[b].categoria : null;
+  return (catA && catA === catB)
+    ? ['giallo', 'Stessa famiglia aromatica (' + catA + '): possibile sovrapposizione, dosare con attenzione.']
+    : ['verde', 'Famiglie aromatiche diverse: compatibilità di default, nessun conflitto noto.'];
+}
+let livelloAttivo = null;
+function renderElencoCompat(){
+  const a = compatA.value, box = document.getElementById('compat-list'), chips = document.querySelectorAll('#compat-legend button');
+  const per = { verde: [], giallo: [], arancio: [], rosso: [] };
+  CORE.filter(n => n !== a).forEach(n => { const [k, nota] = giudizioCoppia(a, n); (per[k] = per[k] || []).push([n, nota]); });
+  chips.forEach(c => { c.querySelector('b').textContent = '(' + (per[c.dataset.lv] || []).length + ')'; c.classList.toggle('on', c.dataset.lv === livelloAttivo); });
+  if (!livelloAttivo){ box.hidden = true; return; }
+  const l = per[livelloAttivo] || [];
+  box.hidden = false;
+  box.innerHTML = '<div class="cl-title">' + SYM[livelloAttivo][0] + ' ' + SYM[livelloAttivo][2] + ' con <strong>' + a + '</strong> — ' + l.length + ' botaniche</div>' +
+    (l.length ? l.map(([n, nota]) => '<button type="button" class="cl-row" data-b="' + n.replace(/"/g, '&quot;') + '"><strong>' + n + '</strong><span>' + nota + '</span></button>').join('') : '<div class="cl-vuoto">Nessuna botanica con questo giudizio.</div>') +
+    '<div class="cl-nota">Elenco sulle botaniche con giudizio dettagliato; per tutte le altre vale la regola generale (stessa famiglia: giallo, famiglie diverse: verde). Tocca una riga per confrontarla con A.</div>';
+}
+document.getElementById('compat-legend').addEventListener('click', e => {
+  const c = e.target.closest('button'); if (!c) return;
+  livelloAttivo = livelloAttivo === c.dataset.lv ? null : c.dataset.lv; renderElencoCompat();
+});
+document.getElementById('compat-list').addEventListener('click', e => {
+  const r = e.target.closest('.cl-row'); if (!r) return;
+  compatB.value = r.dataset.b; renderCompat();
+  document.querySelector('.compat-result').scrollIntoView({ block: 'center', behavior: 'smooth' });
+});
 function renderCompat(){
   const a = compatA.value, b = compatB.value;
+  renderElencoCompat();
   const symbolEl = document.getElementById('compat-symbol');
   const labelEl = document.getElementById('compat-label');
   const noteEl = document.getElementById('compat-note');
