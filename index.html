@@ -1218,6 +1218,7 @@ footer.note{
 .inf-nome{display:flex;flex-direction:column;min-width:0;}
 .inf-riass{font-size:12.5px;color:var(--juniper-deep);text-align:right;white-space:nowrap;margin-left:auto;}
 .inf-item.trovata{border-color:var(--juniper-deep);box-shadow:0 0 0 2px var(--surface-2);}
+.inf-empty{padding:18px 16px;border:1px dashed var(--line);border-radius:12px;color:var(--ink-faint);font-size:13.5px;text-align:center;}
 .inf-corpo{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px 14px;padding:4px 12px 12px;border-top:1px solid var(--line);}
 .inf-corpo .inf-cau,.inf-corpo .inf-how{grid-column:1/-1;}
 .inf-f .k{font-size:11.5px;color:var(--ink-faint);margin-bottom:2px;}
@@ -1823,11 +1824,11 @@ footer.note{
     <details class="howto">
       <summary>Come si usa</summary>
       <div class="howto-body">
-        <p>Pagina di lavoro per preparare gli infusi, una botanica alla volta.</p>
+        <p>Pagina di lavoro per preparare gli infusi, una botanica alla volta. L'elenco non resta esteso: scrivi il nome nella casella di ricerca e si apre solo la scheda di quella botanica, tutte le altre restano chiuse. Restano visibili solo il quadro delle condizioni e la scheda trovata.</p>
         <ol>
           <li>Imposta la temperatura di conservazione (al buio) e il volume di infuso che vuoi ottenere. Per ogni botanica trovi quanto alcol di partenza e quanta acqua demineralizzata (in ml o in grammi) servono per arrivare al grado di estrazione. Per impostazione predefinita gradazione e tempo sono quelli consigliati per ciascuna botanica; togliendo la spunta a «Grado consigliato per botanica» scegli tu sia il grado dell'alcol di partenza sia il grado di estrazione desiderato, e il tempo si corregge anche in base a quanto il grado scelto si allontana da quello ottimale per la famiglia della botanica.</li>
-          <li>La tabella dà per ogni botanica i grammi da mettere e il tempo di estrazione. Con <em>dose fissa</em> si corregge il tempo, con <em>tempo fisso</em> si corregge la dose.</li>
-          <li>Per ogni botanica scegli lo <strong>Stato</strong>: fresca (appena raccolta) o secca. Peso e tempo si ricalcolano; con «Stato delle botaniche» li imposti tutti insieme. Le botaniche fresche portano acqua e abbassano un po' la gradazione.</li>
+          <li>La scheda trovata dà i grammi da mettere, il tempo di estrazione e le <strong>molecole aromatiche dell'erbario</strong> che l'estrazione punta a portare in soluzione.</li>
+          <li>Scegli lo <strong>Stato</strong>: fresca (appena raccolta) o secca. Peso e tempo si ricalcolano; con «Stato delle botaniche» li imposti tutti insieme. Le botaniche fresche portano acqua e abbassano un po' la gradazione.</li>
           <li>Leggi la colonna <strong>Come prepararla e usarla</strong>: dice come trattare la botanica e a cosa si riferisce il peso (senza altra indicazione, botanica secca).</li>
           <li>Assaggia al <strong>primo assaggio</strong> e poi a intervalli: gli estremi dell'intervallo sono limiti, non obiettivi.</li>
           <li>Le dosi sono per un infuso concentrato, da miscelare a percentuale nelle Schede di prova.</li>
@@ -2092,6 +2093,146 @@ const DATA = JSON.parse(document.getElementById('payload-data').textContent);
 const MASTER = DATA.master;
 const REDUND = DATA.redund;
 const DOSE = DATA.dose;
+// Molecole target per botanica: nota didattica su cosa si vuole estrarre e perché.
+// Stime di buon senso chimico-aromatico, non analisi di laboratorio: verificare sempre con assaggio.
+const MOLECOLE = {
+  "Limone": "D-limonene (nota citrica dominante), citrale per la vivacità; evitare l'albedo bianco, amaro per i flavanoni (naringina).",
+  "Bergamotto": "Linalolo e acetato di linalile (la nota floreale-Earl Grey), limonene di supporto; l'acetato di linalile è delicato e si disperde con estrazioni troppo lunghe.",
+  "Arancia dolce": "D-limonene quasi puro, con tracce di decanale per la nota succosa; profilo semplice, poco persistente.",
+  "Arancia amara": "Limonene con una componente più alta di flavanoni amari (naringina) e linalolo; equilibrio tra agrume e amaro voluto.",
+  "Cedro": "Limonene e gamma-terpinene, con cere e composti più pesanti che danno la nota 'candita'; scorza spessa, più resina della norma.",
+  "Mandarino": "Metil-N-metilantranilato (nota dolce caratteristica del mandarino) insieme al limonene; componente floreale delicata, da non disperdere con troppo calore o tempo.",
+  "Mandarino verde": "Limonene con profilo più verde per raccolta precoce, meno metil-antranilato dolce del mandarino maturo.",
+  "Pompelmo": "Nootkatone (la molecola-firma amarognola-resinosa del pompelmo) insieme al limonene; si estrae bene anche a gradi moderati.",
+  "Lime": "Limonene con una quota maggiore di aldeidi verdi (citrale) rispetto al limone, da cui la nota più acida e tagliente.",
+  "Yuzu": "Miscela complessa di limonene, linalolo e composti floreali tipici degli ibridi Citrus; profilo meno standardizzabile degli agrumi comuni.",
+  "Kumquat": "Olio di scorza simile al mandarino (limonene, metil-antranilato) ma frutto piccolo e intero: anche pectine e zuccheri della polpa entrano nell'infuso.",
+  "Lime nero": "Essiccazione/fermentazione sviluppa composti diversi dal lime fresco: note più terrose e da tè, meno aldeidi verdi fresche.",
+  "Coriandolo": "Linalolo (fino al 70% dell'olio essenziale), responsabile della nota agrumato-floreale; sovraestratto vira su note terrose/sapone per la pirazina.",
+  "Cardamomo verde": "1,8-cineolo e alfa-terpinil acetato, le molecole della freschezza eucaliptata; il cineolo si estrae rapidamente, l'acetato richiede più tempo.",
+  "Cardamomo nero": "Essiccazione ad affumicatura diretta: oli essenziali simili al cardamomo verde ma arricchiti di composti fenolici legati al fumo.",
+  "Cubebe": "Cubebolo e altri sesquiterpeni, affini al pepe ma con nota resinosa-canforata più marcata; estrazione lenta per i terpeni pesanti.",
+  "Pepe nero": "Piperina (il principio pungente, poco volatile) insieme a beta-cariofillene e altri terpeni per la parte aromatica legnosa.",
+  "Pepe rosa": "Alfa-pinene e beta-cariofillene con una componente resinosa tipica di Schinus; non è un vero pepe (famiglia botanica diversa).",
+  "Grani del paradiso": "6-paradolo e composti affini ai gingeroli dello zenzero, uniti a una nota agrumata; piccantezza meno acuta della piperina del pepe.",
+  "Cumino": "Cuminaldeide, molecola dominante e molto riconoscibile; si estrae con facilità, bastano dosi e tempi contenuti.",
+  "Carvi": "Carvone (isomero S), la stessa molecola dell'aneto ma nell'isomero che dà la nota 'pane di segale' anziché menta.",
+  "Finocchio": "Trans-anetolo come componente principale, con fencone a dare la nota più fresca/canforata; l'anetolo satura rapidamente anche a gradi medi.",
+  "Anice verde": "Trans-anetolo in concentrazione molto alta; poche altre note, per questo l'aroma è così diretto e dolce.",
+  "Stella di anice": "Trans-anetolo come nell'anice verde, ma con un corredo di sesquiterpeni che danno più calore e meno dolcezza pura.",
+  "Macis": "Miristicina e composti correlati alla noce moscata, ma con profilo più floreale e delicato essendo l'arillo e non il seme.",
+  "Noce moscata": "Miristicina ed elemicina, composti potenti; in dosi elevate hanno anche attività psicoattiva, da cui la dose molto prudenziale.",
+  "Chiodo di garofano": "Eugenolo, fino all'85-90% dell'olio essenziale: molecola dominante, calda e fenolica; si estrae già a gradi e tempi bassi.",
+  "Cannella Ceylon": "Cinnamaldeide in concentrazione moderata ed eugenolo di supporto; profilo più delicato e meno cumarina della cassia.",
+  "Cassia": "Cinnamaldeide molto concentrata e cumarina naturale elevata; più intensa e meno elegante della cannella Ceylon, da dosare con attenzione.",
+  "Fave di tonka": "Cumarina ad alta concentrazione, la molecola di vaniglia-fieno-mandorla; per questo la dose di riferimento è bassissima.",
+  "Senape gialla": "Glucosinolati che, idrolizzati, liberano isotiocianati pungenti e sulfurei; l'alcol ne limita parzialmente la pungenza rispetto all'acqua.",
+  "Angelica": "Lattoni macrociclici e alfa-pinene, insieme a cumarine; i lattoni danno la nota muschiata-terrosa che fissa l'intero bouquet.",
+  "Liquirizia": "Glicirrizina (dolcezza, non volatile) e trans-anetolo per la nota anice-balsamica; servono tempi lunghi per sciogliere bene la glicirrizina.",
+  "Genziana": "Amarogentina e genziopicrina, tra le molecole più amare note in natura; bastano tracce per un amaro percepibile a lungo.",
+  "Iris": "Irone (alfa, beta, gamma), che si forma solo dopo anni di stagionatura del rizoma essiccato; è la molecola più lenta da estrarre dell'erbario, da cui le macerazioni di giorni.",
+  "Zenzero": "Gingeroli (piccantezza) e zingiberene (nota fresco-legnosa); l'essiccazione converte parte dei gingeroli in shogaoli, più piccanti e stabili.",
+  "Galanga": "1,8-cineolo e galangina insieme a composti piperonilici; nota più canforata e meno dolce dello zenzero.",
+  "Curcuma": "Turmeroni e curcumina (poco solubile in alcol, ma il colore resta comunque intenso); nota terrosa poco volatile.",
+  "Mirto": "Mirtenil acetato e 1,8-cineolo nelle foglie (nota balsamica); nelle bacche prevalgono antociani e zuccheri per la componente fruttata-vinosa.",
+  "Elicriso": "Italidioni e nerolo, molecole rare che danno la caratteristica nota di curry/miele; molto potenti, da cui la dose minima della scheda.",
+  "Rosmarino": "1,8-cineolo, canfora e verbenone in proporzioni variabili per chemotipo; il verbenone dà la parte più elegante, la canfora quella più invadente.",
+  "Timo": "Timolo e carvacrolo, fenoli molto potenti e un po' medicinali; l'estrazione è rapida, motivo delle dosi molto piccole.",
+  "Timo limonato": "Citrale (geraniale/nerale) al posto del timolo: stesso genere del timo ma chemotipo orientato al limone anziché al fenolico.",
+  "Santoreggia": "Carvacrolo in concentrazione alta, simile all'origano ma con una nota più pepata di supporto.",
+  "Origano": "Carvacrolo e timolo, fenoli molto intensi; stessa famiglia chimica del timo ma profilo più caldo e terroso.",
+  "Maggiorana": "Terpinen-4-olo e sabinene, meno fenolico dell'origano: nota più dolce ed erbacea, meno medicinale.",
+  "Salvia": "Tujone, canfora e 1,8-cineolo; il tujone in eccesso è responsabile della nota amara e del rischio tossicologico, da cui dosi contenute.",
+  "Melissa": "Citrale (geraniale/nerale) e citronellale, le stesse famiglie di molecole degli agrumi ma di origine erbacea; molto labili al calore e al tempo.",
+  "Verbena odorosa": "Citrale in concentrazione molto alta, la nota di limone più pura tra le erbe; si esaurisce rapidamente, da cui tempi brevi.",
+  "Alloro": "1,8-cineolo ed eugenolo; il cineolo dà la parte fresco-balsamica, l'eugenolo la nota più calda e speziata di fondo.",
+  "Lentisco": "Alfa-pinene e altri monoterpeni resinosi dal mastice; nota pulita e balsamica, meno canforata del rosmarino.",
+  "Finocchio di mare": "Composti solforati e dillapiolo (simile all'aneto) uniti ai sali minerali della pianta; la nota salina viene soprattutto dal contesto costiero.",
+  "Levistico": "Ftalidi (le stesse molecole del sedano), molto potenti e persistenti; bastano tempi brevi per un'estrazione già completa.",
+  "Dragoncello": "Estragolo (metilcavicolo) come componente dominante, la stessa molecola base dell'anice ma con nota più verde.",
+  "Cappero": "Glucosinolati che liberano metil isotiocianato (nota pungente-vegetale); i boccioli portano in infusione anche sapidità residua.",
+  "Foglie di cappero": "Stessi glucosinolati dei boccioli ma concentrazione minore e più nota verde/clorofilla; tempi di macerazione molto brevi.",
+  "Salicornia": "Sali minerali e aldeidi verdi tipiche delle piante succulente costiere; contributo soprattutto sapido-minerale più che aromatico.",
+  "Alga verde alimentare": "Composti solforati volatili (dimetil solfuro) e aldeidi marine, che danno la tipica nota 'di mare'; si estraggono molto rapidamente.",
+  "Spirulina alimentare": "Pigmenti (ficocianina) e composti volatili legati a proteine algali; nota più umami che aromatica in senso classico, oltre al forte colore.",
+  "Lavanda": "Linalolo e acetato di linalile, come nel bergamotto ma più concentrati; oltre una certa soglia virano su una nota saponosa.",
+  "Rosa": "Citronellolo, geraniolo e feniletanolo, i tre alcoli che definiscono l'odore di rosa; servono tempi brevi, altrimenti la nota si appiattisce.",
+  "Camomilla": "Bisabololo e camazulene (quest'ultimo dà anche il colore blu all'olio essenziale); nota mela-miele dal bisabololo, un po' amara dal resto.",
+  "Sambuco": "Composti simili al linalolo e aldeidi fruttate; estrazione molto rapida, oltre poche ore prevale una nota vegetale sgradevole.",
+  "Ibisco": "Acidi organici (soprattutto acido ibiscico) e antociani per il colore rosso; più una questione di acidi e pigmenti che di aromatici volatili.",
+  "Fiordaliso": "Antociani per il colore blu, pochissimi composti aromatici volatili; botanica quasi esclusivamente visiva.",
+  "Gelsomino": "Benzil acetato e indolo: a bassa concentrazione floreale, ad alta quasi fecale; da qui la dose minima della scheda.",
+  "Bacche di ginepro": "Alfa-pinene, sabinene e mircene, i terpeni che danno la spina dorsale resinosa del gin; servono gradi medio-alti per scioglierli bene.",
+  "Bacche della passione": "Esteri fruttati e acido edulisico, tipici dei frutti della passione; profilo acido-tropicale, meno aromatico del frutto fresco non essiccato.",
+  "Melograno": "Acidi organici (tra cui il punicico) e antociani; aromaticamente discreto, contribuisce più per acidità e colore.",
+  "Fico": "Zuccheri concentrati e furanoni (nota di miele/frutta secca tipica dell'essiccazione); pochi composti volatili specifici.",
+  "Uva passa": "Zuccheri e un poco di acidi dell'uva concentrati dall'essiccazione; aromaticamente neutro, serve più da corpo dolce che da aromatica.",
+  "Mela": "Esteri (come l'acetato di esile) tipici della mela, ma attenuati e un po' ossidati dall'essiccazione verso note più cotte.",
+  "Pera": "Esteri simili alla mela con una componente più dolce-floreale; anche qui l'essiccazione sposta il profilo verso il 'cotto'.",
+  "Ciliegia": "Benzaldeide (nota di mandorla) dal nocciolo residuo, oltre a zuccheri e un po' di tannino dalla buccia essiccata.",
+  "Prugna": "Zuccheri concentrati e un poco di acidi; l'essiccazione forte porta note più caramellate-vinose che fruttate fresche.",
+  "Ribes nero": "Composti solforati (4MMP, lo stesso del sauvignon blanc) che danno la caratteristica nota di cassis/foglia di bosso; da dosare con cura.",
+  "Caffè": "Pirazine e furani da tostatura, centinaia di composti; contributo soprattutto amaro-tostato più che su una singola molecola.",
+  "Cacao": "Pirazine (in particolare tetrametilpirazina) e un poco di teobromina amara dalla tostatura delle fave.",
+  "Vaniglia bourbon": "Vanillina come molecola dominante, affiancata da decine di composti minori che danno la complessità rispetto alla vanillina di sintesi.",
+  "Mandorla dolce": "Oli grassi che danno corpo, con tracce di benzaldeide; nota di mandorla molto più tenue della variante amara.",
+  "Sesamo": "Pirazine da tostatura e sesamolo (un lignano) che contribuisce anche a una leggera nota antiossidante-amara.",
+  "Sommacco": "Acidi organici (malico, citrico) e tannini idrolizzabili; la nota acidula-limone viene dagli acidi, non da oli essenziali.",
+  "Vaniglia": "Vanillina come per la bourbon; voce della libreria per varianti di origine o preparazione.",
+  "Alloro bacca": "Stessi composti delle foglie (1,8-cineolo, eugenolo) ma con una componente oleosa-grassa maggiore propria del frutto.",
+  "Portulaca": "Acidi grassi omega-3 e mucillagini; pianta succulenta con pochissimi composti aromatici volatili, resa aromatica bassa.",
+  "Spina santa": "Botanica poco studiata in letteratura aromatica: composti non ben caratterizzati, probabili tannini e acidi organici in piccola quantità.",
+  "Carruba polpa": "Zuccheri naturali e pirazine da leggera tostatura, simili al cacao ma meno amare; niente teobromina.",
+  "Corbezzolo": "Arbutina (un glicoside) e zuccheri da frutto molto maturo; a maturazione avanzata si formano anche tracce di composti più fermentati.",
+  "Uva Cataratto": "Esteri fruttati e zuccheri tipici dell'uva da vino; profilo semplice e pulito.",
+  "Sorbo": "Acido parasorbico (irritante da frutto acerbo, che scompare con l'ammezzimento) e tannini; va sempre usato ben maturo.",
+  "Castagna": "Amido e zuccheri che danno corpo farinoso; pochi composti aromatici specifici, nota di tostato se la castagna è stata arrostita.",
+  "Tarassaco": "Lattoni sesquiterpenici amari (simili a quelli della cicoria); radice ricca di inulina, poco aromatica ma molto amara.",
+  "Betulla corteccia": "Betulina e salicilati (simili all'aspirina): nota legnosa-balsamica con un fondo leggermente 'farmaceutico'.",
+  "Pepe di giava": "Se Litsea cubeba: citrale puro e intenso (nota di limone molto concentrata); se Piper retrofractum: piperina e terpeni come il pepe nero — verificare la specie prima dell'uso.",
+  "Pepe di Sichuan": "Sanshoolo, il composto responsabile dell'effetto formicolante/anestetico tipico, insieme a linalolo per la parte agrumata.",
+  "Zafferano": "Safranal (aroma), picrocrocina (amaro) e crocina (il pigmento giallo-arancio); tre molecole diverse per aroma, gusto e colore.",
+  "Aneto": "Carvone (isomero R, che dà la nota menta-aneto, opposto all'isomero del carvi) e apiolo nei semi.",
+  "Basilico": "Linalolo ed eugenolo in proporzioni variabili per varietà; estrazione molto rapida, oltre poche ore vira su note ammuffite.",
+  "Gelso": "Pochi composti aromatici specifici documentati; principalmente clorofilla e un poco di esteri verdi dalle foglie giovani.",
+  "Moringa": "Isotiocianati (simili a senape e rucola) e un fondo di clorofilla; nota amarognola-vegetale tipica delle piante affini alle Brassicacee.",
+  "Artemisia": "Tujone in concentrazione elevata (la stessa molecola della salvia), insieme a composti molto amari; dose minima per il rischio tossicologico del tujone a dosi elevate.",
+  "Elicriso delle scogliere": "Stessi italidioni dell'elicriso comune, ma la sottospecie costiera ha spesso una nota salina aggiuntiva dall'habitat.",
+  "Malva": "Mucillagini (polisaccaridi) e pochissimi composti volatili; contributo quasi solo visivo/di consistenza, non aromatico.",
+  "Ginestra": "Composti floreali-mielati non ben caratterizzati, ma soprattutto alcaloidi (citisina, sparteina) che impongono dosi minime per sicurezza.",
+  "Alga nori": "Composti solforati volatili e glutammato libero (fonte dell'umami); simile all'alga verde ma più proteica.",
+  "Poseidonia": "Fenoli e composti solforati tipici delle piante marine; aromaticamente vicina alle alghe pur essendo una pianta acquatica superiore, non un'alga.",
+  "Asparago": "Acido asparagusico e derivati solforati (gli stessi che alterano l'odore delle urine); nota vegetale-amarognola tipica.",
+  "Cardo": "Cinaropicrina e altri lattoni sesquiterpenici amari, stessa famiglia chimica del carciofo.",
+  "Carciofo": "Cinarina, il composto amaro caratteristico che dà anche il celebre effetto 'dolcificante' su ciò che si beve subito dopo.",
+  "Cetriolo": "(E,Z)-2,6-nonadienale, la molecola-firma dell'odore di cetriolo fresco, percettibile anche a concentrazioni bassissime.",
+  "Mandorla amara": "Amigdalina, che si idrolizza liberando benzaldeide (l'aroma di mandorla) e acido cianidrico: da qui l'uso solo in tracce ben controllate.",
+  "Manna": "Mannitolo (uno zucchero-alcool) come componente principale; dolcezza delicata, quasi nessun aromatico volatile.",
+  "Mirtillo": "Antociani (colore) ed esteri fruttati tipici dei piccoli frutti di bosco; acidità organica a bilanciare la dolcezza.",
+  "Ribes rosso": "Acidi organici (soprattutto citrico e malico) in forte concentrazione; aromaticamente più acido che fruttato-dolce.",
+  "Mora": "Esteri fruttati e antociani, con tannini della buccia che danno struttura/astringenza se macerata a lungo.",
+  "Fragola": "Furaneolo (la molecola-firma della fragola matura) insieme a diversi esteri fruttati minori.",
+  "Lamponi": "Cheto-lampone (raspberry ketone), la molecola che dà il nome al suo stesso profumo, insieme a esteri floreali.",
+  "Menta": "Mentolo e mentone, che danno la sensazione di freschezza anche tattile sui recettori del freddo, non solo olfattiva.",
+  "Achillea": "Camazulene (nota blu/camomilla) e cineolo; pianta amara-aromatica della stessa famiglia della camomilla.",
+  "Rosa canina": "Acido ascorbico (vitamina C) e acidi organici dai falsi frutti (cinorrodi), con pochi volatili: profilo soprattutto acido-fruttato da tè.",
+  "Scorza di bergamotto disidratata": "Stessi linalolo/acetato di linalile del bergamotto fresco ma più concentrati e con note più amare/saponose dall'essiccazione.",
+  "Scorza di arancia disidratata": "Limonene residuo (parzialmente volatilizzato dall'essiccazione) e più note di albedo/amaro rispetto alla scorza fresca.",
+  "Finger lime": "Limonene e citrale come gli altri Citrus, ma la polpa a 'perle' rilascia anche succo e acidità diretta nell'infuso.",
+  "Ananas": "Esteri (in particolare dell'acido esanoico) per la nota fruttata, con composti solforati minori tipici della frutta tropicale essiccata.",
+  "Mango": "Terpeni (tra cui il 3-carene, nota resinosa) ed esteri della pesca; l'essiccazione accentua le note resinose rispetto al frutto fresco.",
+  "Papaya": "Benzil isotiocianato e esteri dolci-burrosi; profilo delicato, facilmente sovrastato da botaniche più intense.",
+  "Litchi": "Composti floreali simili al geraniolo/rosa e note di moscato; profilo delicato che l'essiccazione tende ad appiattire verso il dolce.",
+  "Rambutan": "Esteri dolci simili all'uva moscata, molto affini al litchi essendo imparentati botanicamente.",
+  "Alchechengi": "Acidi organici e un poco di composti verdi (simili al pomodoro, pianta della stessa famiglia botanica).",
+  "Pitaya (dragon fruit)": "Pochissimi composti volatili specifici documentati; resa aromatica molto bassa, contributo quasi solo visivo/di colore.",
+  "Guava": "Esteri e un poco di cinnamati; nota muschiata caratteristica meno comune nella frutta, utile come accento esotico.",
+  "Feijoa": "1,8-cineolo e metil benzoato, che danno la tipica doppia nota ananas-eucalipto; parente botanico del mirto, da cui l'affinità aromatica.",
+  "Kiwano": "(E,Z)-2,6-nonadienale come nel cetriolo (piante della stessa famiglia botanica), con una nota acidula aggiuntiva.",
+  "Cocco": "Delta-lattoni (in particolare il massoia lattone), responsabili della nota cremosa-cocco; anche acidi grassi a catena media che danno untuosità.",
+  "Durian": "Composti solforati volatili in concentrazione estrema insieme a esteri dolci: la combinazione che produce il suo odore controverso.",
+  "Abrotano": "Citrale e tujone insieme, da cui la doppia nota limone-canfora-amaro; stessa cautela sul tujone delle altre Artemisia.",
+};
 const CORE = DATA.core;
 const OVERRIDES = DATA.overrides;
 const STYLES = DATA.styles;
@@ -2414,6 +2555,14 @@ function showDetail(name){
   const isRef = (abv === REF_ABV && temp === REF_TEMP);
   const adjTempo = adjustedTempo(baseTempo, abv, temp, d.categoria);
   const adjDose = adjustedDose(baseDose, abv, temp, d.categoria);
+  const doseLabel = isRef ? 'Dose operativa (rif. 43°/20°C)' : `Dose operativa a ${abv}%/${temp}°C`;
+  const doseValue = isRef
+    ? `test ${ds.test ?? d.dose ?? '—'} g · range ${ds.min ?? '—'}–${ds.max ?? '—'} g / 100 ml`
+    : `test ≈ <strong>${adjDose ?? (ds.test ?? d.dose ?? '—')} g</strong> / 100 ml <span class="est-nota">mantenendo il tempo di riferimento — a 43°/20°C: ${ds.test ?? d.dose ?? '—'} g</span>`;
+  const tempoLabel = isRef ? 'Tempo di infusione (rif. 43°/20°C)' : `Tempo di infusione a ${abv}%/${temp}°C`;
+  const tempoValue = isRef
+    ? (baseTempo || '—')
+    : `<strong>${adjTempo}</strong> <span class="est-nota">mantenendo la dose di riferimento — a 43°/20°C: ${baseTempo || '—'}</span>`;
   const E = estPer(d, infRif(d));
   const Ef = (E && EST[name].f) ? estPer(d, 'fresco') : null;
   const cal = tarature()[name], q = name.replace(/"/g, '&quot;');
@@ -2440,9 +2589,10 @@ function showDetail(name){
       <div class="field"><div class="k">Funzione operativa</div><div class="v">${d.funzione_op || '—'}</div></div>
       <div class="field"><div class="k">Carattere</div><div class="v"><span class="tag carattere" style="--c:${coloreCarattere(d.carattere)}">${d.carattere || '—'}</span></div></div>
       <div class="field"><div class="k">Potenza</div><div class="v">${d.potenza10 ?? '—'}/10 (intensità ${d.intensita ?? '—'}/5, persistenza ${d.persistenza ?? '—'}/5)</div></div>
-      <div class="field"><div class="k">Dose operativa (rif. 43°/20°C)</div><div class="v">test ${ds.test ?? d.dose ?? '—'} g · range ${ds.min ?? '—'}–${ds.max ?? '—'} g / 100 ml</div></div>
-      <div class="field"><div class="k">Tempo di infusione (rif. 43°/20°C)</div><div class="v">${baseTempo || '—'}</div></div>
+      <div class="field"><div class="k">${doseLabel}</div><div class="v">${doseValue}</div></div>
+      <div class="field"><div class="k">${tempoLabel}</div><div class="v">${tempoValue}</div></div>
       ${estHtml}${calHtml}
+      <div class="field full"><div class="k">🧪 Molecole da estrarre</div><div class="v">${MOLECOLE[name] || 'Scheda non ancora compilata.'}</div></div>
       <div class="field"><div class="k">Parte utilizzata</div><div class="v">${d.parte || '—'}</div></div>
       <div class="field"><div class="k">Edibile</div><div class="v">${d.edibile || 'Sì'}</div></div>
       <div class="field"><div class="k">🌾 Periodo di raccolta</div><div class="v">${d.periodo_raccolta || '—'}</div></div>
@@ -2451,8 +2601,7 @@ function showDetail(name){
       <div class="field full"><div class="k">Sostitutive</div><div class="v">${r.sostitutive || '—'}</div></div>
       <div class="field full"><div class="k">Complementari</div><div class="v">${r.complementari || '—'}</div></div>
     </div>
-    ${isRef ? '' : `<div class="adj-box">🌡️ A ${abv}% / ${temp}°C: tempo adattato ≈ <strong>${adjTempo}</strong> (mantenendo la dose di riferimento) —
-      oppure, mantenendo il tempo di riferimento, dose consigliata ≈ <strong>${adjDose ?? '—'} g</strong>. Stima orientativa, verifica sempre con assaggio.</div>`}
+    ${isRef ? '' : `<div class="adj-box">🌡️ Valori ricalcolati per ${abv}% vol / ${temp}°C rispetto al riferimento 43°/20°C. Stima orientativa, verifica sempre con assaggio.</div>`}
     <div class="warn-box">⚠️ Da non accumulare con: ${r.non_accumulare || 'nessuna nota particolare'}</div>
     ${d.edibile === 'Sì, con cautela' ? `<div class="risk-box">🔺 Attenzione: ${d.sicurezza}</div>` : ''}
   `;
@@ -3686,10 +3835,46 @@ const EST_LIM_B = {
   'Alloro bacca': ['passano resine e amari duri che coprono il resto', 50, 'poco olio essenziale e più tannini'],
   'Mirto bacche': ['passano tannini e note astringenti dai semi', 40, 'restano zuccheri e pigmenti, con poco aroma']
 };
-function limitiEst(d){
-  const e = EST[d.botanica], l0 = EST_LIM[d.categoria], o = EST_LIM_B[d.botanica]; if (!e || !l0) return '';
+function estLimiti(d){
+  const e = EST[d.botanica], l0 = EST_LIM[d.categoria], o = EST_LIM_B[d.botanica]; if (!e || !l0) return null;
   const l = o ? [0, o[0], o[1], o[2]] : l0;
-  return '<strong>Evita oltre ' + e.m + '% vol:</strong> ' + l[1] + '. <strong>Sotto ' + l[2] + '% vol:</strong> ' + l[3] + '.';
+  return { m: e.m, altoTxt: l[1], basso: l[2], bassoTxt: l[3] };
+}
+function limitiEst(d){
+  const l = estLimiti(d); if (!l) return '';
+  return '<strong>Evita oltre ' + l.m + '% vol:</strong> ' + l.altoTxt + '. <strong>Sotto ' + l.basso + '% vol:</strong> ' + l.bassoTxt + '.';
+}
+// Apre una finestra/scheda a parte con il contenuto da stampare: funziona anche quando
+// la pagina e' installata come app (PWA) e il print del documento principale non e' disponibile.
+// Se il browser blocca l'apertura della finestra, scarica un file HTML pronto da aprire e stampare.
+function stampaHtml(corpoHtml, titolo){
+  const doc = '<!doctype html><html lang="it"><head><meta charset="utf-8"><title>' + (titolo || 'Stampa') + '</title><style>' +
+    'body{font-family:\'Public Sans\', sans-serif;color:#111;padding:20px;margin:0;background:#fff;}' +
+    'h2{font-family:\'Fraunces\', serif;border-bottom:2px solid #111;padding-bottom:6px;}' +
+    'table{width:100%;border-collapse:collapse;margin:14px 0;}' +
+    'th,td{border:1px solid #999;padding:6px 8px;text-align:left;font-size:13px;}' +
+    '.print-meta{font-size:13px;color:#333;margin-bottom:10px;}' +
+    '</style></head><body>' + corpoHtml +
+    '<script>window.addEventListener("load",function(){setTimeout(function(){window.print();},200);});<' + '/script>' +
+    '</body></html>';
+  let w = null;
+  try { w = window.open('', '_blank'); } catch(e){ w = null; }
+  if (w && w.document){
+    w.document.open(); w.document.write(doc); w.document.close();
+    return;
+  }
+  // Fallback: niente nuove finestre (tipico delle app installate su schermo home) -> scarica un file HTML.
+  try {
+    const blob = new Blob([doc], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = (titolo || 'stampa').toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.html';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+    alert('Il browser non permette di aprire una finestra di stampa qui (succede spesso nelle app installate sulla schermata Home). Ho scaricato un file HTML: aprilo per stamparlo o condividerlo.');
+  } catch(e){
+    alert('Non sono riuscito ad aprire la stampa su questo dispositivo.');
+  }
 }
 function estPer(d, stato){
   const e0 = EST[d.botanica]; if (!e0) return null;
@@ -3784,7 +3969,6 @@ function infusoRiga(d, abv, temp, vol, mod, stato, ott, abvS){
   const selStato = (d, s) => '<select class="inf-stato" data-i="' + d.id + '"><option value="secco"' + (s === 'secco' ? ' selected' : '') +
     '>Secca</option><option value="fresco"' + (s === 'fresco' ? ' selected' : '') + '>Fresca</option></select>';
   let visibili = [];
-  const aperte = new Set();
   function leggi(){
     const t = parseFloat(iTemp.value);
     return { abv: parseFloat(iAbv.value) || REF_ABV, abvS: parseFloat(iAbvS.value) || ALCOL_PARTENZA, temp: isNaN(t) ? REF_TEMP : t,
@@ -3794,45 +3978,69 @@ function infusoRiga(d, abv, temp, vol, mod, stato, ott, abvS){
     const c = leggi(), q = iQ.value.trim().toLowerCase(), cat = iCat.value;
     visibili = MASTER.filter(d => !cat || d.categoria === cat).slice().sort((x, y) => x.botanica.localeCompare(y.botanica, 'it'))
       .map(d => ({ d, r: infusoRiga(d, c.abv, c.temp, c.vol, c.mod, statoDi(d), c.ott, c.abvS) }));
-    cnt.textContent = visibili.length + ' / ' + MASTER.length + ' botaniche';
     let html = c.ott
       ? '<div class="adj-box">Gradazione e tempo derivano dalla botanica scelta; qui indichi la temperatura di conservazione e il volume di infuso che vuoi ottenere. Il tempo consigliato si corregge con la temperatura (raddoppia ogni 10 °C in meno, dimezza ogni 10 °C in più). La diluizione è calcolata con alcol a ' + c.abvS + '% vol e acqua demineralizzata potabile a 20 °C, tenendo conto della contrazione di volume: per l\u2019acqua usa i ml o i grammi, sono quasi uguali.</div>'
       : '<div class="adj-box">Stai scegliendo tu il grado di estrazione (' + c.abv + '% vol) e il grado dell\u2019alcol di partenza (' + c.abvS + '% vol). Il tempo si corregge sia con la temperatura sia con quanto il grado scelto si allontana da quello di riferimento (43% vol): più ti allontani, più il tempo cambia, secondo la famiglia della botanica. Controlla i \u201climiti della gradazione\u201d di ogni scheda per evitare di estrarre sostanze indesiderate.</div>';
     if (c.temp < 15 || c.temp > 35) html += '<div class="warn-box">Temperatura fuori dall\u2019intervallo di lavoro previsto (15–35 °C): la stima \u00e8 meno affidabile.</div>';
     if (!c.ott && c.abv >= c.abvS) html += '<div class="warn-box">Il grado di estrazione desiderato deve essere pi\u00f9 basso del grado dell\u2019alcol di partenza: con l\u2019acqua si pu\u00f2 solo abbassare il grado, non alzarlo.</div>';
     info.innerHTML = html;
-    body.innerHTML = visibili.map(({d, r}) => {
-      const g = infFmtG(r.g) + ' g <span class="inf-sub">(' + infFmtG(r.gmin) + '–' + infFmtG(r.gmax) + ' g)</span>';
-      const t = r.tmin === null ? (r.tempoRef || '—') : infRange(r.tmin, r.tmax);
-      const a = r.assaggio === null ? '—' : (r.assaggio >= 72 ? infFmt(r.assaggio / 24) + ' giorni' : infFmt(r.assaggio) + ' h');
-      const cau = d.edibile === 'Sì, con cautela' ? '<span class="inf-cau">⚠️ ' + (d.sicurezza || 'usare con cautela') + '</span>' : '';
-      const riass = r.est ? estAbvTxt(r.est.a) + ' · ' + estTempoTxt(r.est.t) : t;
-      const f = (k, v) => '<div class="inf-f"><div class="k">' + k + '</div><div class="v">' + v + '</div></div>';
-      return '<details class="inf-item" data-i="' + d.id + '"' + (aperte.has(String(d.id)) ? ' open' : '') + '><summary><span class="inf-nome"><strong>' + d.botanica + '</strong>' +
-        '<span class="inf-sub">' + d.categoria + ' · ' + (d.parte || '') + '</span></span><span class="inf-riass">' + riass + '</span></summary>' +
-        '<div class="inf-corpo">' + cau +
-        f('Stato', selStato(d, r.stato)) +
-        f('Gradazione consigliata', r.est ? '<strong>' + estAbvTxt(r.est.a) + '</strong>' : '—') +
-        f('Diluizione (alcol 96° + acqua)', r.dil ? '<strong>' + nf(r.dil.alcMl, 1) + ' ml</strong> di alcol + <strong>' + nf(r.dil.acquaMl, 1) + ' ml</strong> di acqua (' + nf(r.dil.acquaG, 1) + ' g)' : '—') +
-        f('Quantità di botanica', g) + f('Tempo di estrazione', t) + f('Primo assaggio', a) +
-        '<div class="inf-f inf-how"><div class="k">Prova a tre gradazioni (campioni identici da ' + nf(Math.min(c.vol, 50), 0) + ' ml)</div><div class="v">' +
-          [40, 60, 80].map(gr => { const x = diluizione(gr, Math.min(c.vol, 50), c.abvS); return '<strong>' + gr + '%</strong>: ' + nf(x.alcMl, 1) + ' ml alcol ' + c.abvS + '° + ' + nf(x.acquaG, 1) + ' g acqua'; }).join(' · ') + '</div></div>' +
-        '<div class="inf-f inf-how"><div class="k">Limiti della gradazione</div><div class="v">' + limitiEst(d) + '</div></div>' +
-        '<div class="inf-f inf-how"><div class="k">Come prepararla e usarla</div><div class="v">' + comeUsare(d, r.stato, r.K, r.abvEff) + (r.est ? ' <em class="inf-est-nota">Estrazione: ' + r.est.n + '</em>' : '') + '</div></div>' +
-        '</div></details>';
-    }).join('');
+    body.innerHTML = '';
+    renderSelezione(c);
+  }
+  // La scheda di una botanica, sempre aperta: è la sola che viene mostrata.
+  function cardHtml(d, r, c){
+    const g = infFmtG(r.g) + ' g <span class="inf-sub">(' + infFmtG(r.gmin) + '\u2013' + infFmtG(r.gmax) + ' g)</span>';
+    const t = r.tmin === null ? (r.tempoRef || '\u2014') : infRange(r.tmin, r.tmax);
+    const a = r.assaggio === null ? '\u2014' : (r.assaggio >= 72 ? infFmt(r.assaggio / 24) + ' giorni' : infFmt(r.assaggio) + ' h');
+    const cau = d.edibile === 'S\u00ec, con cautela' ? '<span class="inf-cau">\u26a0\ufe0f ' + (d.sicurezza || 'usare con cautela') + '</span>' : '';
+    const riass = r.est ? estAbvTxt(r.est.a) + ' \u00b7 ' + estTempoTxt(r.est.t) : t;
+    const lim = estLimiti(d);
+    let gradWarn = '';
+    if (!c.ott && lim){
+      if (c.abv > lim.m) gradWarn = '<div class="warn-box">\u26a0\ufe0f Hai impostato ' + c.abv + '% vol, sopra la soglia di sicurezza di ' + lim.m + '% vol per ' + d.botanica + ': ' + lim.altoTxt + '.</div>';
+      else if (c.abv < lim.basso) gradWarn = '<div class="warn-box">\u26a0\ufe0f Hai impostato ' + c.abv + '% vol, sotto la soglia minima di ' + lim.basso + '% vol per ' + d.botanica + ': ' + lim.bassoTxt + '.</div>';
+    }
+    const f = (k, v) => '<div class="inf-f"><div class="k">' + k + '</div><div class="v">' + v + '</div></div>';
+    return '<details class="inf-item" data-i="' + d.id + '" open><summary><span class="inf-nome"><strong>' + d.botanica + '</strong>' +
+      '<span class="inf-sub">' + d.categoria + ' \u00b7 ' + (d.parte || '') + '</span></span><span class="inf-riass">' + riass + '</span></summary>' +
+      '<div class="inf-corpo">' + cau + gradWarn +
+      f('Stato', selStato(d, r.stato)) +
+      f('Gradazione consigliata', r.est ? '<strong>' + estAbvTxt(r.est.a) + '</strong>' : '\u2014') +
+      f('Diluizione (alcol 96\u00b0 + acqua)', r.dil ? '<strong>' + nf(r.dil.alcMl, 1) + ' ml</strong> di alcol + <strong>' + nf(r.dil.acquaMl, 1) + ' ml</strong> di acqua (' + nf(r.dil.acquaG, 1) + ' g)' : '\u2014') +
+      f('Quantit\u00e0 di botanica', g) + f('Tempo di estrazione', t) + f('Primo assaggio', a) +
+      '<div class="inf-f inf-how"><div class="k">\ud83e\uddea Molecole aromatiche da estrarre</div><div class="v">' + (MOLECOLE[d.botanica] || 'Scheda non ancora compilata.') + '</div></div>' +
+      '<div class="inf-f inf-how"><div class="k">Prova a tre gradazioni (campioni identici da ' + nf(Math.min(c.vol, 50), 0) + ' ml)</div><div class="v">' +
+        [40, 60, 80].map(gr => { const x = diluizione(gr, Math.min(c.vol, 50), c.abvS); return '<strong>' + gr + '%</strong>: ' + nf(x.alcMl, 1) + ' ml alcol ' + c.abvS + '\u00b0 + ' + nf(x.acquaG, 1) + ' g acqua'; }).join(' \u00b7 ') + '</div></div>' +
+      '<div class="inf-f inf-how"><div class="k">Limiti della gradazione</div><div class="v">' + limitiEst(d) + '</div></div>' +
+      '<div class="inf-f inf-how"><div class="k">Come prepararla e usarla</div><div class="v">' + comeUsare(d, r.stato, r.K, r.abvEff) + (r.est ? ' <em class="inf-est-nota">Estrazione: ' + r.est.n + '</em>' : '') + '</div></div>' +
+      '</div></details>';
+  }
+  // La ricerca non elenca l'erbario: apre solo la scheda della botanica che inizia con le lettere scritte,
+  // tutte le altre restano chiuse (semplicemente non vengono mostrate).
+  const nrm = x => x.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  function trovaMatch(q){
+    if (!q) return null;
+    const nq = nrm(q), nome = x => nrm(x.d.botanica);
+    return visibili.find(x => nome(x).startsWith(nq)) ||
+      visibili.find(x => nome(x).split(/[\s\/\-(]+/).some(w => w.startsWith(nq))) ||
+      visibili.find(x => nome(x).includes(nq)) || null;
+  }
+  function renderSelezione(c){
+    const q = iQ.value.trim();
+    const match = trovaMatch(q);
+    if (!match){
+      cnt.textContent = visibili.length + ' botaniche nella libreria';
+      body.innerHTML = '<div class="inf-empty">' + (q
+        ? 'Nessuna botanica trovata per \u00ab' + q.replace(/[<>&]/g, '') + '\u00bb.'
+        : 'Scrivi il nome di una botanica per aprirne la scheda.') + '</div>';
+      return;
+    }
+    cnt.textContent = '1 / ' + visibili.length + ' botaniche';
+    body.innerHTML = cardHtml(match.d, match.r, c);
   }
   [iAbv, iAbvS, iTemp, iVol, iMod, iCat].forEach(el => el.addEventListener('input', calcola));
-  body.addEventListener('toggle', e => { const it = e.target.closest && e.target.closest('.inf-item'); if (it) it.open ? aperte.add(it.dataset.i) : aperte.delete(it.dataset.i); }, true);
-  // La ricerca non restringe l'elenco: lo porta sulla prima botanica che inizia con le lettere scritte.
-  const nrm = x => x.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  iQ.addEventListener('input', () => {
-    const q = nrm(iQ.value.trim()); if (!q) return;
-    const els = [...body.querySelectorAll('.inf-item')], nome = el => nrm(el.querySelector('strong').textContent);
-    const el = els.find(e => nome(e).startsWith(q)) || els.find(e => nome(e).split(/[\s\/\-(]+/).some(w => w.startsWith(q))) || els.find(e => nome(e).includes(q));
-    body.querySelectorAll('.inf-item.trovata').forEach(x => x.classList.remove('trovata'));
-    if (el){ el.classList.add('trovata'); el.scrollIntoView({ block: 'start' }); }
-  });
+  iQ.addEventListener('input', () => renderSelezione(leggi()));
+  if (iOtt) iOtt.addEventListener('change', () => { syncModo(); calcola(); });
   if (iOtt) iOtt.addEventListener('change', () => { syncModo(); calcola(); });
   iSt.addEventListener('change', () => {
     MASTER.forEach(d => { if (iSt.value === 'ref') delete statoMap[d.id]; else statoMap[d.id] = iSt.value; });
@@ -3844,14 +4052,14 @@ function infusoRiga(d, abv, temp, vol, mod, stato, ott, abvS){
   });
   $('inf-print').addEventListener('click', () => {
     const c = leggi();
-    const righe = visibili.map(({d, r}) => '<tr><td>' + d.botanica + ' (' + (r.stato === 'fresco' ? 'fresca' : 'secca') + ')</td><td>' + (r.est ? estAbvTxt(r.est.a) : '—') + '</td><td>' + (r.dil ? nf(r.dil.alcMl, 1) + ' ml + ' + nf(r.dil.acquaMl, 1) + ' ml (' + nf(r.dil.acquaG, 1) + ' g)' : '—') + '</td><td>' + infFmtG(r.g) + ' g</td><td>' +
-      (r.tmin === null ? (r.tempoRef || '—') : infRange(r.tmin, r.tmax)) + '</td><td>' +
-      (r.assaggio === null ? '—' : infFmt(r.assaggio) + ' h') + '</td><td>' + comeUsare(d, r.stato, r.K, r.abvEff) + '</td></tr>').join('');
-    $('print-area').innerHTML = '<h2>Preparazione infusi</h2><div class="print-meta">' + 'Gradazione consigliata per ogni botanica · ' + c.temp +
-      ' °C · ' + c.vol + ' ml di infuso per botanica' +
+    const righe = visibili.map(({d, r}) => '<tr><td>' + d.botanica + ' (' + (r.stato === 'fresco' ? 'fresca' : 'secca') + ')</td><td>' + (r.est ? estAbvTxt(r.est.a) : '\u2014') + '</td><td>' + (r.dil ? nf(r.dil.alcMl, 1) + ' ml + ' + nf(r.dil.acquaMl, 1) + ' ml (' + nf(r.dil.acquaG, 1) + ' g)' : '\u2014') + '</td><td>' + infFmtG(r.g) + ' g</td><td>' +
+      (r.tmin === null ? (r.tempoRef || '\u2014') : infRange(r.tmin, r.tmax)) + '</td><td>' +
+      (r.assaggio === null ? '\u2014' : infFmt(r.assaggio) + ' h') + '</td><td>' + comeUsare(d, r.stato, r.K, r.abvEff) + '</td></tr>').join('');
+    const corpo = '<h2>Preparazione infusi</h2><div class="print-meta">' + 'Gradazione consigliata per ogni botanica \u00b7 ' + c.temp +
+      ' \u00b0C \u00b7 ' + c.vol + ' ml di infuso per botanica' +
       '</div><table><thead><tr><th>Botanica</th><th>Gradazione</th><th>Alcol 96\u00b0 + acqua</th><th>Quantit\u00e0</th><th>Tempo di estrazione</th><th>Primo assaggio</th><th>Come prepararla e usarla</th></tr></thead><tbody>' +
       righe + '</tbody></table><p style="font-size:12px;color:#555;">Stime orientative: da validare con assaggi.</p>';
-    window.print();
+    stampaHtml(corpo, 'Preparazione infusi');
   });
   calcola();
 })();
