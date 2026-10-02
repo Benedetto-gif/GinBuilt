@@ -1341,12 +1341,12 @@ footer.note{
   </header>
 
   <nav class="tabs">
-    <button data-tab="home" class="active">🏠 Inizio</button>
+    <button data-tab="home" class="active">🏠 Pagina iniziale</button>
     <button data-tab="storia">📖 Storia del gin</button>
     <button data-tab="builder">🎯 Gin Builder</button>
     <button data-tab="compat">🧬 Compatibilità</button>
     <button data-tab="ridondanza">⚠️ Anti-ridondanza</button>
-    <button data-tab="infusi">🧫 Infusi</button>
+    <button data-tab="infusi">🧫 Preparazione infuso</button>
     <button data-tab="prove">🧪 Schede di prova</button>
     <button data-tab="libreria">🌿 Botaniche</button>
     <button data-tab="vocabolario">📚 Vocabolario</button>
@@ -1388,29 +1388,27 @@ footer.note{
         <circle class="dot" cx="24" cy="7" r="2.8" fill="currentColor" stroke="none"/>
       </svg></div>
         <h3>Gin Builder</h3>
-        <p>Scegli uno stile e componi la struttura per ruoli: base, legante, freschezza, firma.
-          È il punto di partenza di ogni ricetta.</p>
+        <p>Scegli uno stile e componi la struttura per ruoli: base, freschezza, identità, cuore, firma, rifinitura.
+          Compatibilità e ridondanze ti vengono segnalate lì.</p>
       </div>
-      <div class="home-card" data-goto="compat" style="--c:var(--c-marino)">
-        <div class="hc-icon"><svg viewBox="0 0 48 48" class="anim anim-venn" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-        <ellipse class="lens" cx="24" cy="24" rx="5" ry="10.5" fill="currentColor" stroke="none" opacity="0"/>
-        <circle class="c1" cx="19" cy="24" r="11"/>
-        <circle class="c2" cx="29" cy="24" r="11"/>
-      </svg></div>
-        <h3>Compatibilità</h3>
-        <p>Due botaniche alla volta: sinergia, convivenza da dosare o conflitto.
-          Da consultare prima di aggiungere un ingrediente nuovo.</p>
+      <div class="home-card" data-goto="infusi" style="--c:var(--c-marino)">
+        <div class="hc-icon"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8 H30 M20 8 V14 C13 18 11 24 11 31 C11 38 15 41 24 41 C33 41 37 38 37 31 C37 24 35 18 28 14 V8"/>
+          <path d="M12 29 C18 27 30 31 36 28" opacity=".6"/>
+          <circle cx="20" cy="34" r="1.6" fill="currentColor" stroke="none"/><circle cx="27" cy="35" r="1.3" fill="currentColor" stroke="none"/>
+        </svg></div>
+        <h3>Preparazione infuso</h3>
+        <p>Imposti temperatura e volume: per ogni botanica trovi gradazione, tempo di macerazione,
+          quantità e diluizione.</p>
       </div>
-      <div class="home-card" data-goto="ridondanza" style="--c:var(--c-speziato)">
-        <div class="hc-icon"><svg viewBox="0 0 48 48" class="anim anim-dup" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-        <circle class="d d1" cx="13" cy="24" r="6" fill="currentColor" stroke="none"/>
-        <circle class="d d2" cx="24" cy="24" r="6" fill="currentColor" stroke="none" opacity=".55"/>
-        <circle class="d d3" cx="35" cy="24" r="6" fill="currentColor" stroke="none"/>
-        <path class="slash" d="M17 31 L31 17"/>
-      </svg></div>
-        <h3>Anti-ridondanza</h3>
-        <p>Chi somiglia a chi, cosa si può sostituire e cosa è meglio non accumulare.
-          Serve a togliere, non ad aggiungere.</p>
+      <div class="home-card" data-goto="prove" data-scroll="calc-box" style="--c:var(--c-speziato)">
+        <div class="hc-icon"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M24 7 C24 7 12 21 12 29 A12 12 0 0 0 36 29 C36 21 24 7 24 7 Z"/>
+          <path d="M18 31 H30 M24 25 V37" opacity=".7"/>
+        </svg></div>
+        <h3>Diluizione dell'alcol</h3>
+        <p>Quanto alcol e quanta acqua demineralizzata, in ml e in grammi, per arrivare
+          alla gradazione che vuoi.</p>
       </div>
       <div class="home-card" data-goto="prove" style="--c:var(--c-siciliano)">
         <div class="hc-icon"><svg viewBox="0 0 48 48" class="anim anim-beaker" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
@@ -1879,7 +1877,7 @@ footer.note{
         <p>Le schede restano su questo dispositivo: non vengono inviate da nessuna parte.</p>
       </div>
     </details>
-    <div class="calc-box">
+    <div class="calc-box" id="calc-box">
       <h3>Calcolatore diluizione alcol</h3>
       <div class="calc-row">
         <label>Grado di partenza (°)<input type="number" id="calc-from" value="96" step="0.1"></label>
@@ -2258,9 +2256,11 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
+  const IN_HOME = ['storia', 'builder', 'infusi', 'prove', 'libreria', 'cocktail'];   // già raggiungibili dalla prima pagina
   btns.forEach((b, i) => {
+    if (IN_HOME.indexOf(b.dataset.tab) >= 0) return;
     const t = b.textContent.trim(), sp = t.indexOf(' '), ic = t.slice(0, sp), lab = t.slice(sp + 1);
-    const el = document.createElement('button'); el.type = 'button'; el.className = 'menu-tile' + (['home', 'builder'].indexOf(b.dataset.tab) >= 0 ? ' wide' : '');
+    const el = document.createElement('button'); el.type = 'button'; el.className = 'menu-tile' + (b.dataset.tab === 'home' ? ' wide' : '');
     el.dataset.tab = b.dataset.tab; el.style.setProperty('--h', HUES[i % HUES.length]);
     el.innerHTML = '<span class="mt-ic">' + ic + '</span><span class="mt-l">' + lab + '</span>';
     el.addEventListener('click', () => { showTab(b.dataset.tab); chiudi(); });
@@ -2272,13 +2272,17 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   document.addEventListener('keydown', e => { if (e.key === 'Escape') chiudi(); });
   function aggiorna(name){
     pop.querySelectorAll('.menu-tile').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
-    const b = btns.find(x => x.dataset.tab === name); if (b) cur.textContent = b.textContent.trim();
+    const b = btns.find(x => x.dataset.tab === name); if (b) cur.textContent = 'Menu · ' + b.textContent.trim();
   }
   const orig = showTab; window.showTab = function(name){ orig(name); aggiorna(name); };
   const att = btns.find(x => x.classList.contains('active')); aggiorna(att ? att.dataset.tab : 'home');
 })();
 document.querySelectorAll('[data-goto]').forEach(el => {
-  el.addEventListener('click', () => showTab(el.dataset.goto));
+  el.addEventListener('click', () => {
+    showTab(el.dataset.goto);
+    const t = el.dataset.scroll && document.getElementById(el.dataset.scroll);
+    if (t){ t.style.scrollMarginTop = '84px'; const v = () => t.scrollIntoView({ block: 'start' }); setTimeout(v, 60); setTimeout(v, 520); }  // di nuovo dopo che l'intestazione si è compattata
+  });
 });
 
 // ---------- Libreria ----------
