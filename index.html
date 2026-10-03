@@ -814,6 +814,7 @@ input:focus, select:focus, textarea:focus{
 .cond-label{font-size:11.5px;font-weight:800;color:var(--ochre);text-transform:uppercase;letter-spacing:.08em;align-self:center;}
 .cond-box label{display:flex;flex-direction:column;gap:6px;font-size:11px;color:var(--ink-faint);font-weight:650;text-transform:uppercase;letter-spacing:.06em;}
 .cond-box input{width:92px;padding:9px 12px;}
+.cond-box label #inf-abv-range{display:block;font-size:11px;color:var(--ochre);text-transform:none;font-weight:650;letter-spacing:0;margin-top:2px;}
 .cond-hint{font-size:12.5px;color:var(--ink-faint);flex:1;min-width:210px;align-self:center;}
 
 /* Riquadri informativi */
@@ -2289,7 +2290,7 @@ footer.note{
       <div class="howto-body">
         <p>Pagina di lavoro per preparare gli infusi, una botanica alla volta. L'elenco non resta esteso: scrivi il nome nella casella di ricerca e si apre solo la scheda di quella botanica, tutte le altre restano chiuse. Restano visibili solo il quadro delle condizioni e la scheda trovata.</p>
         <ol>
-          <li>Imposta la temperatura di conservazione (al buio) e il volume di infuso che vuoi ottenere. Per ogni botanica trovi quanto alcol di partenza e quanta acqua demineralizzata (in ml o in grammi) servono per arrivare al grado di estrazione. Per impostazione predefinita gradazione e tempo sono quelli consigliati per ciascuna botanica; togliendo la spunta a «Grado consigliato per botanica» scegli tu sia il grado dell'alcol di partenza sia il grado di estrazione desiderato, e il tempo si corregge anche in base a quanto il grado scelto si allontana da quello ottimale per la famiglia della botanica.</li>
+          <li>Imposta la temperatura di conservazione (al buio), il volume di infuso che vuoi ottenere, l'alcol di partenza e il grado di estrazione desiderato: la diluizione (alcol + acqua), il tempo e gli avvisi si ricalcolano subito a ogni modifica. Accanto alla casella del grado di estrazione trovi il range consigliato in erbario per la botanica scelta; più ti allontani da quel range, più il tempo di macerazione si corregge e, se superi le soglie di sicurezza, compare un avviso sul rischio di estrarre sostanze indesiderate (resine, tannini, amari).</li>
           <li>La scheda trovata dà i grammi da mettere, il tempo di estrazione e le <strong>molecole aromatiche dell'erbario</strong> che l'estrazione punta a portare in soluzione.</li>
           <li>Scegli lo <strong>Stato</strong>: fresca (appena raccolta) o secca. Peso e tempo si ricalcolano; con «Stato delle botaniche» li imposti tutti insieme. Le botaniche fresche portano acqua e abbassano un po' la gradazione.</li>
           <li>Leggi la colonna <strong>Come prepararla e usarla</strong>: dice come trattare la botanica e a cosa si riferisce il peso (senza altra indicazione, botanica secca).</li>
@@ -2329,9 +2330,8 @@ footer.note{
       <span class="cond-label">Condizioni:</span>
       <label>Temperatura di conservazione, al buio (°C)<input type="number" id="inf-temp" value="20" step="1" min="0" max="60"></label>
       <label>Volume di infuso da ottenere (ml)<input type="number" id="inf-vol" value="100" step="10" min="10"></label>
-      <label class="inf-ott-label" style="flex-direction:row;align-items:center;gap:8px;text-transform:none;font-weight:650;font-size:13px;"><input type="checkbox" id="inf-ott" checked style="width:auto;"> Grado consigliato per botanica</label>
-      <label id="inf-abvS-wrap" hidden>Alcol di partenza (°)<input type="number" id="inf-abvS" value="96" step="0.5" min="40" max="96"></label>
-      <label id="inf-abv-wrap" hidden>Grado di estrazione desiderato (%)<input type="number" id="inf-abv" value="43" step="1" min="20" max="96"></label>
+      <label>Alcol di partenza (°)<input type="number" id="inf-abvS" value="96" step="0.5" min="40" max="96"></label>
+      <label>Grado di estrazione desiderato (%)<input type="number" id="inf-abv" value="43" step="1" min="20" max="96"><span class="inf-sub" id="inf-abv-range"></span></label>
       <input type="hidden" id="inf-mod" value="tempo">
       <label>Stato delle botaniche
         <select id="inf-stato"><option value="ref">Come da libreria</option><option value="secco">Tutte secche</option><option value="fresco">Tutte fresche</option></select>
@@ -4456,15 +4456,9 @@ function infusoRiga(d, abv, temp, vol, mod, stato, ott, abvS){
 (function(){
   const $ = id => document.getElementById(id);
   const iAbv = $('inf-abv'), iAbvS = $('inf-abvS'), iTemp = $('inf-temp'), iVol = $('inf-vol'), iMod = $('inf-mod'),
-        iCat = $('inf-cat'), iQ = $('inf-q'), iOtt = $('inf-ott'), body = $('inf-body'), info = $('inf-info'), cnt = $('inf-count'),
-        wAbv = $('inf-abv-wrap'), wAbvS = $('inf-abvS-wrap');
+        iCat = $('inf-cat'), iQ = $('inf-q'), body = $('inf-body'), info = $('inf-info'), cnt = $('inf-count'),
+        abvRange = $('inf-abv-range');
   if (!body) return;
-  function syncModo(){
-    const manuale = !iOtt.checked;
-    if (wAbv) wAbv.hidden = !manuale;
-    if (wAbvS) wAbvS.hidden = !manuale;
-  }
-  syncModo();
   uniqueSorted(MASTER.map(d => d.categoria)).forEach(c => {
     const o = document.createElement('option'); o.value = c; o.textContent = c; iCat.appendChild(o);
   });
@@ -4476,17 +4470,15 @@ function infusoRiga(d, abv, temp, vol, mod, stato, ott, abvS){
   function leggi(){
     const t = parseFloat(iTemp.value);
     return { abv: parseFloat(iAbv.value) || REF_ABV, abvS: parseFloat(iAbvS.value) || ALCOL_PARTENZA, temp: isNaN(t) ? REF_TEMP : t,
-             vol: parseFloat(iVol.value) || 100, mod: iMod.value, ott: !!(iOtt && iOtt.checked) };
+             vol: parseFloat(iVol.value) || 100, mod: iMod.value, ott: false };
   }
   function calcola(){
     const c = leggi(), q = iQ.value.trim().toLowerCase(), cat = iCat.value;
     visibili = MASTER.filter(d => !cat || d.categoria === cat).slice().sort((x, y) => x.botanica.localeCompare(y.botanica, 'it'))
       .map(d => ({ d, r: infusoRiga(d, c.abv, c.temp, c.vol, c.mod, statoDi(d), c.ott, c.abvS) }));
-    let html = c.ott
-      ? '<div class="adj-box">Gradazione e tempo derivano dalla botanica scelta; qui indichi la temperatura di conservazione e il volume di infuso che vuoi ottenere. Il tempo consigliato si corregge con la temperatura (raddoppia ogni 10 °C in meno, dimezza ogni 10 °C in più). La diluizione è calcolata con alcol a ' + c.abvS + '% vol e acqua demineralizzata potabile a 20 °C, tenendo conto della contrazione di volume: per l\u2019acqua usa i ml o i grammi, sono quasi uguali.</div>'
-      : '<div class="adj-box">Stai scegliendo tu il grado di estrazione (' + c.abv + '% vol) e il grado dell\u2019alcol di partenza (' + c.abvS + '% vol). Il tempo si corregge sia con la temperatura sia con quanto il grado scelto si allontana da quello di riferimento (43% vol): più ti allontani, più il tempo cambia, secondo la famiglia della botanica. Controlla i \u201climiti della gradazione\u201d di ogni scheda per evitare di estrarre sostanze indesiderate.</div>';
+    let html = '<div class="adj-box">Diluizione, dose e tempo si ricalcolano subito in base alla temperatura, all\u2019alcol di partenza (' + c.abvS + '% vol) e al grado di estrazione desiderato (' + c.abv + '% vol) che hai inserito: più il grado scelto si allontana da quello consigliato in erbario (lo trovi accanto alla casella del grado), più il tempo di macerazione cambia, secondo la famiglia della botanica. La diluizione tiene conto della contrazione di volume: per l\u2019acqua usa i ml o i grammi, sono quasi uguali. Controlla anche i \u201climiti della gradazione\u201d di ogni scheda, per evitare di estrarre sostanze indesiderate.</div>';
     if (c.temp < 15 || c.temp > 35) html += '<div class="warn-box">Temperatura fuori dall\u2019intervallo di lavoro previsto (15–35 °C): la stima \u00e8 meno affidabile.</div>';
-    if (!c.ott && c.abv >= c.abvS) html += '<div class="warn-box">Il grado di estrazione desiderato deve essere pi\u00f9 basso del grado dell\u2019alcol di partenza: con l\u2019acqua si pu\u00f2 solo abbassare il grado, non alzarlo.</div>';
+    if (c.abv >= c.abvS) html += '<div class="warn-box">Il grado di estrazione desiderato deve essere pi\u00f9 basso del grado dell\u2019alcol di partenza: con l\u2019acqua si pu\u00f2 solo abbassare il grado, non alzarlo.</div>';
     info.innerHTML = html;
     body.innerHTML = '';
     renderSelezione(c);
@@ -4500,7 +4492,7 @@ function infusoRiga(d, abv, temp, vol, mod, stato, ott, abvS){
     const riass = r.est ? estAbvTxt(r.est.a) + ' \u00b7 ' + estTempoTxt(r.est.t) : t;
     const lim = estLimiti(d);
     let gradWarn = '';
-    if (!c.ott && lim){
+    if (lim){
       if (c.abv > lim.m) gradWarn = '<div class="warn-box">\u26a0\ufe0f Hai impostato ' + c.abv + '% vol, sopra la soglia di sicurezza di ' + lim.m + '% vol per ' + d.botanica + ': ' + lim.altoTxt + '.</div>';
       else if (c.abv < lim.basso) gradWarn = '<div class="warn-box">\u26a0\ufe0f Hai impostato ' + c.abv + '% vol, sotto la soglia minima di ' + lim.basso + '% vol per ' + d.botanica + ': ' + lim.bassoTxt + '.</div>';
     }
@@ -4537,15 +4529,15 @@ function infusoRiga(d, abv, temp, vol, mod, stato, ott, abvS){
       body.innerHTML = '<div class="inf-empty">' + (q
         ? 'Nessuna botanica trovata per \u00ab' + q.replace(/[<>&]/g, '') + '\u00bb.'
         : 'Scrivi il nome di una botanica per aprirne la scheda.') + '</div>';
+      if (abvRange) abvRange.textContent = '';
       return;
     }
     cnt.textContent = '1 / ' + visibili.length + ' botaniche';
     body.innerHTML = cardHtml(match.d, match.r, c);
+    if (abvRange) abvRange.textContent = match.r.est ? ('Consigliato in erbario: ' + estAbvTxt(match.r.est.a)) : '';
   }
   [iAbv, iAbvS, iTemp, iVol, iMod, iCat].forEach(el => el.addEventListener('input', calcola));
   iQ.addEventListener('input', () => renderSelezione(leggi()));
-  if (iOtt) iOtt.addEventListener('change', () => { syncModo(); calcola(); });
-  if (iOtt) iOtt.addEventListener('change', () => { syncModo(); calcola(); });
   iSt.addEventListener('change', () => {
     MASTER.forEach(d => { if (iSt.value === 'ref') delete statoMap[d.id]; else statoMap[d.id] = iSt.value; });
     calcola();
