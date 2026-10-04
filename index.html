@@ -512,6 +512,7 @@ section.panel.active{display:block;animation:panelIn .34s var(--ease) both;}
   background:var(--paper);border:1px solid var(--line);
   border-radius:var(--r-lg);box-shadow:var(--sh-3);
   padding:28px 30px;max-width:460px;width:100%;
+  max-height:86vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
   animation:sheetIn .28s var(--ease) both;
 }
 .avviso-icona{font-size:30px;line-height:1;margin-bottom:12px;}
@@ -804,6 +805,8 @@ input:focus, select:focus, textarea:focus{
   box-shadow:0 0 0 3.5px color-mix(in srgb, var(--juniper) 18%, transparent);
 }
 .controls input[type=text]{min-width:230px;flex:1;}
+.inf-q-label{flex:1;min-width:230px;}
+.inf-q-label input[type=text]{width:100%;}
 .controls label{font-size:11.5px;color:var(--ink-faint);display:flex;flex-direction:column;gap:6px;font-weight:650;text-transform:uppercase;letter-spacing:.06em;}
 .count-tag{font-size:13.5px;color:var(--ink-faint);margin-left:auto;font-variant-numeric:tabular-nums;}
 
@@ -811,6 +814,28 @@ input:focus, select:focus, textarea:focus{
   display:flex;align-items:flex-end;gap:18px;flex-wrap:wrap;
   padding:18px 22px;margin-bottom:24px;
 }
+.cond-compact{
+  display:grid;grid-template-columns:repeat(2,minmax(110px,1fr));
+  gap:8px 14px;padding:12px 16px;margin-bottom:14px;align-items:start;
+}
+.cond-compact .cond-label{grid-column:1/-1;margin-bottom:-2px;}
+.cond-compact label{gap:3px;font-size:10.5px;}
+.cond-compact input, .cond-compact select{width:100%;padding:7px 10px;}
+@media (min-width:560px){ .cond-compact{grid-template-columns:repeat(3,minmax(110px,1fr));} }
+
+.num-stepper{display:flex;align-items:stretch;gap:4px;}
+.num-stepper input{flex:1;min-width:0;text-align:center;}
+.num-step-btn{
+  width:32px;min-width:32px;flex:0 0 auto;
+  border:1px solid var(--line-strong);border-radius:var(--r-sm);
+  background:var(--surface);color:var(--ink-soft);
+  font-size:17px;font-weight:700;line-height:1;padding:0;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;user-select:none;
+}
+.num-step-btn:active{background:var(--ochre);color:#fff;border-color:var(--ochre);}
+@media (hover:hover){ .num-step-btn:hover{border-color:var(--juniper);color:var(--ink);} }
+.num-stepper input::-webkit-outer-spin-button, .num-stepper input::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
+.num-stepper input[type=number]{ -moz-appearance:textfield; }
 .cond-label{font-size:11.5px;font-weight:800;color:var(--ochre);text-transform:uppercase;letter-spacing:.08em;align-self:center;}
 .cond-box label{display:flex;flex-direction:column;gap:6px;font-size:11px;color:var(--ink-faint);font-weight:650;text-transform:uppercase;letter-spacing:.06em;}
 .cond-box input{width:92px;padding:9px 12px;}
@@ -1619,6 +1644,7 @@ footer.note{
           <option value="5">5+</option><option value="7">7+</option><option value="9">9+</option>
         </select>
       </label>
+      <button class="ghost-btn" id="lib-print" type="button">🖨️ Stampa elenco</button>
       <span class="count-tag" id="count-tag"></span>
     </div>
         <details class="howto" id="gradaz-lib">
@@ -2223,7 +2249,8 @@ footer.note{
         <ol>
           <li>Scegli uno stile fra i pulsanti colorati: ciascuno propone un'intensità target e una serie di ruoli da riempire.</li>
           <li>Per ogni ruolo — base, freschezza, identità, cuore, firma, rifinitura — seleziona la botanica che vuoi provare.
-            Il suggerimento accanto al nome del ruolo indica le scelte più comuni.</li>
+            Il suggerimento accanto al nome del ruolo indica le scelte più comuni.
+            <button type="button" class="ghost-btn" id="ruoli-def-btn" style="display:block;margin-top:8px;">📖 Definizioni dei ruoli</button></li>
           <li>Controlla i messaggi in fondo. Quelli azzurri ricordano che lo stile stesso prevede più botaniche
             della stessa famiglia — uno stile Floreale nasce dall'accostamento di più fiori, è il suo carattere.
             Quelli arancioni segnalano invece un accumulo oltre a quanto previsto, o una coppia a rischio.</li>
@@ -2288,31 +2315,17 @@ footer.note{
     <details class="howto">
       <summary>Come si usa</summary>
       <div class="howto-body">
-        <p>Pagina di lavoro per preparare gli infusi, una botanica alla volta. L'elenco non resta esteso: scrivi il nome nella casella di ricerca e si apre solo la scheda di quella botanica, tutte le altre restano chiuse. Restano visibili solo il quadro delle condizioni e la scheda trovata.</p>
+        <p>Pagina di lavoro per preparare gli infusi, una botanica alla volta. L'elenco non resta esteso: scrivi il nome nella casella di ricerca e si apre solo la scheda di quella botanica, tutte le altre restano chiuse.</p>
         <ol>
-          <li>Imposta la temperatura di conservazione (al buio), il volume di infuso che vuoi ottenere, l'alcol di partenza e il grado di estrazione desiderato: la diluizione (alcol + acqua), il tempo e gli avvisi si ricalcolano subito a ogni modifica. Accanto alla casella del grado di estrazione trovi il range consigliato in erbario per la botanica scelta; più ti allontani da quel range, più il tempo di macerazione si corregge e, se superi le soglie di sicurezza, compare un avviso sul rischio di estrarre sostanze indesiderate (resine, tannini, amari).</li>
-          <li>La scheda trovata dà i grammi da mettere, il tempo di estrazione e le <strong>molecole aromatiche dell'erbario</strong> che l'estrazione punta a portare in soluzione.</li>
+          <li>Cerca e apri la scheda della botanica: trovi subito la sua <strong>gradazione consigliata in erbario</strong>.</li>
+          <li>Nel quadro delle variabili imposta temperatura di conservazione (al buio), alcol di partenza, grado di estrazione desiderato e volume di infuso da ottenere: diluizione (alcol + acqua), dose, tempo e avvisi si ricalcolano subito a ogni modifica. Accanto alla casella del grado di estrazione trovi il range consigliato per la botanica aperta; più ti allontani da quel range, più il tempo di macerazione si corregge e, se superi le soglie di sicurezza, compare un avviso sul rischio di estrarre sostanze indesiderate (resine, tannini, amari).</li>
+          <li>La scheda dà i grammi da mettere, il tempo di estrazione e le <strong>molecole aromatiche dell'erbario</strong> che l'estrazione punta a portare in soluzione.</li>
           <li>Scegli lo <strong>Stato</strong>: fresca (appena raccolta) o secca. Peso e tempo si ricalcolano; con «Stato delle botaniche» li imposti tutti insieme. Le botaniche fresche portano acqua e abbassano un po' la gradazione.</li>
           <li>Leggi la colonna <strong>Come prepararla e usarla</strong>: dice come trattare la botanica e a cosa si riferisce il peso (senza altra indicazione, botanica secca).</li>
           <li>Assaggia al <strong>primo assaggio</strong> e poi a intervalli: gli estremi dell'intervallo sono limiti, non obiettivi.</li>
-          <li>Le dosi sono per un infuso concentrato, da miscelare a percentuale nelle Schede di prova.</li>
+          <li>Le dosi sono per un infuso concentrato, da miscelare a percentuale nelle Schede di prova. Il pulsante di stampa riguarda solo la botanica aperta; per stampare l'elenco intero vai alla pagina Botaniche.</li>
         </ol>
         <p>I fattori sono stime orientative, uguali a quelle della Libreria: vanno tarate con assaggi.</p>
-      </div>
-    </details>
-        <details class="howto" id="gradaz-inf">
-      <summary>Come scegliere la gradazione di una botanica</summary>
-      <div class="howto-body">
-        <p>Il criterio è la polarità delle sostanze che vuoi estrarre e l'acqua contenuta nella botanica. L'etanolo concentrato estrae meglio le molecole lipofile (oli essenziali, resine, terpeni); l'acqua della miscela favorisce zuccheri, acidi, tannini e sali. <strong>La gradazione più alta non è automaticamente la migliore.</strong> Gli intervalli sono punti di partenza: contano anche lo stato fresco o secco, la finezza dei pezzi e il tempo.</p>
-        <ul>
-          <li><strong>60–70% vol.</strong> estrazione aromatica ampia ed equilibrata.</li>
-          <li><strong>80–95% vol.</strong> per privilegiare oli essenziali, resine e note molto lipofile; l'estratto è concentrato e si intorbida facilmente alla diluizione (per le scorze di agrumi, spesso è più pratico lavorare intorno al 60–70% e poi diluire).</li>
-          <li><strong>40–50% vol.</strong> per estrarre anche una parte delle sostanze idrosolubili, con un profilo più «tintorio» e meno solo aromatico.</li>
-        </ul>
-        <p><strong>Perché l'alcol a 96% non è sempre ideale.</strong> Estrae di più cere, resine, pigmenti e componenti amare; può rendere l'estratto aggressivo o sbilanciato; estrae meno bene le sostanze che hanno bisogno d'acqua; alla diluizione può dare opalescenza o precipitazione degli oli; sulle botaniche fresche disidrata in fretta la superficie e rallenta la penetrazione. Per questo, di solito, una gradazione intermedia (50–70%) è il compromesso migliore: anche per la vaniglia i risultati migliori sono riportati intorno al 50%.</p>
-        <p><strong>L'acqua della pianta.</strong> Una botanica fresca contiene già acqua e abbassa il grado effettivo del macerato (100 g di pianta fresca possono contenere circa 70 g di acqua). Con materia fresca e molto acquosa, in grande quantità, può servire partire da 70–80%; ma alle dosi del gin (pochi grammi per 100 ml) l'acqua della pianta abbassa il grado di appena 1–3 punti; con materia secca bastano spesso 50–65%; con radici, semi, resine e scorze secche si può salire verso 70–90% secondo il risultato voluto, ma per il gin conviene restare sul lato prudente: l'app propone per ogni botanica un valore e una soglia da non superare.</p>
-        <p><strong>Metodo sperimentale per una botanica nuova.</strong> Prepara tre piccoli campioni identici a <strong>40%, 60% e 80%</strong> (la scheda di ogni botanica negli Infusi calcola alcol e acqua per i tre campioni). Tieni uguali peso della botanica, rapporto botanica/alcol (per esempio 1 parte di secca ogni 5–10 di alcol), dimensione dei pezzi, tempo, temperatura, agitazione e filtrazione. Poi confronta intensità e qualità dell'aroma, amaro o astringenza, colore, limpidezza dopo la diluizione e stabilità dopo alcuni giorni. Con botaniche molto intense (chiodo di garofano, cannella, assenzio, scorze amare) riduci il tempo prima ancora di cambiare la gradazione.</p>
-        <p><strong>In sintesi:</strong> oli essenziali e resine 70–90%; estratto aromatico equilibrato 55–70%; anche zuccheri, acidi, tannini e idrosolubili 35–55%; se non sai quale frazione prevalga, confronta 40, 60 e 80%. Usa solo etanolo di grado alimentare, mai alcol denaturato o solventi tecnici. Se l'estratto deve entrare in un gin a 35–45% vol., controlla sempre la <strong>limpidezza dopo la diluizione</strong>: è spesso questo test, più della gradazione iniziale, a dire se il solvente era giusto.</p>
       </div>
     </details>
     <details class="howto" id="solub-inf">
@@ -2326,25 +2339,24 @@ footer.note{
         <p><strong>Più forte non è meglio.</strong> Un solvente troppo forte non estrae solo gli aromi buoni: trascina anche resine, cere, clorofilla e amari duri, che danno note di trementina, di erba tagliata o di amaro. Un solvente troppo debole lascia gli oli nella botanica e porta tannini e acqua. Per questo ogni botanica ha una gradazione consigliata, una soglia oltre cui evitare di salire e il relativo tempo di macerazione; nelle schede trovi cosa succede oltre e sotto quei limiti. I valori sono stime di partenza: affinali con le tue tarature e con gli assaggi.</p>
       </div>
     </details>
-    <div class="cond-box">
-      <span class="cond-label">Condizioni:</span>
+    <div class="controls">
+      <label class="inf-q-label">Cerca la botanica da infondere<input type="text" id="inf-q" placeholder="Scrivi il nome o la prima lettera…" /></label>
+      <span class="count-tag" id="inf-count"></span>
+    </div>
+    <div class="inf-list" id="inf-body"></div>
+    <div class="cond-box cond-compact">
+      <span class="cond-label">Variabili:</span>
       <label>Temperatura di conservazione, al buio (°C)<input type="number" id="inf-temp" value="20" step="1" min="0" max="60"></label>
-      <label>Volume di infuso da ottenere (ml)<input type="number" id="inf-vol" value="100" step="10" min="10"></label>
       <label>Alcol di partenza (°)<input type="number" id="inf-abvS" value="96" step="0.5" min="40" max="96"></label>
-      <label>Grado di estrazione desiderato (%)<input type="number" id="inf-abv" value="43" step="1" min="20" max="96"><span class="inf-sub" id="inf-abv-range"></span></label>
+      <label>Grado di estrazione desiderato (%)<input type="number" id="inf-abv" placeholder="consigliato" step="1" min="20" max="96"><span class="inf-sub" id="inf-abv-range"></span></label>
+      <label>Volume di infuso da ottenere (ml)<input type="number" id="inf-vol" value="100" step="25" min="10"></label>
       <input type="hidden" id="inf-mod" value="tempo">
       <label>Stato delle botaniche
         <select id="inf-stato"><option value="ref">Come da libreria</option><option value="secco">Tutte secche</option><option value="fresco">Tutte fresche</option></select>
       </label>
     </div>
-    <div class="controls">
-      <input type="text" id="inf-q" placeholder="Scrivi la lettera: l'elenco ci porta lì…" />
-      <label>Famiglia<select id="inf-cat"><option value="">Tutte</option></select></label>
-      <button class="ghost-btn" id="inf-print" type="button">🖨️ Stampa elenco</button>
-      <span class="count-tag" id="inf-count"></span>
-    </div>
     <div id="inf-info"></div>
-    <div class="inf-list" id="inf-body"></div>
+    <div style="margin-top:14px;"><button class="ghost-btn" id="inf-print" type="button">🖨️ Stampa scheda</button></div>
   </section>
 
   <!-- SCHEDE DI PROVA -->
@@ -2977,12 +2989,12 @@ uniqueSorted(MASTER.map(d=>d.carattere)).forEach(c=>{
   const o = document.createElement('option'); o.value=c; o.textContent=c; fCarattere.appendChild(o);
 });
 
-function renderGrid(){
+function elencoFiltrato(){
   const q = searchInput.value.trim().toLowerCase();
   const cat = fCategoria.value;
   const car = fCarattere.value;
   const pot = parseInt(fPotenza.value, 10);
-  const filtered = MASTER.filter(d => {
+  return MASTER.filter(d => {
     if (cat && d.categoria !== cat) return false;
     if (car && d.carattere !== car) return false;
     if (pot && (d.potenza10 || 0) < pot) return false;
@@ -2990,6 +3002,9 @@ function renderGrid(){
     if (q && !(d.botanica.toLowerCase().includes(q) || (d.profilo||'').toLowerCase().includes(q))) return false;
     return true;
   });
+}
+function renderGrid(){
+  const filtered = elencoFiltrato();
   countTag.textContent = filtered.length + ' / ' + MASTER.length + ' botaniche';
   grid.innerHTML = '';
   const aggiungi = d => {
@@ -3095,6 +3110,24 @@ function chiudiDetail(){
 
 [searchInput, fCategoria, fCarattere, fPotenza, fOrdine, fStile].forEach(el => el.addEventListener('input', renderGrid));
 renderGrid();
+const libPrint = document.getElementById('lib-print');
+if (libPrint) libPrint.addEventListener('click', () => {
+  const abv = parseFloat(libAbvInput.value) || REF_ABV, temp = parseFloat(libTempInput.value) || REF_TEMP;
+  const isRef = (abv === REF_ABV && temp === REF_TEMP);
+  const lista = ordinaBotaniche(elencoFiltrato()).filter(x => x.gruppo === undefined);
+  const righe = lista.map(d => {
+    const ds = DOSE[d.botanica] || {}, baseTempo = ds.tempo || d.tempo || '', baseDose = ds.test ?? d.dose;
+    const dose = isRef ? (ds.test ?? d.dose ?? '—') : (adjustedDose(baseDose, abv, temp, d.categoria) ?? (ds.test ?? d.dose ?? '—'));
+    const tempo = isRef ? (baseTempo || '—') : (adjustedTempo(baseTempo, abv, temp, d.categoria) || '—');
+    const E = estPer(d, infRif(d));
+    return '<tr><td>' + d.botanica + '</td><td>' + d.categoria + '</td><td>' + (E ? estAbvTxt(E.a) : '—') + '</td><td>' + dose + ' g/100 ml</td><td>' + tempo + '</td></tr>';
+  }).join('');
+  const corpo = '<h2>Erbario — elenco botaniche</h2><div class="print-meta">' + lista.length + ' botaniche' +
+    (isRef ? '' : ' · dose e tempo ricalcolati a ' + abv + '%/' + temp + '°C') +
+    '</div><table><thead><tr><th>Botanica</th><th>Famiglia</th><th>Gradazione consigliata</th><th>Dose</th><th>Tempo di infusione</th></tr></thead><tbody>' +
+    righe + '</tbody></table><p style="font-size:12px;color:#555;">Stime orientative: da validare con assaggi.</p>';
+  stampaHtml(corpo, 'Erbario — elenco botaniche');
+});
 [libAbvInput, libTempInput].forEach(el => el.addEventListener('input', () => {
   if (currentDetailName) showDetail(currentDetailName);
 }));
@@ -3433,6 +3466,20 @@ document.getElementById('add-role-btn').addEventListener('click', () => {
   renderSummary();
 });
 
+document.getElementById('ruoli-def-btn').addEventListener('click', () => {
+  mostraAvviso('I sei ruoli delle botaniche',
+    '<ul>' +
+    '<li><strong>Base.</strong> Il ginepro (<em>Juniperus communis</em>) è l’ingrediente obbligatorio per legge e l’anima del gin: note balsamiche, resinose e pungenti, in dose piena. Accanto a lui il legante, come angelica o iris (giaggiolo): fissativo e spina dorsale, trattiene gli aromi volatili e dà persistenza al palato. <em>Domanda guida: se la tolgo, questo gin perde la sua identità o smette di stare in piedi?</em></li>' +
+    '<li><strong>Freschezza.</strong> Le note di testa che aprono il profilo: il coriandolo, di solito con un agrume come limone o bergamotto. Completano il ginepro con un lato speziato e agrumato. <em>Domanda guida: se la tolgo, il gin diventa più pesante o meno dissetante in apertura?</em></li>' +
+    '<li><strong>Identità.</strong> La botanica che dà carattere allo stile e, quando è legata a un luogo, al territorio: finocchio di mare, bergamotto, timo, lavanda, zenzero, iris. Si riconosce subito dopo il ginepro. <em>Domanda guida: cambiando questa botanica, cambia il tipo di gin che sto facendo?</em></li>' +
+    '<li><strong>Cuore.</strong> Il corpo centrale del profilo, le note di mezzo che danno rotondità e continuità: mirto, lentisco, cedro, cardamomo, rosmarino, sambuco. <em>Domanda guida: è una delle note che raccontano davvero che gin è, o il gin diventa più vuoto senza di lei?</em></li>' +
+    '<li><strong>Firma.</strong> La botanica fuori dal comune, magari unica o misteriosa, che rende il gin riconoscibile: elicriso, grani del paradiso, kumquat, rosa. Una sola, in dose misurata: deve farsi notare senza coprire il resto. Il ruolo è facoltativo. <em>Domanda guida: la sua presenza si nota soprattutto quando manca?</em></li>' +
+    '<li><strong>Rifinitura.</strong> Il tocco finale, in dose minima, che chiude il sorso e rifinisce la coda: timo, alloro, cannella, cardamomo, mandorla. Il ruolo è facoltativo. <em>Domanda guida: se la tolgo, il finale perde la sua coda o la sua memoria aromatica?</em></li>' +
+    '</ul>' +
+    '<p style="margin-top:10px;"><strong>Il ruolo cambia la quantità.</strong> Ogni ruolo usa una frazione della dose di riferimento della Libreria: <em>Base</em> e <em>Freschezza</em> 100%, <em>Identità</em> 80%, <em>Cuore</em> 70%, <em>Firma</em> 30%, <em>Rifinitura</em> 15% (tracce).</p>',
+    '', null);
+});
+
 function renderSummary(){
   const selects = roleList.querySelectorAll('select:not(.role-label-input)');
   const chosen = [...selects].map(s => s.value);
@@ -3542,7 +3589,8 @@ function loadTests(){
   catch(e){ return []; }
 }
 function saveTests(list){
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
+  catch(e){ alert('Non sono riuscito a salvare la scheda su questo dispositivo (memoria piena o modalità privata).'); }
 }
 let tests = loadTests();
 let currentTestId = null;
@@ -4453,15 +4501,48 @@ function infusoRiga(d, abv, temp, vol, mod, stato, ott, abvS){
   return { f, stato, K, abvEff, g: base * fd * wf * k, gmin: dmin * fd * wf * k, gmax: dmax * fd * wf * k,
            tmin, tmax, assaggio: tmin === null ? null : tmin * INF_ASSAGGIO, tempoRef: ds.tempo || d.tempo || '', est, dil: diluizione(abv, vol, abvS) };
 }
+// Aggiunge pulsanti − / + a un campo numerico, con lo scatto indicato (altrimenti quello dell'attributo step).
+// opts.emptyStart(dir), se fornita, decide da dove partire al primo tocco quando il campo è vuoto
+// (altrimenti si parte dal min/max del campo).
+function wrapStepper(input, step, opts){
+  if (!input || input.closest('.num-stepper')) return;
+  opts = opts || {};
+  const wrap = document.createElement('div');
+  wrap.className = 'num-stepper';
+  const minus = document.createElement('button');
+  minus.type = 'button'; minus.className = 'num-step-btn'; minus.setAttribute('aria-label', 'Diminuisci'); minus.textContent = '−';
+  const plus = document.createElement('button');
+  plus.type = 'button'; plus.className = 'num-step-btn'; plus.setAttribute('aria-label', 'Aumenta'); plus.textContent = '+';
+  input.parentNode.insertBefore(wrap, input);
+  wrap.appendChild(minus); wrap.appendChild(input); wrap.appendChild(plus);
+  const st = step || parseFloat(input.step) || 1;
+  const min = input.min !== '' ? parseFloat(input.min) : -Infinity;
+  const max = input.max !== '' ? parseFloat(input.max) : Infinity;
+  function bump(dir){
+    const cur = parseFloat(input.value);
+    let v;
+    if (isNaN(cur)){
+      const es = opts.emptyStart ? opts.emptyStart(dir) : null;
+      v = (es !== null && es !== undefined && !isNaN(es)) ? es : (dir > 0 ? (isFinite(min) ? min : 0) : (isFinite(max) ? max : 0));
+    } else {
+      v = cur + dir * st;
+    }
+    v = Math.min(max, Math.max(min, v));
+    v = Math.round(v * 100) / 100;
+    input.value = v;
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+  minus.addEventListener('click', () => bump(-1));
+  plus.addEventListener('click', () => bump(1));
+}
 (function(){
   const $ = id => document.getElementById(id);
   const iAbv = $('inf-abv'), iAbvS = $('inf-abvS'), iTemp = $('inf-temp'), iVol = $('inf-vol'), iMod = $('inf-mod'),
-        iCat = $('inf-cat'), iQ = $('inf-q'), body = $('inf-body'), info = $('inf-info'), cnt = $('inf-count'),
+        iQ = $('inf-q'), body = $('inf-body'), info = $('inf-info'), cnt = $('inf-count'),
         abvRange = $('inf-abv-range');
   if (!body) return;
-  uniqueSorted(MASTER.map(d => d.categoria)).forEach(c => {
-    const o = document.createElement('option'); o.value = c; o.textContent = c; iCat.appendChild(o);
-  });
+  [iTemp, iAbvS, iVol].forEach(el => wrapStepper(el));
+  wrapStepper(iAbv, 1, { emptyStart: () => (matchAttuale && matchAttuale.r && matchAttuale.r.est) ? matchAttuale.r.est.a[0] : null });
   const iSt = $('inf-stato'), statoMap = {};
   const statoDi = d => statoMap[d.id] || infRif(d);
   const selStato = (d, s) => '<select class="inf-stato" data-i="' + d.id + '"><option value="secco"' + (s === 'secco' ? ' selected' : '') +
@@ -4469,21 +4550,26 @@ function infusoRiga(d, abv, temp, vol, mod, stato, ott, abvS){
   let visibili = [];
   function leggi(){
     const t = parseFloat(iTemp.value);
-    return { abv: parseFloat(iAbv.value) || REF_ABV, abvS: parseFloat(iAbvS.value) || ALCOL_PARTENZA, temp: isNaN(t) ? REF_TEMP : t,
+    const abvRaw = iAbv.value.trim() === '' ? NaN : parseFloat(iAbv.value);
+    return { abv: isNaN(abvRaw) ? null : abvRaw, abvS: parseFloat(iAbvS.value) || ALCOL_PARTENZA, temp: isNaN(t) ? REF_TEMP : t,
              vol: parseFloat(iVol.value) || 100, mod: iMod.value, ott: false };
   }
   function calcola(){
-    const c = leggi(), q = iQ.value.trim().toLowerCase(), cat = iCat.value;
-    visibili = MASTER.filter(d => !cat || d.categoria === cat).slice().sort((x, y) => x.botanica.localeCompare(y.botanica, 'it'))
-      .map(d => ({ d, r: infusoRiga(d, c.abv, c.temp, c.vol, c.mod, statoDi(d), c.ott, c.abvS) }));
-    let html = '<div class="adj-box">Diluizione, dose e tempo si ricalcolano subito in base alla temperatura, all\u2019alcol di partenza (' + c.abvS + '% vol) e al grado di estrazione desiderato (' + c.abv + '% vol) che hai inserito: più il grado scelto si allontana da quello consigliato in erbario (lo trovi accanto alla casella del grado), più il tempo di macerazione cambia, secondo la famiglia della botanica. La diluizione tiene conto della contrazione di volume: per l\u2019acqua usa i ml o i grammi, sono quasi uguali. Controlla anche i \u201climiti della gradazione\u201d di ogni scheda, per evitare di estrarre sostanze indesiderate.</div>';
+    const c = leggi(), q = iQ.value.trim().toLowerCase();
+    visibili = MASTER.slice().sort((x, y) => x.botanica.localeCompare(y.botanica, 'it'))
+      .map(d => {
+        const est = estPer(d, statoDi(d));
+        const abvEff = c.abv !== null ? c.abv : (est ? (est.a[0] + est.a[1]) / 2 : REF_ABV);
+        return { d, r: infusoRiga(d, abvEff, c.temp, c.vol, c.mod, statoDi(d), c.ott, c.abvS) };
+      });
+    let html = '';
     if (c.temp < 15 || c.temp > 35) html += '<div class="warn-box">Temperatura fuori dall\u2019intervallo di lavoro previsto (15–35 °C): la stima \u00e8 meno affidabile.</div>';
-    if (c.abv >= c.abvS) html += '<div class="warn-box">Il grado di estrazione desiderato deve essere pi\u00f9 basso del grado dell\u2019alcol di partenza: con l\u2019acqua si pu\u00f2 solo abbassare il grado, non alzarlo.</div>';
+    if (c.abv !== null && c.abv >= c.abvS) html += '<div class="warn-box">Il grado di estrazione desiderato deve essere pi\u00f9 basso del grado dell\u2019alcol di partenza: con l\u2019acqua si pu\u00f2 solo abbassare il grado, non alzarlo.</div>';
     info.innerHTML = html;
     body.innerHTML = '';
     renderSelezione(c);
   }
-  // La scheda di una botanica, sempre aperta: è la sola che viene mostrata.
+  // La scheda di una botanica \u00e8 a comparsa (chiusa di default): restano visibili il riassunto e il quadro delle variabili.
   function cardHtml(d, r, c){
     const g = infFmtG(r.g) + ' g <span class="inf-sub">(' + infFmtG(r.gmin) + '\u2013' + infFmtG(r.gmax) + ' g)</span>';
     const t = r.tmin === null ? (r.tempoRef || '\u2014') : infRange(r.tmin, r.tmax);
@@ -4492,12 +4578,14 @@ function infusoRiga(d, abv, temp, vol, mod, stato, ott, abvS){
     const riass = r.est ? estAbvTxt(r.est.a) + ' \u00b7 ' + estTempoTxt(r.est.t) : t;
     const lim = estLimiti(d);
     let gradWarn = '';
-    if (lim){
+    if (c.abv !== null && lim){
       if (c.abv > lim.m) gradWarn = '<div class="warn-box">\u26a0\ufe0f Hai impostato ' + c.abv + '% vol, sopra la soglia di sicurezza di ' + lim.m + '% vol per ' + d.botanica + ': ' + lim.altoTxt + '.</div>';
       else if (c.abv < lim.basso) gradWarn = '<div class="warn-box">\u26a0\ufe0f Hai impostato ' + c.abv + '% vol, sotto la soglia minima di ' + lim.basso + '% vol per ' + d.botanica + ': ' + lim.bassoTxt + '.</div>';
+      else if (r.est && (c.abv < r.est.a[0] || c.abv > r.est.a[1])) gradWarn = '<div class="adj-box">\u2139\ufe0f Hai impostato ' + c.abv + '% vol, fuori dal range consigliato in erbario (' + estAbvTxt(r.est.a) + ') per ' + d.botanica + ': resta entro le soglie di sicurezza, ma non \u00e8 il grado ottimale.</div>';
     }
     const f = (k, v) => '<div class="inf-f"><div class="k">' + k + '</div><div class="v">' + v + '</div></div>';
-    return '<details class="inf-item" data-i="' + d.id + '" open><summary><span class="inf-nome"><strong>' + d.botanica + '</strong>' +
+    const apriSubito = (gradWarn || cau) ? ' open' : '';
+    return '<details class="inf-item" data-i="' + d.id + '"' + apriSubito + '><summary><span class="inf-nome"><strong>' + d.botanica + '</strong>' +
       '<span class="inf-sub">' + d.categoria + ' \u00b7 ' + (d.parte || '') + '</span></span><span class="inf-riass">' + riass + '</span></summary>' +
       '<div class="inf-corpo">' + cau + gradWarn +
       f('Stato', selStato(d, r.stato)) +
@@ -4506,6 +4594,7 @@ function infusoRiga(d, abv, temp, vol, mod, stato, ott, abvS){
       f('Quantit\u00e0 di botanica', g) + f('Tempo di estrazione', t) + f('Primo assaggio', a) +
       '<div class="inf-f inf-how"><div class="k">\ud83e\uddea Molecole aromatiche da estrarre</div><div class="v">' + (MOLECOLE[d.botanica] || 'Scheda non ancora compilata.') + '</div></div>' +
       '<div class="inf-f inf-how"><div class="k">Prova a tre gradazioni (campioni identici da ' + nf(Math.min(c.vol, 50), 0) + ' ml)</div><div class="v">' +
+        '<p style="margin:0 0 6px;">Prepara i tre campioni e assaggiali: non serve indovinare la gradazione giusta a tavolino, basta sentire come cambia l\u2019estratto. Salendo di grado inizi a percepire ' + (lim ? ('quello che succede oltre ' + lim.m + '% vol \u2014 ' + lim.altoTxt) : 'note pesanti, resinose o amare') + '; scendendo, invece, ' + (lim ? ('quello che succede sotto ' + lim.basso + '% vol \u2014 ' + lim.bassoTxt) : 'resta poco aroma e prevale l\u2019acqua') + '. Il campione che ti piace di pi\u00f9 \u00e8 la gradazione giusta per questa botanica: non \u00e8 sempre quello pi\u00f9 alto.</p>' +
         [40, 60, 80].map(gr => { const x = diluizione(gr, Math.min(c.vol, 50), c.abvS); return '<strong>' + gr + '%</strong>: ' + nf(x.alcMl, 1) + ' ml alcol ' + c.abvS + '\u00b0 + ' + nf(x.acquaG, 1) + ' g acqua'; }).join(' \u00b7 ') + '</div></div>' +
       '<div class="inf-f inf-how"><div class="k">Limiti della gradazione</div><div class="v">' + limitiEst(d) + '</div></div>' +
       '<div class="inf-f inf-how"><div class="k">Come prepararla e usarla</div><div class="v">' + comeUsare(d, r.stato, r.K, r.abvEff) + (r.est ? ' <em class="inf-est-nota">Estrazione: ' + r.est.n + '</em>' : '') + '</div></div>' +
@@ -4521,9 +4610,11 @@ function infusoRiga(d, abv, temp, vol, mod, stato, ott, abvS){
       visibili.find(x => nome(x).split(/[\s\/\-(]+/).some(w => w.startsWith(nq))) ||
       visibili.find(x => nome(x).includes(nq)) || null;
   }
+  let matchAttuale = null;
   function renderSelezione(c){
     const q = iQ.value.trim();
     const match = trovaMatch(q);
+    matchAttuale = match;
     if (!match){
       cnt.textContent = visibili.length + ' botaniche nella libreria';
       body.innerHTML = '<div class="inf-empty">' + (q
@@ -4536,8 +4627,16 @@ function infusoRiga(d, abv, temp, vol, mod, stato, ott, abvS){
     body.innerHTML = cardHtml(match.d, match.r, c);
     if (abvRange) abvRange.textContent = match.r.est ? ('Consigliato in erbario: ' + estAbvTxt(match.r.est.a)) : '';
   }
-  [iAbv, iAbvS, iTemp, iVol, iMod, iCat].forEach(el => el.addEventListener('input', calcola));
-  iQ.addEventListener('input', () => renderSelezione(leggi()));
+  [iAbv, iAbvS, iTemp, iVol, iMod].forEach(el => el.addEventListener('input', calcola));
+  iQ.addEventListener('input', () => {
+    const prevId = matchAttuale ? matchAttuale.d.id : null;
+    renderSelezione(leggi());
+    const newId = matchAttuale ? matchAttuale.d.id : null;
+    if (newId !== prevId && iAbv.value !== ''){
+      iAbv.value = '';
+      calcola();
+    }
+  });
   iSt.addEventListener('change', () => {
     MASTER.forEach(d => { if (iSt.value === 'ref') delete statoMap[d.id]; else statoMap[d.id] = iSt.value; });
     calcola();
@@ -4547,15 +4646,22 @@ function infusoRiga(d, abv, temp, vol, mod, stato, ott, abvS){
     statoMap[s.dataset.i] = s.value; calcola();
   });
   $('inf-print').addEventListener('click', () => {
-    const c = leggi();
-    const righe = visibili.map(({d, r}) => '<tr><td>' + d.botanica + ' (' + (r.stato === 'fresco' ? 'fresca' : 'secca') + ')</td><td>' + (r.est ? estAbvTxt(r.est.a) : '\u2014') + '</td><td>' + (r.dil ? nf(r.dil.alcMl, 1) + ' ml + ' + nf(r.dil.acquaMl, 1) + ' ml (' + nf(r.dil.acquaG, 1) + ' g)' : '\u2014') + '</td><td>' + infFmtG(r.g) + ' g</td><td>' +
-      (r.tmin === null ? (r.tempoRef || '\u2014') : infRange(r.tmin, r.tmax)) + '</td><td>' +
-      (r.assaggio === null ? '\u2014' : infFmt(r.assaggio) + ' h') + '</td><td>' + comeUsare(d, r.stato, r.K, r.abvEff) + '</td></tr>').join('');
-    const corpo = '<h2>Preparazione infusi</h2><div class="print-meta">' + 'Gradazione consigliata per ogni botanica \u00b7 ' + c.temp +
-      ' \u00b0C \u00b7 ' + c.vol + ' ml di infuso per botanica' +
-      '</div><table><thead><tr><th>Botanica</th><th>Gradazione</th><th>Alcol 96\u00b0 + acqua</th><th>Quantit\u00e0</th><th>Tempo di estrazione</th><th>Primo assaggio</th><th>Come prepararla e usarla</th></tr></thead><tbody>' +
-      righe + '</tbody></table><p style="font-size:12px;color:#555;">Stime orientative: da validare con assaggi.</p>';
-    stampaHtml(corpo, 'Preparazione infusi');
+    if (!matchAttuale){ alert('Cerca e apri prima la scheda di una botanica.'); return; }
+    const { d, r } = matchAttuale, c = leggi();
+    const corpo = '<h2>Preparazione infuso \u2014 ' + d.botanica + '</h2><div class="print-meta">' +
+      d.categoria + (d.parte ? ' \u00b7 ' + d.parte : '') + ' \u00b7 stato ' + (r.stato === 'fresco' ? 'fresca' : 'secca') +
+      ' \u00b7 ' + c.temp + ' \u00b0C \u00b7 alcol di partenza ' + c.abvS + '% vol \u00b7 grado di estrazione ' + (c.abv !== null ? c.abv + '% vol' : '(consigliato, ' + (r.est ? estAbvTxt(r.est.a) : '\u2014') + ')') + ' \u00b7 ' + c.vol + ' ml di infuso' +
+      '</div><table><tbody>' +
+      '<tr><th>Gradazione consigliata</th><td>' + (r.est ? estAbvTxt(r.est.a) : '\u2014') + '</td></tr>' +
+      '<tr><th>Diluizione (alcol ' + c.abvS + '\u00b0 + acqua)</th><td>' + (r.dil ? nf(r.dil.alcMl, 1) + ' ml di alcol + ' + nf(r.dil.acquaMl, 1) + ' ml di acqua (' + nf(r.dil.acquaG, 1) + ' g)' : '\u2014') + '</td></tr>' +
+      '<tr><th>Quantit\u00e0 di botanica</th><td>' + infFmtG(r.g) + ' g (' + infFmtG(r.gmin) + '\u2013' + infFmtG(r.gmax) + ' g)</td></tr>' +
+      '<tr><th>Tempo di estrazione</th><td>' + (r.tmin === null ? (r.tempoRef || '\u2014') : infRange(r.tmin, r.tmax)) + '</td></tr>' +
+      '<tr><th>Primo assaggio</th><td>' + (r.assaggio === null ? '\u2014' : (r.assaggio >= 72 ? infFmt(r.assaggio / 24) + ' giorni' : infFmt(r.assaggio) + ' h')) + '</td></tr>' +
+      '<tr><th>Molecole aromatiche da estrarre</th><td>' + (MOLECOLE[d.botanica] || 'Scheda non ancora compilata.') + '</td></tr>' +
+      '<tr><th>Come prepararla e usarla</th><td>' + comeUsare(d, r.stato, r.K, r.abvEff) + '</td></tr>' +
+      '<tr><th>Limiti della gradazione</th><td>' + limitiEst(d) + '</td></tr>' +
+      '</tbody></table><p style="font-size:12px;color:#555;">Stima orientativa: da validare con assaggi.</p>';
+    stampaHtml(corpo, 'Preparazione infuso \u2014 ' + d.botanica);
   });
   calcola();
 })();
