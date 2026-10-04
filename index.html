@@ -839,7 +839,7 @@ input:focus, select:focus, textarea:focus{
 .cond-label{font-size:11.5px;font-weight:800;color:var(--ochre);text-transform:uppercase;letter-spacing:.08em;align-self:center;}
 .cond-box label{display:flex;flex-direction:column;gap:6px;font-size:11px;color:var(--ink-faint);font-weight:650;text-transform:uppercase;letter-spacing:.06em;}
 .cond-box input{width:92px;padding:9px 12px;}
-.cond-box label #inf-abv-range{display:block;font-size:11px;color:var(--ochre);text-transform:none;font-weight:650;letter-spacing:0;margin-top:2px;}
+.cond-box label #inf-abv-range, .cond-box label #lib-abv-range{display:block;font-size:11px;color:var(--ochre);text-transform:none;font-weight:650;letter-spacing:0;margin-top:2px;}
 .cond-hint{font-size:12.5px;color:var(--ink-faint);flex:1;min-width:210px;align-self:center;}
 
 /* Riquadri informativi */
@@ -1604,10 +1604,10 @@ footer.note{
         <p>L'erbario: <span class="bot-count">84</span> botaniche con profilo aromatico, funzione nel gin, potenza, dose e tempo di infusione.</p>
         <ol>
           <li>Filtra per famiglia, carattere o potenza minima, oppure cerca per nome o per descrizione del profilo.</li>
-          <li>Tocca una scheda per aprire il dettaglio: dose operativa in grammi per 100 ml di infuso, tempo di infusione,
+          <li>Tocca una scheda per aprire il dettaglio: dose operativa in grammi per il volume scelto, tempo di infusione,
             periodo di raccolta e zone italiane in cui trovarla.</li>
-          <li>Modifica grado alcolico e temperatura nella barra "condizioni di infusione simulate": tempi e dosi si
-            ricalcolano rispetto al riferimento di 43° a 20°C.</li>
+          <li>Modifica grado alcolico, temperatura e volume nella barra "condizioni di infusione simulate": tempi e dosi si
+            ricalcolano subito, grado dopo grado, in base ai valori che imposti.</li>
           <li>Nel dettaglio trovi anche l'<strong>estrazione consigliata</strong>: la gradazione e il tempo di macerazione che rendono meglio per quella botanica (alcol più alto per resine e scorze, più basso per fiori e frutta), con il perché.</li>
           <li>Leggi sempre il riquadro <em>Da non accumulare con</em> prima di portare una botanica in ricetta.</li>
         </ol>
@@ -1662,7 +1662,7 @@ footer.note{
     </div>
     <div class="cond-box">
       <span class="cond-label">Condizioni di infusione simulate:</span>
-      <label>Grado alcolico (%)<input type="number" id="lib-abv" placeholder="consigliato" step="1" min="20" max="96"></label>
+      <label>Grado alcolico (%)<input type="number" id="lib-abv" placeholder="consigliato" step="1" min="20" max="96"><span class="inf-sub" id="lib-abv-range"></span></label>
       <label>Temperatura (°C)<input type="number" id="lib-temp" value="20" step="1" min="0" max="60"></label>
       <label>Volume di infuso da ottenere (ml)<input type="number" id="lib-vol" value="100" step="25" min="10"></label>
       <span class="cond-hint">Regola questi valori (con i tasti − / +) per vedere come cambiano tempo e dose consigliati per la botanica selezionata, grado dopo grado. Scelta una botanica, il grado alcolico parte dal minimo consigliato in erbario.</span>
@@ -3064,18 +3064,28 @@ function showDetail(name, nuovaScelta){
   const isRef = (abv === REF_ABV && temp === REF_TEMP);
   const tempWarn = (temp < 15 || temp > 35)
     ? '<div class="warn-box">Temperatura fuori dall’intervallo di lavoro previsto (15–35 °C): la stima è meno affidabile.</div>' : '';
+  const libAbvRange = document.getElementById('lib-abv-range');
+  if (libAbvRange) libAbvRange.textContent = E ? ('Consigliato in erbario: ' + estAbvTxt(E.a)) : '';
+  const lim = estLimiti(d);
+  let gradWarn = '';
+  if (lim && !isNaN(abvRaw)){
+    if (abv > lim.m) gradWarn = '<div class="warn-box">⚠️ Hai impostato ' + abv + '% vol, sopra la soglia di sicurezza di ' + lim.m + '% vol per ' + d.botanica + ': ' + lim.altoTxt + '.</div>';
+    else if (abv < lim.basso) gradWarn = '<div class="warn-box">⚠️ Hai impostato ' + abv + '% vol, sotto la soglia minima di ' + lim.basso + '% vol per ' + d.botanica + ': ' + lim.bassoTxt + '.</div>';
+    else if (E && abv > E.a[1]) gradWarn = '<div class="adj-box">ℹ️ Hai impostato ' + abv + '% vol, sopra il range consigliato in erbario (' + estAbvTxt(E.a) + ') per ' + d.botanica + ': resti entro le soglie di sicurezza, ma iniziano a comparire in parte le note che si accentuano oltre soglia (' + lim.altoTxt + ').</div>';
+    else if (E && abv < E.a[0]) gradWarn = '<div class="adj-box">ℹ️ Hai impostato ' + abv + '% vol, sotto il range consigliato in erbario (' + estAbvTxt(E.a) + ') per ' + d.botanica + ': resti entro le soglie di sicurezza, ma l’estrazione è parziale, nella direzione di ciò che succede sotto soglia (' + lim.bassoTxt + ').</div>';
+  }
   const vol = parseFloat(libVolInput.value) || 100;
   const adjTempo = adjustedTempo(baseTempo, abv, temp, d.categoria);
   const adjDose = adjustedDose(baseDose, abv, temp, d.categoria);
   const dose100 = isRef ? (ds.test ?? d.dose) : (adjDose ?? (ds.test ?? d.dose));
   const doseVolTxt = (typeof dose100 === 'number') ? nf(dose100 * vol / 100, 2) + ' g' : '—';
-  const doseLabel = (isRef ? 'Dose operativa (rif. 43°/20°C)' : `Dose operativa a ${abv}%/${temp}°C`) + ` per ${nf(vol, 0)} ml`;
+  const doseLabel = `Dose operativa a ${abv}%/${temp}°C per ${nf(vol, 0)} ml`;
   const minVolTxt = (typeof ds.min === 'number') ? nf(ds.min * vol / 100, 2) + ' g' : '—';
   const maxVolTxt = (typeof ds.max === 'number') ? nf(ds.max * vol / 100, 2) + ' g' : '—';
   const doseValue = isRef
-    ? `<strong>${doseVolTxt}</strong> <span class="est-nota">range ${minVolTxt}–${maxVolTxt} per ${nf(vol, 0)} ml</span>`
+    ? `<strong>${doseVolTxt}</strong>${(minVolTxt !== '—' || maxVolTxt !== '—') ? ` <span class="est-nota">range ${minVolTxt}–${maxVolTxt} per ${nf(vol, 0)} ml</span>` : ''}`
     : `<strong>${doseVolTxt}</strong> <span class="est-nota">a tempo di infusione invariato</span>`;
-  const tempoLabel = isRef ? 'Tempo di infusione (rif. 43°/20°C)' : `Tempo di infusione a ${abv}%/${temp}°C`;
+  const tempoLabel = `Tempo di infusione a ${abv}%/${temp}°C`;
   const tempoValue = isRef
     ? (baseTempo || '—')
     : `<strong>${adjTempo}</strong> <span class="est-nota">a dose invariata</span>`;
@@ -3100,6 +3110,8 @@ function showDetail(name, nuovaScelta){
     <div class="detail-icon">${d.icona || '🌿'}</div>
     <h3>${d.botanica}</h3>
     <div class="sub">${d.nome_botanico ? d.nome_botanico + ' · ' : ''}${d.categoria} — ${d.sottofamiglia || ''}</div>
+    ${tempWarn}
+    ${gradWarn}
     <div class="detail-grid">
       <div class="field"><div class="k">Profilo aromatico</div><div class="v">${d.profilo || '—'}</div></div>
       <div class="field"><div class="k">Direzione</div><div class="v">${d.direzione || '—'}</div></div>
@@ -3118,8 +3130,7 @@ function showDetail(name, nuovaScelta){
       <div class="field full"><div class="k">Sostitutive</div><div class="v">${r.sostitutive || '—'}</div></div>
       <div class="field full"><div class="k">Complementari</div><div class="v">${r.complementari || '—'}</div></div>
     </div>
-    ${tempWarn}
-    ${isRef ? '' : `<div class="adj-box">🌡️ Valori ricalcolati per ${abv}% vol / ${temp}°C rispetto al riferimento 43°/20°C. Stima orientativa, verifica sempre con assaggio.</div>`}
+    ${isRef ? '' : `<div class="adj-box">🌡️ Stima orientativa per queste condizioni, verifica sempre con assaggio.</div>`}
     <div class="warn-box">⚠️ Da non accumulare con: ${r.non_accumulare || 'nessuna nota particolare'}</div>
     ${d.edibile === 'Sì, con cautela' ? `<div class="risk-box">🔺 Attenzione: ${d.sicurezza}</div>` : ''}
   `;
@@ -3136,6 +3147,8 @@ function chiudiDetail(){
   libAbvInput.value = '';
   libTempInput.value = REF_TEMP;
   libVolInput.value = 100;
+  const libAbvRange = document.getElementById('lib-abv-range');
+  if (libAbvRange) libAbvRange.textContent = '';
   grid.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 
