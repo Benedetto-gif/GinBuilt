@@ -933,6 +933,10 @@ input:focus, select:focus, textarea:focus{
 .ar-compare{margin:0 0 18px;}
 .ar-compare .cmp-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px;}
 .ar-compare .cmp-row .sel-wrap{max-width:none;}
+.cmp-slot{display:flex;gap:6px;align-items:flex-start;min-width:0;}
+.cmp-slot>select,.cmp-slot>.sel-wrap{flex:1;min-width:0;}
+.cmp-rm{flex:0 0 auto;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);cursor:pointer;font-size:14px;line-height:1;align-self:flex-end;}
+.cmp-rm:hover{color:#C0392B;border-color:#C0392B;}
 .ar-compare .cmp-row:has(#cmp-stile){grid-template-columns:1fr;}
 .ar-compare .cmp-base-btn{display:block;width:100%;margin:4px 0 12px;font-size:14px;font-weight:600;color:var(--juniper);border:1.5px solid var(--juniper);background:transparent;padding:10px 14px;}
 .ar-compare .cmp-base-btn[aria-pressed="true"]{background:var(--juniper);color:var(--surface);}
@@ -2546,7 +2550,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 5 ottobre 2026, ore 01:20 · radar con tasto base in scheda botanica, Builder e tavolo di lavoro, profilo assaggiato</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 5 ottobre 2026, ore 01:35 · tavolo di lavoro con ✕ per togliere le botaniche, tasto base ovunque, profilo assaggiato</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -3327,18 +3331,33 @@ renderAr();
     stSel.value = nome;
     aggiorna();
   });
+  const slots = [];
   const sels = [0,1,2,3,4,5,6,7].map(k => {
+    const slot = document.createElement('div'); slot.className = 'cmp-slot';
     const sel = document.createElement('select'); sel.setAttribute('aria-label', 'Botanica ' + (k+1));
-    if (k >= 2){ const o = document.createElement('option'); o.value = ''; o.textContent = '— nessuna —'; sel.appendChild(o); }
+    const vuoto = document.createElement('option'); vuoto.value = ''; vuoto.textContent = '— nessuna —'; sel.appendChild(vuoto);
     nomi.forEach(n => { const o = document.createElement('option'); o.value = n; o.textContent = n; sel.appendChild(o); });
-    sel.value = nomi.includes(DEFAULT[k]) || DEFAULT[k]==='' ? DEFAULT[k] : nomi[k];
+    sel.value = nomi.includes(DEFAULT[k]) ? DEFAULT[k] : '';
     sel.addEventListener('change', () => { stSel.value = ''; aggiorna(); });
-    row.appendChild(sel);
+    const rm = document.createElement('button'); rm.type = 'button'; rm.className = 'cmp-rm'; rm.textContent = '✕';
+    rm.setAttribute('aria-label', 'Togli questa botanica');
+    rm.addEventListener('click', () => { sel.value = ''; stSel.value = ''; aggiorna(); });
+    slot.appendChild(sel); slot.appendChild(rm); row.appendChild(slot);
+    slots.push({slot, sel, rm});
     return sel;
   });
+  // Le botaniche scelte stanno sempre in testa (togliendone una le altre scalano) e si vedono solo i posti usati
+  // piu' uno libero per aggiungerne un'altra; la X compare solo sui posti pieni.
+  function sistemaSlot(){
+    const piene = sels.map(x => x.value).filter(Boolean);
+    sels.forEach((x,k) => { x.value = piene[k] || ''; });
+    const visibili = Math.min(sels.length, Math.max(2, piene.length + 1));
+    slots.forEach((o,k) => { o.slot.style.display = k < visibili ? '' : 'none'; o.rm.style.visibility = o.sel.value ? 'visible' : 'hidden'; });
+  }
   baseBtn.addEventListener('click', () => { setBase(!baseOn); aggiorna(); });
   const ALTO = 8, BASSO = 2;
   function aggiorna(){
+    sistemaSlot();
     let scelte = sels.map((x,k) => ({n:x.value, c:COL[k]})).filter(x => x.n && PROFILO8[x.n]);
     const uniq = new Set(); scelte = scelte.filter(x => !uniq.has(x.n) && uniq.add(x.n));
     // le base si aggiungono a parte (non occupano posti), con colori neutri; se gia' scelte negli slot non si duplicano
