@@ -1613,8 +1613,34 @@ footer.note{
         </ol>
       </div>
     </details>
-    <div class="controls">
-      <input type="text" id="search" placeholder="Cerca botanica…" />
+    <details class="howto" id="gradaz-lib">
+      <summary>Come scegliere la gradazione di una botanica</summary>
+      <div class="howto-body">
+        <p>Il criterio è la polarità delle sostanze che vuoi estrarre e l'acqua contenuta nella botanica. L'etanolo concentrato estrae meglio le molecole lipofile (oli essenziali, resine, terpeni); l'acqua della miscela favorisce zuccheri, acidi, tannini e sali. <strong>La gradazione più alta non è automaticamente la migliore.</strong> Gli intervalli sono punti di partenza: contano anche lo stato fresco o secco, la finezza dei pezzi e il tempo.</p>
+        <ul>
+          <li><strong>60–70% vol.</strong> estrazione aromatica ampia ed equilibrata.</li>
+          <li><strong>80–95% vol.</strong> per privilegiare oli essenziali, resine e note molto lipofile; l'estratto è concentrato e si intorbida facilmente alla diluizione (per le scorze di agrumi, spesso è più pratico lavorare intorno al 60–70% e poi diluire).</li>
+          <li><strong>40–50% vol.</strong> per estrarre anche una parte delle sostanze idrosolubili, con un profilo più «tintorio» e meno solo aromatico.</li>
+        </ul>
+        <p><strong>Perché l'alcol a 96% non è sempre ideale.</strong> Estrae di più cere, resine, pigmenti e componenti amare; può rendere l'estratto aggressivo o sbilanciato; estrae meno bene le sostanze che hanno bisogno d'acqua; alla diluizione può dare opalescenza o precipitazione degli oli; sulle botaniche fresche disidrata in fretta la superficie e rallenta la penetrazione. Per questo, di solito, una gradazione intermedia (50–70%) è il compromesso migliore: anche per la vaniglia i risultati migliori sono riportati intorno al 50%.</p>
+        <p><strong>L'acqua della pianta.</strong> Una botanica fresca contiene già acqua e abbassa il grado effettivo del macerato (100 g di pianta fresca possono contenere circa 70 g di acqua). Con materia fresca e molto acquosa, in grande quantità, può servire partire da 70–80%; ma alle dosi del gin (pochi grammi per 100 ml) l'acqua della pianta abbassa il grado di appena 1–3 punti; con materia secca bastano spesso 50–65%; con radici, semi, resine e scorze secche si può salire verso 70–90% secondo il risultato voluto, ma per il gin conviene restare sul lato prudente: l'app propone per ogni botanica un valore e una soglia da non superare.</p>
+        <p><strong>Metodo sperimentale per una botanica nuova.</strong> Prepara tre piccoli campioni identici a <strong>40%, 60% e 80%</strong> (la scheda di ogni botanica negli Infusi calcola alcol e acqua per i tre campioni). Tieni uguali peso della botanica, rapporto botanica/alcol (per esempio 1 parte di secca ogni 5–10 di alcol), dimensione dei pezzi, tempo, temperatura, agitazione e filtrazione. Poi confronta intensità e qualità dell'aroma, amaro o astringenza, colore, limpidezza dopo la diluizione e stabilità dopo alcuni giorni. Con botaniche molto intense (chiodo di garofano, cannella, assenzio, scorze amare) riduci il tempo prima ancora di cambiare la gradazione.</p>
+        <p><strong>In sintesi:</strong> oli essenziali e resine 70–90%; estratto aromatico equilibrato 55–70%; anche zuccheri, acidi, tannini e idrosolubili 35–55%; se non sai quale frazione prevalga, confronta 40, 60 e 80%. Usa solo etanolo di grado alimentare, mai alcol denaturato o solventi tecnici. Se l'estratto deve entrare in un gin a 35–45% vol., controlla sempre la <strong>limpidezza dopo la diluizione</strong>: è spesso questo test, più della gradazione iniziale, a dire se il solvente era giusto.</p>
+      </div>
+    </details>
+    <details class="howto" id="solub-lib">
+      <summary>La solubilità selettiva (la gradazione dell'alcol)</summary>
+      <div class="howto-body">
+        <p>Ogni botanica rilascia le sue molecole migliori solo a una specifica gradazione alcolica. L'alcol funge da solvente, e l'acqua che contiene scioglie un'altra parte delle sostanze.</p>
+        <ul>
+          <li><strong>Molecole idrofobe (oli essenziali).</strong> Il ginepro (ricco di alfa-pinene) e gli agrumi come il cedro (ricchi di limonene) richiedono una gradazione alta per sciogliersi ed essere estratti bene: 60-70% per il ginepro, intorno all'80% per le scorze. Se la gradazione è troppo bassa, una parte del profumo resta nella botanica.</li>
+          <li><strong>Molecole idrofile e parti verdi.</strong> Foglie come quelle di cappero e il finocchio di mare contengono acqua cellulare, clorofilla e componenti idrosolubili. Con un alcol troppo basso, o tempi troppo lunghi, passano note sgradevoli di erba bagnata o fieno. Un alcol altissimo (80-95%) estrae bene anche clorofilla e cere: per le foglie fresche conviene una gradazione media (55–65%) e poche ore al buio, così si preleva soprattutto la frazione aromatica.</li>
+        </ul>
+        <p><strong>Più forte non è meglio.</strong> Un solvente troppo forte non estrae solo gli aromi buoni: trascina anche resine, cere, clorofilla e amari duri, che danno note di trementina, di erba tagliata o di amaro. Un solvente troppo debole lascia gli oli nella botanica e porta tannini e acqua. Per questo ogni botanica ha una gradazione consigliata, una soglia oltre cui evitare di salire e il relativo tempo di macerazione; nelle schede trovi cosa succede oltre e sotto quei limiti. I valori sono stime di partenza: affinali con le tue tarature e con gli assaggi.</p>
+      </div>
+    </details>
+    <div class="cond-box cond-compact">
+      <span class="cond-label">Filtra ed ordina:</span>
       <label>Famiglia
         <select id="f-categoria"><option value="">Tutte</option></select>
       </label>
@@ -1644,43 +1670,21 @@ footer.note{
           <option value="5">5+</option><option value="7">7+</option><option value="9">9+</option>
         </select>
       </label>
-      <button class="ghost-btn" id="lib-print" type="button">🖨️ Stampa elenco</button>
+    </div>
+    <div class="controls">
+      <label class="inf-q-label">Cerca la botanica<input type="text" id="search" placeholder="Scrivi il nome o la prima lettera…" /></label>
       <span class="count-tag" id="count-tag"></span>
     </div>
-        <details class="howto" id="gradaz-lib">
-      <summary>Come scegliere la gradazione di una botanica</summary>
-      <div class="howto-body">
-        <p>Il criterio è la polarità delle sostanze che vuoi estrarre e l'acqua contenuta nella botanica. L'etanolo concentrato estrae meglio le molecole lipofile (oli essenziali, resine, terpeni); l'acqua della miscela favorisce zuccheri, acidi, tannini e sali. <strong>La gradazione più alta non è automaticamente la migliore.</strong> Gli intervalli sono punti di partenza: contano anche lo stato fresco o secco, la finezza dei pezzi e il tempo.</p>
-        <ul>
-          <li><strong>60–70% vol.</strong> estrazione aromatica ampia ed equilibrata.</li>
-          <li><strong>80–95% vol.</strong> per privilegiare oli essenziali, resine e note molto lipofile; l'estratto è concentrato e si intorbida facilmente alla diluizione (per le scorze di agrumi, spesso è più pratico lavorare intorno al 60–70% e poi diluire).</li>
-          <li><strong>40–50% vol.</strong> per estrarre anche una parte delle sostanze idrosolubili, con un profilo più «tintorio» e meno solo aromatico.</li>
-        </ul>
-        <p><strong>Perché l'alcol a 96% non è sempre ideale.</strong> Estrae di più cere, resine, pigmenti e componenti amare; può rendere l'estratto aggressivo o sbilanciato; estrae meno bene le sostanze che hanno bisogno d'acqua; alla diluizione può dare opalescenza o precipitazione degli oli; sulle botaniche fresche disidrata in fretta la superficie e rallenta la penetrazione. Per questo, di solito, una gradazione intermedia (50–70%) è il compromesso migliore: anche per la vaniglia i risultati migliori sono riportati intorno al 50%.</p>
-        <p><strong>L'acqua della pianta.</strong> Una botanica fresca contiene già acqua e abbassa il grado effettivo del macerato (100 g di pianta fresca possono contenere circa 70 g di acqua). Con materia fresca e molto acquosa, in grande quantità, può servire partire da 70–80%; ma alle dosi del gin (pochi grammi per 100 ml) l'acqua della pianta abbassa il grado di appena 1–3 punti; con materia secca bastano spesso 50–65%; con radici, semi, resine e scorze secche si può salire verso 70–90% secondo il risultato voluto, ma per il gin conviene restare sul lato prudente: l'app propone per ogni botanica un valore e una soglia da non superare.</p>
-        <p><strong>Metodo sperimentale per una botanica nuova.</strong> Prepara tre piccoli campioni identici a <strong>40%, 60% e 80%</strong> (la scheda di ogni botanica negli Infusi calcola alcol e acqua per i tre campioni). Tieni uguali peso della botanica, rapporto botanica/alcol (per esempio 1 parte di secca ogni 5–10 di alcol), dimensione dei pezzi, tempo, temperatura, agitazione e filtrazione. Poi confronta intensità e qualità dell'aroma, amaro o astringenza, colore, limpidezza dopo la diluizione e stabilità dopo alcuni giorni. Con botaniche molto intense (chiodo di garofano, cannella, assenzio, scorze amare) riduci il tempo prima ancora di cambiare la gradazione.</p>
-        <p><strong>In sintesi:</strong> oli essenziali e resine 70–90%; estratto aromatico equilibrato 55–70%; anche zuccheri, acidi, tannini e idrosolubili 35–55%; se non sai quale frazione prevalga, confronta 40, 60 e 80%. Usa solo etanolo di grado alimentare, mai alcol denaturato o solventi tecnici. Se l'estratto deve entrare in un gin a 35–45% vol., controlla sempre la <strong>limpidezza dopo la diluizione</strong>: è spesso questo test, più della gradazione iniziale, a dire se il solvente era giusto.</p>
-      </div>
-    </details>
-    <details class="howto" id="solub-lib">
-      <summary>La solubilità selettiva (la gradazione dell'alcol)</summary>
-      <div class="howto-body">
-        <p>Ogni botanica rilascia le sue molecole migliori solo a una specifica gradazione alcolica. L'alcol funge da solvente, e l'acqua che contiene scioglie un'altra parte delle sostanze.</p>
-        <ul>
-          <li><strong>Molecole idrofobe (oli essenziali).</strong> Il ginepro (ricco di alfa-pinene) e gli agrumi come il cedro (ricchi di limonene) richiedono una gradazione alta per sciogliersi ed essere estratti bene: 60-70% per il ginepro, intorno all'80% per le scorze. Se la gradazione è troppo bassa, una parte del profumo resta nella botanica.</li>
-          <li><strong>Molecole idrofile e parti verdi.</strong> Foglie come quelle di cappero e il finocchio di mare contengono acqua cellulare, clorofilla e componenti idrosolubili. Con un alcol troppo basso, o tempi troppo lunghi, passano note sgradevoli di erba bagnata o fieno. Un alcol altissimo (80-95%) estrae bene anche clorofilla e cere: per le foglie fresche conviene una gradazione media (55–65%) e poche ore al buio, così si preleva soprattutto la frazione aromatica.</li>
-        </ul>
-        <p><strong>Più forte non è meglio.</strong> Un solvente troppo forte non estrae solo gli aromi buoni: trascina anche resine, cere, clorofilla e amari duri, che danno note di trementina, di erba tagliata o di amaro. Un solvente troppo debole lascia gli oli nella botanica e porta tannini e acqua. Per questo ogni botanica ha una gradazione consigliata, una soglia oltre cui evitare di salire e il relativo tempo di macerazione; nelle schede trovi cosa succede oltre e sotto quei limiti. I valori sono stime di partenza: affinali con le tue tarature e con gli assaggi.</p>
-      </div>
-    </details>
     <div class="cond-box">
       <span class="cond-label">Condizioni di infusione simulate:</span>
-      <label>Grado alcolico (%)<input type="number" id="lib-abv" value="43" step="1" min="20" max="96"></label>
+      <label>Grado alcolico (%)<input type="number" id="lib-abv" placeholder="consigliato" step="1" min="20" max="96"></label>
       <label>Temperatura (°C)<input type="number" id="lib-temp" value="20" step="1" min="0" max="60"></label>
-      <span class="cond-hint">Regola questi valori per vedere come cambiano tempo e dose consigliati per la botanica selezionata (rispetto al riferimento 43° / 20°C).</span>
+      <label>Volume di infuso da ottenere (ml)<input type="number" id="lib-vol" value="100" step="25" min="10"></label>
+      <span class="cond-hint">Regola questi valori (con i tasti − / +) per vedere come cambiano tempo e dose consigliati per la botanica selezionata, grado dopo grado. Scelta una botanica, il grado alcolico parte dal minimo consigliato in erbario.</span>
     </div>
     <div class="grid" id="grid"></div>
     <div class="detail" id="detail"></div>
+    <div style="margin-top:14px;"><button class="ghost-btn" id="lib-print" type="button">🖨️ Stampa elenco</button></div>
   </section>
 
   <!-- NOZIONI TECNICO-SCIENTIFICHE -->
@@ -2994,7 +2998,7 @@ function elencoFiltrato(){
   const cat = fCategoria.value;
   const car = fCarattere.value;
   const pot = parseInt(fPotenza.value, 10);
-  return MASTER.filter(d => {
+  const risultato = MASTER.filter(d => {
     if (cat && d.categoria !== cat) return false;
     if (car && d.carattere !== car) return false;
     if (pot && (d.potenza10 || 0) < pot) return false;
@@ -3002,6 +3006,18 @@ function elencoFiltrato(){
     if (q && !(d.botanica.toLowerCase().includes(q) || (d.profilo||'').toLowerCase().includes(q))) return false;
     return true;
   });
+  if (!q) return risultato;
+  // Scrivendo le lettere, le botaniche più probabili vengono prima: il nome inizia
+  // proprio con quello scritto, poi una sua parola inizia così, poi il nome lo contiene
+  // altrove, infine solo il profilo lo contiene.
+  const punteggio = d => {
+    const nome = d.botanica.toLowerCase();
+    if (nome.startsWith(q)) return 0;
+    if (nome.split(/[\s\/\-(]+/).some(w => w.startsWith(q))) return 1;
+    if (nome.includes(q)) return 2;
+    return 3;
+  };
+  return risultato.slice().sort((a, b) => (punteggio(a) - punteggio(b)) || a.botanica.localeCompare(b.botanica, 'it'));
 }
 function renderGrid(){
   const filtered = elencoFiltrato();
@@ -3020,7 +3036,7 @@ function renderGrid(){
         <span class="tag potenza">Potenza ${d.potenza10 ?? '—'}/10</span>
         ${d.edibile === 'Sì, con cautela' ? '<span class="tag cautela">⚠️ Con cautela</span>' : ''}
       </div>`;
-    card.addEventListener('click', () => showDetail(d.botanica));
+    card.addEventListener('click', () => showDetail(d.botanica, true));
     grid.appendChild(card);
   };
   ordinaBotaniche(filtered).forEach(x => {
@@ -3032,29 +3048,47 @@ function renderGrid(){
 let currentDetailName = null;
 const libAbvInput = document.getElementById('lib-abv');
 const libTempInput = document.getElementById('lib-temp');
+const libVolInput = document.getElementById('lib-vol');
+[libTempInput, libVolInput].forEach(el => wrapStepper(el));
+wrapStepper(libAbvInput, 1, { emptyStart: () => {
+  const dCur = currentDetailName && byName[currentDetailName];
+  const Ecur = dCur ? estPer(dCur, infRif(dCur)) : null;
+  return Ecur ? Ecur.a[0] : null;
+}});
 
-function showDetail(name){
+function showDetail(name, nuovaScelta){
   const d = byName[name];
   if (!d) return;
   currentDetailName = name;
+  if (nuovaScelta){
+    // Scelta una nuova botanica: si riparte dal grado minimo consigliato in erbario per lei
+    // (non dal riferimento generico 43°), cosi' i tasti su/giu mostrano da subito come
+    // cambia il tempo di infusione salendo o scendendo di grado in grado.
+    const Enew = estPer(d, infRif(d));
+    libAbvInput.value = Enew ? Enew.a[0] : REF_ABV;
+    libTempInput.value = REF_TEMP;
+  }
   const r = REDUND[name] || {};
   const ds = DOSE[name] || {};
   const baseTempo = ds.tempo || d.tempo || '';
   const baseDose = ds.test ?? d.dose;
-  const abv = parseFloat(libAbvInput.value) || REF_ABV;
+  const E = estPer(d, infRif(d));
+  const abvRaw = libAbvInput.value.trim() === '' ? NaN : parseFloat(libAbvInput.value);
+  const abv = isNaN(abvRaw) ? (E ? (E.a[0] + E.a[1]) / 2 : REF_ABV) : abvRaw;
   const temp = parseFloat(libTempInput.value) || REF_TEMP;
   const isRef = (abv === REF_ABV && temp === REF_TEMP);
+  const tempWarn = (temp < 15 || temp > 35)
+    ? '<div class="warn-box">Temperatura fuori dall’intervallo di lavoro previsto (15–35 °C): la stima è meno affidabile.</div>' : '';
   const adjTempo = adjustedTempo(baseTempo, abv, temp, d.categoria);
   const adjDose = adjustedDose(baseDose, abv, temp, d.categoria);
   const doseLabel = isRef ? 'Dose operativa (rif. 43°/20°C)' : `Dose operativa a ${abv}%/${temp}°C`;
   const doseValue = isRef
     ? `test ${ds.test ?? d.dose ?? '—'} g · range ${ds.min ?? '—'}–${ds.max ?? '—'} g / 100 ml`
-    : `test ≈ <strong>${adjDose ?? (ds.test ?? d.dose ?? '—')} g</strong> / 100 ml <span class="est-nota">mantenendo il tempo di riferimento — a 43°/20°C: ${ds.test ?? d.dose ?? '—'} g</span>`;
+    : `test ≈ <strong>${adjDose ?? (ds.test ?? d.dose ?? '—')} g</strong> / 100 ml <span class="est-nota">a tempo di infusione invariato</span>`;
   const tempoLabel = isRef ? 'Tempo di infusione (rif. 43°/20°C)' : `Tempo di infusione a ${abv}%/${temp}°C`;
   const tempoValue = isRef
     ? (baseTempo || '—')
-    : `<strong>${adjTempo}</strong> <span class="est-nota">mantenendo la dose di riferimento — a 43°/20°C: ${baseTempo || '—'}</span>`;
-  const E = estPer(d, infRif(d));
+    : `<strong>${adjTempo}</strong> <span class="est-nota">a dose invariata</span>`;
   const Ef = (E && EST[name].f) ? estPer(d, 'fresco') : null;
   const cal = tarature()[name], q = name.replace(/"/g, '&quot;');
   const calHtml = E ? `<details class="field full est-cal"><summary>${cal ? '✓ Usi la tua taratura' : 'La mia taratura'}</summary>
@@ -3094,6 +3128,7 @@ function showDetail(name){
       <div class="field full"><div class="k">Sostitutive</div><div class="v">${r.sostitutive || '—'}</div></div>
       <div class="field full"><div class="k">Complementari</div><div class="v">${r.complementari || '—'}</div></div>
     </div>
+    ${tempWarn}
     ${isRef ? '' : `<div class="adj-box">🌡️ Valori ricalcolati per ${abv}% vol / ${temp}°C rispetto al riferimento 43°/20°C. Stima orientativa, verifica sempre con assaggio.</div>`}
     <div class="warn-box">⚠️ Da non accumulare con: ${r.non_accumulare || 'nessuna nota particolare'}</div>
     ${d.edibile === 'Sì, con cautela' ? `<div class="risk-box">🔺 Attenzione: ${d.sicurezza}</div>` : ''}
