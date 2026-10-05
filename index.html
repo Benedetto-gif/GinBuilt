@@ -969,6 +969,14 @@ input:focus, select:focus, textarea:focus{
 .tar-vol{display:flex;gap:8px;align-items:center;margin:6px 0;}
 .tar-vol input{width:90px;}
 .tf-tarato{display:flex;gap:8px;align-items:center;font-size:13px;margin:8px 0;}
+.conf-box{margin:8px 0;}
+.conf-tit{font-size:12px;color:var(--ink-soft);margin-bottom:4px;}
+.conf-riga{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:4px 0;}
+.conf-lab{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);min-width:92px;}
+.conf-chip{font:inherit;font-size:13px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;}
+.conf-chip.conf-simili{border-style:dashed;}
+.conf-chip.conf-simili_fam{border-style:dotted;opacity:.8;}
+.conf-chip.on{background:#C0733A;border-color:#C0733A;color:#fff;font-weight:600;}
 .tag.uso-comune{background:rgba(110,160,110,.22);}
 .tag.uso-firma{background:rgba(200,150,70,.22);}
 .tag.uso-altra{background:rgba(130,130,130,.18);}
@@ -2585,7 +2593,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 5 ottobre 2026, ore 11:00 · botaniche divise in più usate, di firma o rare, altre</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 5 ottobre 2026, ore 12:00 · simili mostrati per profilo vicino (70 %) o per famiglia</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -2904,6 +2912,65 @@ function coerenzaHtml(nome){
   if (c.dubbi.length) h += '<span class="radar-dubbio">Da rivedere: ' + f(c.dubbi) + ' sono citate nella scheda, ma la stima di quell\'asse è bassa.</span>';
   return '<div class="radar-nota">' + h + '</div>';
 }
+
+// ---------- Confronto sul radar della singola botanica ----------
+// Nel box del radar compaiono come tasti le botaniche indicate come simili, sostitutive e complementari:
+// toccandone una, il suo profilo si sovrappone; toccandone un'altra, la precedente si spegne.
+function risolviNomeRadar(n){
+  n = String(n || '').replace(/\(.*?\)/g, '').trim();
+  if (PROFILO8[n]) return n;
+  if (n === 'Mirto' && PROFILO8['Mirto foglie']) return 'Mirto foglie';
+  return null;
+}
+// Soglia di somiglianza (0-1) oltre la quale una botanica e' mostrata come "simile" per profilo.
+// Le altre della lista "simili" dell'erbario restano disponibili, ma come "simili per famiglia o uso".
+const SOGLIA_SIMILI = 0.70;
+function somiglianza(a, b){
+  let sx = 0, nx = 0, ny = 0;
+  a.forEach((x,i) => { sx += x * b[i]; nx += x * x; ny += b[i] * b[i]; });
+  return nx && ny ? sx / Math.sqrt(nx * ny) : 0;
+}
+function parenti(nome){
+  const r = REDUND[nome] || {}, visti = new Set([nome]), out = [];
+  [['simili','Simili'],['sostitutive','Sostitutive'],['complementari','Complementari']].forEach(([k, lab]) => {
+    const l = String(r[k] || '').split(',').map(risolviNomeRadar).filter(x => x && !visti.has(x));
+    l.forEach(x => visti.add(x));
+    if (k === 'simili'){
+      const vicini = l.filter(x => somiglianza(PROFILO8[nome], PROFILO8[x]) >= SOGLIA_SIMILI);
+      const altri = l.filter(x => !vicini.includes(x));
+      if (vicini.length) out.push({k, lab: 'Simili (profilo vicino)', l: vicini});
+      if (altri.length) out.push({k: 'simili_fam', lab: 'Simili per famiglia o uso', l: altri});
+    } else if (l.length) out.push({k, lab, l});
+  });
+  return out;
+}
+window.radarConf = function(n){
+  window.radarConfronta = (window.radarConfronta === n) ? null : n;
+  showDetail(currentDetailName);
+};
+function confrontoRadarHtml(nome, v){
+  const gr = parenti(nome);
+  if (!gr.length) return '';
+  const on = window.radarConfronta;
+  const chips = gr.map(g => '<div class="conf-riga"><span class="conf-lab">' + g.lab + '</span>' +
+    g.l.map(x => '<button type="button" class="conf-chip conf-' + g.k + (x === on ? ' on' : '') + '" aria-pressed="' + (x === on) + '" data-n="' + x.replace(/"/g,'&quot;') + '" onclick="radarConf(this.dataset.n)">' + x + '</button>').join('') + '</div>').join('');
+  let nota = '';
+  if (on && PROFILO8[on]){
+    const w = PROFILO8[on];
+    const com = ASSI8.filter((_,i) => v[i] >= 3 && w[i] >= 3).map(x => x.toLowerCase());
+    const porta = ASSI8.filter((_,i) => w[i] >= 3 && v[i] <= 1).map(x => x.toLowerCase());
+    const manca = ASSI8.filter((_,i) => v[i] >= 3 && w[i] <= 1).map(x => x.toLowerCase());
+    const cosv = somiglianza(v, w), pc = Math.round(cosv * 100);
+    const giud = cosv >= .85 ? 'profili molto vicini' : cosv >= SOGLIA_SIMILI ? 'profili vicini' : cosv >= .5 ? 'profili in parte diversi' : 'profili diversi';
+    const dalla = gr.find(g => g.l.includes(on));
+    const avviso = (dalla && dalla.k === 'simili_fam') ? ' È indicata come simile per famiglia o uso, ma il suo profilo sensoriale è diverso: sotto il ' + Math.round(SOGLIA_SIMILI * 100) + ' % non la consideriamo simile per profilo.' : '';
+    nota = '<div class="radar-nota">Somiglianza dei profili: <strong>' + pc + ' %</strong> (' + giud + ').' + avviso + '</div><div class="radar-nota"><strong>' + nome + ' e ' + on + '</strong>: ' +
+      (com.length ? 'si sovrappongono su ' + com.join(', ') + '. ' : 'nessuna nota forte in comune. ') +
+      (porta.length ? on + ' aggiunge ' + porta.join(', ') + '. ' : '') +
+      (manca.length ? 'Solo ' + nome + ' porta ' + manca.join(', ') + '.' : '') + '</div>';
+  }
+  return '<div class="conf-box"><div class="conf-tit">Confronta con (tocca per sovrapporre, tocca ancora per togliere):</div>' + chips + '</div>' + nota;
+}
 function radarBox(nome){
   const v = PROFILO8[nome];
   if (!v) return '';
@@ -2911,6 +2978,8 @@ function radarBox(nome){
   const conBase = !!window.radarCardBase;
   const COLB = ['#6B7A72','#9A8F6B','#7B6B8F'];
   const serie = [{vals:valFase(nome, window.radarFase), color:'var(--juniper)', label:nome}];
+  const confOn = window.radarConfronta && PROFILO8[window.radarConfronta] && window.radarConfronta !== nome ? window.radarConfronta : null;
+  if (confOn) serie.push({vals:valFase(confOn, window.radarFase), color:'#C0733A', label:confOn});
   let extra = '';
   const sw = STADI[nome] || [.3,1,.4], nmF = ['testa','cuore','coda'], maxW = Math.max.apply(null, sw);
   const doveSi = nmF.filter((_,i) => sw[i] >= maxW - 0.15).join(' e ');
@@ -2926,7 +2995,7 @@ function radarBox(nome){
   }
   const btn = BASE.length ? '<button type="button" class="ghost-btn radar-base-btn" aria-pressed="' + conBase + '" onclick="window.radarCardBase=!window.radarCardBase;showDetail(currentDetailName)">' + (conBase ? '− Togli le botaniche base' : '+ Aggiungi le botaniche base') + '</button>' : '';
   return '<div class="radar-box"><div class="radar-title">Profilo sensoriale</div>' + faseHtml('showDetail(currentDetailName)') + btn +
-    radarSVG(serie, 280) + '<div class="radar-nota">' + (FASE_NOTA[window.radarFase] ? FASE_NOTA[window.radarFase] + ' ' : '') + 'Si sente soprattutto in <strong>' + doveSi + '</strong>.</div>' + extra +
+    radarSVG(serie, 280) + (confOn && !conBase ? '<div class="radar-legend"><span><i style="background:var(--juniper)"></i>' + nome + '</span><span><i style="background:#C0733A"></i>' + confOn + '</span></div>' : '') + confrontoRadarHtml(nome, v) + '<div class="radar-nota">' + (FASE_NOTA[window.radarFase] ? FASE_NOTA[window.radarFase] + ' ' : '') + 'Si sente soprattutto in <strong>' + doveSi + '</strong>.</div>' + extra +
     coerenzaHtml(nome) + '<div class="radar-nota">Stima orientativa (0 = assente, 5 = dominante) di quanto ogni nota pesa nel carattere della botanica. Da validare all\'assaggio.</div></div>';
 }
 
@@ -3303,6 +3372,7 @@ function showDetail(name, nuovaScelta){
   const d = byName[name];
   if (!d) return;
   currentDetailName = name;
+  if (window._confDi !== name){ window.radarConfronta = null; window._confDi = name; }
   if (nuovaScelta){
     // Scelta una nuova botanica: si riparte dal grado minimo consigliato in erbario per lei
     // (non dal riferimento generico 43°), cosi' i tasti su/giu mostrano da subito come
