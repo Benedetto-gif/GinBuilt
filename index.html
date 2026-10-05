@@ -957,7 +957,16 @@ input:focus, select:focus, textarea:focus{
 .fase-ordine{font-size:13px;margin-top:8px;text-align:left;line-height:1.5;}
 .gin-radar{margin-top:14px;padding:14px 14px 10px;border:1px solid var(--line);border-radius:12px;background:var(--paper, transparent);}
 .gin-radar .radar-title{text-align:center;}
-.gin-radar select{width:100%;margin-top:8px;}
+.gin-conf{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+.conf-chip.gin-piu{border-style:dashed;color:var(--ink-soft);}
+.conf-chip.gin-piu[aria-expanded="true"]{border-style:solid;color:var(--ink);}
+.gin-pop{margin-top:10px;border:1px solid var(--line);border-radius:12px;padding:4px;max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.gin-riga{display:grid;grid-template-columns:1fr 70px 36px;gap:10px;align-items:center;width:100%;font:inherit;font-size:13.5px;text-align:left;padding:8px 10px;border:0;border-radius:8px;background:transparent;color:var(--ink);cursor:pointer;}
+.gin-riga:hover,.gin-riga:focus-visible{background:color-mix(in srgb, var(--juniper) 10%, transparent);}
+.gin-riga .bar{height:4px;border-radius:2px;background:var(--line);overflow:hidden;}
+.gin-riga .bar i{display:block;height:100%;background:var(--juniper);}
+.gin-riga .pc{font-size:13px;font-weight:700;color:var(--ink);text-align:right;font-variant-numeric:tabular-nums;}
+.gin-badge{display:inline-block;font-weight:700;font-size:13px;padding:1px 8px;border-radius:999px;color:#fff;background:var(--c);font-variant-numeric:tabular-nums;vertical-align:1px;}
 .gin-leg{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 14px;font-size:12.5px;color:var(--ink-soft);margin-top:4px;}
 .gin-leg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px;}
 .radar-nota{font-size:12.5px;color:var(--ink-soft);margin-top:6px;line-height:1.4;}
@@ -2659,7 +2668,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 5 ottobre 2026, ore 22:15 · 11 nuove botaniche dagli altri gin e radar di ogni gin</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 5 ottobre 2026, ore 22:40 · radar degli altri gin: percentuale di somiglianza in evidenza</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -2876,6 +2885,7 @@ function radarSVG(serie, size){
   });
   serie.forEach(se => {
     const pts = se.vals.map((v,i) => pt(i,v).join(',')).join(' ');
+    if (se.dash){ g += '<polygon points="'+pts+'" fill="none" stroke="'+se.color+'" stroke-width="1.5" stroke-dasharray="4 3" stroke-linejoin="round"/>'; return; }
     g += '<polygon points="'+pts+'" fill="'+se.color+'" fill-opacity=".22" stroke="'+se.color+'" stroke-width="2" stroke-linejoin="round"/>';
     se.vals.forEach((v,i) => { if (v > 0){ const [x,y] = pt(i,v); g += '<circle cx="'+x+'" cy="'+y+'" r="2.8" fill="'+se.color+'"/>'; } });
   });
@@ -5349,41 +5359,77 @@ const GIN_LISTE = {
   'Etsu Japanese Gin': {b:['Bacche di ginepro','Yuzu','Arancia amara','Coriandolo','Liquirizia','Tè verde','Angelica','Pepe sansho','Fiori di ciliegio'], nota:'Il gyokuro è reso con il Tè verde; la scorza di arancia amara verde con l\'Arancia amara.'}
 };
 window.GIN_LISTE = GIN_LISTE;
-function profiloGin(nome){
+const GIN_BASE = ['Bacche di ginepro','Coriandolo','Angelica'];
+// conBase=false: solo la "firma" del gin, senza le tre base che quasi tutti condividono
+function profiloGin(nome, conBase){
   const g = GIN_LISTE[nome]; if (!g) return null;
-  const el = g.b.filter(n => PROFILO8[n]).map(n => ({n, w: (DATA.dose[n] && DATA.dose[n].test) || 1}));
+  const el = g.b.filter(n => PROFILO8[n] && (conBase || !GIN_BASE.includes(n))).map(n => ({n, w: (DATA.dose[n] && DATA.dose[n].test) || 1}));
   if (!el.length) return null;
   const tot = el.reduce((a,x) => a + x.w, 0);
   const vals = ASSI8.map((_,i) => Math.round(el.reduce((a,x) => a + PROFILO8[x.n][i] * x.w, 0) / tot * 10) / 10);
   return {vals, el, tot};
 }
-function radarGinHtml(nome, conf){
-  const g = GIN_LISTE[nome], p = profiloGin(nome);
+// Il "gin medio": media delle firme di tutti i gin con lista. Il carattere di un gin è lo scarto da questa media.
+let _ginMedio = null;
+function ginMedio(){
+  if (_ginMedio) return _ginMedio;
+  const P = Object.keys(GIN_LISTE).map(n => profiloGin(n, false)).filter(Boolean);
+  return (_ginMedio = ASSI8.map((_,i) => P.reduce((a,x) => a + x.vals[i], 0) / P.length));
+}
+// Somiglianza di carattere 0-100: correlazione fra gli scarti dal gin medio (50 = indipendenti, 0 = opposti)
+function affinitaGin(a, b){
+  const pa = profiloGin(a, false), pb = profiloGin(b, false); if (!pa || !pb) return null;
+  const m = ginMedio(), x = pa.vals.map((v,i) => v - m[i]), y = pb.vals.map((v,i) => v - m[i]);
+  const d = x.reduce((s,v,i) => s + v*y[i], 0), n1 = Math.hypot.apply(null, x), n2 = Math.hypot.apply(null, y);
+  return n1 && n2 ? Math.round((d/(n1*n2) + 1) / 2 * 100) : 50;
+}
+function radarGinHtml(nome, conf, aperto){
+  const conBase = !!window.ginConBase;
+  const g = GIN_LISTE[nome], p = profiloGin(nome, conBase), pf = profiloGin(nome, false);
   if (!p) return '<div class="radar-nota">' + ((g && g.parziale) || 'Nessuna botanica della lista è presente in libreria.') + '</div>';
-  const serie = [{vals:p.vals, color:'var(--juniper)', label:nome}];
-  const pc = conf && conf !== nome ? profiloGin(conf) : null;
+  const breve = n => n.startsWith('Gin ') ? n : n.replace(/ (London Dry|Japanese Craft|Japanese|Premium|Islay Dry|Extra Dry|Dry)? ?Gin$/, '');
+  const serie = [];
+  if (!conBase) serie.push({vals:ginMedio().map(v => Math.round(v*10)/10), color:'var(--ink-soft)', label:'gin medio', dash:true});
+  serie.push({vals:p.vals, color:'var(--juniper)', label:nome});
+  const pc = conf && conf !== nome ? profiloGin(conf, conBase) : null;
   if (pc) serie.push({vals:pc.vals, color:'#C0733A', label:conf});
-  const dom = ASSI8.map((a,i) => [a, p.vals[i]]).filter(x => x[1] >= 1).sort((a,b) => b[1]-a[1]).slice(0,3)
-    .map(x => '<strong>' + x[0].toLowerCase() + '</strong> ' + x[1].toFixed(1).replace('.', ','));
-  const pesi = p.el.slice().sort((a,b) => b.w - a.w).slice(0,3).map(x => x.n + ' ' + Math.round(x.w / p.tot * 100) + '%');
+  // cosa lo distingue dal gin medio
+  let distingue = '';
+  if (pf){
+    const m = ginMedio(), sc = ASSI8.map((a,i) => [a.toLowerCase(), pf.vals[i] - m[i]]);
+    const piu = sc.filter(x => x[1] >= 0.5).sort((a,b) => b[1]-a[1]).slice(0,3).map(x => '<strong>' + x[0] + '</strong>');
+    const meno = sc.filter(x => x[1] <= -0.5).sort((a,b) => a[1]-b[1]).slice(0,3).map(x => x[0]);
+    distingue = '<div class="radar-nota">Rispetto al gin medio: ' + (piu.length ? 'più ' + piu.join(', ') : 'nessuna nota sopra la media') + (meno.length ? '; meno ' + meno.join(', ') : '') + '.</div>';
+  } else distingue = '<div class="radar-nota">Fuori dalle base dichiara solo botaniche assenti in libreria: il suo carattere è il ginepro stesso.</div>';
   let cmp = '';
   if (pc){
-    const dot = p.vals.reduce((a,v,i) => a + v*pc.vals[i], 0), na = Math.hypot.apply(null, p.vals), nb = Math.hypot.apply(null, pc.vals);
-    const sim = na && nb ? Math.round(dot/(na*nb)*100) : 0;
+    const af = affinitaGin(nome, conf);
+    const giud = af == null ? '' : af >= 80 ? 'molto simile' : af >= 60 ? 'simile' : af >= 40 ? 'diverso' : 'opposto';
     const piu = ASSI8.filter((_,i) => p.vals[i] - pc.vals[i] >= 0.6).map(x => x.toLowerCase());
     const meno = ASSI8.filter((_,i) => pc.vals[i] - p.vals[i] >= 0.6).map(x => x.toLowerCase());
-    cmp = '<div class="radar-nota">Somiglianza di profilo con ' + conf + ': <strong>' + sim + '%</strong>.' +
+    cmp = '<div class="radar-nota">Carattere rispetto a ' + breve(conf) + ': ' + (af == null ? '—' : '<strong>' + giud + '</strong> <span class="gin-badge" style="--c:' + (af >= 60 ? 'var(--juniper)' : af >= 40 ? '#B08A2E' : '#C0733A') + '">' + af + '%</span>') + '.' +
       (piu.length ? ' Più ' + piu.join(', ') + '.' : '') + (meno.length ? ' Meno ' + meno.join(', ') + '.' : '') + '</div>';
   }
-  const opz = '<option value="">Confronta con un altro gin…</option>' + Object.keys(GIN_LISTE).filter(n => n !== nome && profiloGin(n))
-    .map(n => '<option' + (n === conf ? ' selected' : '') + '>' + n + '</option>').join('');
-  return '<div class="radar-title">Profilo sensoriale stimato</div>' + radarSVG(serie, 300) +
-    (pc ? '<div class="gin-leg"><span><i style="background:var(--juniper)"></i>' + nome + '</span><span><i style="background:#C0733A"></i>' + conf + '</span></div>' : '') +
-    cmp +
-    '<div class="radar-nota">Note dominanti: ' + (dom.join(', ') || '—') + '. Pesano di più: ' + pesi.join(', ') + '.</div>' +
-    '<div class="radar-nota">Media delle ' + p.el.length + ' botaniche della lista pesata sulle dosi di riferimento dell\'app, perché le proporzioni vere non sono dichiarate. È un ritratto orientativo, non la ricetta.' +
-    (g.parziale ? ' <strong>Lista incompleta:</strong> ' + g.parziale : '') + (g.nota ? ' ' + g.nota : '') + '</div>' +
-    '<select class="gin-conf" aria-label="Confronta con un altro gin">' + opz + '</select>';
+  const altri = Object.keys(GIN_LISTE).filter(n => n !== nome && profiloGin(n, false)).map(n => ({n, c: affinitaGin(nome, n)}))
+    .filter(x => x.c != null).sort((a,b) => b.c - a.c);
+  const vicini = altri.slice(0, 3).map(x => x.n);
+  if (conf && !vicini.includes(conf) && profiloGin(conf, conBase)) vicini.push(conf);
+  const chip = n => '<button type="button" class="conf-chip' + (n === conf ? ' on' : '') + '" aria-pressed="' + (n === conf) + '" data-n="' + n.replace(/"/g,'&quot;') + '">' + breve(n) + '</button>';
+  const resto = altri.filter(x => !vicini.includes(x.n));
+  const chips = vicini.map(chip).join('') +
+    (resto.length ? '<button type="button" class="conf-chip gin-piu" aria-expanded="' + !!aperto + '">' + (aperto ? '× chiudi' : '+ altri ' + resto.length) + '</button>' : '');
+  const pop = aperto && resto.length ? '<div class="gin-pop" role="list">' + resto.map(x =>
+      '<button type="button" role="listitem" class="gin-riga" data-n="' + x.n.replace(/"/g,'&quot;') + '"><span>' + breve(x.n) + '</span><span class="bar"><i style="width:' + x.c + '%"></i></span><span class="pc">' + x.c + '%</span></button>').join('') + '</div>' : '';
+  const firma = pf ? pf.el.slice().sort((a,b) => b.w - a.w).slice(0,3).map(x => x.n).join(', ') : '—';
+  const leg = '<div class="gin-leg">' + (!conBase ? '<span><i style="background:transparent;border:1.5px dashed var(--ink-soft)"></i>gin medio</span>' : '') +
+    '<span><i style="background:var(--juniper)"></i>' + breve(nome) + '</span>' + (pc ? '<span><i style="background:#C0733A"></i>' + breve(conf) + '</span>' : '') + '</div>';
+  return '<div class="radar-title">' + (conBase ? 'Profilo completo stimato' : 'La firma del gin, senza le base') + '</div>' + radarSVG(serie, 300) + leg +
+    '<div style="text-align:center;margin:6px 0 2px"><button type="button" class="ghost-btn gin-base-btn" aria-pressed="' + conBase + '">' + (conBase ? '− Togli le botaniche base' : '+ Aggiungi le botaniche base') + '</button></div>' +
+    distingue + cmp +
+    '<div class="radar-nota">Botaniche che pesano di più nella firma: ' + firma + '.</div>' +
+    '<div class="conf-tit" style="margin-top:10px">Confronta con i gin di carattere più vicino (tocca di nuovo per spegnere):</div><div class="gin-conf">' + chips + '</div>' + pop +
+    '<div class="radar-nota" style="margin-top:12px">Ginepro, coriandolo e angelica sono in quasi tutti i gin e appiattiscono le differenze: per questo il radar parte dalla sola firma, confrontata con il <em>gin medio</em> (la media delle firme dei gin di questa pagina). La somiglianza misura quanto due gin si scostano dal gin medio nella stessa direzione. Profili stimati sulle dosi di riferimento dell\'app: le proporzioni vere non sono dichiarate.' +
+    (g.parziale ? ' <strong>Lista incompleta:</strong> ' + g.parziale : '') + (g.nota ? ' ' + g.nota : '') + '</div>';
 }
 (function(){
   const pan = document.getElementById('panel-altrigin'); if (!pan) return;
@@ -5393,9 +5439,14 @@ function radarGinHtml(nome, conf){
     const nome = Object.keys(GIN_LISTE).find(n => titolo.startsWith(n)); if (!nome) return;
     const box = document.createElement('div'); box.className = 'gin-radar';
     (det.querySelector('.howto-body') || det).appendChild(box);
-    const disegna = conf => {
-      box.innerHTML = radarGinHtml(nome, conf);
-      const sel = box.querySelector('.gin-conf'); if (sel) sel.onchange = () => disegna(sel.value);
+    let attuale = '';
+    const disegna = (conf, aperto) => {
+      attuale = conf;
+      box.innerHTML = radarGinHtml(nome, conf, aperto);
+      const piu = box.querySelector('.gin-piu'); if (piu) piu.onclick = () => disegna(attuale, !aperto);
+      const bb = box.querySelector('.gin-base-btn'); if (bb) bb.onclick = () => { window.ginConBase = !window.ginConBase; disegna(attuale, aperto); };
+      box.querySelectorAll('.gin-riga').forEach(r => { r.onclick = () => disegna(r.dataset.n, false); });
+      box.querySelectorAll('.gin-conf .conf-chip[data-n]').forEach(b => { b.onclick = () => disegna(b.dataset.n === conf ? '' : b.dataset.n); });
     };
     let fatto = false;
     det.addEventListener('toggle', () => { if (det.open && !fatto){ fatto = true; disegna(''); } });
