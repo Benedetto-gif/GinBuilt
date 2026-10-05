@@ -1363,6 +1363,12 @@ footer.note{
 .sel-wrap input.sel-ric.nessuno{border-color:var(--red-sym);}
 
 .ruolo-hint{font-size:12px;color:var(--ink-faint);margin-top:6px;line-height:1.4;font-weight:400;}
+.fonti-box .ghost-btn{margin-top:6px;}
+.fonti-box .fonti-lock{display:block;margin:6px 0 0;font-size:12px;}
+.fonti-riga{display:grid;grid-template-columns:1fr;gap:4px;margin:10px 0;padding-top:8px;border-top:1px dashed rgba(127,127,127,.3);}
+.fonti-et{font-weight:600;font-size:13px;}
+.fonti-riga select,.fonti-riga input,.fonti-nota input{width:100%;box-sizing:border-box;font-size:14px;padding:6px;}
+.fonti-nota{display:block;margin-top:8px;font-size:13px;}
 .est-cal{font-size:13px;}
 .voc-dl dt{font-weight:600;margin-top:8px;}.voc-dl dd{margin:0 0 4px 0;color:var(--ink-faint);}
 .cmp-sel{display:flex;gap:6px;margin-bottom:8px;}.cmp-sel select{flex:1;min-width:0;}
@@ -3534,6 +3540,7 @@ function showDetail(name, nuovaScelta){
       <div class="field"><div class="k">Carattere</div><div class="v"><span class="tag carattere" style="--c:${coloreCarattere(d.carattere)}">${d.carattere || '—'}</span></div></div>
       <div class="field"><div class="k">Potenza</div><div class="v">${d.potenza10 ?? '—'}/10 (intensità ${d.intensita ?? '—'}/5, persistenza ${d.persistenza ?? '—'}/5)</div></div>
       ${calHtml}
+      ${fontiHtml(d.botanica)}
       <div class="field"><div class="k">Parte utilizzata</div><div class="v">${d.parte || '—'}</div></div>
       <div class="field"><div class="k">Edibile</div><div class="v">${d.edibile || 'Sì'}</div></div>
       <div class="field"><div class="k">🌾 Periodo di raccolta</div><div class="v">${d.periodo_raccolta || '—'}</div></div>
@@ -4618,7 +4625,7 @@ document.getElementById('new-test-btn').addEventListener('click', () => openForm
     info.classList.toggle('bk-warn', !d || giorni > 30);
   }
   document.getElementById('bk-export').addEventListener('click', () => {
-    const dati = { app: 'GinBuilder', versione: 1, esportato: new Date().toISOString(), schede: loadTests(), tarature: tarature(), prezzi: prezzi() };
+    const dati = { app: 'GinBuilder', versione: 1, esportato: new Date().toISOString(), schede: loadTests(), tarature: tarature(), prezzi: prezzi(), fonti: fonti() };
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([JSON.stringify(dati, null, 1)], {type: 'application/json'}));
     a.download = 'ginbuilder-schede-' + new Date().toISOString().slice(0, 10) + '.json';
@@ -4641,6 +4648,7 @@ document.getElementById('new-test-btn').addEventListener('click', () => openForm
         saveTests(att.concat(agg)); tests = loadTests();
         if (dati.tarature && typeof dati.tarature === 'object'){ try { localStorage.setItem('gb-tarature', JSON.stringify(Object.assign({}, dati.tarature, tarature()))); } catch(e){} }
         if (dati.prezzi && typeof dati.prezzi === 'object'){ try { localStorage.setItem('gb-prezzi', JSON.stringify(Object.assign({}, dati.prezzi, prezzi()))); } catch(e){} }
+        if (dati.fonti && typeof dati.fonti === 'object'){ try { localStorage.setItem('gb-fonti', JSON.stringify(Object.assign({}, dati.fonti, fonti()))); } catch(e){} }
         renderTestList(); aggInfo();
       } catch(e){ alert('File non valido: serve un backup esportato da GinBuilder.'); }
       file.value = '';
@@ -5309,6 +5317,99 @@ EST['Elicriso'].n = "Non è un doppione di «Elicriso delle scogliere»: quella 
 EST['Elicriso delle scogliere'].n = "Sottospecie costiera dell'elicriso: più salina e più potente, per questo la dose è la metà di quella dell'Elicriso comune.";
 EST['Vaniglia'].n = "Stessa specie della «Vaniglia bourbon» (origine Madagascar e Riunione): le due schede differiscono per dose e profilo, usane una sola nella ricetta. " + EST_N.baccello;
 EST['Vaniglia bourbon'].n = "Stessa specie della «Vaniglia» generica, di origine Madagascar e Riunione: usane una sola nella ricetta. " + EST_N.baccello;
+/* ===== Affidabilità e fonte dei dati, protette da impronta (WebAuthn locale) ===== */
+const FONTI_KEY = 'gb-fonti', FONTI_CRED = 'gb-fonti-cred';
+const FONTI_VOCI = [
+  ['profilo', 'Profilo e sentori'],
+  ['dose', 'Dose e tempi di macerazione'],
+  ['grado', 'Gradazione di estrazione'],
+  ['radar', 'Valori del radar (0–5)']
+];
+const FONTI_LIV = { stima: '🟠 Stima (Claude, non verificata)', verificato: '🔵 Verificato su fonte', testato: '🟢 Testato da me' };
+let fontiSbloccate = false;
+function fonti(){ try { return JSON.parse(localStorage.getItem(FONTI_KEY)) || {}; } catch(e){ return {}; } }
+function fontiEsc(t){ return String(t || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+function fontiSupportate(){ return !!(window.PublicKeyCredential && navigator.credentials && window.isSecureContext); }
+function fontiHtml(name){
+  const q = fontiEsc(name);
+  if (!fontiSbloccate){
+    const conf = !!localStorage.getItem(FONTI_CRED);
+    return `<div class="field full fonti-box"><div class="k">🔒 Affidabilità e fonte dei dati</div>
+      <div class="v"><span class="est-nota">Sezione riservata: si apre con l'impronta (o con lo sblocco del dispositivo).</span>
+      <button class="ghost-btn" type="button" data-n="${q}" onclick="fontiSblocca(this.dataset.n)">${conf ? '👆 Sblocca con impronta' : '👆 Configura l\'impronta'}</button>
+      <span class="est-nota" id="fonti-msg"></span></div></div>`;
+  }
+  const F = fonti()[name] || {};
+  const righe = FONTI_VOCI.map(([k, et]) => {
+    const v = F[k] || {}, liv = v.liv || 'stima';
+    return `<div class="fonti-riga"><div class="fonti-et">${et}</div>
+      <select id="fonti-liv-${k}">${Object.keys(FONTI_LIV).map(l => `<option value="${l}"${l === liv ? ' selected' : ''}>${FONTI_LIV[l]}</option>`).join('')}</select>
+      <input type="text" id="fonti-src-${k}" value="${fontiEsc(v.src)}" placeholder="Fonte (es. Fenaroli, p. 512; mio test 12/10)"></div>`;
+  }).join('');
+  const tutteStima = FONTI_VOCI.every(([k]) => !(F[k] && F[k].liv && F[k].liv !== 'stima'));
+  return `<div class="field full fonti-box aperta"><div class="k">🔓 Affidabilità e fonte dei dati
+      <button class="ghost-btn fonti-lock" type="button" data-n="${q}" onclick="fontiBlocca(this.dataset.n)">🔒 Blocca</button></div>
+    <div class="v">${tutteStima ? '<span class="est-nota">Finché non indichi altro, tutti i valori di questa botanica sono stime: vengono dalle conoscenze generali di Claude, non da misure o fonti controllate.</span>' : ''}
+      ${righe}
+      <label class="fonti-nota">Nota<input type="text" id="fonti-nota" value="${fontiEsc(F.nota)}" placeholder="es. lotto Sicilia 2026, più resinoso del previsto"></label>
+      <button class="ghost-btn" type="button" data-n="${q}" onclick="salvaFonti(this.dataset.n)">Salva</button>
+      <span class="est-nota" id="fonti-msg"></span></div></div>`;
+}
+function salvaFonti(name){
+  if (!fontiSbloccate) return;
+  const A = fonti(), F = {};
+  FONTI_VOCI.forEach(([k]) => {
+    const liv = document.getElementById('fonti-liv-' + k).value, src = document.getElementById('fonti-src-' + k).value.trim();
+    if (liv !== 'stima' || src) F[k] = { liv, src };
+  });
+  const nota = document.getElementById('fonti-nota').value.trim();
+  if (nota) F.nota = nota;
+  if (Object.keys(F).length) A[name] = F; else delete A[name];
+  try { localStorage.setItem(FONTI_KEY, JSON.stringify(A)); }
+  catch(e){ alert('Non riesco a salvare (memoria del browser piena o in modalità privata).'); return; }
+  showDetail(name);
+  const m = document.getElementById('fonti-msg'); if (m) m.textContent = '✓ Salvato';
+}
+function fontiBlocca(name){ fontiSbloccate = false; showDetail(name); }
+function fontiB64(buf){ return btoa(String.fromCharCode.apply(null, new Uint8Array(buf))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
+function fontiBuf(b64){ const s = atob(b64.replace(/-/g,'+').replace(/_/g,'/')); return Uint8Array.from(s, c => c.charCodeAt(0)); }
+async function fontiSblocca(name){
+  const msg = t => { const m = document.getElementById('fonti-msg'); if (m) m.textContent = t; };
+  if (!fontiSupportate()){ msg('Questo browser non supporta lo sblocco biometrico. Apri l\'app installata o da Chrome/Safari aggiornati.'); return; }
+  const sfida = crypto.getRandomValues(new Uint8Array(32));
+  let id = localStorage.getItem(FONTI_CRED);
+  try {
+    if (!id){
+      if (!confirm('Configuro lo sblocco con l\'impronta su questo dispositivo. Il telefono ti chiederà di appoggiare il dito. Procedo?')) return;
+      const c = await navigator.credentials.create({ publicKey: {
+        challenge: sfida, rp: { name: 'GinBuilder' },
+        user: { id: crypto.getRandomValues(new Uint8Array(16)), name: 'ginbuilder', displayName: 'GinBuilder — dati riservati' },
+        pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+        authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required', residentKey: 'discouraged' },
+        timeout: 60000, attestation: 'none' } });
+      if (!c) throw new Error('annullato');
+      localStorage.setItem(FONTI_CRED, fontiB64(c.rawId));
+    } else {
+      const a = await navigator.credentials.get({ publicKey: {
+        challenge: sfida, allowCredentials: [{ type: 'public-key', id: fontiBuf(id), transports: ['internal'] }],
+        userVerification: 'required', timeout: 60000 } });
+      if (!a) throw new Error('annullato');
+      // flag UV (bit 2) nei dati dell'autenticatore: l'utente è stato verificato davvero
+      const flags = new Uint8Array(a.response.authenticatorData)[32];
+      if (!(flags & 4)) throw new Error('nessuna verifica');
+    }
+    fontiSbloccate = true;
+    showDetail(name);
+  } catch(e){
+    if (id && e && e.name === 'NotAllowedError'){
+      msg('Sblocco annullato o impronta non riconosciuta. Se hai cambiato telefono o reinstallato l\'app, ');
+      const m = document.getElementById('fonti-msg');
+      if (m){ const b = document.createElement('button'); b.className = 'ghost-btn'; b.type = 'button'; b.textContent = 'riconfigura l\'impronta';
+        b.onclick = () => { if (confirm('Registro di nuovo l\'impronta? I dati salvati restano.')){ localStorage.removeItem(FONTI_CRED); fontiSblocca(name); } }; m.appendChild(b); }
+    } else msg('Sblocco non riuscito' + (e && e.name ? ' (' + e.name + ')' : '') + '.');
+  }
+}
+document.addEventListener('visibilitychange', () => { if (document.hidden && fontiSbloccate){ fontiSbloccate = false; if (currentDetailName && document.querySelector('.fonti-box.aperta')) showDetail(currentDetailName); } });
 function prezzi(){ try { return JSON.parse(localStorage.getItem('gb-prezzi')) || {}; } catch(e){ return {}; } }
 function salvaPrezzo(n){
   if (!document.getElementById('prezzo-v')) return;
