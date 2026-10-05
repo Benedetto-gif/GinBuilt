@@ -715,6 +715,25 @@ html.con-splash, html.con-splash body{overflow:hidden;}
 }
 
 /* ---------------- Cocktail ---------------- */
+.lab-wrap{margin-top:34px;}
+.lab-tit{font-size:22px;margin:0 0 6px;}
+.lab-intro{font-size:14px;color:var(--ink-soft);line-height:1.55;margin:0 0 16px;}
+.lab-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:16px;}
+.lab-card .lab-tec{display:inline-block;font-size:11.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--c);margin-bottom:6px;}
+.lab-ip{font-size:13.5px;margin:8px 0 10px;padding:8px 10px;border-left:3px solid var(--c);background:var(--surface-2);border-radius:6px;}
+.lab-prep{font-size:13px;color:var(--ink-soft);margin:8px 0;line-height:1.5;}
+.lab-card .radar-box{margin:10px 0;}
+.lab-ass{margin-top:10px;}
+.lab-ass>summary{cursor:pointer;font-weight:650;font-size:14px;}
+.lab-ass .tf-grid{margin-top:8px;}
+.lab-ass textarea, .lab-nuovo textarea{width:100%;box-sizing:border-box;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font:inherit;}
+.lab-ass .tf-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;gap:8px 10px;}
+.lab-ass .tf-grid label{min-width:0;}
+.lab-ass select{width:100%;min-width:0;max-width:100%;box-sizing:border-box;}
+.lab-storia{list-style:none;padding:0;margin:8px 0 0;font-size:13px;}
+.lab-storia li{border-top:1px solid var(--line);padding:6px 0;display:flex;gap:8px;justify-content:space-between;align-items:flex-start;}
+.lab-x{border:none;background:transparent;color:var(--ink-faint);cursor:pointer;font-size:15px;}
+.lab-nuovo textarea{width:100%;}
 .ck-filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:26px;}
 .ck-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;}
 .ck-card{
@@ -1298,6 +1317,8 @@ footer.note{
 .inf-table td.dose{font-weight:750;color:var(--juniper-deep);}
 .inf-table .inf-cau{display:block;font-size:11.5px;color:var(--orange-sym);margin-top:3px;}
 .inf-table .inf-sub{display:block;font-size:11.5px;color:var(--ink-faint);}
+.inf-in-scheda{margin:14px 0;}
+.inf-in-scheda h4{margin:0 0 8px;font-size:16px;}
 .inf-list{display:flex;flex-direction:column;gap:6px;margin-top:10px;}
 .inf-item{border:1px solid var(--line);border-radius:12px;background:var(--surface);scroll-margin-top:96px;}
 .inf-item>summary{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;list-style:none;}
@@ -1445,14 +1466,14 @@ footer.note{
     <button data-tab="storia">📖 Storia del gin</button>
     <button data-tab="builder">🎯 Gin Builder</button>
     <button data-tab="ridondanza">🧬 Ridondanze e complementari</button>
-    <button data-tab="infusi">🧫 Preparazione infuso</button>
     <button data-tab="prove">🧪 Schede di prova</button>
-    <button data-tab="libreria">🌿 Botaniche</button>
+    <button data-tab="libreria">🌿 Botaniche e infusi</button>
     <button data-tab="vocabolario">📚 Vocabolario</button>
     <button data-tab="nozioni">🔬 Nozioni tecniche</button>
     <button data-tab="analisi">👃 Analisi sensoriale</button>
     <button data-tab="altrigin">🥃 Gli altri gin</button>
     <button data-tab="cocktail">🍸 Cocktail</button>
+    <button data-tab="laboratorio">🧪 Laboratorio cocktail</button>
   </nav>
   </div>
 
@@ -1481,7 +1502,7 @@ footer.note{
       <span class="hero-go">Leggi →</span>
     </div>
 
-    <p class="home-path-label">Il percorso in 5 passi, dalla botanica al bicchiere:</p>
+    <p class="home-path-label">Il percorso in 3 passi, dalla botanica al bicchiere:</p>
     <div class="home-grid">
       <div class="home-card" data-goto="libreria" style="--c:var(--c-erbaceo)">
         <span class="hc-step">1</span>
@@ -1491,9 +1512,9 @@ footer.note{
         <path class="leaf l2" d="M24 24 C32 23 35.5 18 35.5 12.5 C28 12.5 24 18 24 24 Z"/>
         <circle class="berry" cx="24" cy="9" r="3.2" fill="currentColor" stroke="none"/>
       </svg></div>
-        <h3>Botaniche</h3>
+        <h3>Botaniche e infusi</h3>
         <p>Parti da qui: le <span class="bot-count">84</span> schede dell'erbario, con profilo aromatico, potenza,
-          dose operativa, tempo di infusione, periodo di raccolta e zone italiane.</p>
+          raccolta e zone italiane, e per ognuna la preparazione dell'infuso: gradazione, diluizione, grammi e tempo.</p>
       </div>
       <div class="home-card" data-goto="builder" style="--c:var(--c-secco)">
         <span class="hc-step">2</span>
@@ -1507,19 +1528,8 @@ footer.note{
         <p>Poi componi la struttura: scegli uno stile e assegna le botaniche ai ruoli (base, freschezza, identità,
           cuore, firma, rifinitura). Ridondanze e complementari ti vengono segnalati qui.</p>
       </div>
-      <div class="home-card" data-goto="infusi" style="--c:var(--c-marino)">
-        <span class="hc-step">3</span>
-        <div class="hc-icon"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M18 8 H30 M20 8 V14 C13 18 11 24 11 31 C11 38 15 41 24 41 C33 41 37 38 37 31 C37 24 35 18 28 14 V8"/>
-          <path d="M12 29 C18 27 30 31 36 28" opacity=".6"/>
-          <circle cx="20" cy="34" r="1.6" fill="currentColor" stroke="none"/><circle cx="27" cy="35" r="1.3" fill="currentColor" stroke="none"/>
-        </svg></div>
-        <h3>Preparazione infuso</h3>
-        <p>Metti in infusione ogni botanica: imposti temperatura e volume e trovi gradazione,
-          tempo di macerazione, quantità e diluizione.</p>
-      </div>
       <div class="home-card" data-goto="prove" style="--c:var(--c-siciliano)">
-        <span class="hc-step">4</span>
+        <span class="hc-step">3</span>
         <div class="hc-icon"><svg viewBox="0 0 48 48" class="anim anim-beaker" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
         <defs><clipPath id="beakerClip">
           <path d="M18 20 L11 36 A3 3 0 0 0 14 40 H34 A3 3 0 0 0 37 36 L30 20 Z"/>
@@ -1533,19 +1543,9 @@ footer.note{
         <path d="M18 8 V20 L11 36 A3 3 0 0 0 14 40 H34 A3 3 0 0 0 37 36 L30 20 V8"/>
         <path d="M16 8 H32"/>
       </svg></div>
-        <h3>Schede di prova</h3>
-        <p>Registra tutto: percentuali degli infusi, calcolo della diluizione, valutazione
-          all'assaggio e correzioni per la volta successiva.</p>
-      </div>
-      <div class="home-card" data-goto="prove" data-scroll="calc-box" style="--c:var(--c-speziato)">
-        <span class="hc-step">5</span>
-        <div class="hc-icon"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M24 7 C24 7 12 21 12 29 A12 12 0 0 0 36 29 C36 21 24 7 24 7 Z"/>
-          <path d="M18 31 H30 M24 25 V37" opacity=".7"/>
-        </svg></div>
-        <h3>Diluizione dell'alcol</h3>
-        <p>Porta il gin alla gradazione finale: quanto alcol e quanta acqua demineralizzata,
-          in ml e in grammi.</p>
+        <h3>Schede di prova e diluizione</h3>
+        <p>Registra tutto: percentuali degli infusi, valutazione all'assaggio e correzioni per la volta
+          successiva. Nella stessa pagina il calcolatore porta il gin alla gradazione finale: alcol e acqua in ml e in grammi.</p>
       </div>
       <div class="home-card" data-goto="cocktail" style="--c:var(--c-floreale)">
         <div class="hc-icon"><svg viewBox="0 0 48 48" class="anim anim-coupe" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
@@ -1558,6 +1558,14 @@ footer.note{
         <h3>I cocktail classici</h3>
         <p>Infine, il banco di prova: venti grandi drink a base gin con le dosi standard,
           dal Martini al Negroni, per vedere la tua ricetta all'opera.</p>
+      </div>
+      <div class="home-card" data-goto="laboratorio" style="--c:var(--ochre)">
+        <div class="hc-icon"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 7 H29 M21 7 V19 L11 37 A3 3 0 0 0 14 41 H34 A3 3 0 0 0 37 37 L27 19 V7"/>
+          <path d="M15 31 H33" opacity=".6"/><circle cx="21" cy="35" r="1.6" fill="currentColor" stroke="none"/><circle cx="28" cy="34" r="1.2" fill="currentColor" stroke="none"/>
+        </svg></div>
+        <h3>Laboratorio cocktail</h3>
+        <p>Cocktail sperimentali con un'ipotesi da verificare, il radar previsto e gli assaggi annotati versione dopo versione.</p>
       </div>
     </div>
 
@@ -1658,16 +1666,17 @@ footer.note{
     <details class="howto">
       <summary>Come si usa</summary>
       <div class="howto-body">
-        <p>L'erbario: <span class="bot-count">84</span> botaniche con profilo aromatico, funzione nel gin, potenza, dose e tempo di infusione.</p>
+        <p>L'erbario e la preparazione degli infusi in una sola pagina: <span class="bot-count">84</span> botaniche con profilo aromatico, funzione nel gin, potenza e, per ognuna, la scheda per metterla in infusione.</p>
         <ol>
-          <li>Filtra per famiglia, carattere o potenza minima, oppure cerca per nome o per descrizione del profilo.</li>
-          <li>Tocca una scheda per aprire il dettaglio: dose operativa in grammi per il volume scelto, tempo di infusione,
-            periodo di raccolta e zone italiane in cui trovarla.</li>
-          <li>Modifica grado alcolico, temperatura e volume nella barra "condizioni di infusione simulate": tempi e dosi si
-            ricalcolano subito, grado dopo grado, in base ai valori che imposti.</li>
-          <li>Nel dettaglio trovi anche l'<strong>estrazione consigliata</strong>: la gradazione e il tempo di macerazione che rendono meglio per quella botanica (alcol più alto per resine e scorze, più basso per fiori e frutta), con il perché.</li>
+          <li>Filtra per famiglia, carattere, uso o potenza, oppure cerca per nome o per descrizione del profilo.</li>
+          <li>Tocca una scheda per aprirla: in alto il <strong>profilo sensoriale</strong> (il radar, con il confronto con simili, sostitutive e complementari), subito sotto la <strong>preparazione dell'infuso</strong>, poi i dati dell'erbario.</li>
+          <li>Nel quadro <em>Condizioni dell'infuso</em> imposti temperatura di conservazione (al buio), alcol di partenza, grado di estrazione e volume da ottenere: diluizione (alcol + acqua), grammi, tempo, primo assaggio e avvisi si ricalcolano subito. Aperta una botanica, il grado parte dal minimo consigliato in erbario.</li>
+          <li>Scegli lo <strong>Stato</strong>: fresca (appena raccolta) o secca. Peso e tempo si ricalcolano; con «Stato delle botaniche» li imposti tutti insieme. Le botaniche fresche portano acqua e abbassano un po' la gradazione.</li>
+          <li>Assaggia al <strong>primo assaggio</strong> e poi a intervalli: gli estremi dell'intervallo sono limiti, non obiettivi. Le dosi sono per un infuso concentrato, da miscelare a percentuale nelle Schede di prova.</li>
           <li>Leggi sempre il riquadro <em>Da non accumulare con</em> prima di portare una botanica in ricetta.</li>
+          <li>Due stampe: la scheda della botanica aperta, oppure l'elenco filtrato.</li>
         </ol>
+        <p>I fattori sono stime orientative: vanno tarate con assaggi (nella scheda trovi «La mia taratura»).</p>
       </div>
     </details>
     <details class="howto" id="solub-lib">
@@ -1720,23 +1729,29 @@ footer.note{
       <label class="inf-q-label">Cerca la botanica<input type="text" id="search" placeholder="Scrivi il nome o la prima lettera…" /></label>
       <span class="count-tag" id="count-tag"></span>
     </div>
-    <div class="cond-box">
-      <span class="cond-label">Condizioni di infusione simulate:</span>
-      <label>Grado alcolico (%)<input type="number" id="lib-abv" placeholder="consigliato" step="1" min="20" max="96"><span class="inf-sub" id="lib-abv-range"></span></label>
-      <label>Temperatura (°C)<input type="number" id="lib-temp" value="20" step="1" min="0" max="60"></label>
-      <label>Volume di infuso da ottenere (ml)<input type="number" id="lib-vol" value="100" step="25" min="10"></label>
-      <span class="cond-hint">Regola questi valori (con i tasti − / +) per vedere come cambiano tempo e dose consigliati per la botanica selezionata, grado dopo grado. Scelta una botanica, il grado alcolico parte dal minimo consigliato in erbario.</span>
+    <div class="cond-box cond-compact" id="inf-cond">
+      <span class="cond-label">Condizioni dell'infuso:</span>
+      <label>Temperatura di conservazione, al buio (°C)<input type="number" id="inf-temp" value="20" step="1" min="0" max="60"></label>
+      <label>Alcol di partenza (°)<input type="number" id="inf-abvS" value="96" step="0.5" min="40" max="96"></label>
+      <label>Grado di estrazione desiderato (%)<input type="number" id="inf-abv" placeholder="consigliato" step="1" min="20" max="96"><span class="inf-sub" id="inf-abv-range"></span></label>
+      <label>Volume di infuso da ottenere (ml)<input type="number" id="inf-vol" value="100" step="25" min="10"></label>
+      <input type="hidden" id="inf-mod" value="tempo">
+      <label>Stato delle botaniche
+        <select id="inf-stato"><option value="ref">Come da libreria</option><option value="secco">Tutte secche</option><option value="fresco">Tutte fresche</option></select>
+      </label>
+      <span class="cond-hint">Valgono per la scheda della botanica aperta: con i tasti − / + vedi come cambiano dose, tempo e diluizione, grado dopo grado.</span>
     </div>
+    <div id="inf-info"></div>
     <div class="grid" id="grid"></div>
     <div class="detail" id="detail"></div>
-    <div style="margin-top:14px;"><button class="ghost-btn" id="lib-print" type="button">🖨️ Stampa elenco</button></div>
+    <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;"><button class="ghost-btn" id="inf-print" type="button">🖨️ Stampa scheda della botanica aperta</button><button class="ghost-btn" id="lib-print" type="button">🖨️ Stampa elenco</button></div>
   </section>
 
   <!-- NOZIONI TECNICO-SCIENTIFICHE -->
   <section class="panel" id="panel-nozioni">
     <div class="storia">
       <h2>Nozioni tecnico-scientifiche</h2>
-      <p class="storia-sub">Le spiegazioni sulla chimica e la pratica dell'infusione, raccolte in un solo posto. Si trovano, con lo stesso contenuto, anche nelle pagine di provenienza (Botaniche, Infusi, Schede di prova, Gin Builder, Vocabolario): qui sono solo riunite per una consultazione comoda.</p>
+      <p class="storia-sub">Le spiegazioni sulla chimica e la pratica dell'infusione, raccolte in un solo posto. Si trovano, con lo stesso contenuto, anche nelle pagine di provenienza (Botaniche e infusi, Schede di prova, Gin Builder, Vocabolario): qui sono solo riunite per una consultazione comoda.</p>
 
       <h3>Gradazione e solubilità dell'alcol</h3>
         <details class="howto" id="gradaz-noz">
@@ -1750,7 +1765,7 @@ footer.note{
         </ul>
         <p><strong>Perché l'alcol a 96% non è sempre ideale.</strong> Estrae di più cere, resine, pigmenti e componenti amare; può rendere l'estratto aggressivo o sbilanciato; estrae meno bene le sostanze che hanno bisogno d'acqua; alla diluizione può dare opalescenza o precipitazione degli oli; sulle botaniche fresche disidrata in fretta la superficie e rallenta la penetrazione. Per questo, di solito, una gradazione intermedia (50–70%) è il compromesso migliore: anche per la vaniglia i risultati migliori sono riportati intorno al 50%.</p>
         <p><strong>L'acqua della pianta.</strong> Una botanica fresca contiene già acqua e abbassa il grado effettivo del macerato (100 g di pianta fresca possono contenere circa 70 g di acqua). Con materia fresca e molto acquosa, in grande quantità, può servire partire da 70–80%; ma alle dosi del gin (pochi grammi per 100 ml) l'acqua della pianta abbassa il grado di appena 1–3 punti; con materia secca bastano spesso 50–65%; con radici, semi, resine e scorze secche si può salire verso 70–90% secondo il risultato voluto, ma per il gin conviene restare sul lato prudente: l'app propone per ogni botanica un valore e una soglia da non superare.</p>
-        <p><strong>Metodo sperimentale per una botanica nuova.</strong> Prepara tre piccoli campioni identici a <strong>40%, 60% e 80%</strong> (la scheda di ogni botanica negli Infusi calcola alcol e acqua per i tre campioni). Tieni uguali peso della botanica, rapporto botanica/alcol (per esempio 1 parte di secca ogni 5–10 di alcol), dimensione dei pezzi, tempo, temperatura, agitazione e filtrazione. Poi confronta intensità e qualità dell'aroma, amaro o astringenza, colore, limpidezza dopo la diluizione e stabilità dopo alcuni giorni. Con botaniche molto intense (chiodo di garofano, cannella, assenzio, scorze amare) riduci il tempo prima ancora di cambiare la gradazione.</p>
+        <p><strong>Metodo sperimentale per una botanica nuova.</strong> Prepara tre piccoli campioni identici a <strong>40%, 60% e 80%</strong> (la scheda di ogni botanica, nella pagina Botaniche, calcola alcol e acqua per i tre campioni). Tieni uguali peso della botanica, rapporto botanica/alcol (per esempio 1 parte di secca ogni 5–10 di alcol), dimensione dei pezzi, tempo, temperatura, agitazione e filtrazione. Poi confronta intensità e qualità dell'aroma, amaro o astringenza, colore, limpidezza dopo la diluizione e stabilità dopo alcuni giorni. Con botaniche molto intense (chiodo di garofano, cannella, assenzio, scorze amare) riduci il tempo prima ancora di cambiare la gradazione.</p>
         <p><strong>In sintesi:</strong> oli essenziali e resine 70–90%; estratto aromatico equilibrato 55–70%; anche zuccheri, acidi, tannini e idrosolubili 35–55%; se non sai quale frazione prevalga, confronta 40, 60 e 80%. Usa solo etanolo di grado alimentare, mai alcol denaturato o solventi tecnici. Se l'estratto deve entrare in un gin a 35–45% vol., controlla sempre la <strong>limpidezza dopo la diluizione</strong>: è spesso questo test, più della gradazione iniziale, a dire se il solvente era giusto.</p>
       </div>
     </details>
@@ -2339,53 +2354,7 @@ footer.note{
   </section>
 
   <!-- INFUSI -->
-  <section class="panel" id="panel-infusi">
-    <details class="howto">
-      <summary>Come si usa</summary>
-      <div class="howto-body">
-        <p>Pagina di lavoro per preparare gli infusi, una botanica alla volta. L'elenco non resta esteso: scrivi il nome nella casella di ricerca e si apre solo la scheda di quella botanica, tutte le altre restano chiuse.</p>
-        <ol>
-          <li>Cerca e apri la scheda della botanica: trovi subito la sua <strong>gradazione consigliata in erbario</strong>.</li>
-          <li>Nel quadro delle variabili imposta temperatura di conservazione (al buio), alcol di partenza, grado di estrazione desiderato e volume di infuso da ottenere: diluizione (alcol + acqua), dose, tempo e avvisi si ricalcolano subito a ogni modifica. Accanto alla casella del grado di estrazione trovi il range consigliato per la botanica aperta; più ti allontani da quel range, più il tempo di macerazione si corregge e, se superi le soglie di sicurezza, compare un avviso sul rischio di estrarre sostanze indesiderate (resine, tannini, amari).</li>
-          <li>La scheda dà i grammi da mettere, il tempo di estrazione e le <strong>molecole aromatiche dell'erbario</strong> che l'estrazione punta a portare in soluzione.</li>
-          <li>Scegli lo <strong>Stato</strong>: fresca (appena raccolta) o secca. Peso e tempo si ricalcolano; con «Stato delle botaniche» li imposti tutti insieme. Le botaniche fresche portano acqua e abbassano un po' la gradazione.</li>
-          <li>Leggi la colonna <strong>Come prepararla e usarla</strong>: dice come trattare la botanica e a cosa si riferisce il peso (senza altra indicazione, botanica secca).</li>
-          <li>Assaggia al <strong>primo assaggio</strong> e poi a intervalli: gli estremi dell'intervallo sono limiti, non obiettivi.</li>
-          <li>Le dosi sono per un infuso concentrato, da miscelare a percentuale nelle Schede di prova. Il pulsante di stampa riguarda solo la botanica aperta; per stampare l'elenco intero vai alla pagina Botaniche.</li>
-        </ol>
-        <p>I fattori sono stime orientative, uguali a quelle della Libreria: vanno tarate con assaggi.</p>
-      </div>
-    </details>
-    <details class="howto" id="solub-inf">
-      <summary>La solubilità selettiva (la gradazione dell'alcol)</summary>
-      <div class="howto-body">
-        <p>Ogni botanica rilascia le sue molecole migliori solo a una specifica gradazione alcolica. L'alcol funge da solvente, e l'acqua che contiene scioglie un'altra parte delle sostanze.</p>
-        <ul>
-          <li><strong>Molecole idrofobe (oli essenziali).</strong> Il ginepro (ricco di alfa-pinene) e gli agrumi come il cedro (ricchi di limonene) richiedono una gradazione alta per sciogliersi ed essere estratti bene: 60-70% per il ginepro, intorno all'80% per le scorze. Se la gradazione è troppo bassa, una parte del profumo resta nella botanica.</li>
-          <li><strong>Molecole idrofile e parti verdi.</strong> Foglie come quelle di cappero e il finocchio di mare contengono acqua cellulare, clorofilla e componenti idrosolubili. Con un alcol troppo basso, o tempi troppo lunghi, passano note sgradevoli di erba bagnata o fieno. Un alcol altissimo (80-95%) estrae bene anche clorofilla e cere: per le foglie fresche conviene una gradazione media (55–65%) e poche ore al buio, così si preleva soprattutto la frazione aromatica.</li>
-        </ul>
-        <p><strong>Più forte non è meglio.</strong> Un solvente troppo forte non estrae solo gli aromi buoni: trascina anche resine, cere, clorofilla e amari duri, che danno note di trementina, di erba tagliata o di amaro. Un solvente troppo debole lascia gli oli nella botanica e porta tannini e acqua. Per questo ogni botanica ha una gradazione consigliata, una soglia oltre cui evitare di salire e il relativo tempo di macerazione; nelle schede trovi cosa succede oltre e sotto quei limiti. I valori sono stime di partenza: affinali con le tue tarature e con gli assaggi.</p>
-      </div>
-    </details>
-    <div class="controls">
-      <label class="inf-q-label">Cerca la botanica da infondere<input type="text" id="inf-q" placeholder="Scrivi il nome o la prima lettera…" /></label>
-      <span class="count-tag" id="inf-count"></span>
-    </div>
-    <div class="inf-list" id="inf-body"></div>
-    <div class="cond-box cond-compact">
-      <span class="cond-label">Variabili:</span>
-      <label>Temperatura di conservazione, al buio (°C)<input type="number" id="inf-temp" value="20" step="1" min="0" max="60"></label>
-      <label>Alcol di partenza (°)<input type="number" id="inf-abvS" value="96" step="0.5" min="40" max="96"></label>
-      <label>Grado di estrazione desiderato (%)<input type="number" id="inf-abv" placeholder="consigliato" step="1" min="20" max="96"><span class="inf-sub" id="inf-abv-range"></span></label>
-      <label>Volume di infuso da ottenere (ml)<input type="number" id="inf-vol" value="100" step="25" min="10"></label>
-      <input type="hidden" id="inf-mod" value="tempo">
-      <label>Stato delle botaniche
-        <select id="inf-stato"><option value="ref">Come da libreria</option><option value="secco">Tutte secche</option><option value="fresco">Tutte fresche</option></select>
-      </label>
-    </div>
-    <div id="inf-info"></div>
-    <div style="margin-top:14px;"><button class="ghost-btn" id="inf-print" type="button">🖨️ Stampa scheda</button></div>
-  </section>
+  
 
   <!-- SCHEDE DI PROVA -->
   <section class="panel" id="panel-prove">
@@ -2580,6 +2549,7 @@ footer.note{
           <li>Usa i pulsanti per filtrare per famiglia: i mescolati, gli amari da aperitivo, i sour e i long drink.</li>
           <li>In fondo a ogni scheda trovi lo <strong>stile di gin consigliato</strong>: ritrova lo stesso nome nel Gin Builder
             se vuoi costruire una ricetta pensata per quel cocktail.</li>
+          <li>I cocktail sperimentali hanno una pagina a parte, il <strong>Laboratorio cocktail</strong> (pulsante in fondo a questa pagina).</li>
           <li>Un gin si giudica davvero in tre prove: liscio a temperatura di cantina, in gin tonic e in un mescolato secco
             come il Martini. Il primo racconta la materia, il secondo l'apertura aromatica, il terzo la struttura.</li>
         </ul>
@@ -2588,12 +2558,50 @@ footer.note{
 
     <div class="ck-filters" id="ck-filters"></div>
     <div class="ck-grid" id="ck-grid"></div>
+    <p style="margin:18px 0 0;"><button type="button" class="ghost-btn" onclick="showTab('laboratorio')">🧪 Vai al Laboratorio: cocktail sperimentali →</button></p>
     <p class="home-note">Le dosi sono quelle consolidate nella letteratura di bar: sono un punto di partenza, non un dogma.
       Il rapporto fra gin e vermouth nel Martini, per dire, è cambiato di dieci volte in un secolo.</p>
   </section>
 
+  <!-- ============ LABORATORIO ============ -->
+  <section class="panel" id="panel-laboratorio">
+    <details class="howto">
+      <summary>Come si usa</summary>
+      <div class="howto-body">
+        <p>Cocktail sperimentali, separati dai classici: ognuno mette alla prova una tecnica (soluzione salina, cordiale con acidi in polvere, sciroppo infuso, chiarificazione al latte…) con le botaniche dell'erbario.</p>
+        <ul>
+          <li>Leggi l'<strong>ipotesi</strong>: è quello che l'assaggio deve confermare o smentire.</li>
+          <li>Il <strong>radar previsto</strong> è una stima dai profili degli ingredienti; dopo il primo assaggio compare in arancione quello che hai sentito.</li>
+          <li>In <em>Assaggia e annota</em> dai gli otto voti (stessa scala tarata delle Schede di prova), il giudizio, se l'ipotesi è verificata, e le correzioni: ogni salvataggio diventa una versione (v1, v2…).</li>
+          <li>Con <em>Aggiungi un tuo esperimento</em> crei schede tue; le trovi nel filtro «I miei».</li>
+        </ul>
+        <p>Gli assaggi restano salvati su questo dispositivo.</p>
+      </div>
+    </details>
+    <div class="lab-wrap" id="lab" style="margin-top:0">
+            <p class="lab-intro">Ricette nuove, pensate per mettere alla prova una tecnica alla volta con le botaniche dell'erbario. Ogni scheda ha un'<strong>ipotesi</strong> da verificare, il <strong>radar previsto</strong> (stima dai profili degli ingredienti) e lo spazio per annotare gli assaggi: dopo il primo assaggio sul radar compare anche quello che hai sentito. Le dosi sono un punto di partenza, non ancora provate.</p>
+      <div class="ck-filters" id="lab-filters"></div>
+      <div class="lab-grid" id="lab-grid"></div>
+      <details class="howto lab-nuovo">
+        <summary>➕ Aggiungi un tuo esperimento</summary>
+        <div class="howto-body">
+          <div class="tf-grid">
+            <label>Nome<input type="text" id="lab-n" placeholder="es. Martini al lentisco"></label>
+            <label>Tecnica<input type="text" id="lab-tec" placeholder="es. infusione rapida, cordiale, chiarificazione"></label>
+          </div>
+          <label>Ricetta (un ingrediente per riga)<textarea id="lab-ing" rows="4" placeholder="50 ml gin&#10;20 ml cordiale di…"></textarea></label>
+          <label>Metodo e servizio<input type="text" id="lab-m" placeholder="es. mescolato, coppa fredda, twist di limone"></label>
+          <label>Che cosa voglio verificare<input type="text" id="lab-ip" placeholder="es. il lentisco regge la diluizione del ghiaccio?"></label>
+          <div class="tf-grid" id="lab-bot"></div>
+          <button class="ghost-btn" type="button" id="lab-salva-nuovo">Salva l'esperimento</button>
+        </div>
+      </details>
+    </div>
+    <p style="margin:18px 0 0;"><button type="button" class="ghost-btn" onclick="showTab('cocktail')">← I cocktail classici</button></p>
+  </section>
+
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 5 ottobre 2026, ore 12:00 · simili mostrati per profilo vicino (70 %) o per famiglia</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 5 ottobre 2026, ore 19:00 · Laboratorio cocktail in una pagina a parte</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -3162,7 +3170,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
-  const IN_HOME = ['storia', 'builder', 'infusi', 'prove', 'libreria', 'cocktail'];   // già raggiungibili dalla prima pagina
+  const IN_HOME = ['storia', 'builder', 'prove', 'libreria', 'cocktail', 'laboratorio'];   // già raggiungibili dalla prima pagina
   // Le pagine restanti si presentano raggruppate, dalla più utile mentre si costruisce
   // una ricetta alle pagine di approfondimento/riferimento, invece che nell'ordine dei tab.
   const GROUPS = [
@@ -3208,13 +3216,11 @@ document.querySelectorAll('[data-goto]').forEach(el => {
 });
 // Apre la pagina Infusi direttamente sulla scheda di una botanica (usata dagli avvisi di gradazione del Builder).
 function apriInfusi(nome){
-  showTab('infusi');
-  const q = document.getElementById('inf-q');
-  if (!q) return;
-  q.value = nome;
-  q.dispatchEvent(new Event('input', { bubbles: true }));
-  const v = () => q.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  setTimeout(v, 60); setTimeout(v, 300);
+  showTab('libreria');
+  if (!byName[nome]) return;
+  showDetail(nome, true);
+  const v = () => { const t = document.getElementById('inf-body'); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+  setTimeout(v, 80); setTimeout(v, 360);
 }
 
 // ---------- Libreria ----------
@@ -3358,9 +3364,9 @@ function renderGrid(){
 }
 
 let currentDetailName = null;
-const libAbvInput = document.getElementById('lib-abv');
-const libTempInput = document.getElementById('lib-temp');
-const libVolInput = document.getElementById('lib-vol');
+const libAbvInput = document.getElementById('inf-abv');
+const libTempInput = document.getElementById('inf-temp');
+const libVolInput = document.getElementById('inf-vol');
 [libTempInput, libVolInput].forEach(el => wrapStepper(el));
 wrapStepper(libAbvInput, 1, { emptyStart: () => {
   const dCur = currentDetailName && byName[currentDetailName];
@@ -3392,7 +3398,7 @@ function showDetail(name, nuovaScelta){
   const isRef = (abv === REF_ABV && temp === REF_TEMP);
   const tempWarn = (temp < 15 || temp > 35)
     ? '<div class="warn-box">Temperatura fuori dall’intervallo di lavoro previsto (15–35 °C): la stima è meno affidabile.</div>' : '';
-  const libAbvRange = document.getElementById('lib-abv-range');
+  const libAbvRange = document.getElementById('inf-abv-range');
   if (libAbvRange) libAbvRange.textContent = E ? ('Consigliato in erbario: ' + estAbvTxt(E.a)) : '';
   const lim = estLimiti(d);
   let gradWarn = '';
@@ -3438,19 +3444,15 @@ function showDetail(name, nuovaScelta){
     <div class="detail-icon">${d.icona || '🌿'}</div>
     <h3>${d.botanica}</h3>
     <div class="sub">${d.nome_botanico ? d.nome_botanico + ' · ' : ''}${d.categoria} — ${d.sottofamiglia || ''}</div>
-    ${tempWarn}
-    ${gradWarn}
     ${radarBox(d.botanica)}
+    <div class="inf-in-scheda"><h4>🧫 Preparazione dell'infuso</h4><div id="inf-body"></div></div>
     <div class="detail-grid">
       <div class="field"><div class="k">Profilo aromatico</div><div class="v">${d.profilo || '—'}</div></div>
       <div class="field"><div class="k">Direzione</div><div class="v">${d.direzione || '—'}</div></div>
       <div class="field"><div class="k">Funzione operativa</div><div class="v">${d.funzione_op || '—'}</div></div>
       <div class="field"><div class="k">Carattere</div><div class="v"><span class="tag carattere" style="--c:${coloreCarattere(d.carattere)}">${d.carattere || '—'}</span></div></div>
       <div class="field"><div class="k">Potenza</div><div class="v">${d.potenza10 ?? '—'}/10 (intensità ${d.intensita ?? '—'}/5, persistenza ${d.persistenza ?? '—'}/5)</div></div>
-      <div class="field"><div class="k">${doseLabel}</div><div class="v">${doseValue}</div></div>
-      <div class="field"><div class="k">${tempoLabel}</div><div class="v">${tempoValue}</div></div>
-      ${estHtml}${calHtml}
-      <div class="field full"><div class="k">🧪 Molecole da estrarre</div><div class="v">${MOLECOLE[name] || 'Scheda non ancora compilata.'}</div></div>
+      ${calHtml}
       <div class="field"><div class="k">Parte utilizzata</div><div class="v">${d.parte || '—'}</div></div>
       <div class="field"><div class="k">Edibile</div><div class="v">${d.edibile || 'Sì'}</div></div>
       <div class="field"><div class="k">🌾 Periodo di raccolta</div><div class="v">${d.periodo_raccolta || '—'}</div></div>
@@ -3459,12 +3461,12 @@ function showDetail(name, nuovaScelta){
       <div class="field full"><div class="k">Sostitutive</div><div class="v">${r.sostitutive || '—'}</div></div>
       <div class="field full"><div class="k">Complementari</div><div class="v">${r.complementari || '—'}</div></div>
     </div>
-    ${isRef ? '' : `<div class="adj-box">🌡️ Stima orientativa per queste condizioni, verifica sempre con assaggio.</div>`}
     <div class="warn-box">⚠️ Da non accumulare con: ${r.non_accumulare || 'nessuna nota particolare'}</div>
     ${d.edibile === 'Sì, con cautela' ? `<div class="risk-box">🔺 Attenzione: ${d.sicurezza}</div>` : ''}
   `;
   // Scrolla alla scheda solo quando si apre una nuova botanica: variare le condizioni con i
   // tasti su/giù deve solo aggiornare i numeri, senza far saltare la pagina.
+  if (window.renderInfusoScheda) window.renderInfusoScheda();
   if (nuovaScelta) detail.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 function chiudiDetail(){
@@ -3476,7 +3478,7 @@ function chiudiDetail(){
   libAbvInput.value = '';
   libTempInput.value = REF_TEMP;
   libVolInput.value = 100;
-  const libAbvRange = document.getElementById('lib-abv-range');
+  const libAbvRange = document.getElementById('inf-abv-range');
   if (libAbvRange) libAbvRange.textContent = '';
   grid.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
@@ -4003,7 +4005,7 @@ function renderSummary(){
     const dose2 = adjustedDose(baseDose, mid, REF_TEMP, d.categoria);
     const tempo2 = adjustedTempo(baseTempo, mid, REF_TEMP, d.categoria);
     const nq = n.replace(/'/g, "\\'");
-    gradHtml += `<div class="warn-box">⚠️ <strong>${n}</strong> si estrae meglio a <strong>${estAbvTxt(est.a)}</strong>, non alla gradazione del gin finito. A ${mid}%/${REF_TEMP}°C: ${dose2 ?? (baseDose ?? '—')} g per 100 ml e tempo ${tempo2}. Conviene infonderla da sola a questa gradazione e poi unirla al blend finale. <button type="button" class="ghost-btn" style="margin-top:6px" onclick="apriInfusi('${nq}')">Apri in Infusi →</button></div>`;
+    gradHtml += `<div class="warn-box">⚠️ <strong>${n}</strong> si estrae meglio a <strong>${estAbvTxt(est.a)}</strong>, non alla gradazione del gin finito. A ${mid}%/${REF_TEMP}°C: ${dose2 ?? (baseDose ?? '—')} g per 100 ml e tempo ${tempo2}. Conviene infonderla da sola a questa gradazione e poi unirla al blend finale. <button type="button" class="ghost-btn" style="margin-top:6px" onclick="apriInfusi('${nq}')">Apri la preparazione →</button></div>`;
   });
   const personalizzato = currentStyleName === 'Personalizzato';
   buildWarnings.innerHTML = juniperHtml + gradHtml + (personalizzato ? '' : noteHtml + warnHtml);
@@ -4917,6 +4919,174 @@ function renderCocktails(){
 }
 renderCocktails();
 
+// ---------- Laboratorio: cocktail sperimentali ----------
+// Profili stimati (0-5 sugli otto assi) degli ingredienti che non sono botaniche dell'erbario.
+// Servono solo a disegnare il radar previsto: stime orientative, da correggere con l'assaggio.
+const ING8 = {
+  'Vermouth bianco secco':[1,1,1,0,1,2,3,1], 'Vermouth rosso':[3,2,1,0,1,1,2,3], 'Amaro siciliano':[3,4,0,0,2,0,3,3],
+  'Bitter rosso':[2,5,0,0,3,0,1,1], 'Succo di limone':[0,0,5,0,3,0,0,0], 'Succo di bergamotto':[0,1,5,0,4,2,0,0],
+  'Miele':[5,0,0,0,0,2,0,0], 'Zucchero':[5,0,0,0,0,0,0,0], 'Acidi (citrico, malico)':[0,0,5,0,0,0,0,0],
+  'Acqua di pomodoro':[1,0,2,2,0,0,3,0], 'Tonica':[2,3,1,0,1,0,0,0], 'Spumante brut':[1,0,3,0,1,2,0,0],
+  'Soluzione salina':[0,0,0,5,0,0,0,0], 'Tè verde':[0,2,0,0,0,1,3,0]
+};
+const LAB_FAM = [['tutti','Tutti','var(--juniper)'],['stirred','Mescolati',CK_COLORS.stirred],['amari','Amari',CK_COLORS.amari],['sour','Sour',CK_COLORS.sour],['long','Long e spritz',CK_COLORS.long]];
+const LAB = [
+  {id:'scogliera', n:'Scogliera', fam:'stirred', tec:'Soluzione salina',
+   ip:'Il sale in gocce non deve sentirsi come salato: deve alzare gli agrumi e smorzare l’amaro.',
+   ing:[['Gin mediterraneo','50 ml'],['Vermouth bianco secco','10 ml'],['Soluzione salina al 20 %','2 gocce']],
+   prep:'Soluzione salina: 20 g di sale fino in 100 ml d’acqua, in un contagocce.',
+   m:'Mescolato con ghiaccio, filtrato', g:'Coppa ghiacciata, twist di bergamotto, un rametto di salicornia',
+   r:[['Bacche di ginepro',3],['Coriandolo',1],['Vermouth bianco secco',1],['Soluzione salina',.6],['Bergamotto',.8],['Salicornia',.4]]},
+  {id:'etna', n:'Negroni dell’Etna', fam:'amari', tec:'Amaro d’erbe al posto del bitter',
+   ip:'Metà del bitter sostituita da un amaro siciliano: meno zucchero, più profondità. Confrontalo con un Negroni classico.',
+   ing:[['Gin','30 ml'],['Vermouth rosso','30 ml'],['Amaro siciliano','20 ml'],['Bitter rosso','10 ml']],
+   m:'Mescolato con ghiaccio', g:'Tumbler basso con un cubo grande, twist di arancia amara',
+   r:[['Bacche di ginepro',2],['Vermouth rosso',2],['Amaro siciliano',1.4],['Bitter rosso',.7],['Arancia amara',.5]]},
+  {id:'elicriso', n:'Elicriso Sour', fam:'sour', tec:'Sciroppo infuso a caldo',
+   ip:'Lo sciroppo è una seconda via di estrazione: l’elicriso esce in fretta e diverso che in alcol. Si sente miele-curry o copre il gin?',
+   ing:[['Gin','50 ml'],['Succo di limone','25 ml'],['Sciroppo di miele all’elicriso','20 ml'],['Albume o aquafaba','20 ml']],
+   prep:'Sciroppo: 100 g di miele e 100 ml di acqua calda; infondi 2 g di elicriso secco per 10 minuti e filtra.',
+   m:'Shaker senza ghiaccio (dry shake), poi con ghiaccio; doppio filtro', g:'Coppa, nessuna guarnizione',
+   r:[['Bacche di ginepro',2.5],['Succo di limone',1.5],['Miele',1],['Elicriso',.8]]},
+  {id:'pomodoro', n:'Gimlet di pomodoro e basilico', fam:'sour', tec:'Cordiale con acidi in polvere',
+   ip:'Acidità costruita con acido citrico e malico invece del limone: drink trasparente, stabile, con l’acido misurabile al grammo.',
+   ing:[['Gin','50 ml'],['Cordiale di pomodoro e basilico','20 ml']],
+   prep:'Cordiale: 250 ml di acqua di pomodoro chiarificata (polpa frullata lasciata colare in un filtro da caffè), 150 g di zucchero, 5 g di acido citrico, 2 g di acido malico, 4 foglie di basilico per 1 ora.',
+   m:'Mescolato con ghiaccio', g:'Coppetta fredda, una foglia di basilico',
+   r:[['Bacche di ginepro',3],['Acqua di pomodoro',1.2],['Zucchero',.6],['Acidi (citrico, malico)',.6],['Basilico',.5]]},
+  {id:'chiarificato', n:'Bergamotto chiarificato', fam:'stirred', tec:'Chiarificazione al latte (milk punch)',
+   ip:'Il latte trattiene tannini e asprezze: il drink deve uscire limpido, morbido e senza louche, e conservarsi per settimane.',
+   ing:[['Gin','200 ml'],['Succo di bergamotto','80 ml'],['Sciroppo semplice 1:1','60 ml'],['Tè verde','40 ml'],['Latte intero (per chiarificare)','120 ml']],
+   prep:'Dosi per 4. Versa il miscuglio nel latte (non il contrario), lascia cagliare 30 minuti, filtra due volte nel filtro da caffè finché è limpido.',
+   m:'Servire su un cubo di ghiaccio, oppure dritto e freddo', g:'Tumbler basso, scorza di bergamotto',
+   r:[['Bacche di ginepro',3],['Succo di bergamotto',1.2],['Zucchero',.8],['Tè verde',.6],['Bergamotto',.6]]},
+  {id:'fico', n:'Collins di fico e alloro', fam:'long', tec:'Sciroppo di abbinamento dolce-resinoso',
+   ip:'Due botaniche lontane sul radar (fico dolce, alloro erbaceo e speziato) che dovrebbero completarsi invece di coprirsi.',
+   ing:[['Gin','45 ml'],['Succo di limone','20 ml'],['Sciroppo di fico secco e alloro','20 ml'],['Soda','top']],
+   prep:'Sciroppo: 2 fichi secchi spezzati e 1 foglia di alloro in 150 ml di sciroppo 1:1, sobbollire 5 minuti, filtrare.',
+   m:'Shaker con ghiaccio, poi top di soda', g:'Bicchiere alto con ghiaccio, una foglia di alloro',
+   r:[['Bacche di ginepro',2.5],['Succo di limone',1.2],['Fico',1],['Alloro',.6]]},
+  {id:'tretempi', n:'Gin tonic in tre tempi', fam:'long', tec:'Testa, cuore e coda nel bicchiere',
+   ip:'Separare i tempi del sorso: lo spray di limone arriva prima (testa), il drink è il cuore, il rosmarino scaldato chiude (coda). Annota cosa senti all’inizio, a metà e alla fine.',
+   ing:[['Gin','50 ml'],['Tonica secca','150 ml']],
+   prep:'Testa: spruzza gli oli di una scorza di limone sopra il bicchiere. Coda: scalda un rametto di rosmarino con l’accendino per pochi secondi e mettilo nel bicchiere alla fine.',
+   m:'Costruito nel bicchiere con molto ghiaccio', g:'Balloon, scorza di limone, rametto di rosmarino',
+   r:[['Bacche di ginepro',3],['Tonica',2],['Limone',.6],['Rosmarino',.5]]},
+  {id:'oro', n:'Oro di Sicilia', fam:'long', tec:'Cordiale a freddo con lo zafferano',
+   ip:'Lo zafferano dà colore e una nota amaricante e mielata: con una dose così piccola trovi il limite fra firma e troppo.',
+   ing:[['Gin','40 ml'],['Cordiale zafferano e arancia amara','20 ml'],['Spumante brut','90 ml'],['Soda','30 ml']],
+   prep:'Cordiale: 150 ml di sciroppo 1:1, scorza di 1 arancia amara, 0,1 g di zafferano in pistilli, 3 g di acido citrico; in infusione a freddo per una notte, poi filtrare.',
+   m:'Costruito nel bicchiere con ghiaccio, mescolare appena', g:'Calice da vino, fetta di arancia amara',
+   r:[['Bacche di ginepro',2],['Spumante brut',2],['Zucchero',.6],['Arancia amara',.6],['Zafferano',.4]]}
+];
+const LAB_KEY = 'gb-lab-assaggi', LAB_MIEI = 'gb-lab-miei';
+function labLeggi(k, def){ try { return JSON.parse(localStorage.getItem(k)) || def; } catch(e){ return def; } }
+function labScrivi(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch(e){ alert('Non sono riuscito a salvare su questo dispositivo (memoria piena o modalità privata).'); return false; } }
+function labProfilo(r){
+  const acc = new Array(8).fill(0); let tot = 0;
+  r.forEach(([n, w]) => { const p = PROFILO8[n] || ING8[n]; if (!p) return; p.forEach((x,i) => acc[i] += x * w); tot += w; });
+  if (!tot) return null;
+  const m = acc.map(x => x / tot), mx = Math.max.apply(null, m) || 1;
+  return m.map(x => Math.round(x / mx * 50) / 10);
+}
+let labFiltro = 'tutti';
+function labTutti(){
+  const miei = labLeggi(LAB_MIEI, []).map(x => Object.assign({mio:true, fam:'mio'}, x));
+  return LAB.concat(miei);
+}
+function labCardHtml(c){
+  const ass = (labLeggi(LAB_KEY, {})[c.id] || []);
+  const prev = labProfilo(c.r || []);
+  const ultimo = ass.length ? ass[ass.length - 1] : null;
+  const serie = [];
+  if (prev) serie.push({vals:prev, color:'var(--juniper)', label:'Previsto'});
+  if (ultimo && ultimo.profilo && ultimo.profilo.some(x => x !== null)){
+    const f = formaProfilo(ultimo.profilo); if (f) serie.push({vals:f, color:'#C0733A', label:'Assaggiato'});
+  }
+  const col = c.mio ? 'var(--ochre)' : CK_COLORS[c.fam];
+  const radar = serie.length ? '<div class="radar-box">' + radarSVG(serie, 240) +
+    '<div class="radar-legend"><span><i style="background:var(--juniper)"></i>Previsto</span>' + (serie.length > 1 ? '<span><i style="background:#C0733A"></i>Ultimo assaggio</span>' : '') + '</div>' +
+    '<div class="radar-nota">Forma del profilo, non intensità. Stima dai profili degli ingredienti.</div></div>' : '';
+  const sel = (i) => '<label>' + ASSI8[i] + '<select class="lab-pa" data-i="' + i + '"><option value="">—</option>' + [0,1,2,3,4,5].map(v => '<option value="' + v + '">' + v + ' · ' + ANCORE_VOTO[v] + '</option>').join('') + '</select></label>';
+  const storia = ass.map((a, k) => '<li><span><strong>v' + (k + 1) + '</strong> · ' + (a.data || '') + (a.giudizio ? ' · ' + a.giudizio : '') + (a.ipotesi ? ' · ipotesi: ' + a.ipotesi.toLowerCase() : '') +
+    (a.note ? '<br>' + String(a.note).replace(/[<>&]/g, '') : '') + '</span><button type="button" class="lab-x" title="Elimina" data-del="' + k + '" data-id="' + c.id + '">✕</button></li>').join('');
+  return '<div class="ck-card lab-card" style="--c:' + col + '" data-id="' + c.id + '">' +
+    '<span class="lab-tec">' + (c.tec || 'Esperimento') + (c.mio ? ' · tuo' : '') + '</span>' +
+    '<h3>' + c.n + '</h3>' +
+    (c.ip ? '<div class="lab-ip"><strong>Ipotesi:</strong> ' + c.ip + '</div>' : '') +
+    (c.ing && c.ing.length ? '<ul class="ck-ing">' + c.ing.map(i => '<li><span>' + i[0] + '</span><span>' + (i[1] || '') + '</span></li>').join('') + '</ul>' : '') +
+    (c.prep ? '<p class="lab-prep">' + c.prep + '</p>' : '') +
+    '<div class="ck-meta">' + (c.m ? '<div><strong>Metodo</strong> · ' + c.m + '</div>' : '') + (c.g ? '<div><strong>Servizio</strong> · ' + c.g + '</div>' : '') + '</div>' +
+    radar +
+    '<details class="lab-ass"><summary>Assaggia e annota' + (ass.length ? ' (' + ass.length + ' assaggi)' : '') + '</summary>' +
+      '<div class="tf-grid">' + ASSI8.map((_,i) => sel(i)).join('') + '</div>' +
+      '<div class="tf-grid"><label>Giudizio<select class="lab-giu"><option value="">—</option><option>Da rifare</option><option>Da correggere</option><option>Buono</option><option>Ottimo</option></select></label>' +
+      '<label>L’ipotesi è verificata?<select class="lab-ipv"><option value="">—</option><option>Sì</option><option>In parte</option><option>No</option></select></label></div>' +
+      '<label>Note e correzioni per la prossima versione<textarea class="lab-note" rows="3"></textarea></label>' +
+      '<button type="button" class="ghost-btn lab-salva" data-id="' + c.id + '">Salva assaggio</button>' +
+      (storia ? '<ul class="lab-storia">' + storia + '</ul>' : '') +
+    '</details>' +
+    (c.mio ? '<div style="margin-top:10px;"><button type="button" class="ghost-btn lab-elimina" data-id="' + c.id + '">Elimina esperimento</button></div>' : '') +
+    '</div>';
+}
+function renderLab(){
+  const g = document.getElementById('lab-grid'); if (!g) return;
+  const lista = labTutti().filter(c => labFiltro === 'tutti' || c.fam === labFiltro || (labFiltro === 'mio' && c.mio));
+  g.innerHTML = lista.length ? lista.map(labCardHtml).join('') : '<div class="inf-empty">Nessun esperimento in questa famiglia.</div>';
+}
+(function(){
+  const f = document.getElementById('lab-filters'); if (!f) return;
+  LAB_FAM.concat([['mio','I miei','var(--ochre)']]).forEach(([k, lab, col]) => {
+    const b = document.createElement('button'); b.className = 'style-btn' + (k === 'tutti' ? ' active' : ''); b.textContent = lab;
+    b.style.setProperty('--c', col); b.style.setProperty('--on', '#fff');
+    b.addEventListener('click', () => { labFiltro = k; f.querySelectorAll('.style-btn').forEach(x => x.classList.remove('active')); b.classList.add('active'); renderLab(); });
+    f.appendChild(b);
+  });
+  const bot = document.getElementById('lab-bot');
+  if (bot) for (let k = 0; k < 4; k++){
+    const l = document.createElement('label'); l.textContent = 'Botanica ' + (k + 1) + ' (per il radar)';
+    const s = document.createElement('select'); s.className = 'lab-bsel';
+    s.innerHTML = '<option value="">—</option>' + Object.keys(PROFILO8).sort((a,b) => a.localeCompare(b,'it')).map(n => '<option>' + n + '</option>').join('');
+    l.appendChild(s); bot.appendChild(l);
+  }
+  document.getElementById('lab-salva-nuovo').addEventListener('click', () => {
+    const v = id => document.getElementById(id).value.trim();
+    if (!v('lab-n')){ alert('Dai un nome all’esperimento.'); return; }
+    const bots = [...document.querySelectorAll('.lab-bsel')].map(s => s.value).filter(Boolean);
+    const r = [['Bacche di ginepro', 2.5]].concat(bots.map(n => [n, 1]));
+    const ing = v('lab-ing').split('\n').map(x => x.trim()).filter(Boolean).map(x => [x, '']);
+    const miei = labLeggi(LAB_MIEI, []);
+    miei.push({id:'u' + Date.now(), n:v('lab-n'), tec:v('lab-tec'), ip:v('lab-ip'), ing, m:v('lab-m'), r});
+    if (!labScrivi(LAB_MIEI, miei)) return;
+    ['lab-n','lab-tec','lab-ing','lab-m','lab-ip'].forEach(id => document.getElementById(id).value = '');
+    document.querySelectorAll('.lab-bsel').forEach(s => s.value = '');
+    renderLab();
+  });
+  document.getElementById('lab-grid').addEventListener('click', e => {
+    const card = e.target.closest('.lab-card'); if (!card) return;
+    const id = card.dataset.id;
+    if (e.target.closest('.lab-salva')){
+      const profilo = [...card.querySelectorAll('.lab-pa')].map(s => s.value === '' ? null : +s.value);
+      const rec = { data: new Date().toLocaleDateString('it-IT'), profilo, giudizio: card.querySelector('.lab-giu').value,
+        ipotesi: card.querySelector('.lab-ipv').value, note: card.querySelector('.lab-note').value.trim() };
+      if (profilo.every(x => x === null) && !rec.giudizio && !rec.ipotesi && !rec.note){ alert('Compila almeno un voto o una nota.'); return; }
+      const all = labLeggi(LAB_KEY, {}); (all[id] = all[id] || []).push(rec);
+      if (labScrivi(LAB_KEY, all)){ renderLab(); const d = document.querySelector('.lab-card[data-id="' + id + '"] .lab-ass'); if (d) d.open = true; }
+    } else if (e.target.closest('.lab-x')){
+      const k = +e.target.closest('.lab-x').dataset.del;
+      if (!confirm('Eliminare questo assaggio?')) return;
+      const all = labLeggi(LAB_KEY, {}); if (all[id]){ all[id].splice(k, 1); labScrivi(LAB_KEY, all); }
+      renderLab(); const d = document.querySelector('.lab-card[data-id="' + id + '"] .lab-ass'); if (d) d.open = true;
+    } else if (e.target.closest('.lab-elimina')){
+      if (!confirm('Eliminare questo esperimento e i suoi assaggi?')) return;
+      labScrivi(LAB_MIEI, labLeggi(LAB_MIEI, []).filter(x => x.id !== id));
+      const all = labLeggi(LAB_KEY, {}); delete all[id]; labScrivi(LAB_KEY, all);
+      renderLab();
+    }
+  });
+  renderLab();
+})();
+
 // ---------- Come preparare e usare ogni botanica ----------
 // Indicazioni di pratica generale, non risultati sperimentali. Se non altrimenti indicato,
 // i pesi si intendono di botanica secca.
@@ -5053,6 +5223,7 @@ EST['Vaniglia'].n = "Stessa specie della «Vaniglia bourbon» (origine Madagasca
 EST['Vaniglia bourbon'].n = "Stessa specie della «Vaniglia» generica, di origine Madagascar e Riunione: usane una sola nella ricetta. " + EST_N.baccello;
 function prezzi(){ try { return JSON.parse(localStorage.getItem('gb-prezzi')) || {}; } catch(e){ return {}; } }
 function salvaPrezzo(n){
+  if (!document.getElementById('prezzo-v')) return;
   const v = parseFloat(String(document.getElementById('prezzo-v').value).replace(',', '.')), P = prezzi();
   if (isFinite(v) && v > 0) P[n] = v; else delete P[n];
   try { localStorage.setItem('gb-prezzi', JSON.stringify(P)); } catch(e){}
@@ -5125,6 +5296,7 @@ function estPer(d, stato){
   return { a: a, t: t, n: EST_N[n] || n, fr: fr };
 }
 function salvaTaratura(n){
+  if (!document.getElementById('cal-a0')) return;
   const v = id => parseFloat(document.getElementById(id).value);
   const a = [v('cal-a0'), v('cal-a1')], t = [v('cal-t0'), v('cal-t1')];
   if (a.concat(t).some(x => !isFinite(x) || x <= 0) || a[0] > a[1] || t[0] > t[1] || a[1] > 96){ alert('Controlla i valori: il minimo non può superare il massimo, la gradazione al massimo 96.'); return; }
@@ -5220,9 +5392,8 @@ function wrapStepper(input, step, opts){
 (function(){
   const $ = id => document.getElementById(id);
   const iAbv = $('inf-abv'), iAbvS = $('inf-abvS'), iTemp = $('inf-temp'), iVol = $('inf-vol'), iMod = $('inf-mod'),
-        iQ = $('inf-q'), body = $('inf-body'), info = $('inf-info'), cnt = $('inf-count'),
-        abvRange = $('inf-abv-range');
-  if (!body) return;
+        info = $('inf-info'), abvRange = $('inf-abv-range');
+  if (!info) return;
   [iTemp, iAbvS, iVol].forEach(el => wrapStepper(el));
   wrapStepper(iAbv, 1, { emptyStart: () => (matchAttuale && matchAttuale.r && matchAttuale.r.est) ? matchAttuale.r.est.a[0] : null });
   const iSt = $('inf-stato'), statoMap = {};
@@ -5237,7 +5408,7 @@ function wrapStepper(input, step, opts){
              vol: parseFloat(iVol.value) || 100, mod: iMod.value, ott: false };
   }
   function calcola(){
-    const c = leggi(), q = iQ.value.trim().toLowerCase();
+    const c = leggi();
     visibili = MASTER.slice().sort((x, y) => x.botanica.localeCompare(y.botanica, 'it'))
       .map(d => {
         const est = estPer(d, statoDi(d));
@@ -5247,8 +5418,7 @@ function wrapStepper(input, step, opts){
     let html = '';
     if (c.temp < 15 || c.temp > 35) html += '<div class="warn-box">Temperatura fuori dall\u2019intervallo di lavoro previsto (15–35 °C): la stima \u00e8 meno affidabile.</div>';
     if (c.abv !== null && c.abv >= c.abvS) html += '<div class="warn-box">Il grado di estrazione desiderato deve essere pi\u00f9 basso del grado dell\u2019alcol di partenza: con l\u2019acqua si pu\u00f2 solo abbassare il grado, non alzarlo.</div>';
-    info.innerHTML = html;
-    body.innerHTML = '';
+    info.innerHTML = currentDetailName ? html : '';
     renderSelezione(c);
   }
   // La scheda di una botanica \u00e8 a comparsa (chiusa di default): restano visibili il riassunto e il quadro delle variabili.
@@ -5266,7 +5436,7 @@ function wrapStepper(input, step, opts){
       else if (r.est && (c.abv < r.est.a[0] || c.abv > r.est.a[1])) gradWarn = '<div class="adj-box">\u2139\ufe0f Hai impostato ' + c.abv + '% vol, fuori dal range consigliato in erbario (' + estAbvTxt(r.est.a) + ') per ' + d.botanica + ': resta entro le soglie di sicurezza, ma non \u00e8 il grado ottimale.</div>';
     }
     const f = (k, v) => '<div class="inf-f"><div class="k">' + k + '</div><div class="v">' + v + '</div></div>';
-    const apriSubito = (gradWarn || cau) ? ' open' : '';
+    const apriSubito = ' open';
     return '<details class="inf-item" data-i="' + d.id + '"' + apriSubito + '><summary><span class="inf-nome"><strong>' + d.botanica + '</strong>' +
       '<span class="inf-sub">' + d.categoria + ' \u00b7 ' + (d.parte || '') + '</span></span><span class="inf-riass">' + riass + '</span></summary>' +
       '<div class="inf-corpo">' + cau + gradWarn +
@@ -5282,53 +5452,27 @@ function wrapStepper(input, step, opts){
       '<div class="inf-f inf-how"><div class="k">Come prepararla e usarla</div><div class="v">' + comeUsare(d, r.stato, r.K, r.abvEff) + (r.est ? ' <em class="inf-est-nota">Estrazione: ' + r.est.n + '</em>' : '') + '</div></div>' +
       '</div></details>';
   }
-  // La ricerca non elenca l'erbario: apre solo la scheda della botanica che inizia con le lettere scritte,
-  // tutte le altre restano chiuse (semplicemente non vengono mostrate).
-  const nrm = x => x.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  function trovaMatch(q){
-    if (!q) return null;
-    const nq = nrm(q), nome = x => nrm(x.d.botanica);
-    return visibili.find(x => nome(x).startsWith(nq)) ||
-      visibili.find(x => nome(x).split(/[\s\/\-(]+/).some(w => w.startsWith(nq))) ||
-      visibili.find(x => nome(x).includes(nq)) || null;
-  }
+  // La scheda dell'infuso e' quella della botanica aperta nella pagina Botaniche.
   let matchAttuale = null;
   function renderSelezione(c){
-    const q = iQ.value.trim();
-    const match = trovaMatch(q);
-    matchAttuale = match;
-    if (!match){
-      cnt.textContent = visibili.length + ' botaniche nella libreria';
-      body.innerHTML = '<div class="inf-empty">' + (q
-        ? 'Nessuna botanica trovata per \u00ab' + q.replace(/[<>&]/g, '') + '\u00bb.'
-        : 'Scrivi il nome di una botanica per aprirne la scheda.') + '</div>';
-      if (abvRange) abvRange.textContent = '';
-      return;
-    }
-    cnt.textContent = '1 / ' + visibili.length + ' botaniche';
-    body.innerHTML = cardHtml(match.d, match.r, c);
-    if (abvRange) abvRange.textContent = match.r.est ? ('Consigliato in erbario: ' + estAbvTxt(match.r.est.a)) : '';
+    const body = $('inf-body');
+    matchAttuale = currentDetailName ? (visibili.find(x => x.d.botanica === currentDetailName) || null) : null;
+    if (!body || !matchAttuale) return;
+    body.innerHTML = cardHtml(matchAttuale.d, matchAttuale.r, c);
+    if (abvRange) abvRange.textContent = matchAttuale.r.est ? ('Consigliato in erbario: ' + estAbvTxt(matchAttuale.r.est.a)) : '';
   }
+  window.renderInfusoScheda = calcola;
   [iAbv, iAbvS, iTemp, iVol, iMod].forEach(el => el.addEventListener('input', calcola));
-  iQ.addEventListener('input', () => {
-    const prevId = matchAttuale ? matchAttuale.d.id : null;
-    renderSelezione(leggi());
-    const newId = matchAttuale ? matchAttuale.d.id : null;
-    if (newId !== prevId && iAbv.value !== ''){
-      iAbv.value = '';
-      calcola();
-    }
-  });
   iSt.addEventListener('change', () => {
     MASTER.forEach(d => { if (iSt.value === 'ref') delete statoMap[d.id]; else statoMap[d.id] = iSt.value; });
     calcola();
   });
-  body.addEventListener('change', e => {
+  document.getElementById('detail').addEventListener('change', e => {
     const s = e.target.closest('.inf-stato'); if (!s) return;
     statoMap[s.dataset.i] = s.value; calcola();
   });
   $('inf-print').addEventListener('click', () => {
-    if (!matchAttuale){ alert('Cerca e apri prima la scheda di una botanica.'); return; }
+    if (!matchAttuale){ alert('Apri prima la scheda di una botanica.'); return; }
     const { d, r } = matchAttuale, c = leggi();
     const corpo = '<h2>Preparazione infuso \u2014 ' + d.botanica + '</h2><div class="print-meta">' +
       d.categoria + (d.parte ? ' \u00b7 ' + d.parte : '') + ' \u00b7 stato ' + (r.stato === 'fresco' ? 'fresca' : 'secca') +
