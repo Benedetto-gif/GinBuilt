@@ -927,6 +927,15 @@ input:focus, select:focus, textarea:focus{
 .radar8{width:100%;max-width:300px;height:auto;display:block;margin:0 auto;}
 .radar-base-btn{display:block;width:100%;margin:6px 0 10px;font-size:14px;font-weight:600;color:var(--juniper);border:1.5px solid var(--juniper);background:transparent;padding:9px 14px;}
 .radar-base-btn[aria-pressed="true"]{background:var(--juniper);color:var(--surface);}
+.fase-sel{display:flex;gap:6px;justify-content:center;margin:6px 0 8px;}
+.fase-btn{flex:1;max-width:90px;padding:7px 4px;border-radius:999px;border:1.5px solid var(--line);background:transparent;color:var(--ink-soft);font:inherit;font-size:13px;font-weight:600;cursor:pointer;}
+.fase-btn[aria-pressed="true"]{background:var(--juniper);border-color:var(--juniper);color:var(--surface);}
+.fasi-riga{margin-bottom:10px;}
+.fasi-tit{font-size:13px;font-weight:600;margin-bottom:4px;}
+.fasi-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.nota-chip{padding:6px 11px;border-radius:999px;border:1.5px solid var(--line);background:transparent;color:var(--ink-soft);font:inherit;font-size:13px;cursor:pointer;}
+.nota-chip[aria-pressed="true"]{background:var(--juniper);border-color:var(--juniper);color:var(--surface);font-weight:600;}
+.fase-ordine{font-size:13px;margin-top:8px;text-align:left;line-height:1.5;}
 .radar-nota{font-size:12.5px;color:var(--ink-soft);margin-top:6px;line-height:1.4;}
 .radar-legend{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;font-size:13px;margin-top:6px;}
 .radar-legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:baseline;}
@@ -951,6 +960,22 @@ input:focus, select:focus, textarea:focus{
 .ax-medio .ax-bar i{background:#2F7259;} .ax-medio .ax-tag{color:#2F7259;}
 .ax-basso .ax-bar i{background:#9AA59F;} .ax-basso .ax-tag{color:#7A867F;}
 .ax-sintesi{color:var(--ink);text-align:left;margin-top:10px;}
+.tar-box{border:1px solid var(--line,#d8d2c4);border-radius:10px;padding:0;margin:0 0 12px;background:var(--card,#fff);}
+.tar-box>summary{cursor:pointer;padding:10px 12px;font-weight:600;}
+.tar-body{padding:0 12px 12px;font-size:14px;line-height:1.5;}
+.tar-table{width:100%;border-collapse:collapse;margin:8px 0;font-size:13px;}
+.tar-table th,.tar-table td{border-bottom:1px solid var(--line,#e5e0d3);padding:5px 6px;text-align:left;vertical-align:top;}
+.tar-table th{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);}
+.tar-vol{display:flex;gap:8px;align-items:center;margin:6px 0;}
+.tar-vol input{width:90px;}
+.tf-tarato{display:flex;gap:8px;align-items:center;font-size:13px;margin:8px 0;}
+.tag.uso-comune{background:rgba(110,160,110,.22);}
+.tag.uso-firma{background:rgba(200,150,70,.22);}
+.tag.uso-altra{background:rgba(130,130,130,.18);}
+.radar-insieme{font-size:13px;margin:6px 0;display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+.radar-insieme input[type=number]{width:70px;}
+.radar-dubbio{color:var(--warn,#b3541e);font-weight:600;}
+.tar-tab-wrap{overflow-x:auto;}
 #tf-profilo-grid .ax-grp{grid-column:1/-1;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);margin-top:4px;}
 .prof-tab{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px;text-align:left;}
 .prof-tab th,.prof-tab td{padding:4px 6px;border-bottom:1px solid var(--line);}
@@ -1666,8 +1691,11 @@ footer.note{
           <option value="abv-desc">Gradazione consigliata: alta → bassa</option><option value="tempo-asc">Macerazione: breve → lunga</option>
           <option value="g:categoria">Raggruppa per famiglia</option><option value="g:sottofamiglia">Raggruppa per sottofamiglia</option>
           <option value="g:carattere">Raggruppa per carattere</option><option value="g:funzione_compound">Raggruppa per funzione nel compound</option>
-          <option value="g:parte">Raggruppa per parte utilizzata</option>
+          <option value="g:parte">Raggruppa per parte utilizzata</option><option value="g:usoGruppo">Raggruppa per uso nella miscela</option>
         </select>
+      </label>
+      <label>Uso nella miscela
+        <select id="f-uso"><option value="">Tutte</option><option value="comune">Più usate</option><option value="firma">Di firma o rare</option><option value="altra">Altre</option></select>
       </label>
       <label>Stile
         <select id="f-stile"><option value="">Tutti</option></select>
@@ -2213,6 +2241,7 @@ footer.note{
       <div class="cmp-row"><select id="cmp-stile" aria-label="Parti da uno stile"></select></div>
       <button type="button" class="ghost-btn cmp-base-btn" id="cmp-base-btn" aria-pressed="false">+ Aggiungi le botaniche base</button>
       <div class="cmp-row" id="cmp-row"></div>
+      <div id="wb-fase"></div>
       <div id="wb-out"></div>
     </div>
     <div class="ar-scrollwrap" id="ar-scrollwrap">
@@ -2504,8 +2533,14 @@ footer.note{
         </div>
         <h4>Profilo assaggiato</h4>
         <p class="cond-hint" style="margin:0 0 8px;">Quanto senti ogni nota, da 0 (assente) a 5 (dominante). Le prime quattro si colgono con la lingua, le altre con il naso: assaggia, poi annusa il bicchiere vuoto. Serve a confrontare ciò che hai sentito con ciò che l'app prevedeva.</p>
+        <div id="tf-taratura-palato"></div>
         <div class="tf-grid tf-eval" id="tf-profilo-grid"></div>
+        <label class="tf-tarato"><input type="checkbox" id="tf-tarato"> Ho dato questi voti dopo aver ripassato le soluzioni di riferimento</label>
         <div id="tf-prof-cmp"></div>
+        <h4>Evoluzione al sorso</h4>
+        <p class="cond-hint" style="margin:0 0 8px;">Tocca le note che senti in ciascun momento: all'inizio (appena in bocca e al naso), a metà sorso, alla fine (il retrogusto che resta). Ne bastano due o tre per momento.</p>
+        <div id="tf-fasi-grid"></div>
+        <div id="tf-fasi-cmp"></div>
         <h4>Aspetto del prodotto</h4>
         <div class="tf-grid tf-eval">
           <label>Limpidezza<select id="tf-limpidezza"><option value="">—</option><option>Limpido</option><option>Velato</option><option>Torbido</option></select></label>
@@ -2550,7 +2585,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 5 ottobre 2026, ore 01:35 · tavolo di lavoro con ✕ per togliere le botaniche, tasto base ovunque, profilo assaggiato</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 5 ottobre 2026, ore 11:00 · botaniche divise in più usate, di firma o rare, altre</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -2737,7 +2772,7 @@ MASTER.forEach(d => byName[d.botanica] = d);
 
 // ---------- Profilo sensoriale a 8 assi (stime orientative 0-5, da validare all'assaggio) ----------
 const ASSI8 = ['Dolce','Amaro','Acido','Salino','Agrumato','Floreale','Erbaceo','Speziato'];
-const PROFILO8 = {"Limone":[0,1,4,0,5,0,0,0],"Bergamotto":[0,2,1,0,5,3,0,0],"Arancia dolce":[4,0,2,0,4,1,0,0],"Arancia amara":[0,4,1,0,4,2,0,1],"Cedro":[2,1,1,0,4,1,0,0],"Mandarino":[4,0,1,0,4,0,1,0],"Mandarino verde":[1,1,2,0,4,0,2,0],"Pompelmo":[1,4,2,0,4,0,0,1],"Lime":[0,1,4,0,4,0,2,0],"Yuzu":[0,1,3,0,5,2,0,1],"Kumquat":[2,1,3,0,4,1,0,0],"Lime nero":[0,2,3,0,2,0,0,3],"Coriandolo":[0,0,0,0,3,1,1,4],"Cardamomo verde":[0,0,0,0,1,2,3,4],"Cardamomo nero":[0,0,0,0,0,0,2,5],"Cubebe":[0,0,0,0,1,0,2,5],"Pepe nero":[0,0,0,0,0,0,1,5],"Pepe rosa":[1,0,0,0,0,2,1,3],"Grani del paradiso":[0,0,0,0,1,0,0,5],"Cumino":[0,0,0,0,0,0,1,5],"Carvi":[0,0,0,0,0,0,2,5],"Finocchio":[2,0,0,0,0,0,2,4],"Anice verde":[2,0,0,0,0,0,1,5],"Stella di anice":[3,0,0,0,0,0,0,5],"Macis":[0,0,0,0,0,1,0,5],"Noce moscata":[1,0,0,0,0,0,0,5],"Chiodo di garofano":[0,1,0,0,0,0,0,5],"Cannella Ceylon":[2,0,0,0,0,0,0,5],"Cassia":[1,0,0,0,0,0,0,5],"Fave di tonka":[4,0,0,0,0,0,1,3],"Senape gialla":[0,1,0,0,0,0,0,4],"Angelica":[0,2,0,0,0,0,3,4],"Liquirizia":[4,1,0,0,0,0,1,3],"Genziana":[0,5,0,0,0,0,1,1],"Iris":[0,0,0,0,0,4,0,2],"Zenzero":[0,0,0,0,2,0,0,5],"Galanga":[0,0,0,0,1,0,1,5],"Curcuma":[0,2,0,0,0,0,0,4],"Mirto foglie":[0,1,0,0,1,0,4,3],"Mirto bacche":[2,1,2,0,0,0,2,3],"Elicriso":[1,1,0,0,0,0,3,4],"Rosmarino":[0,1,0,0,0,0,4,4],"Timo":[0,1,0,0,0,0,4,4],"Timo limonato":[0,0,0,0,3,0,4,2],"Santoreggia":[0,1,0,0,0,0,4,4],"Origano":[0,1,0,0,0,0,4,4],"Maggiorana":[1,0,0,0,0,0,4,3],"Salvia":[0,2,0,0,0,0,4,3],"Melissa":[0,0,1,0,3,0,4,0],"Verbena odorosa":[0,0,1,0,4,2,2,0],"Alloro":[0,1,0,0,0,0,4,3],"Lentisco":[0,1,0,0,0,0,3,4],"Finocchio di mare":[0,0,0,4,0,0,3,2],"Levistico":[0,1,0,2,0,0,4,3],"Dragoncello":[1,0,0,0,0,0,4,3],"Cappero":[0,1,1,4,0,0,2,2],"Foglie di cappero":[0,1,0,3,0,0,4,1],"Salicornia":[0,0,0,5,0,0,3,0],"Alga verde alimentare":[0,0,0,4,0,0,3,0],"Spirulina alimentare":[0,1,0,3,0,0,3,0],"Lavanda":[0,1,0,0,0,5,3,0],"Rosa":[1,0,0,0,0,5,0,0],"Camomilla":[2,1,0,0,0,4,1,0],"Sambuco":[1,0,0,0,0,5,0,0],"Ibisco":[0,0,4,0,0,3,0,0],"Fiordaliso":[0,0,0,0,0,3,0,0],"Gelsomino":[1,0,0,0,0,5,0,0],"Bacche di ginepro":[1,1,0,0,2,0,2,5],"Bacche della passione":[2,0,4,0,0,2,0,0],"Melograno":[2,1,4,0,0,0,0,0],"Fico":[5,0,0,0,0,0,0,1],"Uva passa":[5,0,1,0,0,0,0,0],"Mela":[3,0,2,0,0,1,0,0],"Pera":[4,0,1,0,0,2,0,0],"Ciliegia":[3,1,2,0,0,1,0,0],"Prugna":[4,0,2,0,0,0,0,0],"Ribes nero":[2,1,4,0,0,0,2,1],"Caffè":[1,4,0,0,0,0,0,3],"Cacao":[2,4,0,0,0,0,0,3],"Vaniglia bourbon":[5,0,0,0,0,1,0,2],"Mandorla dolce":[4,1,0,0,0,0,0,1],"Sesamo":[2,1,0,0,0,0,0,2],"Sommacco":[0,1,4,0,1,0,0,2],"Vaniglia":[5,0,0,0,0,1,0,2],"Alloro bacca":[0,2,0,0,0,0,2,4],"Portulaca":[0,0,2,2,0,0,3,0],"Spina santa":[0,1,2,0,0,0,3,3],"Carruba polpa":[5,1,0,0,0,0,0,1],"Corbezzolo":[2,1,3,0,0,1,0,0],"Uva Cataratto":[4,0,2,0,0,2,0,0],"Sorbo":[1,3,3,0,0,0,0,0],"Castagna":[4,0,0,0,0,0,0,1],"Tarassaco":[0,4,0,0,0,0,2,1],"Betulla corteccia":[1,0,0,0,0,0,3,3],"Pepe di giava":[0,0,0,0,2,0,0,5],"Pepe di Sichuan":[0,0,0,0,4,1,0,4],"Zafferano":[0,2,0,0,0,2,0,4],"Aneto":[0,0,0,0,0,0,4,3],"Basilico":[0,0,0,0,0,0,4,3],"Gelso":[3,0,1,0,0,1,2,0],"Moringa":[0,2,0,0,0,0,4,1],"Artemisia":[0,5,0,0,0,0,4,2],"Elicriso delle scogliere":[1,1,0,2,0,0,2,4],"Malva":[0,0,0,0,0,2,1,0],"Ginestra":[1,1,0,0,0,4,1,0],"Alga nori":[0,0,0,5,0,0,1,0],"Poseidonia":[0,0,0,4,0,0,3,0],"Asparago":[0,2,0,0,0,0,4,0],"Cardo":[0,4,0,0,0,0,3,0],"Carciofo":[0,4,0,0,0,0,3,0],"Cetriolo":[0,0,0,0,0,0,4,0],"Mandorla amara":[1,4,0,0,0,0,0,2],"Manna":[4,1,0,0,0,0,0,0],"Mirtillo":[3,0,3,0,0,1,0,0],"Ribes rosso":[1,1,5,0,0,0,0,0],"Mora":[3,0,3,0,0,0,0,0],"Fragola":[4,0,2,0,0,2,0,0],"Lamponi":[3,0,3,0,0,3,0,0],"Menta":[0,0,0,0,0,0,5,2],"Achillea":[0,4,0,0,0,1,4,2],"Rosa canina":[2,1,4,0,0,2,0,0],"Scorza di bergamotto disidratata":[1,2,0,0,5,3,0,0],"Scorza di arancia disidratata":[3,2,0,0,5,0,0,1],"Finger lime":[0,0,5,0,4,0,0,0],"Ananas":[4,0,4,0,0,0,0,0],"Mango":[4,0,2,0,0,1,0,2],"Papaya":[4,0,1,0,0,1,0,1],"Litchi":[4,0,1,0,0,4,0,0],"Rambutan":[4,0,1,0,0,3,0,0],"Alchechengi":[2,1,4,0,0,0,2,0],"Pitaya (dragon fruit)":[2,0,1,0,0,0,2,0],"Guava":[3,0,3,0,0,3,0,1],"Feijoa":[2,0,3,0,1,1,2,2],"Kiwano":[1,0,4,0,0,0,3,0],"Cocco":[4,0,0,0,0,0,0,0],"Durian":[3,0,0,0,0,0,0,3],"Abrotano":[0,3,0,0,3,0,3,1],"Longan":[4,0,1,0,0,1,0,1],"Foglie di loto":[1,1,0,0,0,1,4,0],"Papavero":[2,1,0,0,0,0,0,2]};
+const PROFILO8 = {"Limone":[0,1,4,0,5,0,0,0],"Bergamotto":[0,2,1,0,5,3,0,0],"Arancia dolce":[4,0,2,0,4,1,0,0],"Arancia amara":[0,4,1,0,4,2,0,1],"Cedro":[2,1,1,0,4,1,0,0],"Mandarino":[4,0,1,0,4,0,1,0],"Mandarino verde":[1,1,2,0,4,0,2,0],"Pompelmo":[1,4,2,0,4,0,0,1],"Lime":[0,1,4,0,4,0,2,0],"Yuzu":[0,1,3,0,5,2,0,1],"Kumquat":[2,1,3,0,4,1,0,0],"Lime nero":[0,2,3,0,2,0,0,3],"Coriandolo":[0,0,0,0,3,2,1,4],"Cardamomo verde":[0,0,0,0,1,2,3,4],"Cardamomo nero":[0,0,0,0,0,0,2,5],"Cubebe":[0,0,0,0,1,0,2,5],"Pepe nero":[0,0,0,0,0,0,1,5],"Pepe rosa":[1,0,0,0,0,2,1,3],"Grani del paradiso":[0,0,0,0,1,0,0,5],"Cumino":[0,0,0,0,0,0,1,5],"Carvi":[0,0,0,0,0,0,2,5],"Finocchio":[2,0,0,0,0,0,2,4],"Anice verde":[2,0,0,0,0,0,1,5],"Stella di anice":[3,0,0,0,0,0,0,5],"Macis":[0,0,0,0,0,1,0,5],"Noce moscata":[1,0,0,0,0,0,0,5],"Chiodo di garofano":[0,1,0,0,0,0,0,5],"Cannella Ceylon":[2,0,0,0,0,0,0,5],"Cassia":[1,0,0,0,0,0,0,5],"Fave di tonka":[4,0,0,0,0,0,1,3],"Senape gialla":[0,1,0,0,0,0,0,4],"Angelica":[0,2,0,0,0,0,3,4],"Liquirizia":[4,1,0,0,0,0,1,3],"Genziana":[0,5,0,0,0,0,1,1],"Iris":[0,0,0,0,0,4,0,2],"Zenzero":[0,0,0,0,2,0,0,5],"Galanga":[0,0,0,0,1,0,1,5],"Curcuma":[0,2,0,0,0,0,0,4],"Mirto foglie":[0,1,0,0,1,0,4,3],"Mirto bacche":[2,1,2,0,0,0,2,3],"Elicriso":[1,1,0,0,0,2,3,4],"Rosmarino":[0,1,0,0,0,0,4,4],"Timo":[0,1,0,0,0,0,4,4],"Timo limonato":[0,0,0,0,3,0,4,2],"Santoreggia":[0,1,0,0,0,0,4,4],"Origano":[0,1,0,0,0,0,4,4],"Maggiorana":[1,0,0,0,0,0,4,3],"Salvia":[0,2,0,0,0,0,4,3],"Melissa":[0,0,1,0,3,0,4,0],"Verbena odorosa":[0,0,1,0,4,2,2,0],"Alloro":[0,1,0,0,0,0,4,3],"Lentisco":[0,1,0,0,0,0,3,4],"Finocchio di mare":[0,0,0,4,0,0,3,2],"Levistico":[0,1,0,2,0,0,4,3],"Dragoncello":[1,0,0,0,0,0,4,3],"Cappero":[0,1,1,4,0,0,2,2],"Foglie di cappero":[0,1,0,3,0,0,4,1],"Salicornia":[0,0,0,5,0,0,3,0],"Alga verde alimentare":[0,0,0,4,0,0,3,0],"Spirulina alimentare":[0,1,0,3,0,0,3,0],"Lavanda":[0,1,0,0,0,5,3,0],"Rosa":[1,0,0,0,0,5,0,0],"Camomilla":[2,1,0,0,0,4,1,0],"Sambuco":[1,0,0,0,0,5,0,0],"Ibisco":[0,0,4,0,0,3,0,0],"Fiordaliso":[0,0,0,0,0,3,0,0],"Gelsomino":[1,0,0,0,0,5,0,0],"Bacche di ginepro":[1,1,0,0,2,0,2,5],"Bacche della passione":[2,0,4,0,0,2,0,0],"Melograno":[2,1,4,0,0,0,0,0],"Fico":[5,0,0,0,0,0,0,1],"Uva passa":[5,0,1,0,0,0,0,0],"Mela":[3,0,2,0,0,1,0,0],"Pera":[4,0,1,0,0,2,0,0],"Ciliegia":[3,1,2,0,0,1,0,0],"Prugna":[4,0,2,0,0,0,0,0],"Ribes nero":[2,1,4,0,0,0,2,1],"Caffè":[1,4,0,0,0,0,0,3],"Cacao":[2,4,0,0,0,0,0,3],"Vaniglia bourbon":[5,0,0,0,0,1,0,2],"Mandorla dolce":[4,1,0,0,0,0,0,1],"Sesamo":[2,1,0,0,0,0,0,2],"Sommacco":[0,1,4,0,1,0,0,2],"Vaniglia":[5,0,0,0,0,1,0,2],"Alloro bacca":[0,2,0,0,0,0,2,4],"Portulaca":[0,0,2,2,0,0,3,0],"Spina santa":[0,1,2,0,0,0,3,3],"Carruba polpa":[5,1,0,0,0,0,0,1],"Corbezzolo":[2,1,3,0,0,1,0,0],"Uva Cataratto":[4,0,2,0,0,2,0,0],"Sorbo":[1,3,3,0,0,0,0,0],"Castagna":[4,0,0,0,0,0,0,1],"Tarassaco":[0,4,0,0,0,0,2,1],"Betulla corteccia":[1,0,0,0,0,0,3,3],"Pepe di giava":[0,0,0,0,2,0,0,5],"Pepe di Sichuan":[0,0,0,0,4,2,0,4],"Zafferano":[0,2,0,0,0,2,0,4],"Aneto":[0,0,0,0,0,0,4,3],"Basilico":[0,0,0,0,0,2,4,3],"Gelso":[3,0,1,0,0,1,2,0],"Moringa":[0,2,0,0,0,0,4,1],"Artemisia":[0,5,0,0,0,0,4,2],"Elicriso delle scogliere":[1,1,0,2,0,0,2,4],"Malva":[0,0,0,0,0,2,1,0],"Ginestra":[1,1,0,0,0,4,1,0],"Alga nori":[0,0,0,5,0,0,1,0],"Poseidonia":[0,0,0,4,0,0,3,0],"Asparago":[0,2,0,0,0,0,4,0],"Cardo":[0,4,0,0,0,0,3,0],"Carciofo":[0,4,0,0,0,0,3,0],"Cetriolo":[0,0,0,0,0,0,4,0],"Mandorla amara":[1,4,0,0,0,0,0,2],"Manna":[4,1,0,0,0,0,0,0],"Mirtillo":[3,0,3,0,0,1,0,0],"Ribes rosso":[1,1,5,0,0,0,0,0],"Mora":[3,0,3,0,0,0,0,0],"Fragola":[4,0,2,0,0,2,0,0],"Lamponi":[3,0,3,0,0,3,0,0],"Menta":[0,0,0,0,0,0,5,2],"Achillea":[0,4,0,0,0,1,4,2],"Rosa canina":[2,1,4,0,0,2,0,0],"Scorza di bergamotto disidratata":[1,2,0,0,5,3,0,0],"Scorza di arancia disidratata":[3,2,0,0,5,0,0,1],"Finger lime":[0,0,5,0,4,0,0,0],"Ananas":[4,0,4,0,0,0,0,0],"Mango":[4,0,2,0,0,1,0,2],"Papaya":[4,0,1,0,0,1,0,1],"Litchi":[4,0,1,0,0,4,0,0],"Rambutan":[4,0,1,0,0,3,0,0],"Alchechengi":[2,1,4,0,0,0,2,0],"Pitaya (dragon fruit)":[2,0,1,0,0,0,2,0],"Guava":[3,0,3,0,0,3,0,1],"Feijoa":[2,0,3,0,1,1,2,2],"Kiwano":[1,0,4,0,0,0,3,0],"Cocco":[4,0,0,0,0,0,0,0],"Durian":[3,0,0,0,0,0,0,3],"Abrotano":[0,3,0,0,3,0,3,1],"Longan":[4,0,1,0,0,1,0,1],"Foglie di loto":[1,1,0,0,0,1,4,0],"Papavero":[2,1,0,0,0,0,0,2]};
 function radarSVG(serie, size){
   size = size || 280;
   const c = size/2, R = size/2 - 62, n = ASSI8.length;
@@ -2760,16 +2795,127 @@ function radarSVG(serie, size){
   const desc = serie.map(se => (se.label||'') + ': ' + se.vals.map((v,i) => ASSI8[i]+' '+v).join(', ')).join('. ');
   return '<svg class="radar8" viewBox="0 0 '+size+' '+size+'" role="img" aria-label="Profilo sensoriale. '+desc.replace(/"/g,'')+'">'+g+'</svg>';
 }
+
+// ---------- Testa, cuore, coda: quando si sente ogni botanica ----------
+// Pesi per tempo (testa, cuore, coda) ricavati da ruolo (funzione_compound) e persistenza: stima orientativa
+// sul modello della piramide olfattiva, da validare all'assaggio. Il ruolo misto (es. top/cuore) prende il massimo dei due.
+const FASI = [['tutto','Tutto'],['testa','Testa'],['cuore','Cuore'],['coda','Coda']];
+const FASE_IDX = {testa:0, cuore:1, coda:2};
+const PESI_RUOLO = {
+  top:[1,.35,.05], cuore:[.3,1,.35], base:[.05,.4,1], ponte:[.5,.8,.3], fissativo:[0,.4,1], firma:[.4,.8,.7],
+  correttore:[.3,.6,.4], traccia:[.3,.3,.3], marino:[.4,.8,.6], colore:[.3,.6,.4], rifinitura:[.2,.5,1],
+  fondo:[.05,.4,1], accento:[.3,.5,.7], 'rotondità':[.1,.6,.9], 'spina dorsale':[.05,.5,1], acido:[.6,.6,.2], acidulo:[.6,.6,.2], amaro:[.2,.6,.6]
+};
+function pesiFase(d){
+  const toks = String(d.funzione_compound || '').toLowerCase().split(/[\/\s]+/).filter(Boolean);
+  let w = [0,0,0], trovato = false;
+  toks.forEach(t => { const r = PESI_RUOLO[t]; if (r){ trovato = true; w = w.map((x,i) => Math.max(x, r[i])); } });
+  if (!trovato) w = [.3,1,.4];
+  const p = Math.max(1, Math.min(5, parseInt(d.persistenza, 10) || 3)) - 1;
+  const fT = [1.15,1,.9,.8,.7][p], fC = [1,1,1,1,1][p], fK = [.4,.6,.8,1,1.15][p];
+  return [Math.min(1, w[0]*fT), Math.min(1, w[1]*fC), Math.min(1, w[2]*fK)].map(x => Math.round(x*100)/100);
+}
+const STADI = {};
+MASTER.forEach(d => { STADI[d.botanica] = pesiFase(d); });
+// Correzioni a mano dove il solo ruolo inganna: il ginepro apre con le note resinose fresche (pinene) pur essendo la base della ricetta
+if (STADI['Bacche di ginepro']) STADI['Bacche di ginepro'] = [.55,.9,.85];
+function valFase(nome, fase){
+  const p = PROFILO8[nome]; if (!p) return null;
+  if (!fase || fase === 'tutto') return p;
+  const w = (STADI[nome] || [.3,1,.4])[FASE_IDX[fase]];
+  return p.map(v => Math.round(v * w * 10) / 10);
+}
+window.radarFase = window.radarFase || 'tutto';
+function faseHtml(js){
+  return '<div class="fase-sel" role="group" aria-label="Quando si sente">' + FASI.map(([k,nm]) =>
+    '<button type="button" class="fase-btn" aria-pressed="' + (window.radarFase === k) + '" onclick="window.radarFase=\'' + k + '\';' + js + '">' + nm + '</button>').join('') + '</div>';
+}
+const FASE_NOTA = {
+  tutto:'', testa:'Vista Testa: le note che arrivano per prime, volatili.', cuore:'Vista Cuore: le note che sostengono il sorso a metà.', coda:'Vista Coda: le note che restano alla fine.'
+};
+// Per ogni tempo, le note che prevalgono fra le botaniche date (con eventuali pesi di quantità)
+function noteDiFaseIdx(elenco){
+  return ['testa','cuore','coda'].map(f => {
+    const tot = ASSI8.map((_,i) => elenco.reduce((a,x) => a + valFase(x.n, f)[i] * (x.w === undefined ? 1 : x.w), 0));
+    const mx = Math.max.apply(null, tot);
+    const idx = tot.map((t,i) => [i,t]).filter(x => x[1] >= 2 && x[1] >= mx * 0.6).sort((a,b) => b[1]-a[1]).slice(0,3).map(x => x[0]);
+    return [f, idx];
+  });
+}
+function noteDiFase(elenco){
+  return noteDiFaseIdx(elenco).map(([f, idx]) => [f, idx.map(i => ASSI8[i].toLowerCase())]);
+}
+function ordineNoteHtml(elenco){
+  const r = noteDiFase(elenco);
+  const nm = {testa:'Testa', cuore:'Cuore', coda:'Coda'};
+  return '<div class="fase-ordine"><strong>In ordine di arrivo:</strong> ' + r.map(([f,n]) => nm[f] + ' → ' + (n.length ? n.join(', ') : 'poco o nulla')).join(' · ') + '</div>';
+}
+
+
+// ---------- Estrazione e profilo ----------
+// Modello semplice a cinetica del primo ordine: la frazione estratta dopo t ore e' F(t) = 1 - exp(-t / tau).
+// Il tempo consigliato di ogni botanica (EST o tempo di libreria) e' preso come il punto in cui si e' estratto
+// circa l'80 % di cio' che serve (tau = T / ln 5). Serve a mostrare cosa succede se le botaniche macerano
+// TUTTE INSIEME per lo stesso tempo: le rapide arrivano a saturazione, le lente restano indietro.
+function tempoRifOre(nome){
+  const d = byName[nome]; if (!d) return 24;
+  const e = typeof estPer === 'function' ? estPer(d) : null;
+  if (e && e.t) return Math.max(0.25, (e.t[0] + e.t[1]) / 2);
+  const p = parseTempoRange((DOSE[nome] || {}).tempo || d.tempo);
+  return p ? Math.max(0.25, toHours((p.min + p.max) / 2, p.unit)) : 24;
+}
+function fracEstratta(t, Tref){ return 1 - Math.exp(-t / (Tref / Math.log(5))); }
+// Moltiplicatore rispetto all'estrazione "giusta" (80 %): 1 = come previsto, <1 = sotto-estratta, max 1.25 = saturata.
+function moltEstrazione(nome, ore){ return fracEstratta(ore, tempoRifOre(nome)) / 0.8; }
+
+// ---------- Controllo con le molecole ----------
+// Le molecole citate nella scheda di ogni botanica (MOLECOLE) sono associate all'asse sensoriale a cui di solito
+// contribuiscono. Se la scheda cita una molecola di un asse ma la stima di quell'asse e' 0 o 1, l'app lo segnala:
+// e' un controllo di coerenza fra due fonti, non una misura.
+const MOL_ASSE = [
+  ['limonene',4,'limonene'],['citrale',4,'citrale'],['geranial',4,'geraniale'],['citronellale',4,'citronellale'],
+  ['linalolo',5,'linalolo'],['linalile',5,'acetato di linalile'],['geraniolo',5,'geraniolo'],['citronellolo',5,'citronellolo'],
+  ['nerolo',5,'nerolo'],['terpineolo',5,'terpineolo'],
+  ['pinene',6,'pinene'],['cineolo',6,'cineolo'],['eucalipt',6,'eucaliptolo'],['canfora',6,'canfora'],['mentol',6,'mentolo'],
+  ['mentone',6,'mentone'],['mircene',6,'mircene'],['terpinene',6,'terpinene'],
+  ['carvone',7,'carvone'],['eugenolo',7,'eugenolo'],['cinnamald',7,'cinnamaldeide'],['timolo',7,'timolo'],['carvacrolo',7,'carvacrolo'],
+  ['anetolo',7,'anetolo'],['estragolo',7,'estragolo'],['piperina',7,'piperina'],['sabinene',7,'sabinene'],['cariofillene',7,'cariofillene'],
+  ['miristicina',7,'miristicina'],['apiolo',7,'apiolo'],['cuminaldeide',7,'cuminaldeide'],['zingiberene',7,'zingiberene'],
+  ['vanillina',0,'vanillina'],['furaneolo',0,'furaneolo']
+];
+function coerenzaMolecole(nome){
+  const t = (MOLECOLE[nome] || '').toLowerCase(), v = PROFILO8[nome];
+  if (!t || !v) return null;
+  const per = {};
+  MOL_ASSE.forEach(([k,a,lab]) => { if (t.includes(k)) (per[a] = per[a] || []).push(lab); });
+  const assi = Object.keys(per).map(Number);
+  if (!assi.length) return null;
+  return {
+    ok: assi.filter(a => v[a] >= 2).map(a => ({asse:a, mol:per[a]})),
+    dubbi: assi.filter(a => v[a] <= 1).map(a => ({asse:a, mol:per[a]}))
+  };
+}
+function coerenzaHtml(nome){
+  const c = coerenzaMolecole(nome);
+  if (!c) return '';
+  const f = x => x.map(e => '<strong>' + ASSI8[e.asse].toLowerCase() + '</strong> (' + e.mol.join(', ') + ')').join('; ');
+  let h = '';
+  if (c.ok.length) h += 'La scheda cita molecole coerenti con: ' + f(c.ok) + '. ';
+  if (c.dubbi.length) h += '<span class="radar-dubbio">Da rivedere: ' + f(c.dubbi) + ' sono citate nella scheda, ma la stima di quell\'asse è bassa.</span>';
+  return '<div class="radar-nota">' + h + '</div>';
+}
 function radarBox(nome){
   const v = PROFILO8[nome];
   if (!v) return '';
   const BASE = ['Bacche di ginepro','Coriandolo','Angelica'].filter(n => n !== nome && PROFILO8[n]);
   const conBase = !!window.radarCardBase;
   const COLB = ['#6B7A72','#9A8F6B','#7B6B8F'];
-  const serie = [{vals:v, color:'var(--juniper)', label:nome}];
+  const serie = [{vals:valFase(nome, window.radarFase), color:'var(--juniper)', label:nome}];
   let extra = '';
+  const sw = STADI[nome] || [.3,1,.4], nmF = ['testa','cuore','coda'], maxW = Math.max.apply(null, sw);
+  const doveSi = nmF.filter((_,i) => sw[i] >= maxW - 0.15).join(' e ');
   if (conBase){
-    BASE.forEach((n,k) => serie.push({vals:PROFILO8[n], color:COLB[k], label:n}));
+    BASE.forEach((n,k) => serie.push({vals:valFase(n, window.radarFase), color:COLB[k], label:n}));
     const cond = BASE.map(n => {
       const comuni = ASSI8.filter((_,i) => v[i] >= 3 && PROFILO8[n][i] >= 3).map(x => x.toLowerCase());
       return comuni.length ? '<strong>' + n + '</strong> condivide con ' + nome + ': ' + comuni.join(', ') : null;
@@ -2779,9 +2925,9 @@ function radarBox(nome){
       '<div class="radar-nota">' + (cond.length ? 'Note in comune con le base (rischio di sommarsi): ' + cond.join('; ') + '.' : 'Nessuna nota forte in comune con le base: ' + nome + ' occupa uno spazio diverso.') + '</div>';
   }
   const btn = BASE.length ? '<button type="button" class="ghost-btn radar-base-btn" aria-pressed="' + conBase + '" onclick="window.radarCardBase=!window.radarCardBase;showDetail(currentDetailName)">' + (conBase ? '− Togli le botaniche base' : '+ Aggiungi le botaniche base') + '</button>' : '';
-  return '<div class="radar-box"><div class="radar-title">Profilo sensoriale</div>' + btn +
-    radarSVG(serie, 280) + extra +
-    '<div class="radar-nota">Stima orientativa (0 = assente, 5 = dominante) di quanto ogni nota pesa nel carattere della botanica. Da validare all\'assaggio.</div></div>';
+  return '<div class="radar-box"><div class="radar-title">Profilo sensoriale</div>' + faseHtml('showDetail(currentDetailName)') + btn +
+    radarSVG(serie, 280) + '<div class="radar-nota">' + (FASE_NOTA[window.radarFase] ? FASE_NOTA[window.radarFase] + ' ' : '') + 'Si sente soprattutto in <strong>' + doveSi + '</strong>.</div>' + extra +
+    coerenzaHtml(nome) + '<div class="radar-nota">Stima orientativa (0 = assente, 5 = dominante) di quanto ogni nota pesa nel carattere della botanica. Da validare all\'assaggio.</div></div>';
 }
 
 // ---------- Botaniche fondamentali ----------
@@ -3010,6 +3156,7 @@ const searchInput = document.getElementById('search');
 const fCategoria = document.getElementById('f-categoria');
 const fCarattere = document.getElementById('f-carattere');
 const fPotenza = document.getElementById('f-potenza');
+const fUso = document.getElementById('f-uso');
 const fOrdine = document.getElementById('f-ordine'), fStile = document.getElementById('f-stile');
 STYLES.filter(st => st[0] !== 'Personalizzato').forEach(st => { const o = document.createElement('option'); o.value = st[0]; o.textContent = st[0]; fStile.appendChild(o); });
 // Botaniche citate in ciascuno stile preordinato (per il filtro "Stile")
@@ -3061,6 +3208,7 @@ function elencoFiltrato(){
     if (car && d.carattere !== car) return false;
     if (pot && (d.potenza10 || 0) < pot) return false;
     if (fStile.value && !botDelloStile(fStile.value).has(d.botanica)) return false;
+    if (fUso.value && d.uso !== fUso.value) return false;
     if (q && !(d.botanica.toLowerCase().includes(q) || (d.profilo||'').toLowerCase().includes(q))) return false;
     return true;
   });
@@ -3077,7 +3225,43 @@ function elencoFiltrato(){
   };
   return risultato.slice().sort((a, b) => (punteggio(a) - punteggio(b)) || a.botanica.localeCompare(b.botanica, 'it'));
 }
+
+// ---------- Uso nella miscela ----------
+// Tre gruppi, con un criterio dichiarato:
+//  - Più usate: fanno parte del nucleo dell'app (CORE), oppure compaiono in almeno 2 gin commerciali di riferimento,
+//    oppure in almeno 2 stili dell'app come botanica vera e propria (non solo in tracce).
+//  - Di firma o rare: la loro funzione tipica nel compound e' firma, traccia, rifinitura o marina, oppure compaiono
+//    solo in tracce, in un solo gin o in un solo stile.
+//  - Altre: non compaiono nei gin e negli stili di riferimento e non hanno una funzione di firma.
+const USO_NOMI = {comune:'1 · Più usate', firma:'2 · Di firma o rare', altra:'3 · Altre'};
+function assegnaUso(){
+  if (MASTER._uso || !window.GIN_RIF || !window.STILI_RIF) return;
+  const S = {}, add = (n, k) => { (S[n] = S[n] || {gin:0, stile:0, tracce:0})[k]++; };
+  Object.values(window.GIN_RIF).forEach(x => x.b.forEach(n => add(n, 'gin')));
+  STYLES.forEach(st => (st[3] || []).forEach(r => {
+    const tr = /tracce/i.test(r[1]) || /Firma|Rifinitura/.test(r[0]);
+    String(r[1]).split(/,| o /).map(t => t.replace(/\(.*?\)/g, '').trim()).filter(Boolean).forEach(n => add(n, tr ? 'tracce' : 'stile'));
+  }));
+  Object.values(window.STILI_RIF).forEach(l => l.forEach(n => add(n, 'stile')));
+  MASTER.forEach(d => {
+    const n = d.botanica, c = S[n] || {gin:0, stile:0, tracce:0};
+    const firmaF = /firma|traccia|rifinitura|marino/.test(d.funzione_compound || '');
+    const nucleo = CORE.includes(n);
+    const prove = [];
+    if (nucleo) prove.push('nel nucleo dell\'app');
+    if (c.gin) prove.push('in ' + c.gin + ' gin di riferimento');
+    if (c.stile) prove.push('in ' + c.stile + ' stili');
+    if (c.tracce) prove.push('in tracce in ' + c.tracce + ' stili');
+    if (nucleo || c.gin >= 2 || c.stile >= 2){ d.uso = 'comune'; }
+    else if (firmaF || c.gin || c.stile || c.tracce){ d.uso = 'firma'; }
+    else d.uso = 'altra';
+    d.usoWhy = prove.length ? prove.join(', ') : (firmaF ? 'funzione tipica: ' + d.funzione_compound : 'non presente nei gin e negli stili di riferimento');
+    d.usoGruppo = USO_NOMI[d.uso];
+  });
+  MASTER._uso = true;
+}
 function renderGrid(){
+  assegnaUso();
   const filtered = elencoFiltrato();
   countTag.textContent = filtered.length + ' / ' + MASTER.length + ' botaniche';
   grid.innerHTML = '';
@@ -3092,6 +3276,7 @@ function renderGrid(){
       <div class="tagrow">
         <span class="tag carattere" style="--c:${coloreCarattere(d.carattere)}">${d.carattere || ''}</span>
         <span class="tag potenza">Potenza ${d.potenza10 ?? '—'}/10</span>
+        <span class="tag uso-${d.uso}" title="${d.usoWhy || ''}">${d.uso === 'comune' ? 'Più usata' : d.uso === 'firma' ? 'Firma / rara' : 'Altra'}</span>
         ${d.edibile === 'Sì, con cautela' ? '<span class="tag cautela">⚠️ Con cautela</span>' : ''}
       </div>`;
     card.addEventListener('click', () => showDetail(d.botanica, true));
@@ -3226,7 +3411,7 @@ function chiudiDetail(){
   grid.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 
-[searchInput, fCategoria, fCarattere, fPotenza, fOrdine, fStile].forEach(el => el.addEventListener('input', renderGrid));
+[searchInput, fCategoria, fCarattere, fPotenza, fOrdine, fStile, fUso].forEach(el => el.addEventListener('input', renderGrid));
 renderGrid();
 const libPrint = document.getElementById('lib-print');
 if (libPrint) libPrint.addEventListener('click', () => {
@@ -3297,6 +3482,7 @@ renderAr();
   const COL = ['var(--juniper)','var(--c-speziato)','var(--c-marino)','var(--c-floreale)','var(--c-mediterraneo)','var(--c-siciliano)','#7A5BC7','#8A6D3B'];
   const DEFAULT = ['Limone','Zenzero','','','','','',''];
   // Botaniche non-base di ciascuno stile preordinato, cosi' come le propone il Builder (da riallineare se cambiano i default)
+  window.STILI_RIF = null;
   const STILI_RIF = {
     'Mediterraneo':['Bergamotto','Finocchio di mare','Lentisco','Elicriso','Rosmarino'],
     'Agrumato':['Limone','Bergamotto','Cedro','Kumquat','Cardamomo verde'],
@@ -3309,7 +3495,9 @@ renderAr();
     'Siciliano':['Bergamotto','Finocchio di mare','Mirto foglie','Elicriso','Mandorla dolce'],
     'Dolce aromatico':['Vaniglia bourbon','Fave di tonka','Fico','Cannella Ceylon']
   };
+  window.STILI_RIF = STILI_RIF;
   // Gin commerciali con lista di botaniche pubblica (senza le base). Fuori restano quelle non presenti in libreria.
+  window.GIN_RIF = null;
   const GIN_RIF = {
     "Gordon's":{b:['Liquirizia','Limone','Arancia dolce','Iris','Cassia'],manca:''},
     'Beefeater':{b:['Limone','Arancia amara','Iris','Mandorla dolce','Liquirizia'],manca:''},
@@ -3319,6 +3507,8 @@ renderAr();
     'Bulldog':{b:['Lavanda','Mandorla dolce','Cassia','Liquirizia','Iris','Longan','Foglie di loto','Papavero'],manca:'sandalo bianco'},
     'Gin Mare':{b:['Rosmarino','Timo','Basilico','Arancia amara','Lentisco','Camomilla','Cardamomo verde'],manca:'oliva Arbequina'}
   };
+  window.GIN_RIF = GIN_RIF;
+  renderGrid();
   const stSel = document.getElementById('cmp-stile');
   stSel.innerHTML = '<option value="">Parti da uno stile o da un gin…</option><optgroup label="Stili dell\'app">' + Object.keys(STILI_RIF).map(n => '<option>' + n + '</option>').join('') +
     '</optgroup><optgroup label="Gin commerciali">' + Object.keys(GIN_RIF).map(n => '<option>' + n + '</option>').join('') + '</optgroup>';
@@ -3358,7 +3548,9 @@ renderAr();
   const ALTO = 8, BASSO = 2;
   function aggiorna(){
     sistemaSlot();
-    let scelte = sels.map((x,k) => ({n:x.value, c:COL[k]})).filter(x => x.n && PROFILO8[x.n]);
+    const V = n => valFase(n, window.radarFase);
+    document.getElementById('wb-fase').innerHTML = faseHtml('document.getElementById(\'cmp-row\').dispatchEvent(new Event(\'fase\'))');
+    let scelte = sels.map((x,k) => ({n:x.value, c:COL[k]})).filter(x => x.n && V(x.n));
     const uniq = new Set(); scelte = scelte.filter(x => !uniq.has(x.n) && uniq.add(x.n));
     // le base si aggiungono a parte (non occupano posti), con colori neutri; se gia' scelte negli slot non si duplicano
     const EXTRA = ['#6B7A72','#9A8F6B','#7B6B8F'];
@@ -3369,13 +3561,13 @@ renderAr();
       return;
     }
     // le tracce (peso 1) non fanno somma: una nota debole non rende pieno un asse
-    const tot = ASSI8.map((_,i) => scelte.reduce((a,x) => a + (PROFILO8[x.n][i] >= 2 ? PROFILO8[x.n][i] : 0), 0));
-    const forti = i => scelte.filter(x => PROFILO8[x.n][i] >= 3).length;
+    const tot = ASSI8.map((_,i) => scelte.reduce((a,x) => a + (V(x.n)[i] >= 2 ? V(x.n)[i] : 0), 0));
+    const forti = i => scelte.filter(x => V(x.n)[i] >= 3).length;
     const stato = (t,i) => (t >= ALTO || forti(i) >= 2) ? 'alto' : (t <= BASSO ? 'basso' : 'medio');
     const ETI = {alto:'Molto pieno', medio:'Equilibrato', basso:'Scoperto'};
     let righe = ASSI8.map((nm,i) => {
       const st = stato(tot[i], i);
-      const contr = scelte.filter(x => PROFILO8[x.n][i] >= 2).map(x => x.n);
+      const contr = scelte.filter(x => V(x.n)[i] >= 2).map(x => x.n);
       let nota = '';
       if (st === 'alto') nota = contr.length > 1 ? 'più botaniche su questa nota: ' + contr.join(' + ') : 'domina ' + (contr[0] || 'una sola botanica');
       else if (st === 'basso') nota = contr.length ? 'appena accennato: ' + contr.join(', ') : 'nessuna botanica copre questa nota';
@@ -3390,14 +3582,18 @@ renderAr();
       : '<strong>Molto pieno su ' + rossi.join(', ').toLowerCase() + ':</strong> più botaniche spingono lo stesso asse. Può essere il carattere che vuoi dare al gin oppure ridondanza: dipende dalle dosi, e a deciderlo è l\'assaggio. ';
     if (grigi.length) sintesi += '<strong>Aree scoperte: ' + grigi.join(', ').toLowerCase() + '.</strong> Possono essere una scelta di stile; se ti servono, cerca una botanica complementare. ';
     if (!sintesi) sintesi = 'Nessun asse saturo e nessun vuoto evidente: la combinazione è equilibrata.';
-    out.innerHTML = radarSVG(scelte.map(x => ({vals:PROFILO8[x.n], color:x.c, label:x.n})), 300) +
+    if (window.radarFase !== 'tutto'){ const nf_ = noteDiFase(scelte.map(x => ({n:x.n}))).find(r => r[0] === window.radarFase)[1]; sintesi = '<strong>In ' + window.radarFase + ' prevalgono: ' + (nf_.length ? nf_.join(', ') : 'quasi nulla') + '.</strong> Grigio qui vuol dire solo che quella nota non si sente in questo tempo, non che manca nella ricetta: guarda "Tutto" per il giudizio complessivo.'; }
+    out.innerHTML = radarSVG(scelte.map(x => ({vals:V(x.n), color:x.c, label:x.n})), 300) +
       '<div class="radar-legend">' + scelte.map(x => '<span><i style="background:'+x.c+'"></i>'+x.n+'</span>').join('') + '</div>' +
       (aggiunte.length ? '<div class="radar-nota">Con le base aggiunte: ' + aggiunte.join(', ') + '.</div>' : '') +
       (GIN_RIF[stSel.value] ? '<div class="radar-nota">Dalla lista pubblica del produttore, senza le base' + (GIN_RIF[stSel.value].manca ? ' e senza ' + GIN_RIF[stSel.value].manca + ' (non in libreria)' : '') + '. Le dosi non sono dichiarate.</div>' : '') +
+      ordineNoteHtml(scelte.map(x => ({n:x.n}))) +
+      (FASE_NOTA[window.radarFase] ? '<div class="radar-nota">' + FASE_NOTA[window.radarFase] + '</div>' : '') +
       '<div class="ax-list">' + righe + '</div>' +
       '<div class="radar-nota ax-sintesi">' + sintesi + '</div>' +
       '<div class="radar-nota">Per ogni asse: rosso (molto pieno) se almeno due botaniche pesano 3 o più, o se la somma arriva a ' + ALTO + '; grigio se la somma è ' + BASSO + ' o meno; verde nel mezzo. Stima orientativa: conta anche il giudizio delle colonne qui sotto.</div>';
   }
+  row.addEventListener('fase', aggiorna);
   aggiorna();
 })();
 
@@ -3645,23 +3841,35 @@ function renderSummary(){
   (function(){
     const box = document.getElementById('build-radar');
     if (!box) return;
-    const visti = new Set(); const acc = [0,0,0,0,0,0,0,0]; let tot = 0;
+    const visti = new Set(); const elenco = [];
     [...selects].forEach(sel => {
       if (visti.has(sel.value) || !PROFILO8[sel.value]) return;
-      if (!window.radarConBase && FONDAMENTALI[sel.value]) return;
       visti.add(sel.value);
-      const w = Math.max(0.0001, pesoRiga(sel, doseLibreria(sel.value) ?? 0));
-      PROFILO8[sel.value].forEach((v,i) => acc[i] += v*w);
-      tot += w;
+      if (!window.radarConBase && FONDAMENTALI[sel.value]) return;
+      elenco.push({n: sel.value, w: Math.max(0.0001, pesoRiga(sel, doseLibreria(sel.value) ?? 0))});
     });
+    const oreIns = window.radarInsieme > 0 ? window.radarInsieme : 0;
+    if (oreIns) elenco.forEach(x => { x.m = moltEstrazione(x.n, oreIns); x.w = Math.max(0.0001, x.w * x.m); });
+    const insBox = '<div class="radar-insieme"><label><input type="checkbox" class="ins-on"' + (oreIns ? ' checked' : '') + '> Macerano tutte insieme per</label> <input type="number" class="ins-ore" min="0.5" step="0.5" value="' + (window.radarInsieme || 24) + '"> ore</div>';
+    const insNota = oreIns ? '<div class="radar-nota">Se macerano tutte insieme per ' + oreIns + ' h, la quota estratta rispetto al tempo consigliato è: ' +
+      elenco.slice().sort((a,b) => a.m - b.m).map(x => '<strong>' + x.n + '</strong> ' + Math.round(Math.min(1.25, x.m) / 1.25 * 100) + '%').join(', ') +
+      '. Il 100 % è la saturazione; il tempo consigliato corrisponde a circa l\'80 %. Modello a cinetica del primo ordine, stima da validare con prove di estrazione.</div>' : '';
     const btnBase = '<button type="button" class="ghost-btn radar-base-btn" aria-pressed="' + (window.radarConBase ? 'true' : 'false') + '">' + (window.radarConBase ? '− Togli le botaniche base' : '+ Aggiungi le botaniche base') + '</button>';
-    if (!tot){ box.innerHTML = '<div class="radar-box"><div class="radar-title">Profilo della ricetta</div>' + btnBase + '<div class="radar-nota">Senza le botaniche base non resta nessuna botanica da mostrare.</div></div>'; box.querySelector('.radar-base-btn').onclick = () => { window.radarConBase = !window.radarConBase; renderSummary(); }; return; }
-    const media = acc.map(x => x/tot), mx = Math.max.apply(null, media) || 1;
-    const vals = media.map(x => Math.round(x/mx*50)/10);
-    box.innerHTML = '<div class="radar-box"><div class="radar-title">Profilo della ricetta' + (window.radarConBase ? ' (con le base)' : ' (senza le base)') + '</div>' + btnBase +
-      radarSVG([{vals:vals,color:'var(--juniper)',label:'Ricetta'}], 280) +
+    const aggancia = () => { box.querySelector('.radar-base-btn').onclick = () => { window.radarConBase = !window.radarConBase; renderSummary(); }; box.querySelectorAll('.fase-btn').forEach(b => { b.onclick = () => { window.radarFase = b.textContent.toLowerCase(); renderSummary(); }; });
+      const on = box.querySelector('.ins-on'), ore = box.querySelector('.ins-ore');
+      if (on && ore){ on.onchange = () => { window.radarInsieme = on.checked ? (parseFloat(ore.value) || 24) : 0; renderSummary(); };
+        ore.onchange = () => { const v = parseFloat(ore.value); if (v > 0){ window.radarInsieme = v; renderSummary(); } }; } };
+    const fasiBtn = faseHtml('').replace(/onclick="[^"]*"/g, '');
+    if (!elenco.length){ box.innerHTML = '<div class="radar-box"><div class="radar-title">Profilo della ricetta</div>' + btnBase + '<div class="radar-nota">Senza le botaniche base non resta nessuna botanica da mostrare.</div></div>'; aggancia(); return; }
+    const mediaDi = f => { const tot = elenco.reduce((a,x) => a + x.w, 0); return ASSI8.map((_,i) => elenco.reduce((a,x) => a + valFase(x.n, f)[i] * x.w, 0) / tot); };
+    const mx = Math.max.apply(null, mediaDi('tutto')) || 1;      // stessa scala per tutti i tempi, cosi' si confrontano
+    const vals = mediaDi(window.radarFase).map(x => Math.min(5, Math.round(x / mx * 50) / 10));
+    box.innerHTML = '<div class="radar-box"><div class="radar-title">Profilo della ricetta' + (window.radarConBase ? ' (con le base)' : ' (senza le base)') + '</div>' + fasiBtn + btnBase + insBox +
+      radarSVG([{vals:vals,color:'var(--juniper)',label:'Ricetta'}], 280) + insNota +
+      ordineNoteHtml(elenco) +
+      (FASE_NOTA[window.radarFase] ? '<div class="radar-nota">' + FASE_NOTA[window.radarFase] + '</div>' : '') +
       '<div class="radar-nota">Mostra la forma del profilo (quali note prevalgono), non l\'intensità. Pesato sulle quantità reali; stima orientativa da validare all\'assaggio.</div></div>';
-    box.querySelector('.radar-base-btn').onclick = () => { window.radarConBase = !window.radarConBase; renderSummary(); };
+    aggancia();
   })();
 
   // quota reale del ginepro sul totale (tracce già ridotte alla quantità effettiva)
@@ -3711,23 +3919,21 @@ function renderSummary(){
       }
     }
   }
-  // Gradazione: la ricetta mostra dose/tempo di riferimento a 43%/20°C, ma ogni botanica
-  // ha una sua gradazione di estrazione consigliata (Libreria). Se il 43% è fuori dal suo
-  // range, segnala la gradazione giusta e i valori ricalcolati, utili per infonderla a parte.
+  // Ogni botanica ha una sua gradazione di estrazione consigliata (Libreria). Se la gradazione del gin finito
+  // (43%) è fuori dal suo range, segnala la gradazione giusta e i valori ricalcolati, per infonderla a parte.
   let gradHtml = '';
   uniqueChosen.forEach(n => {
     const est = EST[n]; if (!est) return;
     const d = byName[n]; if (!d) return;
     if (REF_ABV >= est.a[0] && REF_ABV <= est.a[1]) return;
-    const mid = (est.a[0] + est.a[1]) / 2;
+    const mid = est.a[0];
     const ds = DOSE[n] || {};
     const baseTempo = ds.tempo || d.tempo || '';
     const baseDose = ds.test ?? d.dose;
     const dose2 = adjustedDose(baseDose, mid, REF_TEMP, d.categoria);
     const tempo2 = adjustedTempo(baseTempo, mid, REF_TEMP, d.categoria);
-    const dir = REF_ABV < est.a[0] ? 'più alta' : 'più bassa';
     const nq = n.replace(/'/g, "\\'");
-    gradHtml += `<div class="warn-box">⚠️ <strong>${n}</strong> va estratta a una gradazione ${dir} del 43% di riferimento — consigliata <strong>${estAbvTxt(est.a)}</strong> (non ${REF_ABV}%). A ${mid}%/${REF_TEMP}°C: ${dose2 ?? (baseDose ?? '—')} g e tempo ${tempo2}. Conviene infonderla da sola a questa gradazione e poi unirla al blend finale. <button type="button" class="ghost-btn" style="margin-top:6px" onclick="apriInfusi('${nq}')">Apri in Infusi →</button></div>`;
+    gradHtml += `<div class="warn-box">⚠️ <strong>${n}</strong> si estrae meglio a <strong>${estAbvTxt(est.a)}</strong>, non alla gradazione del gin finito. A ${mid}%/${REF_TEMP}°C: ${dose2 ?? (baseDose ?? '—')} g per 100 ml e tempo ${tempo2}. Conviene infonderla da sola a questa gradazione e poi unirla al blend finale. <button type="button" class="ghost-btn" style="margin-top:6px" onclick="apriInfusi('${nq}')">Apri in Infusi →</button></div>`;
   });
   const personalizzato = currentStyleName === 'Personalizzato';
   buildWarnings.innerHTML = juniperHtml + gradHtml + (personalizzato ? '' : noteHtml + warnHtml);
@@ -3770,6 +3976,27 @@ function loadTests(){
 // ---------- Profilo assaggiato e confronto con la stima ----------
 // Ogni scheda puo' registrare quanto si sente ciascuna delle otto note (0-5). Il confronto con il profilo
 // previsto dalle botaniche e dalle percentuali della miscela dice dove le stime di PROFILO8 sbagliano.
+// ---------- Taratura del palato ----------
+// Riferimenti di training sensoriale (scala Spectrum / Meilgaard): quattro gusti di base in soluzione acquosa a 20 C.
+// Le concentrazioni sono punti di partenza usati nei panel addestrati; ogni palato va verificato con le proprie soluzioni.
+// "liv" e' il voto 0-5 dell'app a cui l'ancora corrisponde (le intensita' Spectrum 2, 5, 10, 15 su 15 diventano 1, 2, 3, 5).
+const TARATURA_GUSTI = [
+  {asse:0, nome:'Dolce',  sost:'saccarosio',        pt:[[2,1],[5,2],[10,3],[16,5]], u:'%'},
+  {asse:1, nome:'Amaro',  sost:'caffeina',          pt:[[0.05,1],[0.08,2],[0.15,3]], u:'%'},
+  {asse:2, nome:'Acido',  sost:'acido citrico',     pt:[[0.05,1],[0.08,2],[0.15,3]], u:'%'},
+  {asse:3, nome:'Salino', sost:'sale fino (NaCl)',  pt:[[0.2,1],[0.35,2],[0.5,3]],   u:'%'}
+];
+const TARATURA_AROMI = [
+  {asse:4, nome:'Agrumato', rif:'scorza di limone appena grattata'},
+  {asse:5, nome:'Floreale', rif:'acqua di rose o petali di rosa freschi'},
+  {asse:6, nome:'Erbaceo',  rif:'foglia di salvia o basilico appena schiacciata'},
+  {asse:7, nome:'Speziato', rif:'pepe nero macinato al momento o un chiodo di garofano'}
+];
+const ANCORE_VOTO = ['assente','appena percettibile','debole ma chiara','media','forte','dominante'];
+function ancoraGusto(g, liv){
+  const p = g.pt.find(x => x[1] === liv);
+  return p ? 'soluzione ' + p[0] + ' %' : '';
+}
 const PROF_GRUPPI = [['Gusto (lingua)', [0,1,2,3]], ['Aroma (naso)', [4,5,6,7]]];
 (function(){
   const g = document.getElementById('tf-profilo-grid');
@@ -3778,12 +4005,47 @@ const PROF_GRUPPI = [['Gusto (lingua)', [0,1,2,3]], ['Aroma (naso)', [4,5,6,7]]]
     idx.forEach(i => {
       const l = document.createElement('label'); l.textContent = ASSI8[i] + ' (0-5)';
       const sel = document.createElement('select'); sel.id = 'tf-pa' + i; sel.className = 'prof-select';
-      sel.innerHTML = '<option value="">—</option>' + [0,1,2,3,4,5].map(v => '<option value="' + v + '">' + v + '</option>').join('');
+      sel.innerHTML = '<option value="">—</option>' + [0,1,2,3,4,5].map(v => {
+        const g = TARATURA_GUSTI.find(x => x.asse === i);
+        const anc = g ? ancoraGusto(g, v) : '';
+        return '<option value="' + v + '">' + v + ' · ' + ANCORE_VOTO[v] + (anc ? ' (' + anc + ')' : '') + '</option>';
+      }).join('');
       sel.addEventListener('change', aggiornaConfrontoProfilo);
       l.appendChild(sel); g.appendChild(l);
     });
   });
 })();
+
+function gMl(perc, ml){ const v = perc * ml / 100; return v >= 1 ? v.toFixed(1).replace(/\.0$/,'') : v.toFixed(2); }
+function renderTaratura(){
+  const box = document.getElementById('tf-taratura-palato');
+  if (!box) return;
+  const volEl = document.getElementById('tar-ml');
+  const ml = volEl ? Math.max(50, +volEl.value || 250) : 250;
+  let rows = '';
+  TARATURA_GUSTI.forEach(g => {
+    g.pt.forEach(([c, liv], k) => {
+      rows += '<tr>' + (k === 0 ? '<td rowspan="' + g.pt.length + '"><strong>' + g.nome + '</strong><br>' + g.sost + '</td>' : '')
+        + '<td>' + liv + '</td><td>' + c + ' %</td><td>' + gMl(c, ml) + ' g</td></tr>';
+    });
+  });
+  const aromi = TARATURA_AROMI.map(a => '<li><strong>' + a.nome + '</strong>: ' + a.rif + '.</li>').join('');
+  const scala = ANCORE_VOTO.map((t, i) => '<strong>' + i + '</strong> ' + t).join(' · ');
+  box.innerHTML = '<details class="tar-box"' + (box.dataset.aperto ? ' open' : '') + '><summary>Taratura del palato: soluzioni di riferimento e significato dei voti</summary><div class="tar-body">'
+    + '<p style="margin:6px 0;"><strong>Scala dei voti.</strong> ' + scala + '.</p>'
+    + '<p style="margin:6px 0;"><strong>Gusti (lingua).</strong> Prepara in acqua a temperatura ambiente le soluzioni qui sotto, in bicchierini numerati. Assaggia dalla più debole alla più forte, sciacquando con acqua tra una e l\'altra e aspettando circa un minuto. Il voto dell\'app è quello della colonna «Voto»: se un campione ti sembra come la soluzione 2, il suo voto è 2. Oltre l\'ultima soluzione si resta su 4–5. Per i grammi molto piccoli (caffeina, acido citrico) serve una bilancia da 0,01 g, oppure prepara un litro intero.</p>'
+    + '<div class="tar-vol"><label for="tar-ml">Quantità da preparare per soluzione (ml)</label><input type="number" id="tar-ml" min="50" step="50" value="' + ml + '"></div>'
+    + '<div class="tar-tab-wrap"><table class="tar-table"><thead><tr><th>Gusto</th><th>Voto</th><th>Concentrazione</th><th>Per ' + ml + ' ml</th></tr></thead><tbody>' + rows + '</tbody></table></div>'
+    + '<p style="margin:6px 0;"><strong>Aromi (naso).</strong> Non esistono soluzioni standard universali: scegli un riferimento tuo e tienilo sempre uguale. Suggerimenti di partenza:</p><ul style="margin:4px 0 8px 18px;">' + aromi + '</ul>'
+    + '<p style="margin:6px 0;">Fissa il tuo 3 come «ben riconoscibile senza coprire il resto» e il 5 come «quella nota riempie il naso». Poi annusa il campione e confronta.</p>'
+    + '<p style="margin:6px 0;"><strong>Regole per voti confrontabili.</strong> Stessa diluizione e stessa temperatura ogni volta (per esempio il distillato ridotto a una gradazione fissa), stesso bicchiere, niente cibo o caffè nei 30 minuti prima, e rifare il giro delle soluzioni se passano più di alcuni giorni.</p>'
+    + '<p class="cond-hint" style="margin:6px 0 0;">Le concentrazioni vengono dalla pratica dei panel sensoriali addestrati (scala Spectrum): sono un punto di partenza da verificare, non una misura assoluta.</p>'
+    + '</div></details>';
+  const det = box.querySelector('details');
+  det.addEventListener('toggle', () => { box.dataset.aperto = det.open ? '1' : ''; });
+  document.getElementById('tar-ml').addEventListener('change', () => { box.dataset.aperto = '1'; renderTaratura(); });
+}
+renderTaratura();
 function profiloAssaggiato(){
   const v = ASSI8.map((_,i) => document.getElementById('tf-pa' + i).value);
   return v.some(x => x === '') ? (v.every(x => x === '') ? null : v.map(x => x === '' ? null : +x)) : v.map(Number);
@@ -3834,22 +4096,97 @@ function aggiornaConfrontoProfilo(){
     '<div class="radar-nota">' + (lontani.length ? 'Scostamenti rilevanti su: <strong>' + lontani.join(', ').toLowerCase() + '</strong>. È un segnale che la stima di qualche botanica va rivista, oppure che la dose ha cambiato il peso di quella nota.' : 'Nessuno scostamento rilevante: la stima regge per questa miscela.') +
     ' Il confronto è sulla forma del profilo (la nota più forte vale 5), non sull\'intensità.</div></div>';
 }
-{ const _rms = renderMixSummary; renderMixSummary = function(){ _rms.apply(this, arguments); aggiornaConfrontoProfilo(); }; }
+{ const _rms = renderMixSummary; renderMixSummary = function(){ _rms.apply(this, arguments); aggiornaConfrontoProfilo(); aggiornaConfrontoFasi(); }; }
 // Taratura complessiva: su tutte le schede con profilo assaggiato, dove le stime sbagliano in media.
 function aggiornaTaraturaStime(){
   const el = document.getElementById('tf-taratura-stime');
   if (!el) return;
-  const conf = loadTests().map(t => confrontoProfilo(t.botaniche, t.profilo)).filter(Boolean);
-  if (!conf.length){ el.innerHTML = ''; return; }
-  const media = ASSI8.map((_,i) => conf.reduce((a,c) => a + c.diff[i], 0) / conf.length);
-  const righe = ASSI8.map((nm,i) => {
-    const m = Math.round(media[i] * 10) / 10;
-    const lettura = Math.abs(m) < 1 ? 'in linea' : (m > 0 ? 'sottostimata dall\'app' : 'sovrastimata dall\'app');
-    return '<tr><td>' + nm + '</td><td class="' + (m >= 1 ? 'd-alto' : (m <= -1 ? 'd-basso' : '')) + '">' + (m > 0 ? '+' : '') + m + ' · ' + lettura + '</td></tr>';
-  }).join('');
-  el.innerHTML = '<details class="howto taratura-box"><summary>Quanto sono affidabili le stime (' + conf.length + (conf.length === 1 ? ' scheda assaggiata' : ' schede assaggiate') + ')</summary><div class="howto-body">' +
-    '<p>Scarto medio fra ciò che hai assaggiato e ciò che l\'app prevedeva, nota per nota. Un valore vicino a zero vuol dire che la stima regge; un valore alto o basso indica una nota da ritarare. Con poche schede è solo un indizio.</p>' +
-    '<table class="prof-tab"><tr><th>Nota</th><th>Scarto medio</th></tr>' + righe + '</table></div></details>';
+  const tutte = loadTests();
+  const conf = tutte.map(t => confrontoProfilo(t.botaniche, t.profilo)).filter(Boolean);
+  const confF = tutte.map(t => confrontoFasi(t.botaniche, t.fasi)).filter(Boolean);
+  if (!conf.length && !confF.length){ el.innerHTML = ''; return; }
+  let corpo = '';
+  if (conf.length){
+    const media = ASSI8.map((_,i) => conf.reduce((a,c) => a + c.diff[i], 0) / conf.length);
+    const righe = ASSI8.map((nm,i) => {
+      const m = Math.round(media[i] * 10) / 10;
+      const lettura = Math.abs(m) < 1 ? 'in linea' : (m > 0 ? 'sottostimata dall\'app' : 'sovrastimata dall\'app');
+      return '<tr><td>' + nm + '</td><td class="' + (m >= 1 ? 'd-alto' : (m <= -1 ? 'd-basso' : '')) + '">' + (m > 0 ? '+' : '') + m + ' · ' + lettura + '</td></tr>';
+    }).join('');
+    corpo += '<p>Scarto medio fra ciò che hai assaggiato e ciò che l\'app prevedeva, nota per nota (' + conf.length + (conf.length === 1 ? ' scheda' : ' schede') + '). Un valore vicino a zero vuol dire che la stima regge; un valore alto o basso indica una nota da ritarare.</p>' +
+      '<table class="prof-tab"><tr><th>Nota</th><th>Scarto medio</th></tr>' + righe + '</table>';
+  }
+  if (confF.length){
+    const nome = {testa:'All\'inizio', cuore:'A metà sorso', coda:'Alla fine'};
+    const righe = ['testa','cuore','coda'].map(f => {
+      let prev = 0, ok = 0, sent = 0, inat = 0;
+      confF.forEach(c => c.filter(r => r.fase === f).forEach(r => { prev += r.previste.length; ok += r.confermate.length; sent += r.sentite.length; inat += r.inattese.length; }));
+      if (!sent) return '<tr><td>' + nome[f] + '</td><td>nessun dato</td></tr>';
+      return '<tr><td>' + nome[f] + '</td><td>' + Math.round(100 * ok / Math.max(1, prev)) + '% delle note previste confermate · ' + Math.round(100 * inat / sent) + '% delle note sentite non previste</td></tr>';
+    }).join('');
+    corpo += '<p>Previsione per momento del sorso (' + confF.length + (confF.length === 1 ? ' scheda' : ' schede') + '): quanto le note stimate per testa, cuore e coda coincidono con quelle che senti.</p>' +
+      '<table class="prof-tab"><tr><th>Momento</th><th>Coincidenza</th></tr>' + righe + '</table>';
+  }
+  const n = Math.max(conf.length, confF.length);
+  el.innerHTML = '<details class="howto taratura-box"><summary>Quanto sono affidabili le stime (' + n + (n === 1 ? ' scheda assaggiata' : ' schede assaggiate') + ')</summary><div class="howto-body">' + corpo + '<p>Con poche schede è solo un indizio.</p></div></details>';
+}
+
+
+// ---------- Evoluzione al sorso: note sentite all'inizio, a meta', alla fine ----------
+const FASI_ASS = [['testa','All\'inizio'],['cuore','A metà sorso'],['coda','Alla fine']];
+(function(){
+  const g = document.getElementById('tf-fasi-grid');
+  FASI_ASS.forEach(([f, titolo]) => {
+    const r = document.createElement('div'); r.className = 'fasi-riga'; r.dataset.fase = f;
+    r.innerHTML = '<div class="fasi-tit">' + titolo + '</div><div class="fasi-chips">' +
+      ASSI8.map((nm,i) => '<button type="button" class="nota-chip" data-i="' + i + '" aria-pressed="false">' + nm + '</button>').join('') + '</div>';
+    r.querySelectorAll('.nota-chip').forEach(b => b.addEventListener('click', () => {
+      b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') === 'true' ? 'false' : 'true');
+      aggiornaConfrontoFasi();
+    }));
+    g.appendChild(r);
+  });
+})();
+function fasiAssaggiate(){
+  const o = {}; let qualcuna = false;
+  FASI_ASS.forEach(([f]) => {
+    o[f] = [...document.querySelectorAll('#tf-fasi-grid .fasi-riga[data-fase="' + f + '"] .nota-chip[aria-pressed="true"]')].map(b => +b.dataset.i);
+    if (o[f].length) qualcuna = true;
+  });
+  return qualcuna ? o : null;
+}
+function impostaFasi(o){
+  document.querySelectorAll('#tf-fasi-grid .nota-chip').forEach(b => {
+    const f = b.closest('.fasi-riga').dataset.fase;
+    b.setAttribute('aria-pressed', (o && o[f] && o[f].indexOf(+b.dataset.i) >= 0) ? 'true' : 'false');
+  });
+}
+// Confronto fra note previste e sentite, per ogni momento
+function confrontoFasi(botaniche, ass){
+  if (!ass) return null;
+  const elenco = (botaniche || []).filter(b => PROFILO8[b.botanica] && (b.perc || 0) > 0).map(b => ({n:b.botanica, w:b.perc}));
+  if (!elenco.length) return null;
+  const prev = noteDiFaseIdx(elenco);
+  return prev.map(([f, p]) => {
+    const t = ass[f] || [];
+    return { fase:f, previste:p, sentite:t, confermate:p.filter(i => t.indexOf(i) >= 0), mancanti:p.filter(i => t.indexOf(i) < 0), inattese:t.filter(i => p.indexOf(i) < 0) };
+  }).filter(r => r.sentite.length);
+}
+function aggiornaConfrontoFasi(){
+  const box = document.getElementById('tf-fasi-cmp');
+  if (!box) return;
+  const ass = fasiAssaggiate();
+  if (!ass){ box.innerHTML = ''; return; }
+  const c = confrontoFasi(readMixRows(), ass);
+  if (!c || !c.length){ box.innerHTML = '<div class="radar-nota">Aggiungi alla miscela almeno un infuso con la sua percentuale per vedere il confronto.</div>'; return; }
+  const nome = {testa:'All\'inizio', cuore:'A metà sorso', coda:'Alla fine'};
+  const lista = a => a.length ? a.map(i => ASSI8[i].toLowerCase()).join(', ') : '—';
+  box.innerHTML = '<div class="radar-box" style="margin:10px 0 0;text-align:left;"><div class="radar-title" style="text-align:center;">Previsto e sentito, momento per momento</div>' +
+    '<table class="prof-tab"><tr><th></th><th>Previsto</th><th>Sentito</th><th>Esito</th></tr>' +
+    c.map(r => '<tr><td>' + nome[r.fase] + '</td><td>' + lista(r.previste) + '</td><td>' + lista(r.sentite) + '</td><td>' +
+      (r.inattese.length ? 'in più: ' + lista(r.inattese) : '') + (r.inattese.length && r.mancanti.length ? '<br>' : '') + (r.mancanti.length ? 'non sentite: ' + lista(r.mancanti) : '') +
+      (!r.inattese.length && !r.mancanti.length ? 'tutto confermato' : '') + '</td></tr>').join('') +
+    '</table><div class="radar-nota">Una nota «in più» o «non sentita» indica che il tempo stimato per qualche botanica non corrisponde a ciò che assaggi: è l\'informazione che serve per tarare i pesi di testa, cuore e coda. Stima orientativa.</div></div>';
 }
 
 function saveTests(list){
@@ -4037,6 +4374,8 @@ function clearForm(){
   ['tf-aroma','tf-gusto','tf-persistenza','tf-equilibrio','tf-sapidita'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('tf-giudizio').value = '';
   ASSI8.forEach((_,i) => document.getElementById('tf-pa' + i).value = '');
+  document.getElementById('tf-tarato').checked = false;
+  impostaFasi(null); aggiornaConfrontoFasi();
   currentTestId = null;
   document.getElementById('tf-delete').style.display = 'none';
   document.getElementById('tf-duplicate').style.display = 'none';
@@ -4066,7 +4405,9 @@ function openForm(test){
     document.getElementById('tf-sapidita').value = test.eval?.sapidita ?? '';
     document.getElementById('tf-giudizio').value = test.giudizio || '';
     ASSI8.forEach((_,i) => { const v = (test.profilo || [])[i]; document.getElementById('tf-pa' + i).value = (v === null || v === undefined) ? '' : v; });
+    document.getElementById('tf-tarato').checked = !!test.profiloTarato;
     aggiornaConfrontoProfilo();
+    impostaFasi(test.fasi || null); aggiornaConfrontoFasi();
     document.getElementById('tf-delete').style.display = 'inline-block';
     document.getElementById('tf-duplicate').style.display = 'inline-block';
   } else {
@@ -4098,6 +4439,8 @@ function collectFormData(){
     },
     giudizio: document.getElementById('tf-giudizio').value,
     profilo: profiloAssaggiato(),
+    profiloTarato: document.getElementById('tf-tarato').checked,
+    fasi: fasiAssaggiate(),
   };
 }
 
@@ -5335,21 +5678,25 @@ document.getElementById('print-builder').addEventListener('click', () => {
     const ds = DOSE[r.botanica] || {};
     const bd = byName[r.botanica];
     const base = ds.test ?? bd?.dose;
-    const dose = base !== undefined ? Math.round(pesoRiga(r.sel, base) * 1000) / 1000 : '—';
-    const fr = r.sel ? fattoreRuolo(r.sel) : 1;
     const est = EST[r.botanica];
-    const grad = est ? estAbvTxt(est.a) + (REF_ABV < est.a[0] || REF_ABV > est.a[1] ? ' ⚠️' : '') : '—';
-    return `<tr><td>${r.ruolo}</td><td>${r.botanica}${r.trace ? ' <em>(tracce)</em>' : ''}</td><td>${dose} g${(!r.trace && fr !== 1) ? ' <em>(' + Math.round(fr * 100) + '% della dose)</em>' : ''}</td><td>${ds.tempo || bd?.tempo || '—'}</td><td>${grad}</td></tr>`;
+    const baseTempoP = ds.tempo || bd?.tempo || '';
+    const gradP = est ? est.a[0] : undefined;   // dose e tempo alla gradazione consigliata, come nella Libreria
+    const baseAdj = (base !== undefined && gradP !== undefined) ? (adjustedDose(base, gradP, REF_TEMP, bd?.categoria) ?? base) : base;
+    const tempoP = gradP !== undefined ? (adjustedTempo(baseTempoP, gradP, REF_TEMP, bd?.categoria) || baseTempoP) : baseTempoP;
+    const dose = baseAdj !== undefined ? Math.round(pesoRiga(r.sel, baseAdj) * 1000) / 1000 : '—';
+    const fr = r.sel ? fattoreRuolo(r.sel) : 1;
+    const grad = est ? estAbvTxt(est.a) : '—';
+    return `<tr><td>${r.ruolo}</td><td>${r.botanica}${r.trace ? ' <em>(tracce)</em>' : ''}</td><td>${dose} g${(!r.trace && fr !== 1) ? ' <em>(' + Math.round(fr * 100) + '% della dose)</em>' : ''}</td><td>${tempoP || '—'}</td><td>${grad}</td></tr>`;
   }).join('');
   printArea.innerHTML = `
     <h2>Gin Builder — ${styleName}</h2>
     <div class="print-meta">Struttura generata il ${new Date().toLocaleDateString('it-IT')}</div>
     <div class="print-section">
       <h4>Botaniche per ruolo</h4>
-      <table><thead><tr><th>Ruolo</th><th>Botanica</th><th>Dose test</th><th>Tempo di infusione</th><th>Gradazione consigliata</th></tr></thead>
+      <table><thead><tr><th>Ruolo</th><th>Botanica</th><th>Dose per 100 ml</th><th>Tempo di infusione</th><th>Gradazione consigliata</th></tr></thead>
       <tbody>${rowsHtml || '<tr><td colspan="5">Nessun ruolo definito</td></tr>'}</tbody></table>
     </div>
-    <div class="print-section"><p style="font-size:12px;color:#555;">Dose e tempo di riferimento a 43% vol / 20°C. ⚠️ accanto alla gradazione consigliata indica che il 43% di riferimento è fuori dal range di quella botanica: meglio infonderla da sola alla sua gradazione e unirla poi al blend finale. Valori di partenza organolettici, da validare con assaggi.</p></div>
+    <div class="print-section"><p style="font-size:12px;color:#555;">Dose e tempo sono calcolati alla gradazione consigliata di ciascuna botanica, a 20 °C. Conviene infondere ogni botanica a parte alla sua gradazione e unire gli infusi nel blend finale. Stime orientative: da validare con assaggi.</p></div>
   `;
   stampaHtml(printArea.innerHTML, 'Gin Builder — ' + styleName);
 });
