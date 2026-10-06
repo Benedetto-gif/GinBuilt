@@ -101,6 +101,7 @@
 
     --juniper:#57A183;
     --juniper-deep:#8FCBAE;
+    --c-blu-basso:#8DB8E8;
     --ochre:#D9A45A;
     --ochre-soft:#6B5327;
     --salt:#5FB0AD;
@@ -147,6 +148,7 @@
 
     --juniper:#57A183;
     --juniper-deep:#8FCBAE;
+    --c-blu-basso:#8DB8E8;
     --ochre:#D9A45A;
     --ochre-soft:#6B5327;
     --salt:#5FB0AD;
@@ -400,6 +402,8 @@ nav.tabs{display:none !important;}
 .home-diario[hidden]{display:none;}
 .noz-rimando{margin:6px 0 12px;font-size:13.5px;color:var(--ink-soft);line-height:1.5;}
 .noz-rimando a{color:var(--juniper-deep);font-weight:650;}
+/* Collegamenti: mai il blu predefinito del browser, illeggibile sul fondo scuro */
+a, a:visited{color:var(--juniper-deep);text-decoration-color:color-mix(in srgb, currentColor 45%, transparent);text-underline-offset:2px;}
 .dia-chk{display:flex;align-items:baseline;gap:8px;padding:5px 0;font-size:14px;flex-wrap:wrap;}
 .dia-chk .cond-hint{font-size:12px;}
 .home-dati{margin:18px 0 10px;padding:14px 16px;border-radius:var(--r-lg);border:1px solid var(--line);background:var(--surface);}
@@ -1110,7 +1114,7 @@ html:not(.avanzato) .radar-wrap .r-norm{display:revert !important;}
 #tf-profilo-grid .ax-grp{grid-column:1/-1;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);margin-top:4px;}
 .prof-tab{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px;text-align:left;}
 .prof-tab th,.prof-tab td{padding:4px 6px;border-bottom:1px solid var(--line);}
-.prof-tab td.d-alto{color:#C0392B;font-weight:600;} .prof-tab td.d-basso{color:#2F6FA3;font-weight:600;}
+.prof-tab td.d-alto{color:#C0392B;font-weight:600;} .prof-tab td.d-basso{color:var(--c-blu-basso, #2F6FA3);font-weight:600;}
 .taratura-box{margin:0 0 16px;}
 .taratura-box summary{cursor:pointer;font-weight:600;}
 .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px 34px;}
@@ -2726,7 +2730,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 00:35 · freccia e gesto per tornare alla pagina di provenienza</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 00:40 · collegamenti leggibili sul fondo scuro</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
