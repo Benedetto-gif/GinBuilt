@@ -6137,7 +6137,7 @@ function wrapStepper(input, step, opts){
     const corpo = '<div class="dia-new">' +
       '<label>Data e ora di inizio<input type="datetime-local" id="dia-quando" value="' + diaLocale(new Date()) + '"></label>' +
       '<label>Tipo di infuso<input type="text" id="dia-tipo" value="' + diaEsc(tipo) + '"></label>' +
-      '<label>Promemoria per l\u2019assaggio<select id="dia-allarme">' + opz.map(o => '<option value="' + o[0] + '"' + (o[0] === 'a' ? ' selected' : '') + '>' + o[1] + '</option>').join('') + '</select></label>' +
+      '<label>Promemoria per l\u2019assaggio <span class="cond-hint">(se cade tra mezzanotte e le 7, slitta alle 7:30)</span><select id="dia-allarme">' + opz.map(o => '<option value="' + o[0] + '"' + (o[0] === 'a' ? ' selected' : '') + '>' + o[1] + '</option>').join('') + '</select></label>' +
       '<label id="dia-ore-l" style="display:none">Ore dall\u2019inizio<input type="number" id="dia-ore" min="1" step="1" value="' + Math.max(1, Math.round(r.assaggio || 24)) + '"></label>' +
       '<label>Note<textarea id="dia-note" rows="2" placeholder="es. bacche schiacciate, vaso da 250 ml"></textarea></label>' +
       '</div>';
@@ -6154,7 +6154,7 @@ function wrapStepper(input, step, opts){
         alcolG: r.dil ? r.dil.alcG : null, alcolMl: r.dil ? r.dil.alcMl : null, abvS: c.abvS,
         acquaG: r.dil ? r.dil.acquaG : null, botG: r.g, temp: c.temp,
         tmin: r.tmin, tmax: r.tmax,
-        allarme: (ore && ore > 0) ? inizio + ore * 3600000 : null, avvisato: false, finito: null
+        allarme: (ore && ore > 0) ? diaNonDiNotte(inizio + ore * 3600000) : null, avvisato: false, finito: null
       };
       const lista = diarioCarica(); lista.unshift(voce); diarioSalva(lista);
       if (voce.allarme && 'Notification' in window && Notification.permission === 'default') { try { Notification.requestPermission(); } catch(e){} }
@@ -6203,6 +6203,13 @@ function diarioCarica(){ try { return JSON.parse(localStorage.getItem(DIARIO_KEY
 function diarioSalva(l){
   try { localStorage.setItem(DIARIO_KEY, JSON.stringify(l)); }
   catch(e){ alert('Non riesco a salvare il diario (memoria del browser piena o modalit\u00e0 privata).'); }
+}
+// Promemoria notturni: se cadono tra mezzanotte e le 7, slittano alle 7:30 dello stesso giorno.
+function diaNonDiNotte(ms){
+  if (!ms) return ms;
+  const d = new Date(ms);
+  if (d.getHours() < 7){ d.setHours(7, 30, 0, 0); return d.getTime(); }
+  return ms;
 }
 function diaEsc(t){ return String(t == null ? '' : t).replace(/[&<>"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch])); }
 function diaLocale(dt){ const z = n => String(n).padStart(2, '0'); return dt.getFullYear() + '-' + z(dt.getMonth() + 1) + '-' + z(dt.getDate()) + 'T' + z(dt.getHours()) + ':' + z(dt.getMinutes()); }
@@ -6286,7 +6293,7 @@ function diarioOrari(id){
   const v = diarioCarica().find(x => x.id === id); if (!v) return;
   const corpo = '<div class="dia-new">' +
     '<label>Inizio dell\u2019infuso<input type="datetime-local" id="dor-inizio" value="' + diaLocale(new Date(v.inizio)) + '"></label>' +
-    '<label>Promemoria per l\u2019assaggio (vuoto = nessuno)<input type="datetime-local" id="dor-allarme" value="' + (v.allarme ? diaLocale(new Date(v.allarme)) : '') + '"></label>' +
+    '<label>Promemoria per l\u2019assaggio (vuoto = nessuno; tra mezzanotte e le 7 slitta alle 7:30)<input type="datetime-local" id="dor-allarme" value="' + (v.allarme ? diaLocale(new Date(v.allarme)) : '') + '"></label>' +
     (v.finito ? '<label>Filtrato il<input type="datetime-local" id="dor-finito" value="' + diaLocale(new Date(v.finito)) + '"></label>' : '') +
     '</div>';
   mostraAvviso('\u270f\ufe0f Orari di ' + v.tipo, corpo, 'Salva', () => {
@@ -6294,7 +6301,7 @@ function diarioOrari(id){
     const lf = document.getElementById('dor-finito');
     diarioAggiorna(id, x => {
       if (li) x.inizio = new Date(li).getTime();
-      const nuovo = la ? new Date(la).getTime() : null;
+      const nuovo = la ? diaNonDiNotte(new Date(la).getTime()) : null;
       if (nuovo !== x.allarme){ x.allarme = nuovo; x.avvisato = false; }
       if (lf && lf.value) x.finito = Math.max(new Date(lf.value).getTime(), diaFiltrabileDa(x));
     });
@@ -6326,6 +6333,9 @@ function diarioIcs(id){
 }
 function diarioControlla(){
   const l = diarioCarica(), ora = Date.now();
+  let spostati = false;
+  l.forEach(v => { if (!v.finito && v.allarme && !v.avvisato && v.allarme > ora){ const n = diaNonDiNotte(v.allarme); if (n !== v.allarme){ v.allarme = n; spostati = true; } } });
+  if (spostati){ diarioSalva(l); diarioRender(); }
   const dovuti = l.filter(v => !v.finito && v.allarme && v.allarme <= ora && !v.avvisato);
   if (!dovuti.length) return;
   dovuti.forEach(v => { v.avvisato = true; });
