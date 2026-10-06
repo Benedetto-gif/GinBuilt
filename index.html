@@ -2787,7 +2787,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 6 ottobre 2026, ore 15:30 · somiglianza come sovrapposizione dei profili, soglia regolabile</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 6 ottobre 2026, ore 15:45 · radar con le note opposte una di fronte all\'altra</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -2988,13 +2988,18 @@ MASTER.forEach(d => byName[d.botanica] = d);
 // ---------- Profilo sensoriale a 8 assi (stime orientative 0-5, da validare all'assaggio) ----------
 const ASSI8 = ['Dolce','Amaro','Acido','Salino','Agrumato','Floreale','Erbaceo','Speziato'];
 const PROFILO8 = {"Tè siciliano":[1,1,0,0,0,0,4,1],"Tè verde":[1,3,0,0,0,2,4,0],"Limone":[0,1,4,0,5,0,0,0],"Bergamotto":[0,2,1,0,5,3,0,0],"Arancia dolce":[4,0,2,0,4,1,0,0],"Arancia amara":[0,4,1,0,4,2,0,1],"Cedro":[2,1,1,0,4,1,0,0],"Mandarino":[4,0,1,0,4,0,1,0],"Mandarino verde":[1,1,2,0,4,0,2,0],"Pompelmo":[1,4,2,0,4,0,0,1],"Lime":[0,1,4,0,4,0,2,0],"Yuzu":[0,1,3,0,5,2,0,1],"Kumquat":[2,1,3,0,4,1,0,0],"Lime nero":[0,2,3,0,2,0,0,3],"Coriandolo":[0,0,0,0,3,2,1,4],"Cardamomo verde":[0,0,0,0,1,2,3,4],"Cardamomo nero":[0,0,0,0,0,0,2,5],"Cubebe":[0,0,0,0,1,0,2,5],"Pepe nero":[0,0,0,0,0,0,1,5],"Pepe rosa":[1,0,0,0,0,2,1,3],"Grani del paradiso":[0,0,0,0,1,0,0,5],"Cumino":[0,0,0,0,0,0,1,5],"Carvi":[0,0,0,0,0,0,2,5],"Finocchio":[2,0,0,0,0,0,2,4],"Anice verde":[2,0,0,0,0,0,1,5],"Stella di anice":[3,0,0,0,0,0,0,5],"Macis":[0,0,0,0,0,1,0,5],"Noce moscata":[1,0,0,0,0,0,0,5],"Chiodo di garofano":[0,1,0,0,0,0,0,5],"Cannella Ceylon":[2,0,0,0,0,0,0,5],"Cassia":[1,0,0,0,0,0,0,5],"Fave di tonka":[4,0,0,0,0,0,1,3],"Senape gialla":[0,1,0,0,0,0,0,4],"Angelica":[0,2,0,0,0,0,3,4],"Liquirizia":[4,1,0,0,0,0,1,3],"Genziana":[0,5,0,0,0,0,1,1],"Iris":[0,0,0,0,0,4,0,2],"Zenzero":[0,0,0,0,2,0,0,5],"Galanga":[0,0,0,0,1,0,1,5],"Curcuma":[0,2,0,0,0,0,0,4],"Mirto foglie":[0,1,0,0,1,0,4,3],"Mirto bacche":[2,1,2,0,0,0,2,3],"Elicriso":[1,1,0,0,0,2,3,4],"Rosmarino":[0,1,0,0,0,0,4,4],"Timo":[0,1,0,0,0,0,4,4],"Timo limonato":[0,0,0,0,3,0,4,2],"Santoreggia":[0,1,0,0,0,0,4,4],"Origano":[0,1,0,0,0,0,4,4],"Maggiorana":[1,0,0,0,0,0,4,3],"Salvia":[0,2,0,0,0,0,4,3],"Melissa":[0,0,1,0,3,0,4,0],"Verbena odorosa":[0,0,1,0,4,2,2,0],"Alloro":[0,1,0,0,0,0,4,3],"Lentisco":[0,1,0,0,0,0,3,4],"Finocchio di mare":[0,0,0,4,0,0,3,2],"Levistico":[0,1,0,2,0,0,4,3],"Dragoncello":[1,0,0,0,0,0,4,3],"Cappero":[0,1,1,4,0,0,2,2],"Foglie di cappero":[0,1,0,3,0,0,4,1],"Salicornia":[0,0,0,5,0,0,3,0],"Alga verde alimentare":[0,0,0,4,0,0,3,0],"Spirulina alimentare":[0,1,0,3,0,0,3,0],"Lavanda":[0,1,0,0,0,5,3,0],"Rosa":[1,0,0,0,0,5,0,0],"Camomilla":[2,1,0,0,0,4,1,0],"Sambuco":[1,0,0,0,0,5,0,0],"Ibisco":[0,0,4,0,0,3,0,0],"Fiordaliso":[0,0,0,0,0,3,0,0],"Gelsomino":[1,0,0,0,0,5,0,0],"Bacche di ginepro":[1,1,0,0,2,0,2,5],"Bacche della passione":[2,0,4,0,0,2,0,0],"Melograno":[2,1,4,0,0,0,0,0],"Fico":[5,0,0,0,0,0,0,1],"Uva passa":[5,0,1,0,0,0,0,0],"Mela":[3,0,2,0,0,1,0,0],"Pera":[4,0,1,0,0,2,0,0],"Ciliegia":[3,1,2,0,0,1,0,0],"Prugna":[4,0,2,0,0,0,0,0],"Ribes nero":[2,1,4,0,0,0,2,1],"Caffè":[1,4,0,0,0,0,0,3],"Cacao":[2,4,0,0,0,0,0,3],"Vaniglia bourbon":[5,0,0,0,0,1,0,2],"Mandorla dolce":[4,1,0,0,0,0,0,1],"Sesamo":[2,1,0,0,0,0,0,2],"Sommacco":[0,1,4,0,1,0,0,2],"Vaniglia":[5,0,0,0,0,1,0,2],"Alloro bacca":[0,2,0,0,0,0,2,4],"Portulaca":[0,0,2,2,0,0,3,0],"Spina santa":[0,1,2,0,0,0,3,3],"Carruba polpa":[5,1,0,0,0,0,0,1],"Corbezzolo":[2,1,3,0,0,1,0,0],"Uva Cataratto":[4,0,2,0,0,2,0,0],"Sorbo":[1,3,3,0,0,0,0,0],"Castagna":[4,0,0,0,0,0,0,1],"Tarassaco":[0,4,0,0,0,0,2,1],"Betulla corteccia":[1,0,0,0,0,0,3,3],"Pepe di giava":[0,0,0,0,2,0,0,5],"Pepe di Sichuan":[0,0,0,0,4,2,0,4],"Zafferano":[0,2,0,0,0,2,0,4],"Aneto":[0,0,0,0,0,0,4,3],"Basilico":[0,0,0,0,0,2,4,3],"Gelso":[3,0,1,0,0,1,2,0],"Moringa":[0,2,0,0,0,0,4,1],"Artemisia":[0,5,0,0,0,0,4,2],"Elicriso delle scogliere":[1,1,0,2,0,0,2,4],"Malva":[0,0,0,0,0,2,1,0],"Ginestra":[1,1,0,0,0,4,1,0],"Alga nori":[0,0,0,5,0,0,1,0],"Poseidonia":[0,0,0,4,0,0,3,0],"Asparago":[0,2,0,0,0,0,4,0],"Cardo":[0,4,0,0,0,0,3,0],"Carciofo":[0,4,0,0,0,0,3,0],"Cetriolo":[0,0,0,0,0,0,4,0],"Mandorla amara":[1,4,0,0,0,0,0,2],"Manna":[4,1,0,0,0,0,0,0],"Mirtillo":[3,0,3,0,0,1,0,0],"Ribes rosso":[1,1,5,0,0,0,0,0],"Mora":[3,0,3,0,0,0,0,0],"Fragola":[4,0,2,0,0,2,0,0],"Lamponi":[3,0,3,0,0,3,0,0],"Menta":[0,0,0,0,0,0,5,2],"Achillea":[0,4,0,0,0,1,4,2],"Rosa canina":[2,1,4,0,0,2,0,0],"Scorza di bergamotto disidratata":[1,2,0,0,5,3,0,0],"Scorza di arancia disidratata":[3,2,0,0,5,0,0,1],"Finger lime":[0,0,5,0,4,0,0,0],"Ananas":[4,0,4,0,0,0,0,0],"Mango":[4,0,2,0,0,1,0,2],"Papaya":[4,0,1,0,0,1,0,1],"Litchi":[4,0,1,0,0,4,0,0],"Rambutan":[4,0,1,0,0,3,0,0],"Alchechengi":[2,1,4,0,0,0,2,0],"Pitaya (dragon fruit)":[2,0,1,0,0,0,2,0],"Guava":[3,0,3,0,0,3,0,1],"Feijoa":[2,0,3,0,1,1,2,2],"Kiwano":[1,0,4,0,0,0,3,0],"Cocco":[4,0,0,0,0,0,0,0],"Durian":[3,0,0,0,0,0,0,3],"Abrotano":[0,3,0,0,3,0,3,1],"Longan":[4,0,1,0,0,1,0,1],"Foglie di loto":[1,1,0,0,0,1,4,0],"Papavero":[2,1,0,0,0,0,0,2],"Sandalo bianco":[2,1,0,0,0,1,0,3],"Oliva":[1,2,0,3,0,0,3,0],"Clementina":[3,0,1,0,4,1,0,0],"Fiori d'arancio":[2,1,0,0,2,5,0,0],"Fiori di ciliegio":[2,0,0,1,0,4,1,1],"Erica":[2,2,0,0,0,3,2,0],"Trifoglio":[2,1,0,0,0,3,3,0],"Menta d'acqua":[0,1,0,0,1,2,4,1],"Mirtillo rosso":[1,2,4,0,0,1,0,0],"Foglie di lampone":[1,2,0,0,0,1,3,0],"Pepe sansho":[0,0,0,0,4,2,1,4]};
+// Ordine degli assi sul disegno (i dati restano nell'ordine di ASSI8): ogni nota sta di fronte alla sua "opposta"
+// Dolce / Amaro, Floreale / Erbaceo, Agrumato / Speziato (fresco / caldo), Acido / Salino (la coppia piu' debole).
+// Vicine fra loro le note affini: floreale accanto al dolce, agrumato accanto all'acido, erbaceo accanto all'amaro.
+const ORDINE_RADAR = [0, 5, 4, 2, 1, 6, 7, 3];
 function radarSVG(serie, size){
   size = size || 280;
   const c = size/2, R = size/2 - 62, n = ASSI8.length;
-  const pt = (i, v) => { const a = -Math.PI/2 + i*2*Math.PI/n; return [c + R*v/5*Math.cos(a), c + R*v/5*Math.sin(a)]; };
+  const POS = []; ORDINE_RADAR.forEach((d, k) => { POS[d] = k; });
+  const pt = (i, v) => { const a = -Math.PI/2 + POS[i]*2*Math.PI/n; return [c + R*v/5*Math.cos(a), c + R*v/5*Math.sin(a)]; };
   let g = '';
   for (let l = 1; l <= 5; l++){
-    g += '<polygon points="' + ASSI8.map((_,i) => pt(i,l).join(',')).join(' ') + '" fill="none" stroke="var(--line)" stroke-width="1"/>';
+    g += '<polygon points="' + ORDINE_RADAR.map(i => pt(i,l).join(',')).join(' ') + '" fill="none" stroke="var(--line)" stroke-width="1"/>';
   }
   ASSI8.forEach((nm,i) => {
     const [x,y] = pt(i,5), [lx,ly] = pt(i,5.0+ (R>0?14/R*5:0));
@@ -3003,13 +3008,13 @@ function radarSVG(serie, size){
     g += '<text x="'+lx+'" y="'+(ly+4)+'" text-anchor="'+anc+'" font-size="12" fill="var(--ink-soft)">'+nm+'</text>';
   });
   serie.forEach(se => {
-    const pts = se.vals.map((v,i) => pt(i,v).join(',')).join(' ');
+    const pts = ORDINE_RADAR.map(i => pt(i, se.vals[i]).join(',')).join(' ');
     if (se.dash){ g += '<polygon points="'+pts+'" fill="none" stroke="'+se.color+'" stroke-width="1.5" stroke-dasharray="4 3" stroke-linejoin="round"/>'; return; }
     g += '<polygon points="'+pts+'" fill="'+se.color+'" fill-opacity=".22" stroke="'+se.color+'" stroke-width="2" stroke-linejoin="round"/>';
     se.vals.forEach((v,i) => { if (v > 0){ const [x,y] = pt(i,v); g += '<circle cx="'+x+'" cy="'+y+'" r="2.8" fill="'+se.color+'"/>'; } });
   });
   const desc = serie.map(se => (se.label||'') + ': ' + se.vals.map((v,i) => ASSI8[i]+' '+v).join(', ')).join('. ');
-  return '<svg class="radar8" viewBox="0 0 '+size+' '+size+'" role="img" aria-label="Profilo sensoriale. '+desc.replace(/"/g,'')+'">'+g+'</svg>';
+  return '<svg class="radar8" viewBox="-22 0 '+(size+44)+' '+size+'" role="img" aria-label="Profilo sensoriale. '+desc.replace(/"/g,'')+'">'+g+'</svg>';
 }
 
 // ---------- Testa, cuore, coda: quando si sente ogni botanica ----------
@@ -3265,7 +3270,7 @@ function radarBox(nome){
   const btn = BASE.length ? '<button type="button" class="ghost-btn radar-base-btn" aria-pressed="' + conBase + '" onclick="window.radarCardBase=!window.radarCardBase;showDetail(currentDetailName)">' + (conBase ? '− Togli le botaniche base' : '+ Aggiungi le botaniche base') + '</button>' : '';
   return '<div class="radar-box"><div class="radar-title">Profilo sensoriale</div>' + faseHtml('showDetail(currentDetailName)') + btn +
     radarSVG(serie, 280) + (confOn && !conBase ? '<div class="radar-legend"><span><i style="background:var(--juniper)"></i>' + nome + '</span><span><i style="background:#C0733A"></i>' + confOn + '</span></div>' : '') + confrontoRadarHtml(nome, v) + '<div class="radar-nota">' + (FASE_NOTA[window.radarFase] ? FASE_NOTA[window.radarFase] + ' ' : '') + 'Si sente soprattutto in <strong>' + doveSi + '</strong>.</div>' + extra +
-    coerenzaHtml(nome) + '<div class="radar-nota">Stima orientativa (0 = assente, 5 = dominante) di quanto ogni nota pesa nel carattere della botanica. Da validare all\'assaggio.</div></div>';
+    coerenzaHtml(nome) + '<div class="radar-nota">Stima orientativa (0 = assente, 5 = dominante) di quanto ogni nota pesa nel carattere della botanica. Da validare all\'assaggio. Le note opposte stanno una di fronte all\'altra: dolce e amaro, floreale ed erbaceo, agrumato e speziato, acido e salino.</div></div>';
 }
 
 // ---------- Botaniche fondamentali ----------
