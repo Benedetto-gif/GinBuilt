@@ -3816,12 +3816,8 @@ function showDetail(name, nuovaScelta){
       <div class="field"><div class="k">Edibile</div><div class="v">${d.edibile || 'Sì'}</div></div>
       <div class="field"><div class="k">🌾 Periodo di raccolta</div><div class="v">${d.periodo_raccolta || '—'}</div></div>
       <div class="field"><div class="k">📍 Zone in Italia</div><div class="v">${d.zone_italia || '—'}</div></div>
-      <div class="field full"><div class="k">Simili</div><div class="v">${similiHtml(d.botanica, r.simili)}</div></div>
-      <div class="field full"><div class="k">Sostitutive</div><div class="v">${r.sostitutive || '—'}</div></div>
-      <div class="field full"><div class="k">Complementari</div><div class="v">${r.complementari || '—'}</div></div>
     </div>
     <div class="warn-box">⚠️ Da non accumulare con: ${r.non_accumulare || 'nessuna nota particolare'}</div>
-    ${d.edibile === 'Sì, con cautela' ? `<div class="risk-box">🔺 Attenzione: ${d.sicurezza}</div>` : ''}
   `;
   // Scrolla alla scheda solo quando si apre una nuova botanica: variare le condizioni con i
   // tasti su/giù deve solo aggiornare i numeri, senza far saltare la pagina.
@@ -6262,11 +6258,10 @@ function wrapStepper(input, step, opts){
   function cardCorpo(d, r, c, g, t, a, cau, riass, lim){
     const f = (k, v) => '<div class="inf-f"><div class="k">' + k + '</div><div class="v">' + v + '</div></div>';
     const apriSubito = window.infSchedaAperta ? ' open' : '';
-    return '<details class="inf-item" data-i="' + d.id + '"' + apriSubito + '><summary><span class="inf-nome"><strong>' + d.botanica + '</strong>' +
-      '<span class="inf-sub">' + d.categoria + ' \u00b7 ' + (d.parte || '') + '</span></span><span class="inf-riass">' + riass + '</span></summary>' +
-      '<div class="inf-corpo">' + cau +
-      (r.est ? '<div class="inf-f inf-how"><div class="k">Perch\u00e9 questa gradazione e questo tempo</div><div class="v">' + r.est.n + '</div></div>' : '') +
-      '<div class="inf-f inf-how"><div class="k">\ud83e\uddea Molecole aromatiche da estrarre</div><div class="v">' + (MOLECOLE[d.botanica] || 'Scheda non ancora compilata.') + '</div></div>' +
+    return '<details class="inf-item" data-i="' + d.id + '"' + apriSubito + '><summary><span class="inf-nome"><strong>\ud83e\uddea Perch\u00e9 questi valori e molecole da estrarre</strong></span></summary>' +
+      '<div class="inf-corpo">' +
+      (r.est ? '<div class="inf-f inf-how"><div class="k">Gradazione e tempo</div><div class="v">' + r.est.n + '</div></div>' : '') +
+      '<div class="inf-f inf-how"><div class="k">Molecole aromatiche da estrarre</div><div class="v">' + (MOLECOLE[d.botanica] || 'Scheda non ancora compilata.') + '</div></div>' +
       '<details class="inf-f inf-how inf-opz"' + (window.prova3Aperta ? ' open' : '') + ' ontoggle="window.prova3Aperta=this.open"><summary class="k"><span class="opz-car">\u25b8</span>\ud83d\udd2c Per i curiosi: prova a tre gradazioni (campioni da ' + nf(Math.min(c.vol, 50), 0) + ' ml) <span class="inf-opz-hint">\u2014 per verificare di persona i limiti di ' + d.botanica + '</span></summary><div class="v">' + prova3Html(d, r, c, lim) + '</div></details>' +
       '</div></details>';
   }
@@ -6281,7 +6276,8 @@ function wrapStepper(input, step, opts){
       x('Alcol ' + c.abvS + '\u00b0', dil ? '<strong>' + nf(dil.alcG, 1) + ' g</strong> <small>(' + nf(dil.alcMl, 1) + ' ml)</small>' : '\u2014') +
       x('Acqua demineralizzata', dil ? '<strong>' + nf(dil.acquaG, 1) + ' g</strong> <small>(' + nf(dil.acquaMl, 1) + ' ml)</small>' : '\u2014') +
       x('Botanica', '<strong>' + infFmtG(r.g) + ' g</strong> <small>(' + infFmtG(r.gmin) + '\u2013' + infFmtG(r.gmax) + ' g)</small>') +
-      '<div class="ris full ris-prep"><div class="k">\u270b Come prepararla prima di metterla in infusione</div><div class="v">' + comeUsare(d, r.stato, r.K, r.abvEff) + '</div></div>' +
+      '<div class="ris full ris-prep"><div class="k">\u270b Come prepararla prima di metterla in infusione</div><div class="v">' + comeUsare(d, r.stato, r.K, r.abvEff).replace(/ ?Peso riferito a botanica secca\./, '') + '</div></div>' +
+      (d.edibile === 'S\u00ec, con cautela' ? '<div class="ris full"><span class="inf-cau">\u26a0\ufe0f ' + (d.sicurezza || 'usare con cautela') + '</span></div>' : '') +
       x('Tempo di estrazione', '<strong>' + t + '</strong>') +
       x('Primo assaggio', a) +
       '<div class="wl-row" id="wl-row"></div>' +
@@ -6303,7 +6299,7 @@ function wrapStepper(input, step, opts){
     const sch = body.querySelector('.inf-item');
     if (sch && !sch.open && body.querySelector('.warn-box, .adj-box, .inf-cau')){ window.infSchedaAperta = true; sch.open = true; }
     const av = gradAvviso(matchAttuale.d, matchAttuale.r, c), E = matchAttuale.r.est;
-    if (abvRange) abvRange.textContent = E ? ('Consigliato: min ' + E.a[0] + ' \u2013 max ' + E.a[1] + ' % vol' + (av.lim ? ' \u00b7 soglie di sicurezza ' + av.lim.basso + '\u2013' + av.lim.m : '')) : '';
+    if (abvRange) abvRange.textContent = E ? ('Consigliato: min ' + E.a[0] + ' \u2013 max ' + E.a[1] + ' % vol' + '') : '';
     const li = $('inf-lim'); if (li) li.innerHTML = limitiEst(matchAttuale.d) ? '<span class="k">Limiti della gradazione</span> ' + limitiEst(matchAttuale.d) : '';
     const w = $('inf-abv-warn'); if (w) w.innerHTML = av.html;
     iAbv.classList.remove('abv-fuori', 'abv-allarme'); if (av.livello) iAbv.classList.add(av.livello);
