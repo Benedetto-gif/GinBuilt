@@ -374,6 +374,15 @@ nav.tabs{display:none !important;}
 .menu-pop{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:60;max-height:72vh;overflow-y:auto;padding:10px;border-radius:22px;
   border:1px solid var(--line);background:var(--surface);box-shadow:0 12px 36px rgba(0,0,0,.25);display:grid;grid-template-columns:1fr 1fr;grid-auto-flow:dense;gap:8px;}
 .menu-pop[hidden]{display:none;}
+#nav-indietro{position:fixed;left:max(12px, env(safe-area-inset-left));bottom:calc(14px + env(safe-area-inset-bottom));z-index:45;
+  display:flex;align-items:center;gap:8px;max-width:calc(100vw - 24px);padding:11px 16px 11px 13px;border-radius:999px;cursor:pointer;
+  border:1px solid var(--line);background:var(--glass, rgba(255,255,255,.85));color:var(--ink);font:inherit;font-size:14px;font-weight:650;
+  -webkit-backdrop-filter:saturate(180%) blur(18px);backdrop-filter:saturate(180%) blur(18px);box-shadow:0 8px 24px -10px rgba(18,38,28,.55);
+  animation:fadeIn .2s var(--ease) both;}
+#nav-indietro[hidden]{display:none;}
+#nav-indietro .ni-f{font-size:18px;line-height:1;color:var(--juniper);}
+#nav-indietro .ni-t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+@media print{#nav-indietro{display:none !important;}}
 .menu-pop{overscroll-behavior:contain;-webkit-overflow-scrolling:touch;}
 .menu-group-label{grid-column:1/-1;margin:6px 2px 0;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);}
 .menu-group-label:first-of-type{margin-top:2px;}
@@ -449,7 +458,7 @@ nav.tabs button.active{
   nav.tabs button:not(.active):hover{color:var(--ink);background:var(--paper-2);}
 }
 
-section.panel{display:none;padding-top:34px;padding-bottom:calc(40px + env(safe-area-inset-bottom));}
+section.panel{display:none;padding-top:34px;padding-bottom:calc(76px + env(safe-area-inset-bottom));}
 section.panel.active{display:block;animation:panelIn .34s var(--ease) both;}
 @keyframes panelIn{
   from{opacity:0;transform:translate3d(0,10px,0);}
@@ -2717,7 +2726,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 00:25 · pagine scorrevoli fino all’ultimo riquadro</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 00:35 · freccia e gesto per tornare alla pagina di provenienza</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -3505,7 +3514,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
     const el = document.createElement('button'); el.type = 'button'; el.className = 'menu-tile' + (wide ? ' wide' : '');
     el.dataset.tab = b.dataset.tab; el.style.setProperty('--h', HUES[i % HUES.length]);
     el.innerHTML = '<span class="mt-ic">' + ic + '</span><span class="mt-l">' + lab + '</span>';
-    el.addEventListener('click', () => { showTab(b.dataset.tab); chiudi(); });
+    el.addEventListener('click', () => { window._navDaMenu = true; showTab(b.dataset.tab); chiudi(); });
     pop.appendChild(el);
   };
   if (homeBtn) aggiungiTile(homeBtn, 0, true);
@@ -3513,7 +3522,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const dTile = document.createElement('button'); dTile.type = 'button'; dTile.className = 'menu-tile wide'; dTile.id = 'menu-diario'; dTile.dataset.tab = 'diario';
   dTile.style.setProperty('--h', '#B8921F');
   dTile.innerHTML = '<span class="mt-ic">\ud83d\udcd3</span><span class="mt-l">Diario degli infusi</span><span class="mt-badge" id="menu-diario-n"></span>';
-  dTile.addEventListener('click', () => { chiudi(); apriDiario(); });
+  dTile.addEventListener('click', () => { chiudi(); window._navDaMenu = true; apriDiario(); });
   pop.appendChild(dTile);
   let hue = 1;
   GROUPS.forEach(g => {
@@ -3557,6 +3566,62 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   }
   const orig = showTab; window.showTab = function(name){ orig(name); aggiorna(name); };
   const att = btns.find(x => x.classList.contains('active')); aggiorna(att ? att.dataset.tab : 'home');
+})();
+// ---------- Ritorno alla pagina di provenienza ----------
+// Quando un rimando porta da una pagina all'altra, si ricorda da dove si è venuti (pagina e punto di lettura).
+// Si torna indietro con la freccia in basso, con il gesto di scorrimento dal bordo sinistro verso destra,
+// o con il tasto/gesto «indietro» del telefono. Scegliere una pagina dal menu riparte da zero.
+(function(){
+  const NAV = [];
+  const nomeTab = t => { const b = document.querySelector('nav.tabs button[data-tab="' + t + '"]'); return b ? b.textContent.trim().replace(/^\S+\s/, '') : t; };
+  const attuale = () => { const p = document.querySelector('section.panel.active'); return p ? p.id.replace('panel-', '') : 'home'; };
+  const freccia = document.createElement('button');
+  freccia.type = 'button'; freccia.id = 'nav-indietro'; freccia.hidden = true;
+  document.body.appendChild(freccia);
+  const aggiorna = () => {
+    const ult = NAV[NAV.length - 1];
+    freccia.hidden = !ult;
+    if (ult) freccia.innerHTML = '<span class="ni-f">\u2190</span><span class="ni-t">Torna a ' + nomeTab(ult.tab) + '</span>';
+  };
+  let ritorno = false;
+  const prec = window.showTab;
+  window.showTab = function(name){
+    const da = attuale(), y = window.scrollY, menu = window._navDaMenu; window._navDaMenu = false;
+    prec(name);
+    if (ritorno || name === da) { aggiorna(); return; }
+    if (menu) NAV.length = 0;
+    else {
+      NAV.push({ tab: da, y });
+      if (NAV.length > 20) NAV.shift();
+      try { history.pushState({ gbNav: NAV.length }, ''); } catch(e){}
+    }
+    aggiorna();
+  };
+  function torna(){
+    const ult = NAV.pop(); if (!ult) { aggiorna(); return; }
+    ritorno = true; window.showTab(ult.tab); ritorno = false;
+    const v = () => window.scrollTo(0, ult.y);
+    setTimeout(v, 40); setTimeout(v, 420);   // di nuovo dopo che l'intestazione ha cambiato altezza
+    aggiorna();
+  }
+  // La freccia e il gesto passano dalla cronologia, così anche il tasto «indietro» del telefono funziona.
+  const indietro = () => { if (!NAV.length) return; if (history.state && history.state.gbNav) history.back(); else torna(); };
+  // I collegamenti interni con href="#" non devono aggiungere voci alla cronologia (scatenerebbero un ritorno).
+  document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('a[href="#"]'); if (a) e.preventDefault(); });
+  let hashNoto = location.hash;
+  window.addEventListener('popstate', e => {
+    if (location.hash !== hashNoto){ hashNoto = location.hash; return; }   // cambio di ancora, non un ritorno
+    if (NAV.length) torna();
+  });
+  freccia.addEventListener('click', indietro);
+  window.navIndietro = indietro;
+  // Gesto: dito appoggiato vicino al bordo sinistro e trascinato verso destra.
+  let x0 = null, y0 = 0;
+  document.addEventListener('touchstart', e => { const t = e.touches[0]; x0 = (e.touches.length === 1 && t.clientX < 30) ? t.clientX : null; y0 = t.clientY; }, { passive: true });
+  document.addEventListener('touchend', e => {
+    if (x0 === null) return; const t = e.changedTouches[0], dx = t.clientX - x0, dy = Math.abs(t.clientY - y0); x0 = null;
+    if (dx > 80 && dy < 60 && NAV.length && !document.querySelector('.avviso:not([hidden])')) indietro();
+  }, { passive: true });
 })();
 document.querySelectorAll('[data-goto]').forEach(el => {
   el.addEventListener('click', () => {
