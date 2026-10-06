@@ -1420,6 +1420,14 @@ footer.note{
 .inf-empty{padding:18px 16px;border:1px dashed var(--line);border-radius:12px;color:var(--ink-faint);font-size:13.5px;text-align:center;}
 .inf-corpo{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px 14px;padding:4px 12px 12px;border-top:1px solid var(--line);}
 .inf-corpo .inf-cau,.inf-corpo .inf-how{grid-column:1/-1;}
+.inf-opz > summary{cursor:pointer;list-style:none;}
+.inf-opz > summary::-webkit-details-marker{display:none;}
+.inf-opz > summary.k{display:block !important;}
+.inf-opz > summary::before{content:none !important;display:none !important;}
+.inf-opz .opz-car{display:inline-block;color:var(--ochre);margin-right:4px;transition:transform .2s;}
+.inf-opz[open] .opz-car{transform:rotate(90deg);}
+.inf-opz-hint{display:inline;font-weight:400;text-transform:none;letter-spacing:0;opacity:.8;}
+.inf-opz > .v{margin-top:6px;}
 .inf-f .k{font-size:11.5px;color:var(--ink-faint);margin-bottom:2px;}
 .inf-f .v{font-size:13.5px;}
 .inf-table td.est{min-width:96px;}
@@ -2737,7 +2745,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 6 ottobre 2026, ore 18:00 · backup unico, infusi dal Builder, modalità semplice, riapertura dove eri rimasto</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 6 ottobre 2026, ore 17:45 · prova a tre gradazioni facoltativa, chiusa</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -6230,9 +6238,9 @@ function wrapStepper(input, step, opts){
       '<span class="inf-sub">' + d.categoria + ' \u00b7 ' + (d.parte || '') + '</span></span><span class="inf-riass">' + riass + '</span></summary>' +
       '<div class="inf-corpo">' + cau +
       '<div class="inf-f inf-how"><div class="k">\ud83e\uddea Molecole aromatiche da estrarre</div><div class="v">' + (MOLECOLE[d.botanica] || 'Scheda non ancora compilata.') + '</div></div>' +
-      '<div class="inf-f inf-how"><div class="k">Prova a tre gradazioni (campioni identici da ' + nf(Math.min(c.vol, 50), 0) + ' ml)</div><div class="v">' +
+      '<details class="inf-f inf-how inf-opz"' + (window.prova3Aperta ? ' open' : '') + ' ontoggle="window.prova3Aperta=this.open"><summary class="k"><span class="opz-car">\u25b8</span>\ud83d\udd2c Facoltativa: prova a tre gradazioni (campioni da ' + nf(Math.min(c.vol, 50), 0) + ' ml) <span class="inf-opz-hint">\u2014 per verificare di persona i limiti min e max</span></summary><div class="v">' +
         '<p style="margin:0 0 6px;">Prepara i tre campioni e assaggiali: non serve indovinare la gradazione giusta a tavolino, basta sentire come cambia l\u2019estratto. Salendo di grado inizi a percepire ' + (lim ? ('quello che succede oltre ' + lim.m + '% vol \u2014 ' + lim.altoTxt) : 'note pesanti, resinose o amare') + '; scendendo, invece, ' + (lim ? ('quello che succede sotto ' + lim.basso + '% vol \u2014 ' + lim.bassoTxt) : 'resta poco aroma e prevale l\u2019acqua') + '. Il campione che ti piace di pi\u00f9 \u00e8 la gradazione giusta per questa botanica: non \u00e8 sempre quello pi\u00f9 alto.</p>' +
-        [40, 60, 80].map(gr => { const x = diluizione(gr, Math.min(c.vol, 50), c.abvS); return '<strong>' + gr + '%</strong>: ' + nf(x.alcMl, 1) + ' ml (' + nf(x.alcG, 1) + ' g) alcol ' + c.abvS + '\u00b0 + ' + nf(x.acquaMl, 1) + ' ml (' + nf(x.acquaG, 1) + ' g) acqua'; }).join(' \u00b7 ') + '</div></div>' +
+        [40, 60, 80].map(gr => { const x = diluizione(gr, Math.min(c.vol, 50), c.abvS); return '<strong>' + gr + '%</strong>: ' + nf(x.alcMl, 1) + ' ml (' + nf(x.alcG, 1) + ' g) alcol ' + c.abvS + '\u00b0 + ' + nf(x.acquaMl, 1) + ' ml (' + nf(x.acquaG, 1) + ' g) acqua'; }).join(' \u00b7 ') + '</div></details>' +
       '<div class="inf-f inf-how"><div class="k">Limiti della gradazione</div><div class="v">' + limitiEst(d) + '</div></div>' +
       '<div class="inf-f inf-how"><div class="k">Come prepararla e usarla</div><div class="v">' + comeUsare(d, r.stato, r.K, r.abvEff) + (r.est ? ' <em class="inf-est-nota">Estrazione: ' + r.est.n + '</em>' : '') + '</div></div>' +
       '</div></details>';
