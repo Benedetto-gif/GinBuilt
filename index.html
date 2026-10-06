@@ -6171,14 +6171,28 @@ function diarioRender(){
         '<div class="dia-btn">' +
           '<button class="ghost-btn" type="button" onclick="diarioOrari(\'' + v.id + '\')">\u270f\ufe0f Modifica orari</button>' +
           (v.allarme && !v.finito ? '<button class="ghost-btn" type="button" onclick="diarioIcs(\'' + v.id + '\')">\ud83d\udcc5 Allarme nel calendario</button>' : '') +
-          (!v.finito ? '<button class="ghost-btn" type="button" onclick="diarioFinito(\'' + v.id + '\')">\u2713 Filtrato</button>' : '') +
+          (v.finito ? '<button class="ghost-btn" type="button" onclick="diarioRiapri(\'' + v.id + '\')">\u21a9\ufe0f Non ancora filtrato</button>'
+            : diaFiltrabileDa(v) > ora ? '<button class="ghost-btn" type="button" disabled title="Prima del tempo minimo di estrazione non si filtra">\u23f3 Filtrabile dal ' + diaData(diaFiltrabileDa(v)) + '</button>'
+            : '<button class="ghost-btn" type="button" onclick="diarioFinito(\'' + v.id + '\')">\u2713 Filtrato</button>') +
           '<button class="ghost-btn" type="button" onclick="diarioElimina(\'' + v.id + '\')">\ud83d\uddd1\ufe0f Elimina</button>' +
         '</div></div>';
     }).join('');
 }
 function diarioAggiorna(id, fn){ const l = diarioCarica(), v = l.find(x => x.id === id); if (!v) return; fn(v, l); diarioSalva(l); diarioRender(); }
 function diarioNota(id, t){ const l = diarioCarica(), v = l.find(x => x.id === id); if (!v) return; v.note = t; diarioSalva(l); }
-function diarioFinito(id){ diarioAggiorna(id, v => { v.finito = Date.now(); }); }
+// Non si pu\u00f2 segnare come filtrato un infuso prima che sia passato il tempo minimo di estrazione.
+function diaFiltrabileDa(v){ return (v.tmin != null && isFinite(v.tmin)) ? v.inizio + v.tmin * 3600000 : v.inizio; }
+function diarioFinito(id){
+  const v = diarioCarica().find(x => x.id === id); if (!v) return;
+  const da = diaFiltrabileDa(v);
+  if (Date.now() < da){
+    mostraAvviso('\u23f3 Troppo presto per filtrare', '<p>L\u2019estrazione di <strong>' + diaEsc(v.tipo) + '</strong> \u00e8 iniziata ' + diaData(v.inizio) +
+      ' e il tempo minimo finisce ' + diaData(da) + ' (mancano ' + diaDurata((da - Date.now()) / 3600000) + ').</p><p>Se l\u2019orario di inizio \u00e8 sbagliato, correggilo con \u270f\ufe0f Modifica orari.</p>', '', null);
+    return;
+  }
+  diarioAggiorna(id, x => { x.finito = Date.now(); });
+}
+function diarioRiapri(id){ diarioAggiorna(id, x => { x.finito = null; }); diarioControlla(); }
 function diarioElimina(id){
   mostraAvviso('Eliminare questa voce?', '<p>La voce del diario sar\u00e0 cancellata.</p>', 'Elimina', () => {
     diarioSalva(diarioCarica().filter(x => x.id !== id)); diarioRender();
@@ -6200,7 +6214,7 @@ function diarioOrari(id){
       if (li) x.inizio = new Date(li).getTime();
       const nuovo = la ? new Date(la).getTime() : null;
       if (nuovo !== x.allarme){ x.allarme = nuovo; x.avvisato = false; }
-      if (lf && lf.value) x.finito = new Date(lf.value).getTime();
+      if (lf && lf.value) x.finito = Math.max(new Date(lf.value).getTime(), diaFiltrabileDa(x));
     });
     diarioControlla();
   });
