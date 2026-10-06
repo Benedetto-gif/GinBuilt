@@ -2730,7 +2730,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 00:40 · collegamenti leggibili sul fondo scuro</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 00:50 · riapertura dalla pagina iniziale e comando Esci</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -3544,6 +3544,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
     el.addEventListener('click', () => { chiudi(); fn(); }); pop.appendChild(el); return el;
   };
   tileImp('menu-dati', '\ud83d\udcbe', 'I tuoi dati (backup)', '#4C7BB5', () => window.apriDati && window.apriDati());
+  tileImp('menu-esci', '\u23cf\ufe0f', 'Ho finito \u00b7 esci', '#7A867F', () => window.esciApp && window.esciApp());
   tileImp('menu-avanzati', '\ud83e\uddf0', 'Strumenti avanzati', '#5D6F8C', () => window.toggleAvanzati && window.toggleAvanzati());
   // Mentre il menu è aperto la pagina sotto resta ferma: scorre solo il riquadro del menu.
   const bloccaFuori = e => { if (!pop.hidden && !pop.contains(e.target)) e.preventDefault(); };
@@ -3570,6 +3571,23 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   }
   const orig = showTab; window.showTab = function(name){ orig(name); aggiorna(name); };
   const att = btns.find(x => x.classList.contains('active')); aggiorna(att ? att.dataset.tab : 'home');
+})();
+// ---------- Esci: si chiude il lavoro in corso e si torna alla pagina iniziale ----------
+// Un'app installata non si può chiudere da sola: «Esci» riporta tutto allo stato di partenza,
+// e la stessa cosa succede alla riapertura dopo una lunga pausa (l'app era rimasta in memoria).
+function esciApp(){
+  try { if (window.chiudiDetail && document.querySelector('#detail.active')){ window.chiudiDetail(); const q = document.getElementById('search'); if (q && q.value){ q.value = ''; q.dispatchEvent(new Event('input')); } } } catch(e){}
+  document.querySelectorAll('details[open]:not(.howto)').forEach(d => { if (!d.closest('.avviso')) d.open = false; });
+  window._navDaMenu = true; window.showTab('home'); window.scrollTo(0, 0);
+}
+window.esciApp = esciApp;
+(function(){
+  const PAUSA_LUNGA = 2 * 3600000;   // dopo due ore in sottofondo si riparte dalla pagina iniziale
+  let nascostaDa = null;
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) nascostaDa = Date.now();
+    else { if (nascostaDa && Date.now() - nascostaDa > PAUSA_LUNGA && !document.querySelector('.avviso:not([hidden]), .test-form.active')) esciApp(); nascostaDa = null; }
+  });
 })();
 // ---------- Ritorno alla pagina di provenienza ----------
 // Quando un rimando porta da una pagina all'altra, si ricorda da dove si è venuti (pagina e punto di lettura).
@@ -6915,13 +6933,8 @@ function ripristina(){
       renderSummary();
     }
   } catch(e){}
-  // Pagina e botanica (non quando l'app e' stata aperta dalla scorciatoia del diario)
-  let apri = null; try { apri = new URLSearchParams(location.search).get('apri'); } catch(e){}
-  const u = leggiJ(ULTIMA_KEY);
-  if (!apri && location.hash !== '#diario' && u && u.tab && u.tab !== 'home' && document.getElementById('panel-' + u.tab)){
-    showTab(u.tab);
-    if (u.tab === 'libreria' && u.bot && byName[u.bot]) setTimeout(() => showDetail(u.bot, true), 50);
-  }
+  // La pagina non si ripristina: chi chiude l'app ha finito, e alla riapertura si parte dalla pagina iniziale.
+  // Restano invece la ricetta del Builder, le schede, il diario e le tarature.
   setTimeout(() => { _ripristinoInCorso = false; window.salvaStatoBuilder(); }, 200);
 }
 
