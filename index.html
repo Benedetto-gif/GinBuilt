@@ -1033,6 +1033,12 @@ input:focus, select:focus, textarea:focus{
 .tar-vol input{width:90px;}
 .tf-tarato{display:flex;gap:8px;align-items:center;font-size:13px;margin:8px 0;}
 .conf-box{margin:8px 0;}
+.soglia-box{margin:10px 0;padding:10px 12px;border:1px solid var(--line);border-radius:12px;font-size:13px;}
+.soglia-box label{display:flex;flex-wrap:wrap;align-items:center;gap:8px;}
+.soglia-box input[type=range]{flex:1 1 160px;min-width:140px;accent-color:#C0733A;}
+.soglia-hint{display:block;margin-top:4px;font-size:12px;color:var(--ink-soft);line-height:1.4;}
+.sim-pc{font-size:11px;color:var(--ink-soft);}
+.sim-fun{color:var(--ink-soft);}
 .conf-tit{font-size:12px;color:var(--ink-soft);margin-bottom:4px;}
 .conf-riga{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:4px 0;}
 .conf-lab{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);min-width:92px;}
@@ -2421,9 +2427,14 @@ footer.note{
           l'altra lascia scoperto. Succede in due modi: (1) stanno ai poli opposti di un asse, per esempio fresco e caldo, brillante e profondo,
           volatile e persistente (il limone con lo zenzero o con l'angelica); (2) una sostiene l'altra, come l'angelica, che fissa e allunga le note
           volatili del limone. È la stessa logica del dolce che si bilancia con l'acido: canali diversi, che non si sommano.</p>
+        <p><strong>Come si misura la somiglianza.</strong> Sul radar a otto note, per ogni nota si prende la parte in comune
+          (il valore più basso delle due) e l'ingombro totale (il più alto). La somiglianza è la somma delle parti in comune divisa per
+          l'ingombro totale: in pratica quanta parte delle due aree si sovrappone. Esempio: liquirizia e angelica condividono solo lo speziato,
+          38 %; il dolce della liquirizia bilancia invece l'amaro dell'angelica, quindi sono complementari per gusto pur avendo la stessa funzione di leganti.
+          La soglia oltre cui due botaniche contano come simili si regola con il cursore qui sotto: l'app ricalcola subito tabella, schede e Builder.</p>
         <p>Cerca una botanica e leggi le colonne:</p>
         <ul>
-          <li><strong>Simili</strong> — occupano lo stesso spazio aromatico: insieme non raddoppiano l'effetto, lo confondono.</li>
+          <li><strong>Simili</strong> — accanto a ciascuna c'è la percentuale di somiglianza del profilo. In grassetto quelle sopra la soglia: occupano lo stesso spazio aromatico e si sommano. In grigio, con «funzione», quelle che l'erbario accosta per famiglia o funzione (per esempio le radici leganti) ma che al gusto sono diverse.</li>
           <li><strong>Sostitutive</strong> — se una manca o non è di stagione, queste ne fanno le veci.</li>
           <li><strong>Complementari</strong> — principi diversi che si valorizzano a vicenda.</li>
           <li><strong>Da non accumulare</strong> — la combinazione satura il profilo: scegline una sola.</li>
@@ -2441,6 +2452,7 @@ footer.note{
       <div id="wb-fase"></div>
       <div id="wb-out"></div>
     </div>
+    <div class="soglia-slot" id="soglia-ar"></div>
     <div class="ar-scrollwrap" id="ar-scrollwrap">
       <div class="controls">
         <input type="text" id="ar-search" placeholder="Cerca botanica…" />
@@ -2775,7 +2787,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 5 ottobre 2026, ore 22:40 · radar degli altri gin: percentuale di somiglianza in evidenza</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 6 ottobre 2026, ore 15:30 · somiglianza come sovrapposizione dei profili, soglia regolabile</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -3118,13 +3130,64 @@ function risolviNomeRadar(n){
   if (n === 'Mirto' && PROFILO8['Mirto foglie']) return 'Mirto foglie';
   return null;
 }
-// Soglia di somiglianza (0-1) oltre la quale una botanica e' mostrata come "simile" per profilo.
-// Le altre della lista "simili" dell'erbario restano disponibili, ma come "simili per famiglia o uso".
-const SOGLIA_SIMILI = 0.70;
+// Somiglianza di profilo = quota dei valori in comune: per ogni nota si prende il valore piu' basso
+// delle due (la parte condivisa) e il piu' alto (l'ingombro totale); somiglianza = somma dei minimi / somma dei massimi.
+// E' la sovrapposizione delle aree del radar misurata nota per nota: non dipende dall'ordine degli assi
+// e tiene conto dell'intensita' (rosa 5 e fiordaliso 3 sul floreale non sono uguali).
+// La soglia oltre la quale due botaniche sono "simili per profilo" e' regolabile dall'utente.
+let SOGLIA_SIMILI = 0.60;
+try { const sv = parseFloat(localStorage.getItem('gb-soglia-simili')); if (sv >= 0.2 && sv <= 0.95) SOGLIA_SIMILI = sv; } catch(e){}
 function somiglianza(a, b){
-  let sx = 0, nx = 0, ny = 0;
-  a.forEach((x,i) => { sx += x * b[i]; nx += x * x; ny += b[i] * b[i]; });
-  return nx && ny ? sx / Math.sqrt(nx * ny) : 0;
+  let mn = 0, mx = 0;
+  a.forEach((x,i) => { mn += Math.min(x, b[i]); mx += Math.max(x, b[i]); });
+  return mx ? mn / mx : 0;
+}
+function somiglianzaNomi(a, b){ return (PROFILO8[a] && PROFILO8[b]) ? somiglianza(PROFILO8[a], PROFILO8[b]) : null; }
+function giudizioSomiglianza(v){
+  return v >= SOGLIA_SIMILI + .2 ? 'profili molto vicini' : v >= SOGLIA_SIMILI ? 'profili vicini' : v >= SOGLIA_SIMILI - .2 ? 'profili in parte diversi' : 'profili diversi';
+}
+// Poli opposti sullo stesso canale di gusto: il dolce dell'una bilancia l'amaro o l'acido dell'altra.
+function poliOpposti(a, b){
+  const A = PROFILO8[a], B = PROFILO8[b]; if (!A || !B) return null;
+  const prova = (X, Y, x, y) => {
+    if (X[0] >= 3 && Y[0] <= 1){
+      if (Y[1] >= 2 && Y[1] > X[1]) return 'il dolce di ' + x + ' bilancia l\u2019amaro di ' + y;
+      if (Y[2] >= 3 && X[2] <= 1) return 'il dolce di ' + x + ' bilancia l\u2019acido di ' + y;
+    }
+    return null;
+  };
+  return prova(A, B, a, b) || prova(B, A, b, a);
+}
+// Elenco "simili" dell'erbario con la percentuale: sopra soglia = simili per profilo, sotto = solo per funzione o famiglia.
+function similiHtml(nome, lista){
+  if (!lista) return '\u2014';
+  return lista.split(',').map(t => {
+    const x = t.trim(), n = risolviNomeRadar(x), v = n ? somiglianzaNomi(nome, n) : null;
+    if (v === null) return x;
+    const pc = Math.round(v * 100);
+    return v >= SOGLIA_SIMILI ? '<strong>' + x + '</strong> <span class="sim-pc">' + pc + '%</span>'
+      : '<span class="sim-fun" title="Simile per funzione o famiglia, profilo diverso">' + x + ' <span class="sim-pc">' + pc + '% \u00b7 funzione</span></span>';
+  }).join(', ');
+}
+function sogliaHtml(){
+  const pc = Math.round(SOGLIA_SIMILI * 100);
+  return '<div class="soglia-box"><label>Soglia di somiglianza: <strong class="soglia-val">' + pc + ' %</strong>' +
+    '<input type="range" class="soglia-range" min="30" max="90" step="5" value="' + pc + '" oninput="sogliaAnteprima(this.value)" onchange="impostaSoglia(this.value)"></label>' +
+    '<span class="soglia-hint">Sopra la soglia due botaniche sono simili per profilo (si sommano); sotto, simili solo per funzione o famiglia. Cambiandola, l\u2019app ricalcola tutto.</span></div>';
+}
+window.sogliaAnteprima = function(v){ document.querySelectorAll('.soglia-val').forEach(el => el.textContent = v + ' %'); document.querySelectorAll('.soglia-range').forEach(el => { if (el.value !== String(v)) el.value = v; }); };
+window.impostaSoglia = function(v){
+  SOGLIA_SIMILI = Math.min(.95, Math.max(.2, parseFloat(v) / 100));
+  try { localStorage.setItem('gb-soglia-simili', String(SOGLIA_SIMILI)); } catch(e){}
+  ricalcolaSomiglianze();
+};
+function ricalcolaSomiglianze(){
+  const y = window.scrollY;
+  document.querySelectorAll('.soglia-slot').forEach(el => { el.innerHTML = sogliaHtml(); });
+  try { if (currentDetailName && typeof showDetail === 'function') showDetail(currentDetailName); } catch(e){}
+  try { if (typeof renderAr === 'function') renderAr(); } catch(e){}
+  try { if (typeof renderSummary === 'function') renderSummary(); } catch(e){}
+  window.scrollTo(0, y);
 }
 function parenti(nome){
   const r = REDUND[nome] || {}, visti = new Set([nome]), out = [];
@@ -3138,6 +3201,16 @@ function parenti(nome){
       if (altri.length) out.push({k: 'simili_fam', lab: 'Simili per famiglia o uso', l: altri});
     } else if (l.length) out.push({k, lab, l});
   });
+  // Botaniche non elencate nell'erbario ma con profilo sopra soglia
+  const v0 = PROFILO8[nome];
+  if (v0){
+    const extra = Object.keys(PROFILO8).filter(x => !visti.has(x)).map(x => [x, somiglianza(v0, PROFILO8[x])])
+      .filter(x => x[1] >= SOGLIA_SIMILI).sort((a,b) => b[1] - a[1]).slice(0, 6).map(x => x[0]);
+    if (extra.length){
+      const pos = out.filter(g => g.k === 'simili' || g.k === 'simili_fam').length;
+      out.splice(pos, 0, {k: 'simili', lab: 'Simili per profilo (non in erbario)', l: extra});
+    }
+  }
   return out;
 }
 window.radarConf = function(n){
@@ -3146,7 +3219,7 @@ window.radarConf = function(n){
 };
 function confrontoRadarHtml(nome, v){
   const gr = parenti(nome);
-  if (!gr.length) return '';
+  if (!gr.length) return sogliaHtml();
   const on = window.radarConfronta;
   const chips = gr.map(g => '<div class="conf-riga"><span class="conf-lab">' + g.lab + '</span>' +
     g.l.map(x => '<button type="button" class="conf-chip conf-' + g.k + (x === on ? ' on' : '') + '" aria-pressed="' + (x === on) + '" data-n="' + x.replace(/"/g,'&quot;') + '" onclick="radarConf(this.dataset.n)">' + x + '</button>').join('') + '</div>').join('');
@@ -3157,15 +3230,15 @@ function confrontoRadarHtml(nome, v){
     const porta = ASSI8.filter((_,i) => w[i] >= 3 && v[i] <= 1).map(x => x.toLowerCase());
     const manca = ASSI8.filter((_,i) => v[i] >= 3 && w[i] <= 1).map(x => x.toLowerCase());
     const cosv = somiglianza(v, w), pc = Math.round(cosv * 100);
-    const giud = cosv >= .85 ? 'profili molto vicini' : cosv >= SOGLIA_SIMILI ? 'profili vicini' : cosv >= .5 ? 'profili in parte diversi' : 'profili diversi';
+    const giud = giudizioSomiglianza(cosv), polo = poliOpposti(nome, on);
     const dalla = gr.find(g => g.l.includes(on));
     const avviso = (dalla && dalla.k === 'simili_fam') ? ' È indicata come simile per famiglia o uso, ma il suo profilo sensoriale è diverso: sotto il ' + Math.round(SOGLIA_SIMILI * 100) + ' % non la consideriamo simile per profilo.' : '';
-    nota = '<div class="radar-nota">Somiglianza dei profili: <strong>' + pc + ' %</strong> (' + giud + ').' + avviso + '</div><div class="radar-nota"><strong>' + nome + ' e ' + on + '</strong>: ' +
+    nota = '<div class="radar-nota">Somiglianza dei profili: <strong>' + pc + ' %</strong> (' + giud + '; soglia ' + Math.round(SOGLIA_SIMILI * 100) + ' %).' + avviso + (polo ? ' Complementari per gusto: ' + polo + '.' : '') + '</div><div class="radar-nota"><strong>' + nome + ' e ' + on + '</strong>: ' +
       (com.length ? 'si sovrappongono su ' + com.join(', ') + '. ' : 'nessuna nota forte in comune. ') +
       (porta.length ? on + ' aggiunge ' + porta.join(', ') + '. ' : '') +
       (manca.length ? 'Solo ' + nome + ' porta ' + manca.join(', ') + '.' : '') + '</div>';
   }
-  return '<div class="conf-box"><div class="conf-tit">Confronta con (tocca per sovrapporre, tocca ancora per togliere):</div>' + chips + '</div>' + nota;
+  return '<div class="conf-box"><div class="conf-tit">Confronta con (tocca per sovrapporre, tocca ancora per togliere):</div>' + chips + '</div>' + nota + sogliaHtml();
 }
 function radarBox(nome){
   const v = PROFILO8[nome];
@@ -3668,7 +3741,7 @@ function showDetail(name, nuovaScelta){
       <div class="field"><div class="k">Edibile</div><div class="v">${d.edibile || 'Sì'}</div></div>
       <div class="field"><div class="k">🌾 Periodo di raccolta</div><div class="v">${d.periodo_raccolta || '—'}</div></div>
       <div class="field"><div class="k">📍 Zone in Italia</div><div class="v">${d.zone_italia || '—'}</div></div>
-      <div class="field full"><div class="k">Simili</div><div class="v">${r.simili || '—'}</div></div>
+      <div class="field full"><div class="k">Simili</div><div class="v">${similiHtml(d.botanica, r.simili)}</div></div>
       <div class="field full"><div class="k">Sostitutive</div><div class="v">${r.sostitutive || '—'}</div></div>
       <div class="field full"><div class="k">Complementari</div><div class="v">${r.complementari || '—'}</div></div>
     </div>
@@ -3806,7 +3879,7 @@ function renderAr(){
     const r = REDUND[d.botanica] || {};
     return `<tr>
       <td><strong>${d.botanica}</strong></td>
-      <td>${r.simili || '—'}</td>
+      <td>${similiHtml(d.botanica, r.simili)}</td>
       <td>${r.sostitutive || '—'}</td>
       <td>${r.complementari || '—'}</td>
       <td>${r.non_accumulare || '—'}</td>
@@ -3816,6 +3889,7 @@ function renderAr(){
 }
 arSearch.addEventListener('input', renderAr);
 renderAr();
+document.querySelectorAll('.soglia-slot').forEach(el => { el.innerHTML = sogliaHtml(); });
 // La riga dei titoli resta fissa subito sotto la barra di ricerca: ne misuriamo l'altezza reale
 // (cambia con la larghezza dello schermo) invece di usare un valore fisso.
 (function(){
@@ -6452,10 +6526,17 @@ function semaforoCoppia(a, b){
   const ra = REDUND[a] || {}, rb = REDUND[b] || {};
   if (da.sottofamiglia && da.sottofamiglia === db.sottofamiglia)
     return { c: 'rosso', t: 'Stessa sottofamiglia (' + da.sottofamiglia + '): si sovrappongono, ne basta una.' };
+  const sim = somiglianzaNomi(a, b), pc = sim === null ? null : Math.round(sim * 100), sg = Math.round(SOGLIA_SIMILI * 100);
+  const polo = poliOpposti(a, b);
+  if (sim !== null && sim >= SOGLIA_SIMILI)
+    return { c: 'arancio', t: 'Profili simili (' + pc + ' %, soglia ' + sg + ' %): le note in comune si sommano, dosare con attenzione o tenerne una.' };
+  const listaSim = elencoContiene(ra.simili, b) || elencoContiene(rb.simili, a);
   if (elencoContiene(ra.complementari, b) || elencoContiene(rb.complementari, a))
-    return { c: 'verde', t: 'Complementari: lavorano in direzioni diverse e si valorizzano a vicenda.' };
-  if (elencoContiene(ra.simili, b) || elencoContiene(rb.simili, a))
-    return { c: 'arancio', t: 'Profili simili: rischio di sovrapposizione, dosare con attenzione.' };
+    return { c: 'verde', t: 'Complementari: lavorano in direzioni diverse e si valorizzano a vicenda.' + (polo ? ' In più ' + polo + '.' : '') };
+  if (polo)
+    return { c: 'verde', t: 'Complementari per gusto: ' + polo + (listaSim ? '. Hanno la stessa funzione nel gin, ma il profilo è diverso (' + pc + ' %).' : '.') };
+  if (listaSim && sim === null)
+    return { c: 'arancio', t: 'Indicate come simili nell\u2019erbario: rischio di sovrapposizione, dosare con attenzione.' };
   return null;
 }
 function renderSemafori(nomi){
