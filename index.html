@@ -1805,7 +1805,7 @@ footer.note{
         <ol>
           <li>Filtra per famiglia, carattere, uso o potenza, oppure cerca per nome o per descrizione del profilo.</li>
           <li>Tocca una scheda per aprirla: in alto il <strong>profilo sensoriale</strong> (il radar, con il confronto con simili, sostitutive e complementari), subito sotto la <strong>preparazione dell'infuso</strong>, poi i dati dell'erbario.</li>
-          <li>Nel quadro <em>Condizioni dell'infuso</em> imposti temperatura di conservazione (al buio), alcol di partenza, grado di estrazione e volume da ottenere: diluizione (alcol + acqua), grammi, tempo, primo assaggio e avvisi si ricalcolano subito. Aperta una botanica, il grado parte dal minimo consigliato in erbario.</li>
+          <li>Nel quadro <em>Preparazione dell'infuso</em> imposti temperatura di conservazione (al buio), alcol di partenza, grado di estrazione e volume da ottenere: diluizione (alcol + acqua), grammi, tempo, primo assaggio e avvisi si ricalcolano subito. Aperta una botanica, il grado parte dal minimo consigliato in erbario.</li>
           <li>Scegli lo <strong>Stato</strong>: fresca (appena raccolta) o secca. Peso e tempo si ricalcolano; con «Stato delle botaniche» li imposti tutti insieme. Le botaniche fresche portano acqua e abbassano un po' la gradazione.</li>
           <li>Assaggia al <strong>primo assaggio</strong> e poi a intervalli: gli estremi dell'intervallo sono limiti, non obiettivi. Le dosi sono per un infuso concentrato, da miscelare a percentuale nelle Schede di prova.</li>
           <li>Leggi sempre il riquadro <em>Da non accumulare con</em> prima di portare una botanica in ricetta.</li>
@@ -1858,7 +1858,7 @@ footer.note{
       <span class="count-tag" id="count-tag"></span>
     </div>
     <div class="cond-box cond-compact" id="inf-cond">
-      <span class="cond-label">Condizioni dell'infuso:</span>
+      <span class="cond-label">Preparazione dell'infuso:</span>
       <label>Temperatura di conservazione, al buio (°C)<input type="number" id="inf-temp" value="20" step="1" min="0" max="60"></label>
       <label>Alcol di partenza (°)<input type="number" id="inf-abvS" value="96" step="0.5" min="40" max="96"></label>
       <label>Grado di estrazione desiderato (%)<input type="number" id="inf-abv" placeholder="consigliato" step="1" min="20" max="96"><span class="inf-sub" id="inf-abv-range"></span></label>
@@ -3801,7 +3801,7 @@ function showDetail(name, nuovaScelta){
     <h3>${d.botanica}</h3>
     <div class="sub">${d.nome_botanico ? d.nome_botanico + ' · ' : ''}${d.categoria} — ${d.sottofamiglia || ''}</div>
     ${radarBox(d.botanica)}
-    <details class="howto inf-in-scheda" id="inf-sch"${window.infSchedaAperta ? ' open' : ''}><summary>🧫 Preparazione dell'infuso</summary><div id="inf-body"></div></details>
+    <div class="inf-in-scheda" id="inf-body"></div>
     <div class="detail-grid">
       <div class="field"><div class="k">Profilo aromatico</div><div class="v">${d.profilo || '—'}</div></div>
       <div class="field"><div class="k">Direzione</div><div class="v">${d.direzione || '—'}</div></div>
@@ -3907,8 +3907,8 @@ function schermoStato(){
 }
 function schermoCambia(){ schermo.voluto = !schermo.voluto; if (schermo.voluto) schermoAcceso(); else schermoLibera(); schermoStato(); }
 document.addEventListener('visibilitychange', () => { if (!document.hidden) schermoAcceso(); });
-// La scheda "Preparazione dell'infuso" ricorda se l'hai aperta o chiusa mentre cambi le condizioni.
-detail.addEventListener('toggle', e => { if (e.target.id === 'inf-sch') window.infSchedaAperta = e.target.open; }, true);
+// La scheda della botanica (come prepararla, molecole) ricorda se l'hai aperta o chiusa mentre cambi le condizioni.
+detail.addEventListener('toggle', e => { if (e.target.classList && e.target.classList.contains('inf-item')) window.infSchedaAperta = e.target.open; }, true);
 // Il riquadro dei filtri chiuso dice quanti filtri sono attivi.
 function aggiornaFiltriSum(){
   const sum = document.getElementById('filtri-sum'); if (!sum) return;
@@ -6259,7 +6259,7 @@ function wrapStepper(input, step, opts){
   }
   function cardCorpo(d, r, c, g, t, a, cau, riass, lim){
     const f = (k, v) => '<div class="inf-f"><div class="k">' + k + '</div><div class="v">' + v + '</div></div>';
-    const apriSubito = ' open';
+    const apriSubito = window.infSchedaAperta ? ' open' : '';
     return '<details class="inf-item" data-i="' + d.id + '"' + apriSubito + '><summary><span class="inf-nome"><strong>' + d.botanica + '</strong>' +
       '<span class="inf-sub">' + d.categoria + ' \u00b7 ' + (d.parte || '') + '</span></span><span class="inf-riass">' + riass + '</span></summary>' +
       '<div class="inf-corpo">' + cau +
@@ -6297,7 +6297,7 @@ function wrapStepper(input, step, opts){
     if (!body || !matchAttuale) return;
     body.innerHTML = cardHtml(matchAttuale.d, matchAttuale.r, c);
     // Chiusa di default; si apre da sola solo se c'e' un avviso da leggere.
-    const sch = $('inf-sch');
+    const sch = body.querySelector('.inf-item');
     if (sch && !sch.open && body.querySelector('.warn-box, .adj-box, .inf-cau')){ window.infSchedaAperta = true; sch.open = true; }
     const av = gradAvviso(matchAttuale.d, matchAttuale.r, c), E = matchAttuale.r.est;
     if (abvRange) abvRange.textContent = E ? ('Consigliato: min ' + E.a[0] + ' \u2013 max ' + E.a[1] + ' % vol' + (av.lim ? ' \u00b7 soglie di sicurezza ' + av.lim.basso + '\u2013' + av.lim.m : '')) : '';
