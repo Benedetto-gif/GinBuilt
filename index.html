@@ -1548,6 +1548,7 @@ footer.note{
     <button data-tab="ridondanza">🧬 Ridondanze e complementari</button>
     <button data-tab="prove">🧪 Schede di prova</button>
     <button data-tab="libreria">🌿 Botaniche e infusi</button>
+    <button data-tab="diario">📓 Diario degli infusi</button>
     <button data-tab="vocabolario">📚 Vocabolario</button>
     <button data-tab="nozioni">🔬 Nozioni tecniche</button>
     <button data-tab="analisi">👃 Analisi sensoriale</button>
@@ -1745,6 +1746,11 @@ footer.note{
   </section>
 
   <!-- BOTANICHE -->
+  <section class="panel" id="panel-diario">
+    <div id="diario-slot"></div>
+    <div style="margin-top:14px;"><button class="ghost-btn" type="button" data-goto="libreria">🌿 Vai a Botaniche e infusi</button></div>
+  </section>
+
   <section class="panel" id="panel-libreria">
     <details class="howto">
       <summary>Come si usa</summary>
@@ -3338,7 +3344,18 @@ function showTab(name){
   document.querySelectorAll('nav.tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
   document.querySelectorAll('section.panel').forEach(p => p.classList.remove('active'));
   panel.classList.add('active');
+  spostaDiario(name);
   window.scrollTo(0, 0);
+}
+// Il riquadro del diario è uno solo: nella pagina Diario sta da solo (senza le schede delle botaniche),
+// nella pagina Botaniche e infusi torna al suo posto, sotto il quadro delle condizioni.
+let _diarioPosto = null;
+function spostaDiario(name){
+  const box = document.getElementById('diario-box'), slot = document.getElementById('diario-slot');
+  if (!box || !slot) return;
+  if (!_diarioPosto){ _diarioPosto = document.createComment('diario'); box.parentNode.insertBefore(_diarioPosto, box); }
+  if (name === 'diario'){ if (box.parentNode !== slot) slot.appendChild(box); box.open = true; }
+  else if (box.parentNode === slot) _diarioPosto.parentNode.insertBefore(box, _diarioPosto);
 }
 document.querySelectorAll('nav.tabs button').forEach(btn => {
   btn.addEventListener('click', () => showTab(btn.dataset.tab));
@@ -3371,7 +3388,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   };
   if (homeBtn) aggiungiTile(homeBtn, 0, true);
   // Accesso diretto al Diario degli infusi, con il numero di infusi in corso
-  const dTile = document.createElement('button'); dTile.type = 'button'; dTile.className = 'menu-tile wide'; dTile.id = 'menu-diario';
+  const dTile = document.createElement('button'); dTile.type = 'button'; dTile.className = 'menu-tile wide'; dTile.id = 'menu-diario'; dTile.dataset.tab = 'diario';
   dTile.style.setProperty('--h', '#B8921F');
   dTile.innerHTML = '<span class="mt-ic">\ud83d\udcd3</span><span class="mt-l">Diario degli infusi</span><span class="mt-badge" id="menu-diario-n"></span>';
   dTile.addEventListener('click', () => { chiudi(); apriDiario(); });
@@ -3411,14 +3428,8 @@ function apriInfusi(nome){
   setTimeout(v, 80); setTimeout(v, 360);
 }
 
-// Apre la pagina Botaniche e infusi con il Diario degli infusi aperto e in vista.
-function apriDiario(){
-  showTab('libreria');
-  const box = document.getElementById('diario-box'); if (!box) return;
-  box.open = true; box.style.scrollMarginTop = '84px';
-  const v = () => box.scrollIntoView({ block: 'start' });
-  setTimeout(v, 60); setTimeout(v, 520);
-}
+// Apre la pagina del Diario degli infusi (solo il diario, senza le schede delle botaniche).
+function apriDiario(){ showTab('diario'); }
 window.apriDiario = apriDiario;
 
 // ---------- Libreria ----------
