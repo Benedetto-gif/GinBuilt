@@ -905,6 +905,11 @@ input:focus, select:focus, textarea:focus{
 .cond-box input{width:92px;padding:9px 12px;}
 .cond-box label #inf-abv-range, .cond-box label #lib-abv-range{display:block;font-size:11px;color:var(--ochre);text-transform:none;font-weight:650;letter-spacing:0;margin-top:2px;}
 .inf-abv-warn{grid-column:1/-1;}
+.inf-lim{grid-column:1/-1;font-size:13px;line-height:1.45;color:var(--ink-soft);}
+.inf-lim:empty{display:none;}
+.inf-lim .k{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ochre);font-weight:700;margin-bottom:2px;}
+ul.prova3{margin:4px 0;padding-left:18px;}
+ul.prova3 li{margin:3px 0;}
 .inf-abv-warn:empty{display:none;}
 .inf-abv-warn .warn-box, .inf-abv-warn .adj-box{margin-top:0;}
 .cond-box input.abv-fuori{border-color:var(--tint-info-line);box-shadow:0 0 0 2px var(--tint-info-line);}
@@ -1858,6 +1863,7 @@ footer.note{
       <label>Alcol di partenza (°)<input type="number" id="inf-abvS" value="96" step="0.5" min="40" max="96"></label>
       <label>Grado di estrazione desiderato (%)<input type="number" id="inf-abv" placeholder="consigliato" step="1" min="20" max="96"><span class="inf-sub" id="inf-abv-range"></span></label>
       <label>Volume di infuso da ottenere (ml)<input type="number" id="inf-vol" value="100" step="25" min="10"></label>
+      <div class="inf-lim" id="inf-lim"></div>
       <div class="inf-abv-warn" id="inf-abv-warn"></div>
       <input type="hidden" id="inf-mod" value="tempo">
       <label>Stato della botanica
@@ -1893,7 +1899,7 @@ footer.note{
         </ul>
         <p><strong>Perché l'alcol a 96% non è sempre ideale.</strong> Estrae di più cere, resine, pigmenti e componenti amare; può rendere l'estratto aggressivo o sbilanciato; estrae meno bene le sostanze che hanno bisogno d'acqua; alla diluizione può dare opalescenza o precipitazione degli oli; sulle botaniche fresche disidrata in fretta la superficie e rallenta la penetrazione. Per questo, di solito, una gradazione intermedia (50–70%) è il compromesso migliore: anche per la vaniglia i risultati migliori sono riportati intorno al 50%.</p>
         <p><strong>L'acqua della pianta.</strong> Una botanica fresca contiene già acqua e abbassa il grado effettivo del macerato (100 g di pianta fresca possono contenere circa 70 g di acqua). Con materia fresca e molto acquosa, in grande quantità, può servire partire da 70–80%; ma alle dosi del gin (pochi grammi per 100 ml) l'acqua della pianta abbassa il grado di appena 1–3 punti; con materia secca bastano spesso 50–65%; con radici, semi, resine e scorze secche si può salire verso 70–90% secondo il risultato voluto, ma per il gin conviene restare sul lato prudente: l'app propone per ogni botanica un valore e una soglia da non superare.</p>
-        <p><strong>Metodo sperimentale per una botanica nuova.</strong> Prepara tre piccoli campioni identici a <strong>40%, 60% e 80%</strong> (la scheda di ogni botanica, nella pagina Botaniche, calcola alcol e acqua per i tre campioni). Tieni uguali peso della botanica, rapporto botanica/alcol (per esempio 1 parte di secca ogni 5–10 di alcol), dimensione dei pezzi, tempo, temperatura, agitazione e filtrazione. Poi confronta intensità e qualità dell'aroma, amaro o astringenza, colore, limpidezza dopo la diluizione e stabilità dopo alcuni giorni. Con botaniche molto intense (chiodo di garofano, cannella, assenzio, scorze amare) riduci il tempo prima ancora di cambiare la gradazione.</p>
+        <p><strong>Metodo sperimentale per una botanica nuova.</strong> Prepara tre piccoli campioni identici a gradazioni diverse, per esempio <strong>40%, 60% e 80%</strong> per una botanica sconosciuta. Per le botaniche dell'erbario la scheda calcola i tre campioni gi&agrave; sui limiti di quella botanica: soglia bassa, centro consigliato e soglia alta. Tieni uguali peso della botanica, rapporto botanica/alcol (per esempio 1 parte di secca ogni 5–10 di alcol), dimensione dei pezzi, tempo, temperatura, agitazione e filtrazione. Poi confronta intensità e qualità dell'aroma, amaro o astringenza, colore, limpidezza dopo la diluizione e stabilità dopo alcuni giorni. Con botaniche molto intense (chiodo di garofano, cannella, assenzio, scorze amare) riduci il tempo prima ancora di cambiare la gradazione.</p>
         <p><strong>In sintesi:</strong> oli essenziali e resine 70–90%; estratto aromatico equilibrato 55–70%; anche zuccheri, acidi, tannini e idrosolubili 35–55%; se non sai quale frazione prevalga, confronta 40, 60 e 80%. Usa solo etanolo di grado alimentare, mai alcol denaturato o solventi tecnici. Se l'estratto deve entrare in un gin a 35–45% vol., controlla sempre la <strong>limpidezza dopo la diluizione</strong>: è spesso questo test, più della gradazione iniziale, a dire se il solvente era giusto.</p>
       </div>
     </details>
@@ -2745,7 +2751,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 6 ottobre 2026, ore 17:45 · prova a tre gradazioni facoltativa, chiusa</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 6 ottobre 2026, ore 18:10 · preparazione infuso: limiti accanto al range, prova a tre gradazioni legata ai limiti della botanica</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -5912,6 +5918,26 @@ function estLimiti(d){
   const l = o ? [0, o[0], o[1], o[2]] : l0;
   return { m: e.m, altoTxt: l[1], basso: l[2], bassoTxt: l[3] };
 }
+// Tre campioni legati alla botanica: soglia bassa di sicurezza, centro del range consigliato, soglia alta.
+// Assaggiandoli si verifica di persona cosa si perde sotto il minimo e cosa compare sopra il massimo.
+function prova3Gradi(d, r, abvS){
+  const lim = estLimiti(d), E = r && r.est;
+  const centro = E ? Math.round((E.a[0] + E.a[1]) / 2) : 60;
+  let basso = lim ? lim.basso : (E ? E.a[0] - 10 : 40), alto = lim ? lim.m : (E ? E.a[1] + 10 : 80);
+  alto = Math.min(alto, Math.floor(abvS) - 1);
+  return [ {k:'Soglia bassa', gr: basso}, {k:'Centro consigliato', gr: centro}, {k:'Soglia alta', gr: alto} ].filter((x, i, a) => x.gr > 0 && (i === 0 || x.gr !== a[i-1].gr));
+}
+function prova3Html(d, r, c, lim){
+  const vol = Math.min(c.vol, 50), g = prova3Gradi(d, r, c.abvS), E = r.est;
+  const testo = '<p style="margin:0 0 6px;">Non serve per preparare l\u2019infuso: serve a sentire perch\u00e9 ' + d.botanica + ' ha questi limiti. ' +
+    'Prepara tre campioni identici (stessa botanica, stesse proporzioni, stesso tempo) alle gradazioni qui sotto e assaggiali affiancati. ' +
+    (lim ? 'Alla <strong>soglia alta</strong> (' + lim.m + '% vol) inizi a sentire: ' + lim.altoTxt + '. Alla <strong>soglia bassa</strong> (' + lim.basso + '% vol): ' + lim.bassoTxt + '. ' : '') +
+    (E ? 'Il <strong>centro consigliato</strong> (' + estAbvTxt(E.a) + ') dovrebbe essere il pi\u00f9 pulito. ' : '') +
+    'Se il tuo palato dice altro, annotalo: \u00e8 cos\u00ec che si tarano i valori dell\u2019erbario.</p>';
+  const righe = g.map(x => { const dl = diluizione(x.gr, vol, c.abvS); const bot = infusoRiga(d, x.gr, c.temp, vol, 'tempo', r.stato, false, c.abvS);
+    return '<li><strong>' + x.k + ' \u00b7 ' + x.gr + '%</strong>: ' + nf(dl.alcMl, 1) + ' ml (' + nf(dl.alcG, 1) + ' g) alcol ' + c.abvS + '\u00b0 + ' + nf(dl.acquaMl, 1) + ' ml (' + nf(dl.acquaG, 1) + ' g) acqua, ' + nf(bot.g, 2) + ' g di botanica</li>'; }).join('');
+  return testo + '<ul class="prova3">' + righe + '</ul><p class="cond-hint" style="margin:4px 0 0">Stessa dose e stesso tempo per tutti e tre, cos\u00ec cambia solo la gradazione.</p>';
+}
 function limitiEst(d){
   const l = estLimiti(d); if (!l) return '';
   return '<strong>Evita oltre ' + l.m + '% vol:</strong> ' + l.altoTxt + '. <strong>Sotto ' + l.basso + '% vol:</strong> ' + l.bassoTxt + '.';
@@ -6237,12 +6263,9 @@ function wrapStepper(input, step, opts){
     return '<details class="inf-item" data-i="' + d.id + '"' + apriSubito + '><summary><span class="inf-nome"><strong>' + d.botanica + '</strong>' +
       '<span class="inf-sub">' + d.categoria + ' \u00b7 ' + (d.parte || '') + '</span></span><span class="inf-riass">' + riass + '</span></summary>' +
       '<div class="inf-corpo">' + cau +
-      '<div class="inf-f inf-how"><div class="k">\ud83e\uddea Molecole aromatiche da estrarre</div><div class="v">' + (MOLECOLE[d.botanica] || 'Scheda non ancora compilata.') + '</div></div>' +
-      '<details class="inf-f inf-how inf-opz"' + (window.prova3Aperta ? ' open' : '') + ' ontoggle="window.prova3Aperta=this.open"><summary class="k"><span class="opz-car">\u25b8</span>\ud83d\udd2c Facoltativa: prova a tre gradazioni (campioni da ' + nf(Math.min(c.vol, 50), 0) + ' ml) <span class="inf-opz-hint">\u2014 per verificare di persona i limiti min e max</span></summary><div class="v">' +
-        '<p style="margin:0 0 6px;">Prepara i tre campioni e assaggiali: non serve indovinare la gradazione giusta a tavolino, basta sentire come cambia l\u2019estratto. Salendo di grado inizi a percepire ' + (lim ? ('quello che succede oltre ' + lim.m + '% vol \u2014 ' + lim.altoTxt) : 'note pesanti, resinose o amare') + '; scendendo, invece, ' + (lim ? ('quello che succede sotto ' + lim.basso + '% vol \u2014 ' + lim.bassoTxt) : 'resta poco aroma e prevale l\u2019acqua') + '. Il campione che ti piace di pi\u00f9 \u00e8 la gradazione giusta per questa botanica: non \u00e8 sempre quello pi\u00f9 alto.</p>' +
-        [40, 60, 80].map(gr => { const x = diluizione(gr, Math.min(c.vol, 50), c.abvS); return '<strong>' + gr + '%</strong>: ' + nf(x.alcMl, 1) + ' ml (' + nf(x.alcG, 1) + ' g) alcol ' + c.abvS + '\u00b0 + ' + nf(x.acquaMl, 1) + ' ml (' + nf(x.acquaG, 1) + ' g) acqua'; }).join(' \u00b7 ') + '</div></details>' +
-      '<div class="inf-f inf-how"><div class="k">Limiti della gradazione</div><div class="v">' + limitiEst(d) + '</div></div>' +
       '<div class="inf-f inf-how"><div class="k">Come prepararla e usarla</div><div class="v">' + comeUsare(d, r.stato, r.K, r.abvEff) + (r.est ? ' <em class="inf-est-nota">Estrazione: ' + r.est.n + '</em>' : '') + '</div></div>' +
+      '<div class="inf-f inf-how"><div class="k">\ud83e\uddea Molecole aromatiche da estrarre</div><div class="v">' + (MOLECOLE[d.botanica] || 'Scheda non ancora compilata.') + '</div></div>' +
+      '<details class="inf-f inf-how inf-opz"' + (window.prova3Aperta ? ' open' : '') + ' ontoggle="window.prova3Aperta=this.open"><summary class="k"><span class="opz-car">\u25b8</span>\ud83d\udd2c Per i curiosi: prova a tre gradazioni (campioni da ' + nf(Math.min(c.vol, 50), 0) + ' ml) <span class="inf-opz-hint">\u2014 per verificare di persona i limiti di ' + d.botanica + '</span></summary><div class="v">' + prova3Html(d, r, c, lim) + '</div></details>' +
       '</div></details>';
   }
   // Valori per preparare l'infuso: stanno nel quadro delle variabili, accanto ai campi che li fanno cambiare.
@@ -6270,7 +6293,7 @@ function wrapStepper(input, step, opts){
     if (ris) ris.innerHTML = matchAttuale ? risHtml(matchAttuale.d, matchAttuale.r, c)
       : '<span class="cond-hint">Apri una botanica: qui compaiono diluizione, dose e tempi, che cambiano con i tasti \u2212 / +.</span>';
     if (matchAttuale && typeof schermoStato === 'function') schermoStato();
-    if (!matchAttuale){ const w = $('inf-abv-warn'); if (w) w.innerHTML = ''; iAbv.classList.remove('abv-fuori', 'abv-allarme'); }
+    if (!matchAttuale){ const w = $('inf-abv-warn'); if (w) w.innerHTML = ''; const li = $('inf-lim'); if (li) li.innerHTML = ''; iAbv.classList.remove('abv-fuori', 'abv-allarme'); }
     if (!body || !matchAttuale) return;
     body.innerHTML = cardHtml(matchAttuale.d, matchAttuale.r, c);
     // Chiusa di default; si apre da sola solo se c'e' un avviso da leggere.
@@ -6278,6 +6301,7 @@ function wrapStepper(input, step, opts){
     if (sch && !sch.open && body.querySelector('.warn-box, .adj-box, .inf-cau')){ window.infSchedaAperta = true; sch.open = true; }
     const av = gradAvviso(matchAttuale.d, matchAttuale.r, c), E = matchAttuale.r.est;
     if (abvRange) abvRange.textContent = E ? ('Consigliato: min ' + E.a[0] + ' \u2013 max ' + E.a[1] + ' % vol' + (av.lim ? ' \u00b7 soglie di sicurezza ' + av.lim.basso + '\u2013' + av.lim.m : '')) : '';
+    const li = $('inf-lim'); if (li) li.innerHTML = limitiEst(matchAttuale.d) ? '<span class="k">Limiti della gradazione</span> ' + limitiEst(matchAttuale.d) : '';
     const w = $('inf-abv-warn'); if (w) w.innerHTML = av.html;
     iAbv.classList.remove('abv-fuori', 'abv-allarme'); if (av.livello) iAbv.classList.add(av.livello);
   }
@@ -6340,13 +6364,13 @@ function wrapStepper(input, step, opts){
       ' \u00b7 ' + c.temp + ' \u00b0C \u00b7 alcol di partenza ' + c.abvS + '% vol \u00b7 grado di estrazione ' + (c.abv !== null ? c.abv + '% vol' : '(consigliato, ' + (r.est ? estAbvTxt(r.est.a) : '\u2014') + ')') + ' \u00b7 ' + c.vol + ' ml di infuso' +
       '</div><table><tbody>' +
       '<tr><th>Gradazione consigliata</th><td>' + (r.est ? estAbvTxt(r.est.a) : '\u2014') + '</td></tr>' +
+      '<tr><th>Limiti della gradazione</th><td>' + limitiEst(d) + '</td></tr>' +
       '<tr><th>Diluizione (alcol ' + c.abvS + '\u00b0 + acqua)</th><td>' + (r.dil ? nf(r.dil.alcG, 1) + ' g di alcol (' + nf(r.dil.alcMl, 1) + ' ml) + ' + nf(r.dil.acquaG, 1) + ' g di acqua (' + nf(r.dil.acquaMl, 1) + ' ml)' : '\u2014') + '</td></tr>' +
       '<tr><th>Quantit\u00e0 di botanica</th><td>' + infFmtG(r.g) + ' g (' + infFmtG(r.gmin) + '\u2013' + infFmtG(r.gmax) + ' g)</td></tr>' +
       '<tr><th>Tempo di estrazione</th><td>' + (r.tmin === null ? (r.tempoRef || '\u2014') : infRange(r.tmin, r.tmax)) + '</td></tr>' +
       '<tr><th>Primo assaggio</th><td>' + (r.assaggio === null ? '\u2014' : (r.assaggio >= 72 ? infFmt(r.assaggio / 24) + ' giorni' : infFmt(r.assaggio) + ' h')) + '</td></tr>' +
       '<tr><th>Molecole aromatiche da estrarre</th><td>' + (MOLECOLE[d.botanica] || 'Scheda non ancora compilata.') + '</td></tr>' +
       '<tr><th>Come prepararla e usarla</th><td>' + comeUsare(d, r.stato, r.K, r.abvEff) + '</td></tr>' +
-      '<tr><th>Limiti della gradazione</th><td>' + limitiEst(d) + '</td></tr>' +
       '</tbody></table><p style="font-size:12px;color:#555;">Stima orientativa: da validare con assaggi.</p>';
     stampaHtml(corpo, 'Preparazione infuso \u2014 ' + d.botanica);
   });
