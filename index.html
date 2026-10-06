@@ -837,6 +837,12 @@ input:focus, select:focus, textarea:focus{
 }
 .controls input[type=text]{min-width:230px;flex:1;}
 .inf-q-label{flex:1;min-width:230px;}
+.mic-btn{flex:0 0 auto;width:44px;height:40px;border-radius:10px;border:1px solid var(--line, rgba(0,0,0,.2));background:var(--paper, #fff);font-size:19px;cursor:pointer;}
+.mic-btn.ascolto{background:var(--tint-warn);border-color:var(--ochre);animation:micPulse 1s ease-in-out infinite;}
+@keyframes micPulse{50%{transform:scale(1.08);}}
+.voce-msg{flex-basis:100%;font-size:12.5px;color:var(--ink-faint);margin-top:-6px;}
+.wl-row{grid-column:1/-1;font-size:12px;color:var(--ink-faint);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.wl-row button{padding:3px 9px;font-size:12px;}
 .inf-q-label input[type=text]{width:100%;}
 .controls label{font-size:11.5px;color:var(--ink-faint);display:flex;flex-direction:column;gap:6px;font-weight:650;text-transform:uppercase;letter-spacing:.06em;}
 .count-tag{font-size:13.5px;color:var(--ink-faint);margin-left:auto;font-variant-numeric:tabular-nums;}
@@ -1788,6 +1794,7 @@ footer.note{
     </details>
     <div class="controls">
       <label class="inf-q-label">Cerca la botanica<input type="text" id="search" placeholder="Scrivi il nome o la prima lettera…" /></label>
+      <button type="button" class="mic-btn" id="voce-btn" hidden aria-label="Cerca la botanica a voce" title="Cerca a voce">🎤</button>
       <span class="count-tag" id="count-tag"></span>
     </div>
     <div class="cond-box cond-compact" id="inf-cond">
@@ -3625,6 +3632,7 @@ function showDetail(name, nuovaScelta){
   // Scrolla alla scheda solo quando si apre una nuova botanica: variare le condizioni con i
   // tasti su/giù deve solo aggiornare i numeri, senza far saltare la pagina.
   if (window.renderInfusoScheda) window.renderInfusoScheda();
+  if (typeof schermoAcceso === 'function') schermoAcceso();
   if (nuovaScelta) detail.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 function chiudiDetail(){
@@ -3639,10 +3647,74 @@ function chiudiDetail(){
   const libAbvRange = document.getElementById('inf-abv-range');
   if (libAbvRange) libAbvRange.textContent = '';
   if (window.renderInfusoScheda) window.renderInfusoScheda();
+  if (typeof schermoLibera === 'function') schermoLibera();
   grid.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 
 [searchInput, fCategoria, fCarattere, fPotenza, fOrdine, fStile, fUso].forEach(el => el.addEventListener('input', renderGrid));
+// ---------- Ricerca della botanica a voce ----------
+// Usa il riconoscimento vocale del browser (italiano). Se il nome detto corrisponde bene a una botanica,
+// la scheda si apre da sola; altrimenti l'elenco resta filtrato su quello che \u00e8 stato capito.
+(function(){
+  const btn = document.getElementById('voce-btn');
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!btn || !SR) return;
+  btn.hidden = false;
+  const norm = t => t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+  let msg = null, rec = null;
+  function scrivi(t){
+    if (!msg){ msg = document.createElement('div'); msg.className = 'voce-msg'; btn.parentNode.appendChild(msg); }
+    msg.textContent = t || ''; msg.hidden = !t;
+  }
+  function cerca(alternative){
+    const nomi = MASTER.map(d => d.botanica);
+    let scelta = null, detto = alternative[0];
+    for (const alt of alternative){
+      const q = norm(alt); if (!q) continue;
+      scelta = nomi.find(n => norm(n) === q) || nomi.find(n => norm(n).split(' ').some(w => w === q)) ||
+               nomi.find(n => norm(n).startsWith(q)) || nomi.find(n => q.includes(norm(n)));
+      if (scelta){ detto = alt; break; }
+    }
+    if (currentDetailName) chiudiDetail();
+    searchInput.value = scelta || detto;
+    searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+    if (scelta){ scrivi('Ho capito \u00ab' + detto + '\u00bb: apro ' + scelta + '.'); showDetail(scelta, true); }
+    else scrivi('Ho capito \u00ab' + detto + '\u00bb: nessuna botanica con questo nome, guarda l\u2019elenco qui sotto.');
+  }
+  btn.addEventListener('click', () => {
+    if (rec){ rec.stop(); return; }
+    rec = new SR(); rec.lang = 'it-IT'; rec.interimResults = false; rec.maxAlternatives = 5;
+    rec.onresult = e => { const r = e.results[0]; cerca([...r].map(a => a.transcript)); };
+    rec.onerror = e => scrivi(e.error === 'not-allowed' || e.error === 'service-not-allowed'
+      ? 'Il microfono non \u00e8 autorizzato: consentilo nelle impostazioni del browser.'
+      : e.error === 'no-speech' ? 'Non ho sentito nulla, riprova.' : 'Riconoscimento vocale non riuscito (' + e.error + ').');
+    rec.onend = () => { btn.classList.remove('ascolto'); rec = null; };
+    try { rec.start(); btn.classList.add('ascolto'); scrivi('Ti ascolto: d\u00ec il nome della botanica\u2026'); }
+    catch(e){ rec = null; scrivi('Non riesco ad avviare il microfono.'); }
+  });
+})();
+
+// ---------- Schermo sempre acceso mentre si leggono i pesi ----------
+// Con la scheda di una botanica aperta lo schermo non si spegne (Screen Wake Lock);
+// chiudendo la scheda, o con il pulsante, torna al comportamento normale.
+const schermo = { lock: null, voluto: true };
+async function schermoAcceso(){
+  if (!('wakeLock' in navigator) || !schermo.voluto || !currentDetailName || document.hidden || schermo.lock) return;
+  try {
+    schermo.lock = await navigator.wakeLock.request('screen');
+    schermo.lock.addEventListener('release', () => { schermo.lock = null; schermoStato(); });
+  } catch(e){ schermo.lock = null; }
+  schermoStato();
+}
+function schermoLibera(){ if (schermo.lock){ try { schermo.lock.release(); } catch(e){} schermo.lock = null; } schermoStato(); }
+function schermoStato(){
+  const el = document.getElementById('wl-row'); if (!el) return;
+  if (!('wakeLock' in navigator)){ el.innerHTML = 'Questo browser non permette di tenere lo schermo acceso: allunga lo spegnimento automatico nelle impostazioni del telefono.'; return; }
+  el.innerHTML = (schermo.lock ? '\ud83d\udd06 Schermo sempre acceso finch\u00e9 la scheda \u00e8 aperta' : '\ud83c\udf19 Lo schermo pu\u00f2 spegnersi') +
+    ' <button class="ghost-btn" type="button" onclick="schermoCambia()">' + (schermo.voluto ? 'Lascialo spegnere' : 'Tienilo acceso') + '</button>';
+}
+function schermoCambia(){ schermo.voluto = !schermo.voluto; if (schermo.voluto) schermoAcceso(); else schermoLibera(); schermoStato(); }
+document.addEventListener('visibilitychange', () => { if (!document.hidden) schermoAcceso(); });
 // La scheda "Preparazione dell'infuso" ricorda se l'hai aperta o chiusa mentre cambi le condizioni.
 detail.addEventListener('toggle', e => { if (e.target.id === 'inf-sch') window.infSchedaAperta = e.target.open; }, true);
 // Il riquadro dei filtri chiuso dice quanti filtri sono attivi.
@@ -5973,6 +6045,7 @@ function wrapStepper(input, step, opts){
       x('Botanica', '<strong>' + infFmtG(r.g) + ' g</strong> <small>(' + infFmtG(r.gmin) + '\u2013' + infFmtG(r.gmax) + ' g)</small>') +
       x('Tempo di estrazione', '<strong>' + t + '</strong>') +
       x('Primo assaggio', a) +
+      '<div class="wl-row" id="wl-row"></div>' +
       '<div class="ris full"><button class="ghost-btn" type="button" onclick="diarioNuovo()">\ud83d\udcd3 Ho preparato l\u2019infuso: annota nel diario</button></div>';
   }
   // La scheda dell'infuso e' quella della botanica aperta nella pagina Botaniche.
@@ -5983,6 +6056,7 @@ function wrapStepper(input, step, opts){
     const ris = $('inf-ris');
     if (ris) ris.innerHTML = matchAttuale ? risHtml(matchAttuale.d, matchAttuale.r, c)
       : '<span class="cond-hint">Apri una botanica: qui compaiono diluizione, dose e tempi, che cambiano con i tasti \u2212 / +.</span>';
+    if (matchAttuale && typeof schermoStato === 'function') schermoStato();
     if (!body || !matchAttuale) return;
     body.innerHTML = cardHtml(matchAttuale.d, matchAttuale.r, c);
     // Chiusa di default; si apre da sola solo se c'e' un avviso da leggere.
@@ -6095,6 +6169,7 @@ function diarioRender(){
         (v.allarme ? '<div class="dia-r">' + (scad ? '\u23f0 <strong>Ora di assaggiare</strong> (dal ' + diaData(v.allarme) + ')' : '\u23f0 Promemoria: ' + diaData(v.allarme)) + '</div>' : '') +
         '<textarea rows="2" placeholder="Note e assaggi\u2026" onchange="diarioNota(\'' + v.id + '\', this.value)">' + diaEsc(v.note) + '</textarea>' +
         '<div class="dia-btn">' +
+          '<button class="ghost-btn" type="button" onclick="diarioOrari(\'' + v.id + '\')">\u270f\ufe0f Modifica orari</button>' +
           (v.allarme && !v.finito ? '<button class="ghost-btn" type="button" onclick="diarioIcs(\'' + v.id + '\')">\ud83d\udcc5 Allarme nel calendario</button>' : '') +
           (!v.finito ? '<button class="ghost-btn" type="button" onclick="diarioFinito(\'' + v.id + '\')">\u2713 Filtrato</button>' : '') +
           '<button class="ghost-btn" type="button" onclick="diarioElimina(\'' + v.id + '\')">\ud83d\uddd1\ufe0f Elimina</button>' +
@@ -6107,6 +6182,36 @@ function diarioFinito(id){ diarioAggiorna(id, v => { v.finito = Date.now(); }); 
 function diarioElimina(id){
   mostraAvviso('Eliminare questa voce?', '<p>La voce del diario sar\u00e0 cancellata.</p>', 'Elimina', () => {
     diarioSalva(diarioCarica().filter(x => x.id !== id)); diarioRender();
+  });
+}
+// Cambia l'ora di inizio, del promemoria e (se gi\u00e0 filtrato) di filtrazione. Spostando l'inizio,
+// il promemoria si sposta della stessa differenza; poi si pu\u00f2 ritoccare a mano o togliere.
+function diarioOrari(id){
+  const v = diarioCarica().find(x => x.id === id); if (!v) return;
+  const corpo = '<div class="dia-new">' +
+    '<label>Inizio dell\u2019infuso<input type="datetime-local" id="dor-inizio" value="' + diaLocale(new Date(v.inizio)) + '"></label>' +
+    '<label>Promemoria per l\u2019assaggio (vuoto = nessuno)<input type="datetime-local" id="dor-allarme" value="' + (v.allarme ? diaLocale(new Date(v.allarme)) : '') + '"></label>' +
+    (v.finito ? '<label>Filtrato il<input type="datetime-local" id="dor-finito" value="' + diaLocale(new Date(v.finito)) + '"></label>' : '') +
+    '</div>';
+  mostraAvviso('\u270f\ufe0f Orari di ' + v.tipo, corpo, 'Salva', () => {
+    const li = document.getElementById('dor-inizio').value, la = document.getElementById('dor-allarme').value;
+    const lf = document.getElementById('dor-finito');
+    diarioAggiorna(id, x => {
+      if (li) x.inizio = new Date(li).getTime();
+      const nuovo = la ? new Date(la).getTime() : null;
+      if (nuovo !== x.allarme){ x.allarme = nuovo; x.avvisato = false; }
+      if (lf && lf.value) x.finito = new Date(lf.value).getTime();
+    });
+    diarioControlla();
+  });
+  const ini = document.getElementById('dor-inizio'), al = document.getElementById('dor-allarme');
+  let prima = ini.value;
+  ini.addEventListener('change', () => {
+    if (al.value && prima && ini.value){
+      const delta = new Date(ini.value).getTime() - new Date(prima).getTime();
+      al.value = diaLocale(new Date(new Date(al.value).getTime() + delta));
+    }
+    prima = ini.value;
   });
 }
 function diarioIcs(id){
