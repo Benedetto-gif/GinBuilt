@@ -908,6 +908,10 @@ input:focus, select:focus, textarea:focus{
 .inf-abv-warn{grid-column:1/-1;}
 .inf-lim{grid-column:1/-1;font-size:13px;line-height:1.45;color:var(--ink-soft);}
 .inf-lim:empty{display:none;}
+.grad-perche{border:1px solid var(--line, #d9d2c3);border-radius:10px;padding:6px 10px;background:rgba(0,0,0,.02);}
+.grad-perche>summary{cursor:pointer;font-weight:600;color:var(--juniper-deep);font-size:13.5px;}
+.grad-perche .gp-body p{margin:6px 0;}
+.grad-perche .inf-opz>summary{cursor:pointer;font-weight:600;font-size:13px;margin-top:6px;}
 .inf-lim .k{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ochre);font-weight:700;margin-bottom:2px;}
 ul.prova3{margin:4px 0;padding-left:18px;}
 ul.prova3 li{margin:3px 0;}
@@ -2754,7 +2758,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 6 ottobre 2026, ore 20:15 · ricerca: la scheda si aggiorna da sola, contatore cliccabile</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 6 ottobre 2026, ore 20:25 · il perché di min e max della gradazione ora sta nel quadro delle variabili</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -3590,7 +3594,7 @@ function apriInfusi(nome){
   showTab('libreria');
   if (!byName[nome]) return;
   showDetail(nome, true);
-  const v = () => { const t = document.getElementById('inf-body'); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+  const v = () => { const t = document.getElementById('inf-cond'); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
   setTimeout(v, 80); setTimeout(v, 360);
 }
 
@@ -6317,6 +6321,21 @@ function wrapStepper(input, step, opts){
       '<details class="inf-f inf-how inf-opz"' + (window.prova3Aperta ? ' open' : '') + ' ontoggle="window.prova3Aperta=this.open"><summary class="k"><span class="opz-car">\u25b8</span>\ud83d\udd2c Per i curiosi: prova a tre gradazioni (campioni da ' + nf(Math.min(c.vol, 50), 0) + ' ml) <span class="inf-opz-hint">\u2014 per verificare di persona i limiti di ' + d.botanica + '</span></summary><div class="v">' + prova3Html(d, r, c, lim) + '</div></details>' +
       '</div></details>';
   }
+  // Il senso del minimo e del massimo di gradazione: sta nel quadro delle variabili, subito sotto la casella del grado.
+  function perchéGradHtml(d, r, c, av){
+    const E = r.est, lim = av.lim || estLimiti(d);
+    if (!E && !lim) return '';
+    const apri = av.html || window.perchéGradAperto;
+    const tit = E ? 'Perch\u00e9 min ' + E.a[0] + ' \u2013 max ' + E.a[1] + ' % vol?' : 'Perch\u00e9 questi limiti di gradazione?';
+    const p = (k, v) => '<p><strong>' + k + '</strong> ' + v + '</p>';
+    return '<details class="grad-perche"' + (apri ? ' open' : '') + ' ontoggle="window.perch\u00e9GradAperto=this.open"><summary>\u2753 ' + tit + '</summary><div class="gp-body">' +
+      p('Cosa vuoi estrarre:', MOLECOLE[d.botanica] || 'scheda delle molecole non ancora compilata.') +
+      p('L\u2019alcol fa da filtro.', 'Pi\u00f9 \u00e8 alto il grado, pi\u00f9 scioglie oli essenziali e resine; pi\u00f9 c\u2019\u00e8 acqua, pi\u00f9 passano zuccheri, tannini e sostanze amare. Il range consigliato \u00e8 il punto in cui per ' + d.botanica + ' passano le molecole utili e restano fuori le altre.' + (E && E.n ? ' ' + E.n : '')) +
+      (lim ? p('Sopra ' + lim.m + '% vol (massimo di sicurezza):', lim.altoTxt + '.') + p('Sotto ' + lim.basso + '% vol (minimo di sicurezza):', lim.bassoTxt + '.') +
+        (E ? '<p class="cond-hint">Tra il range consigliato e queste soglie l\u2019infuso riesce ancora, ma meno pulito: per questo compare solo una nota, non un allarme.</p>' : '') : '') +
+      '<details class="inf-opz"' + (window.prova3Aperta ? ' open' : '') + ' ontoggle="window.prova3Aperta=this.open"><summary>\ud83d\udd2c Verificalo di persona: prova a tre gradazioni (campioni da ' + nf(Math.min(c.vol, 50), 0) + ' ml)</summary>' + prova3Html(d, r, c, lim) + '</details>' +
+      '</div></details>';
+  }
   // Valori per preparare l'infuso: stanno nel quadro delle variabili, accanto ai campi che li fanno cambiare.
   function risHtml(d, r, c){
     const x = (k, v, full) => '<div class="ris' + (full ? ' full' : '') + '"><div class="k">' + k + '</div><div class="v">' + v + '</div></div>';
@@ -6346,13 +6365,10 @@ function wrapStepper(input, step, opts){
     if (matchAttuale && typeof schermoStato === 'function') schermoStato();
     if (!matchAttuale){ const w = $('inf-abv-warn'); if (w) w.innerHTML = ''; const li = $('inf-lim'); if (li) li.innerHTML = ''; iAbv.classList.remove('abv-fuori', 'abv-allarme'); }
     if (!body || !matchAttuale) return;
-    body.innerHTML = cardHtml(matchAttuale.d, matchAttuale.r, c);
-    // Chiusa di default; si apre da sola solo se c'e' un avviso da leggere.
-    const sch = body.querySelector('.inf-item');
-    if (sch && !sch.open && body.querySelector('.warn-box, .adj-box, .inf-cau')){ window.infSchedaAperta = true; sch.open = true; }
+    body.innerHTML = '';
     const av = gradAvviso(matchAttuale.d, matchAttuale.r, c), E = matchAttuale.r.est;
     if (abvRange) abvRange.textContent = E ? ('Consigliato: min ' + E.a[0] + ' \u2013 max ' + E.a[1] + ' % vol' + '') : '';
-    const li = $('inf-lim'); if (li) li.innerHTML = limitiEst(matchAttuale.d) ? '<span class="k">Limiti della gradazione</span> ' + limitiEst(matchAttuale.d) : '';
+    const li = $('inf-lim'); if (li) li.innerHTML = perchéGradHtml(matchAttuale.d, matchAttuale.r, c, av);
     const w = $('inf-abv-warn'); if (w) w.innerHTML = av.html;
     iAbv.classList.remove('abv-fuori', 'abv-allarme'); if (av.livello) iAbv.classList.add(av.livello);
   }
