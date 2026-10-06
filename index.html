@@ -919,6 +919,8 @@ ul.prova3 li{margin:3px 0;}
 .inf-ris .ris-t{grid-column:1/-1;font-size:11.5px;font-weight:800;color:var(--ochre);text-transform:uppercase;letter-spacing:.08em;}
 .inf-ris .ris{display:flex;flex-direction:column;gap:2px;}
 .inf-ris .ris.full{grid-column:1/-1;}
+.inf-ris .ris-prep{border-left:3px solid var(--ochre);padding:4px 0 4px 10px;background:color-mix(in srgb, var(--ochre) 8%, transparent);border-radius:4px;}
+.inf-ris .ris-prep .k{color:var(--ochre);}
 .inf-ris .ris .k{font-size:10.5px;color:var(--ink-faint);font-weight:650;text-transform:uppercase;letter-spacing:.06em;}
 .inf-ris .ris .v{font-size:14px;line-height:1.35;}
 .inf-ris .ris .v small{color:var(--ink-faint);font-size:12px;}
@@ -6263,7 +6265,7 @@ function wrapStepper(input, step, opts){
     return '<details class="inf-item" data-i="' + d.id + '"' + apriSubito + '><summary><span class="inf-nome"><strong>' + d.botanica + '</strong>' +
       '<span class="inf-sub">' + d.categoria + ' \u00b7 ' + (d.parte || '') + '</span></span><span class="inf-riass">' + riass + '</span></summary>' +
       '<div class="inf-corpo">' + cau +
-      '<div class="inf-f inf-how"><div class="k">Come prepararla e usarla</div><div class="v">' + comeUsare(d, r.stato, r.K, r.abvEff) + (r.est ? ' <em class="inf-est-nota">Estrazione: ' + r.est.n + '</em>' : '') + '</div></div>' +
+      (r.est ? '<div class="inf-f inf-how"><div class="k">Perch\u00e9 questa gradazione e questo tempo</div><div class="v">' + r.est.n + '</div></div>' : '') +
       '<div class="inf-f inf-how"><div class="k">\ud83e\uddea Molecole aromatiche da estrarre</div><div class="v">' + (MOLECOLE[d.botanica] || 'Scheda non ancora compilata.') + '</div></div>' +
       '<details class="inf-f inf-how inf-opz"' + (window.prova3Aperta ? ' open' : '') + ' ontoggle="window.prova3Aperta=this.open"><summary class="k"><span class="opz-car">\u25b8</span>\ud83d\udd2c Per i curiosi: prova a tre gradazioni (campioni da ' + nf(Math.min(c.vol, 50), 0) + ' ml) <span class="inf-opz-hint">\u2014 per verificare di persona i limiti di ' + d.botanica + '</span></summary><div class="v">' + prova3Html(d, r, c, lim) + '</div></details>' +
       '</div></details>';
@@ -6279,6 +6281,7 @@ function wrapStepper(input, step, opts){
       x('Alcol ' + c.abvS + '\u00b0', dil ? '<strong>' + nf(dil.alcG, 1) + ' g</strong> <small>(' + nf(dil.alcMl, 1) + ' ml)</small>' : '\u2014') +
       x('Acqua demineralizzata', dil ? '<strong>' + nf(dil.acquaG, 1) + ' g</strong> <small>(' + nf(dil.acquaMl, 1) + ' ml)</small>' : '\u2014') +
       x('Botanica', '<strong>' + infFmtG(r.g) + ' g</strong> <small>(' + infFmtG(r.gmin) + '\u2013' + infFmtG(r.gmax) + ' g)</small>') +
+      '<div class="ris full ris-prep"><div class="k">\u270b Come prepararla prima di metterla in infusione</div><div class="v">' + comeUsare(d, r.stato, r.K, r.abvEff) + '</div></div>' +
       x('Tempo di estrazione', '<strong>' + t + '</strong>') +
       x('Primo assaggio', a) +
       '<div class="wl-row" id="wl-row"></div>' +
