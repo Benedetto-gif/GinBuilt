@@ -873,6 +873,7 @@ input:focus, select:focus, textarea:focus{
 .inf-q-label input[type=text]{width:100%;}
 .controls label{font-size:11.5px;color:var(--ink-faint);display:flex;flex-direction:column;gap:6px;font-weight:650;text-transform:uppercase;letter-spacing:.06em;}
 .count-tag{font-size:13.5px;color:var(--ink-faint);margin-left:auto;font-variant-numeric:tabular-nums;}
+#count-tag{cursor:pointer;color:var(--juniper-deep);text-decoration:underline;text-underline-offset:3px;padding:4px 2px;}
 
 .cond-box{
   display:flex;align-items:flex-end;gap:18px;flex-wrap:wrap;
@@ -2753,7 +2754,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 6 ottobre 2026, ore 18:10 · preparazione infuso: limiti accanto al range, prova a tre gradazioni legata ai limiti della botanica</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 6 ottobre 2026, ore 20:15 · ricerca: la scheda si aggiorna da sola, contatore cliccabile</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -3712,7 +3713,7 @@ function assegnaUso(){
 function renderGrid(){
   assegnaUso();
   const filtered = elencoFiltrato();
-  countTag.textContent = filtered.length + ' / ' + MASTER.length + ' botaniche';
+  countTag.textContent = filtered.length + ' / ' + MASTER.length + ' botaniche ' + (filtered.length === 1 ? '→ apri la scheda' : filtered.length ? '↓ vedi' : '');
   grid.innerHTML = '';
   const aggiungi = d => {
     const card = document.createElement('div');
@@ -3858,7 +3859,41 @@ function chiudiDetail(){
   grid.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 
-[searchInput, fCategoria, fCarattere, fPotenza, fOrdine, fStile, fUso].forEach(el => el.addEventListener('input', renderGrid));
+[fCategoria, fCarattere, fPotenza, fOrdine, fStile, fUso].forEach(el => el.addEventListener('input', renderGrid));
+// Ricerca: se una scheda e' gia' aperta si richiude da sola (prima restava la vecchia scheda e la griglia nascosta);
+// se resta una sola botanica, o il nome scritto coincide con una botanica, la sua scheda si apre subito.
+function trovaUnica(){
+  const q = searchInput.value.trim().toLowerCase();
+  if (!q) return null;
+  const lista = elencoFiltrato();
+  if (lista.length === 1) return lista[0].botanica;
+  const esatta = lista.find(d => d.botanica.toLowerCase() === q);
+  return esatta ? esatta.botanica : null;
+}
+searchInput.addEventListener('input', () => {
+  const unica = trovaUnica();
+  if (currentDetailName && currentDetailName !== unica) chiudiDetailMuto();
+  renderGrid();
+  if (unica && currentDetailName !== unica) showDetail(unica, true);
+});
+function chiudiDetailMuto(){
+  // Come chiudiDetail, ma senza far scorrere la pagina mentre si sta scrivendo.
+  const gs = grid.scrollIntoView; grid.scrollIntoView = () => {};
+  try { chiudiDetail(); } finally { grid.scrollIntoView = gs; }
+}
+// Il contatore (es. 1 / 153) e' cliccabile: apre la scheda se il risultato e' uno solo, altrimenti porta all'elenco.
+countTag.setAttribute('role', 'button');
+countTag.tabIndex = 0;
+countTag.title = 'Vai alla scheda o all\u2019elenco';
+const vaiAiRisultati = () => {
+  const lista = elencoFiltrato();
+  if (lista.length === 1){ showDetail(lista[0].botanica, true); detail.scrollIntoView({behavior:'smooth', block:'start'}); return; }
+  if (currentDetailName) chiudiDetailMuto();
+  grid.scrollIntoView({behavior:'smooth', block:'start'});
+};
+countTag.addEventListener('click', vaiAiRisultati);
+countTag.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); vaiAiRisultati(); } });
+searchInput.addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); searchInput.blur(); vaiAiRisultati(); } });
 // ---------- Ricerca della botanica a voce ----------
 // Usa il riconoscimento vocale del browser (italiano). Se il nome detto corrisponde bene a una botanica,
 // la scheda si apre da sola; altrimenti l'elenco resta filtrato su quello che \u00e8 stato capito.
