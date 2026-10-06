@@ -375,7 +375,6 @@ nav.tabs{display:none !important;}
   border:1px solid var(--line);background:var(--surface);box-shadow:0 12px 36px rgba(0,0,0,.25);display:grid;grid-template-columns:1fr 1fr;grid-auto-flow:dense;gap:8px;}
 .menu-pop[hidden]{display:none;}
 .menu-pop{overscroll-behavior:contain;-webkit-overflow-scrolling:touch;}
-html.menu-aperto, html.menu-aperto body{overflow:hidden;overscroll-behavior:none;}
 .menu-group-label{grid-column:1/-1;margin:6px 2px 0;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);}
 .menu-group-label:first-of-type{margin-top:2px;}
 .menu-tile{--h:#2F7259;display:flex;flex-direction:column;justify-content:space-between;gap:10px;min-height:76px;padding:12px;border-radius:16px;cursor:pointer;text-align:left;
@@ -450,7 +449,7 @@ nav.tabs button.active{
   nav.tabs button:not(.active):hover{color:var(--ink);background:var(--paper-2);}
 }
 
-section.panel{display:none;padding-top:34px;}
+section.panel{display:none;padding-top:34px;padding-bottom:calc(40px + env(safe-area-inset-bottom));}
 section.panel.active{display:block;animation:panelIn .34s var(--ease) both;}
 @keyframes panelIn{
   from{opacity:0;transform:translate3d(0,10px,0);}
@@ -2718,7 +2717,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 00:10 · diluizioni dei tre assaggi corrette (1:1 e 1:2)</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 00:25 · pagine scorrevoli fino all’ultimo riquadro</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
