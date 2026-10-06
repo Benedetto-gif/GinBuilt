@@ -385,11 +385,18 @@ nav.tabs{display:none !important;}
 .menu-tile:active{transform:scale(.97);}
 .menu-tile .mt-badge{margin-left:auto;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--h);color:#fff;}
 .menu-tile .mt-badge:empty{display:none;}
-.home-diario{margin:0 0 16px;padding:14px 16px;border-radius:var(--r-lg);background:var(--surface);border:1px solid var(--line);box-shadow:var(--sh-1);cursor:pointer;}
+.home-diario{margin:0 0 16px;padding:0;border-radius:var(--r-lg);border:1.5px solid #B8921F;box-shadow:var(--sh-1);
+  background:var(--surface);background:color-mix(in srgb, #B8921F 14%, var(--surface));}
 .home-diario[hidden]{display:none;}
-.home-diario h3{margin:0 0 8px;font-size:15px;display:flex;align-items:center;gap:8px;}
-.home-diario h3 .hd-go{margin-left:auto;font-size:13px;font-weight:800;color:var(--juniper-deep);}
-.home-diario ul{list-style:none;margin:0;padding:0;display:grid;gap:6px;}
+.home-diario summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:13px 16px;font-weight:700;font-size:15px;}
+.home-diario summary::-webkit-details-marker{display:none;}
+.home-diario .hd-n{min-width:24px;padding:2px 8px;border-radius:999px;background:#B8921F;color:#fff;font-size:12.5px;text-align:center;}
+.home-diario .hd-due{font-size:12.5px;font-weight:800;color:var(--ochre);}
+.home-diario .hd-car{margin-left:auto;transition:transform .2s;}
+.home-diario[open] .hd-car{transform:rotate(180deg);}
+.home-diario.hd-allerta{border-color:var(--ochre);box-shadow:0 0 0 3px color-mix(in srgb, var(--ochre) 25%, transparent), var(--sh-1);}
+.home-diario ul{list-style:none;margin:0;padding:0 16px 4px;display:grid;gap:6px;}
+.home-diario .hd-apri{margin:8px 16px 14px;}
 .home-diario li{display:flex;justify-content:space-between;gap:10px;font-size:14px;padding-top:6px;border-top:1px solid var(--line);}
 .home-diario li:first-child{border-top:0;padding-top:0;}
 .home-diario li .hd-t{color:var(--ink-soft);white-space:nowrap;font-size:13px;}
@@ -1594,7 +1601,7 @@ footer.note{
       <span class="hero-go">Leggi →</span>
     </div>
 
-    <div class="home-diario" id="home-diario" hidden role="button" tabindex="0" aria-label="Apri il Diario degli infusi"></div>
+    <details class="home-diario" id="home-diario" hidden></details>
 
     <p class="home-path-label">Il percorso in 3 passi, dalla botanica al bicchiere:</p>
     <div class="home-grid">
@@ -2791,7 +2798,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 6 ottobre 2026, ore 16:30 · sottrazione: il giudizio è lo stile, non l\'equilibrio</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 6 ottobre 2026, ore 16:40 · infusi in corso in prima pagina: chiuso ed evidenziato</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -6422,14 +6429,18 @@ function diarioRiepilogo(lista){
     const h = (t - ora) / 3600000;
     return 'tra ' + (h < 1 ? Math.max(1, Math.round(h * 60)) + ' min' : diaDurata(h));
   };
-  box.innerHTML = '<h3>\ud83d\udcd3 Infusi in corso (' + inCorso.length + ')<span class="hd-go">Apri il diario \u2192</span></h3><ul>' +
-    inCorso.map(v => { const q = quando(v); return '<li class="' + (q.indexOf('\u23f0') === 0 || q === 'pronto' ? 'scaduto' : '') + '"><span>' + diaEsc(v.tipo) + '</span><span class="hd-t">' + q + '</span></li>'; }).join('') + '</ul>';
+  const righe = inCorso.map(v => { const q = quando(v); return {v, q, pronto: q.indexOf('\u23f0') === 0 || q === 'pronto'}; });
+  const nPronti = righe.filter(r => r.pronto).length;
+  // Chiuso di default (si apre toccando il titolo), ma ben visibile; resta aperto o chiuso come l'hai lasciato.
+  box.classList.toggle('hd-allerta', nPronti > 0);
+  box.innerHTML = '<summary><span class="hd-tit">\ud83d\udcd3 Infusi in corso</span><span class="hd-n">' + inCorso.length + '</span>' +
+    (nPronti ? '<span class="hd-due">\u23f0 ' + nPronti + ' da assaggiare</span>' : '') + '<span class="hd-car" aria-hidden="true">\u25be</span></summary>' +
+    '<ul>' + righe.map(r => '<li class="' + (r.pronto ? 'scaduto' : '') + '"><span>' + diaEsc(r.v.tipo) + '</span><span class="hd-t">' + r.q + '</span></li>').join('') + '</ul>' +
+    '<button type="button" class="ghost-btn hd-apri" onclick="apriDiario()">Apri il diario \u2192</button>';
   box.hidden = false;
 }
 (function(){
   const box = document.getElementById('home-diario'); if (!box) return;
-  box.addEventListener('click', () => apriDiario());
-  box.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); apriDiario(); } });
 })();
 function diarioRender(){
   diarioRiepilogo(diarioCarica());
