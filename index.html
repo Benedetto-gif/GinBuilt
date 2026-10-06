@@ -3002,10 +3002,14 @@ function baricentro(vals){
   const P = _posRadar(); let x = 0, y = 0, tot = 0;
   vals.forEach((v,i) => { const a = -Math.PI/2 + P[i]*Math.PI/4; x += v*Math.cos(a); y += v*Math.sin(a); tot += v; });
   const len = Math.hypot(x, y);
-  // le note che restano dopo la sottrazione, dalla piu' forte: sono loro a dire dove pende il profilo
-  const net = vals.map((v,i) => v - vals[OPPOSTA_RADAR[i]]), mx = Math.max.apply(null, net);
-  const note = net.map((v,i) => [i,v]).filter(z => z[1] > 0 && z[1] >= mx * 0.4).sort((a,b) => b[1]-a[1]).slice(0,2).map(z => ASSI8[z[0]].toLowerCase());
-  return { x, y, tot, pct: tot ? Math.round(len / tot * 100) : 0, ang: Math.atan2(y, x), note };
+  // Le note che danno il nome alla direzione: quelle rimaste dopo la sottrazione, pesate per quanto
+  // spingono nella direzione del baricentro (cosi' i nomi e il verdetto vengono dalla stessa misura).
+  const ang = Math.atan2(y, x);
+  const net = vals.map((v,i) => v - vals[OPPOSTA_RADAR[i]]);
+  const spinta = net.map((v,i) => { const a = -Math.PI/2 + P[i]*Math.PI/4; return [i, v > 0 ? v * Math.cos(a - ang) : 0]; });
+  const mx = Math.max.apply(null, spinta.map(z => z[1]));
+  const note = spinta.filter(z => z[1] > 0 && z[1] >= mx * 0.5).sort((a,b) => b[1]-a[1]).slice(0,2).map(z => ASSI8[z[0]].toLowerCase());
+  return { x, y, tot, pct: tot ? Math.round(len / tot * 100) : 0, ang, note };
 }
 function direzioneTesto(b){
   if (b.pct < 8 || !b.note.length) return 'nessuna nota in particolare';
@@ -3076,7 +3080,7 @@ function radarSVG(serie, size, opts){
   const bR = baricentro(insieme);
   if (opts.insieme && piene.length > 1) gS += freccia(bR, 'var(--ink)', false);
   let nota = '<div class="radar-nota r-sottr">In sottrazione ogni nota toglie la sua opposta: al centro il profilo \u00e8 neutro, un braccio lungo indica un carattere netto. Lo squilibrio non \u00e8 un difetto: \u00e8 lo stile. ';
-  const rifV = opts.stile ? profiloRiferimento(opts.stile, opts.conBase) : null;
+  const rifV = opts.rifVals || (opts.stile ? profiloRiferimento(opts.stile, opts.conBase) : null);
   if (rifV){
     const bT = baricentro(rifV);
     gS += freccia(bT, 'var(--ink-soft)', true);
@@ -3090,13 +3094,14 @@ function radarSVG(serie, size, opts){
       esito = d <= 25 ? 'in stile' : d <= 60 ? 'in parte in stile' : 'fuori stile';
       forza = bR.pct < bT.pct * 0.6 ? ', con un carattere meno marcato del riferimento' : (bR.pct > bT.pct * 1.4 && bR.pct - bT.pct > 10) ? ', con un carattere pi\u00f9 marcato del riferimento' : '';
     }
-    nota += '<br><strong>' + opts.stile + '</strong> pende verso <strong>' + direzioneTesto(bT) + '</strong> (carattere ' + carattereTesto(bT.pct) + ', ' + bT.pct + ' %, cerchio vuoto). ' +
+    nota += '<br><strong>' + opts.stile + (opts.rifVals ? '</strong> (la ricetta proposta dallo stile, con le stesse dosi)' : '</strong>') + ' pende verso <strong>' + direzioneTesto(bT) + '</strong> (carattere ' + carattereTesto(bT.pct) + ', ' + bT.pct + ' %, cerchio vuoto). ' +
       (opts.insieme ? 'La combinazione' : 'La ricetta') + ' pende verso <strong>' + direzioneTesto(bR) + '</strong> (' + carattereTesto(bR.pct) + ', ' + bR.pct + ' %' + (opts.insieme && piene.length > 1 ? ', punto scuro' : '') + ')' +
       ': <strong>' + esito + '</strong>' + (d > 25 ? ' (scarto di ' + Math.round(d) + '\u00b0)' : '') + forza + '.';
   } else {
     nota += sq.map(x => (sq.length > 1 && x.l ? '<strong>' + x.l + '</strong>' : 'Il profilo') + ' pende verso ' + direzioneTesto(baricentro((serie.find(se => (se.label||'') === x.l) || serie[0]).vals)) + ' (carattere ' + carattereTesto(x.pct) + ', ' + x.pct + ' %)').join(' \u00b7 ') + '.';
     if (opts.insieme && piene.length > 1) nota += ' <strong>Insieme</strong> (punto scuro) pendono verso ' + direzioneTesto(bR) + ' (' + carattereTesto(bR.pct) + ', ' + bR.pct + ' %).';
   }
+  if (rifV) nota += ' <em>Stima da tarare con gli assaggi.</em>';
   nota += '</div>';
   return '<div class="radar-wrap"><button type="button" class="ghost-btn radar-sottr-btn" onclick="toggleSottrazione()"><span class="r-norm">\u2296 Vedi in sottrazione</span><span class="r-sottr">\u2295 Vedi il profilo intero</span></button>' +
     '<svg class="radar8" viewBox="-22 0 '+(size+44)+' '+size+'" role="img" aria-label="Profilo sensoriale. '+desc.replace(/"/g,'')+'">'+g+'<g class="r-norm">'+gN+'</g><g class="r-sottr">'+gS+'</g></svg>' + nota + '</div>';
@@ -4386,8 +4391,21 @@ function renderSummary(){
       if (!window.radarConBase && FONDAMENTALI[sel.value]) return;
       elenco.push({n: sel.value, w: Math.max(0.0001, pesoRiga(sel, doseLibreria(sel.value) ?? 0))});
     });
+    // Ricetta di riferimento dello stile: la fotografia delle scelte proposte dallo stile appena caricato,
+    // con le stesse dosi per ruolo. Il confronto con la ricetta e' cosi' alla pari (stessi pesi, stesse regole).
+    if (window._rifStile === undefined || window._rifStile.nome !== currentStyleName){
+      const vr = new Set(), el = [];
+      [...selects].forEach(sel => {
+        if (vr.has(sel.value) || !PROFILO8[sel.value]) return; vr.add(sel.value);
+        el.push({n: sel.value, fond: !!FONDAMENTALI[sel.value], w: Math.max(0.0001, pesoRiga(sel, doseLibreria(sel.value) ?? 0))});
+      });
+      window._rifStile = { nome: currentStyleName, elenco: el };
+    }
+    const elRif = (currentStyleName !== 'Personalizzato' && window._rifStile.nome === currentStyleName)
+      ? window._rifStile.elenco.filter(x => window.radarConBase || !x.fond).map(x => ({n: x.n, w: x.w})) : [];
     const oreIns = window.radarInsieme > 0 ? window.radarInsieme : 0;
     if (oreIns) elenco.forEach(x => { x.m = moltEstrazione(x.n, oreIns); x.w = Math.max(0.0001, x.w * x.m); });
+    if (oreIns) elRif.forEach(x => { x.w = Math.max(0.0001, x.w * moltEstrazione(x.n, oreIns)); });
     const insBox = '<div class="radar-insieme"><label><input type="checkbox" class="ins-on"' + (oreIns ? ' checked' : '') + '> Macerano tutte insieme per</label> <input type="number" class="ins-ore" min="0.5" step="0.5" value="' + (window.radarInsieme || 24) + '"> ore</div>';
     const insNota = oreIns ? '<div class="radar-nota">Se macerano tutte insieme per ' + oreIns + ' h, la quota estratta rispetto al tempo consigliato è: ' +
       elenco.slice().sort((a,b) => a.m - b.m).map(x => '<strong>' + x.n + '</strong> ' + Math.round(Math.min(1.25, x.m) / 1.25 * 100) + '%').join(', ') +
@@ -4403,7 +4421,7 @@ function renderSummary(){
     const mx = Math.max.apply(null, mediaDi('tutto')) || 1;      // stessa scala per tutti i tempi, cosi' si confrontano
     const vals = mediaDi(window.radarFase).map(x => Math.min(5, Math.round(x / mx * 50) / 10));
     box.innerHTML = '<div class="radar-box"><div class="radar-title">Profilo della ricetta' + (window.radarConBase ? ' (con le base)' : ' (senza le base)') + '</div>' + fasiBtn + btnBase + insBox +
-      radarSVG([{vals:vals,color:'var(--juniper)',label:'Ricetta'}], 280, {stile: currentStyleName !== 'Personalizzato' ? currentStyleName : null, conBase: !!window.radarConBase}) + insNota +
+      radarSVG([{vals:vals,color:'var(--juniper)',label:'Ricetta'}], 280, {stile: elRif.length ? currentStyleName : null, rifVals: elRif.length ? ASSI8.map((_,i) => elRif.reduce((a,x) => a + valFase(x.n, window.radarFase)[i] * x.w, 0)) : null}) + insNota +
       ordineNoteHtml(elenco) +
       (FASE_NOTA[window.radarFase] ? '<div class="radar-nota">' + FASE_NOTA[window.radarFase] + '</div>' : '') +
       '<div class="radar-nota">Mostra la forma del profilo (quali note prevalgono), non l\'intensità. Pesato sulle quantità reali; stima orientativa da validare all\'assaggio.</div></div>';
