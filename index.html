@@ -877,6 +877,11 @@ input:focus, select:focus, textarea:focus{
 .cond-box label{display:flex;flex-direction:column;gap:6px;font-size:11px;color:var(--ink-faint);font-weight:650;text-transform:uppercase;letter-spacing:.06em;}
 .cond-box input{width:92px;padding:9px 12px;}
 .cond-box label #inf-abv-range, .cond-box label #lib-abv-range{display:block;font-size:11px;color:var(--ochre);text-transform:none;font-weight:650;letter-spacing:0;margin-top:2px;}
+.inf-abv-warn{grid-column:1/-1;}
+.inf-abv-warn:empty{display:none;}
+.inf-abv-warn .warn-box, .inf-abv-warn .adj-box{margin-top:0;}
+.cond-box input.abv-fuori{border-color:var(--tint-info-line);box-shadow:0 0 0 2px var(--tint-info-line);}
+.cond-box input.abv-allarme{border-color:var(--tint-warn-line);box-shadow:0 0 0 2px var(--tint-warn-line);}
 .inf-ris{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px;border-top:1px dashed var(--line, rgba(0,0,0,.15));padding-top:10px;margin-top:2px;}
 .inf-ris .cond-hint{grid-column:1/-1;}
 .inf-ris .ris-t{grid-column:1/-1;font-size:11.5px;font-weight:800;color:var(--ochre);text-transform:uppercase;letter-spacing:.08em;}
@@ -1803,6 +1808,7 @@ footer.note{
       <label>Alcol di partenza (°)<input type="number" id="inf-abvS" value="96" step="0.5" min="40" max="96"></label>
       <label>Grado di estrazione desiderato (%)<input type="number" id="inf-abv" placeholder="consigliato" step="1" min="20" max="96"><span class="inf-sub" id="inf-abv-range"></span></label>
       <label>Volume di infuso da ottenere (ml)<input type="number" id="inf-vol" value="100" step="25" min="10"></label>
+      <div class="inf-abv-warn" id="inf-abv-warn"></div>
       <input type="hidden" id="inf-mod" value="tempo">
       <label>Stato della botanica
         <select id="inf-stato"><option value="ref">Come da libreria</option><option value="secco">Secca</option><option value="fresco">Fresca</option></select>
@@ -6013,17 +6019,26 @@ function wrapStepper(input, step, opts){
     const cau = d.edibile === 'S\u00ec, con cautela' ? '<span class="inf-cau">\u26a0\ufe0f ' + (d.sicurezza || 'usare con cautela') + '</span>' : '';
     const riass = r.est ? estAbvTxt(r.est.a) + ' \u00b7 ' + estTempoTxt(r.est.t) : t;
     const lim = estLimiti(d);
-    let gradWarn = '';
+    return cardCorpo(d, r, c, g, t, a, cau, riass, lim);
+  }
+  // Avviso sul grado scelto: sta nel quadro delle condizioni, subito sotto le caselle.
+  function gradAvviso(d, r, c){
+    const lim = estLimiti(d);
+    let gradWarn = '', livello = '';
     if (c.abv !== null && lim){
       if (c.abv > lim.m) gradWarn = '<div class="warn-box">\u26a0\ufe0f Hai impostato ' + c.abv + '% vol, sopra la soglia di sicurezza di ' + lim.m + '% vol per ' + d.botanica + ': ' + lim.altoTxt + '.</div>';
       else if (c.abv < lim.basso) gradWarn = '<div class="warn-box">\u26a0\ufe0f Hai impostato ' + c.abv + '% vol, sotto la soglia minima di ' + lim.basso + '% vol per ' + d.botanica + ': ' + lim.bassoTxt + '.</div>';
-      else if (r.est && (c.abv < r.est.a[0] || c.abv > r.est.a[1])) gradWarn = '<div class="adj-box">\u2139\ufe0f Hai impostato ' + c.abv + '% vol, fuori dal range consigliato in erbario (' + estAbvTxt(r.est.a) + ') per ' + d.botanica + ': resta entro le soglie di sicurezza, ma non \u00e8 il grado ottimale.</div>';
+      else if (r.est && (c.abv < r.est.a[0] || c.abv > r.est.a[1])) gradWarn = '<div class="adj-box">\u2139\ufe0f Hai impostato ' + c.abv + '% vol, ' + (c.abv < r.est.a[0] ? 'sotto il minimo' : 'sopra il massimo') + ' consigliato in erbario (' + estAbvTxt(r.est.a) + ') per ' + d.botanica + ': resta entro le soglie di sicurezza, ma non \u00e8 il grado ottimale.</div>';
+      livello = gradWarn.indexOf('warn-box') > 0 ? 'abv-allarme' : (gradWarn ? 'abv-fuori' : '');
     }
+    return { html: gradWarn, livello, lim };
+  }
+  function cardCorpo(d, r, c, g, t, a, cau, riass, lim){
     const f = (k, v) => '<div class="inf-f"><div class="k">' + k + '</div><div class="v">' + v + '</div></div>';
     const apriSubito = ' open';
     return '<details class="inf-item" data-i="' + d.id + '"' + apriSubito + '><summary><span class="inf-nome"><strong>' + d.botanica + '</strong>' +
       '<span class="inf-sub">' + d.categoria + ' \u00b7 ' + (d.parte || '') + '</span></span><span class="inf-riass">' + riass + '</span></summary>' +
-      '<div class="inf-corpo">' + cau + gradWarn +
+      '<div class="inf-corpo">' + cau +
       '<div class="inf-f inf-how"><div class="k">\ud83e\uddea Molecole aromatiche da estrarre</div><div class="v">' + (MOLECOLE[d.botanica] || 'Scheda non ancora compilata.') + '</div></div>' +
       '<div class="inf-f inf-how"><div class="k">Prova a tre gradazioni (campioni identici da ' + nf(Math.min(c.vol, 50), 0) + ' ml)</div><div class="v">' +
         '<p style="margin:0 0 6px;">Prepara i tre campioni e assaggiali: non serve indovinare la gradazione giusta a tavolino, basta sentire come cambia l\u2019estratto. Salendo di grado inizi a percepire ' + (lim ? ('quello che succede oltre ' + lim.m + '% vol \u2014 ' + lim.altoTxt) : 'note pesanti, resinose o amare') + '; scendendo, invece, ' + (lim ? ('quello che succede sotto ' + lim.basso + '% vol \u2014 ' + lim.bassoTxt) : 'resta poco aroma e prevale l\u2019acqua') + '. Il campione che ti piace di pi\u00f9 \u00e8 la gradazione giusta per questa botanica: non \u00e8 sempre quello pi\u00f9 alto.</p>' +
@@ -6057,12 +6072,16 @@ function wrapStepper(input, step, opts){
     if (ris) ris.innerHTML = matchAttuale ? risHtml(matchAttuale.d, matchAttuale.r, c)
       : '<span class="cond-hint">Apri una botanica: qui compaiono diluizione, dose e tempi, che cambiano con i tasti \u2212 / +.</span>';
     if (matchAttuale && typeof schermoStato === 'function') schermoStato();
+    if (!matchAttuale){ const w = $('inf-abv-warn'); if (w) w.innerHTML = ''; iAbv.classList.remove('abv-fuori', 'abv-allarme'); }
     if (!body || !matchAttuale) return;
     body.innerHTML = cardHtml(matchAttuale.d, matchAttuale.r, c);
     // Chiusa di default; si apre da sola solo se c'e' un avviso da leggere.
     const sch = $('inf-sch');
     if (sch && !sch.open && body.querySelector('.warn-box, .adj-box, .inf-cau')){ window.infSchedaAperta = true; sch.open = true; }
-    if (abvRange) abvRange.textContent = matchAttuale.r.est ? ('Consigliato in erbario: ' + estAbvTxt(matchAttuale.r.est.a)) : '';
+    const av = gradAvviso(matchAttuale.d, matchAttuale.r, c), E = matchAttuale.r.est;
+    if (abvRange) abvRange.textContent = E ? ('Consigliato: min ' + E.a[0] + ' \u2013 max ' + E.a[1] + ' % vol' + (av.lim ? ' \u00b7 soglie di sicurezza ' + av.lim.basso + '\u2013' + av.lim.m : '')) : '';
+    const w = $('inf-abv-warn'); if (w) w.innerHTML = av.html;
+    iAbv.classList.remove('abv-fuori', 'abv-allarme'); if (av.livello) iAbv.classList.add(av.livello);
   }
   window.renderInfusoScheda = calcola;
   window.diarioNuovo = function(){
