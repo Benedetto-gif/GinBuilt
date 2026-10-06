@@ -871,6 +871,14 @@ input:focus, select:focus, textarea:focus{
 .cond-box label{display:flex;flex-direction:column;gap:6px;font-size:11px;color:var(--ink-faint);font-weight:650;text-transform:uppercase;letter-spacing:.06em;}
 .cond-box input{width:92px;padding:9px 12px;}
 .cond-box label #inf-abv-range, .cond-box label #lib-abv-range{display:block;font-size:11px;color:var(--ochre);text-transform:none;font-weight:650;letter-spacing:0;margin-top:2px;}
+.inf-ris{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px;border-top:1px dashed var(--line, rgba(0,0,0,.15));padding-top:10px;margin-top:2px;}
+.inf-ris .cond-hint{grid-column:1/-1;}
+.inf-ris .ris-t{grid-column:1/-1;font-size:11.5px;font-weight:800;color:var(--ochre);text-transform:uppercase;letter-spacing:.08em;}
+.inf-ris .ris{display:flex;flex-direction:column;gap:2px;}
+.inf-ris .ris.full{grid-column:1/-1;}
+.inf-ris .ris .k{font-size:10.5px;color:var(--ink-faint);font-weight:650;text-transform:uppercase;letter-spacing:.06em;}
+.inf-ris .ris .v{font-size:14px;line-height:1.35;}
+.inf-ris .ris .v small{color:var(--ink-faint);font-size:12px;}
 .cond-hint{font-size:12.5px;color:var(--ink-faint);flex:1;min-width:210px;align-self:center;}
 
 /* Riquadri informativi */
@@ -1773,10 +1781,10 @@ footer.note{
       <label>Grado di estrazione desiderato (%)<input type="number" id="inf-abv" placeholder="consigliato" step="1" min="20" max="96"><span class="inf-sub" id="inf-abv-range"></span></label>
       <label>Volume di infuso da ottenere (ml)<input type="number" id="inf-vol" value="100" step="25" min="10"></label>
       <input type="hidden" id="inf-mod" value="tempo">
-      <label>Stato delle botaniche
-        <select id="inf-stato"><option value="ref">Come da libreria</option><option value="secco">Tutte secche</option><option value="fresco">Tutte fresche</option></select>
+      <label>Stato della botanica
+        <select id="inf-stato"><option value="ref">Come da libreria</option><option value="secco">Secca</option><option value="fresco">Fresca</option></select>
       </label>
-      <span class="cond-hint">Valgono per la scheda della botanica aperta: con i tasti − / + vedi come cambiano dose, tempo e diluizione, grado dopo grado.</span>
+      <div class="inf-ris" id="inf-ris"><span class="cond-hint">Apri una botanica: qui compaiono diluizione, dose e tempi, che cambiano con i tasti − / +.</span></div>
     </div>
     <div id="inf-info"></div>
     <div class="grid" id="grid"></div>
@@ -3609,6 +3617,7 @@ function chiudiDetail(){
   libVolInput.value = 100;
   const libAbvRange = document.getElementById('inf-abv-range');
   if (libAbvRange) libAbvRange.textContent = '';
+  if (window.renderInfusoScheda) window.renderInfusoScheda();
   grid.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 
@@ -5913,23 +5922,36 @@ function wrapStepper(input, step, opts){
     return '<details class="inf-item" data-i="' + d.id + '"' + apriSubito + '><summary><span class="inf-nome"><strong>' + d.botanica + '</strong>' +
       '<span class="inf-sub">' + d.categoria + ' \u00b7 ' + (d.parte || '') + '</span></span><span class="inf-riass">' + riass + '</span></summary>' +
       '<div class="inf-corpo">' + cau + gradWarn +
-      f('Stato', selStato(d, r.stato)) +
-      f('Gradazione consigliata', r.est ? '<strong>' + estAbvTxt(r.est.a) + '</strong>' : '\u2014') +
-      f('Diluizione (alcol 96\u00b0 + acqua)', r.dil ? '<strong>' + nf(r.dil.alcMl, 1) + ' ml</strong> di alcol + <strong>' + nf(r.dil.acquaMl, 1) + ' ml</strong> di acqua (' + nf(r.dil.acquaG, 1) + ' g)' : '\u2014') +
-      f('Quantit\u00e0 di botanica', g) + f('Tempo di estrazione', t) + f('Primo assaggio', a) +
       '<div class="inf-f inf-how"><div class="k">\ud83e\uddea Molecole aromatiche da estrarre</div><div class="v">' + (MOLECOLE[d.botanica] || 'Scheda non ancora compilata.') + '</div></div>' +
       '<div class="inf-f inf-how"><div class="k">Prova a tre gradazioni (campioni identici da ' + nf(Math.min(c.vol, 50), 0) + ' ml)</div><div class="v">' +
         '<p style="margin:0 0 6px;">Prepara i tre campioni e assaggiali: non serve indovinare la gradazione giusta a tavolino, basta sentire come cambia l\u2019estratto. Salendo di grado inizi a percepire ' + (lim ? ('quello che succede oltre ' + lim.m + '% vol \u2014 ' + lim.altoTxt) : 'note pesanti, resinose o amare') + '; scendendo, invece, ' + (lim ? ('quello che succede sotto ' + lim.basso + '% vol \u2014 ' + lim.bassoTxt) : 'resta poco aroma e prevale l\u2019acqua') + '. Il campione che ti piace di pi\u00f9 \u00e8 la gradazione giusta per questa botanica: non \u00e8 sempre quello pi\u00f9 alto.</p>' +
-        [40, 60, 80].map(gr => { const x = diluizione(gr, Math.min(c.vol, 50), c.abvS); return '<strong>' + gr + '%</strong>: ' + nf(x.alcMl, 1) + ' ml alcol ' + c.abvS + '\u00b0 + ' + nf(x.acquaG, 1) + ' g acqua'; }).join(' \u00b7 ') + '</div></div>' +
+        [40, 60, 80].map(gr => { const x = diluizione(gr, Math.min(c.vol, 50), c.abvS); return '<strong>' + gr + '%</strong>: ' + nf(x.alcMl, 1) + ' ml (' + nf(x.alcG, 1) + ' g) alcol ' + c.abvS + '\u00b0 + ' + nf(x.acquaMl, 1) + ' ml (' + nf(x.acquaG, 1) + ' g) acqua'; }).join(' \u00b7 ') + '</div></div>' +
       '<div class="inf-f inf-how"><div class="k">Limiti della gradazione</div><div class="v">' + limitiEst(d) + '</div></div>' +
       '<div class="inf-f inf-how"><div class="k">Come prepararla e usarla</div><div class="v">' + comeUsare(d, r.stato, r.K, r.abvEff) + (r.est ? ' <em class="inf-est-nota">Estrazione: ' + r.est.n + '</em>' : '') + '</div></div>' +
       '</div></details>';
+  }
+  // Valori per preparare l'infuso: stanno nel quadro delle variabili, accanto ai campi che li fanno cambiare.
+  function risHtml(d, r, c){
+    const x = (k, v, full) => '<div class="ris' + (full ? ' full' : '') + '"><div class="k">' + k + '</div><div class="v">' + v + '</div></div>';
+    const t = r.tmin === null ? (r.tempoRef || '\u2014') : infRange(r.tmin, r.tmax);
+    const a = r.assaggio === null ? '\u2014' : (r.assaggio >= 72 ? infFmt(r.assaggio / 24) + ' giorni' : infFmt(r.assaggio) + ' h');
+    const gr = c.abv !== null ? c.abv : Math.round(r.abvEff * 10) / 10;
+    const dil = r.dil;
+    return '<div class="ris-t">Per ' + nf(c.vol, 0) + ' ml di ' + d.botanica + ' a ' + nf(gr, 1) + '% vol' + (c.abv === null ? ' (consigliato)' : '') + ' \u00b7 ' + (r.stato === 'fresco' ? 'fresca' : 'secca') + '</div>' +
+      x('Alcol ' + c.abvS + '\u00b0', dil ? '<strong>' + nf(dil.alcG, 1) + ' g</strong> <small>(' + nf(dil.alcMl, 1) + ' ml)</small>' : '\u2014') +
+      x('Acqua demineralizzata', dil ? '<strong>' + nf(dil.acquaG, 1) + ' g</strong> <small>(' + nf(dil.acquaMl, 1) + ' ml)</small>' : '\u2014') +
+      x('Botanica', '<strong>' + infFmtG(r.g) + ' g</strong> <small>(' + infFmtG(r.gmin) + '\u2013' + infFmtG(r.gmax) + ' g)</small>') +
+      x('Tempo di estrazione', '<strong>' + t + '</strong>') +
+      x('Primo assaggio', a);
   }
   // La scheda dell'infuso e' quella della botanica aperta nella pagina Botaniche.
   let matchAttuale = null;
   function renderSelezione(c){
     const body = $('inf-body');
     matchAttuale = currentDetailName ? (visibili.find(x => x.d.botanica === currentDetailName) || null) : null;
+    const ris = $('inf-ris');
+    if (ris) ris.innerHTML = matchAttuale ? risHtml(matchAttuale.d, matchAttuale.r, c)
+      : '<span class="cond-hint">Apri una botanica: qui compaiono diluizione, dose e tempi, che cambiano con i tasti \u2212 / +.</span>';
     if (!body || !matchAttuale) return;
     body.innerHTML = cardHtml(matchAttuale.d, matchAttuale.r, c);
     if (abvRange) abvRange.textContent = matchAttuale.r.est ? ('Consigliato in erbario: ' + estAbvTxt(matchAttuale.r.est.a)) : '';
@@ -5952,7 +5974,7 @@ function wrapStepper(input, step, opts){
       ' \u00b7 ' + c.temp + ' \u00b0C \u00b7 alcol di partenza ' + c.abvS + '% vol \u00b7 grado di estrazione ' + (c.abv !== null ? c.abv + '% vol' : '(consigliato, ' + (r.est ? estAbvTxt(r.est.a) : '\u2014') + ')') + ' \u00b7 ' + c.vol + ' ml di infuso' +
       '</div><table><tbody>' +
       '<tr><th>Gradazione consigliata</th><td>' + (r.est ? estAbvTxt(r.est.a) : '\u2014') + '</td></tr>' +
-      '<tr><th>Diluizione (alcol ' + c.abvS + '\u00b0 + acqua)</th><td>' + (r.dil ? nf(r.dil.alcMl, 1) + ' ml di alcol + ' + nf(r.dil.acquaMl, 1) + ' ml di acqua (' + nf(r.dil.acquaG, 1) + ' g)' : '\u2014') + '</td></tr>' +
+      '<tr><th>Diluizione (alcol ' + c.abvS + '\u00b0 + acqua)</th><td>' + (r.dil ? nf(r.dil.alcG, 1) + ' g di alcol (' + nf(r.dil.alcMl, 1) + ' ml) + ' + nf(r.dil.acquaG, 1) + ' g di acqua (' + nf(r.dil.acquaMl, 1) + ' ml)' : '\u2014') + '</td></tr>' +
       '<tr><th>Quantit\u00e0 di botanica</th><td>' + infFmtG(r.g) + ' g (' + infFmtG(r.gmin) + '\u2013' + infFmtG(r.gmax) + ' g)</td></tr>' +
       '<tr><th>Tempo di estrazione</th><td>' + (r.tmin === null ? (r.tempoRef || '\u2014') : infRange(r.tmin, r.tmax)) + '</td></tr>' +
       '<tr><th>Primo assaggio</th><td>' + (r.assaggio === null ? '\u2014' : (r.assaggio >= 72 ? infFmt(r.assaggio / 24) + ' giorni' : infFmt(r.assaggio) + ' h')) + '</td></tr>' +
