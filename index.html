@@ -1116,32 +1116,25 @@ html:not(.avanzato) .radar-wrap .r-norm{display:revert !important;}
 }
 .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
 
-/* ---------------- Anti-ridondanza ---------------- */
-.ar-scrollwrap{
-  max-height:72vh;overflow-y:auto;overflow-x:auto;
-  border-radius:var(--r-md);border:1px solid var(--line);box-shadow:var(--sh-1);
-}
-.ar-scrollwrap .controls{
-  position:sticky;top:0;z-index:3;margin:0;
-  padding:14px 16px;border-bottom:1px solid var(--line);
-  background:var(--glass-strong);-webkit-backdrop-filter:saturate(160%) blur(14px);backdrop-filter:saturate(160%) blur(14px);
-}
-table.ar-table{
-  width:100%;border-collapse:separate;border-spacing:0;font-size:13.5px;
-  background:var(--surface);
-  border-radius:0;overflow:visible;box-shadow:none;border:none;
-}
-table.ar-table th{
-  text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;
-  color:var(--ink-faint);font-weight:800;background:var(--surface-2);
-  border-bottom:1px solid var(--line);padding:14px 16px;
-  position:sticky;top:var(--ar-head-h,52px);z-index:2;
-}
-table.ar-table td{border-bottom:1px solid var(--line);padding:14px 16px;vertical-align:top;color:var(--ink-soft);}
-table.ar-table tr:last-child td{border-bottom:none;}
-@media (hover:hover){
-  table.ar-table tr:hover td{background:var(--surface-2);}
-}
+/* ---------------- Ridondanze: elenco a schede ---------------- */
+.ar-elenco{border-radius:var(--r-md);border:1px solid var(--line);box-shadow:var(--sh-1);background:var(--surface);padding:14px 14px 8px;}
+.ar-title{font-family:'Fraunces',serif;font-size:17px;color:var(--juniper-deep);margin-bottom:8px;}
+.ar-head .controls{margin:0 0 8px;}
+.ar-tutte{margin:0 0 8px;}
+.ar-tutte[hidden]{display:none;}
+.ar-item{border-top:1px solid var(--line);}
+.ar-item>summary{list-style:none;cursor:pointer;display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:12px 2px;font-size:14.5px;}
+.ar-item>summary::-webkit-details-marker{display:none;}
+.ar-item>summary::after{content:'\25B8';margin-left:auto;color:var(--ink-faint);transition:transform .2s;}
+.ar-item[open]>summary::after{transform:rotate(90deg);}
+.ar-nome{font-weight:700;color:var(--ink);}
+.ar-badge{display:flex;gap:6px;flex-wrap:wrap;font-size:11.5px;}
+.ar-badge span{padding:2px 8px;border-radius:var(--r-pill);background:var(--surface-2);color:var(--ink-soft);}
+.ar-badge .b-no{background:rgba(196,90,50,.12);color:#9a4a2a;}
+.ar-corpo{padding:0 2px 14px;display:grid;gap:10px;font-size:13.5px;line-height:1.5;color:var(--ink-soft);}
+.ar-sez .k{font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;font-weight:800;color:var(--ink-faint);margin-bottom:2px;}
+.ar-sez.ok .k{color:var(--juniper);}
+.ar-sez.no .k{color:#b0552f;}
 
 /* ---------------- Gin Builder ---------------- */
 .style-picker{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:28px;}
@@ -2492,18 +2485,16 @@ footer.note{
       <div id="wb-out"></div>
     </div>
     <div class="soglia-slot" id="soglia-ar"></div>
-    <div class="ar-scrollwrap" id="ar-scrollwrap">
-      <div class="controls">
-        <input type="text" id="ar-search" placeholder="Cerca botanica…" />
-        <span class="count-tag" id="ar-count"></span>
+    <div class="ar-elenco" id="ar-scrollwrap">
+      <div class="ar-head">
+        <div class="ar-title">Simili, sostitutive e complementari di ogni botanica</div>
+        <div class="controls">
+          <input type="text" id="ar-search" placeholder="Cerca botanica…" />
+          <span class="count-tag" id="ar-count"></span>
+        </div>
+        <button type="button" class="ghost-btn ar-tutte" id="ar-tutte">Mostra tutte le botaniche</button>
       </div>
-      <table class="ar-table">
-        <thead><tr>
-          <th>Botanica</th><th>Simili</th><th>Sostitutive</th><th>Complementari</th>
-          <th>Da non accumulare con</th><th>Rischio principale</th>
-        </tr></thead>
-        <tbody id="ar-body"></tbody>
-      </table>
+      <div class="ar-lista" id="ar-body"></div>
     </div>
   </section>
 
@@ -2759,7 +2750,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 6 ottobre 2026, ore 20:30 · la ricerca guarda il nome; il profilo aromatico a richiesta</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 6 ottobre 2026, ore 20:40 · ridondanze: elenco a schede richiudibili</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -4010,36 +4001,44 @@ const arBody = document.getElementById('ar-body');
 const arSearch = document.getElementById('ar-search');
 const arCount = document.getElementById('ar-count');
 
+// Elenco a schede richiudibili: niente tabella larga con scorrimento interno (sul telefono si faticava a scorrere).
+// Chiuso finche' non si cerca o si chiede l'elenco; si apre una botanica alla volta.
+let arTutte = false;
+const arTutteBtn = document.getElementById('ar-tutte');
 function renderAr(){
   const q = arSearch.value.trim().toLowerCase();
-  const rows = MASTER.filter(d => !q || d.botanica.toLowerCase().includes(q));
-  arCount.textContent = rows.length + ' / ' + MASTER.length;
+  const aperta = (arBody.querySelector('details[open]') || {}).dataset;
+  const apertaNome = aperta ? aperta.n : null;
+  let rows = MASTER.filter(d => !q || d.botanica.toLowerCase().includes(q));
+  if (q) rows = rows.slice().sort((x, y) => (+!x.botanica.toLowerCase().startsWith(q)) - (+!y.botanica.toLowerCase().startsWith(q)) || x.botanica.localeCompare(y.botanica, 'it'));
+  else rows = rows.slice().sort((x, y) => x.botanica.localeCompare(y.botanica, 'it'));
+  const mostra = q || arTutte;
+  arCount.textContent = q ? rows.length + ' / ' + MASTER.length : '';
+  arTutteBtn.hidden = !!q;
+  arTutteBtn.textContent = arTutte ? 'Richiudi l\u2019elenco' : 'Mostra tutte le ' + MASTER.length + ' botaniche';
+  if (!mostra){ arBody.innerHTML = ''; return; }
+  const conta = t => t ? t.split(',').filter(x => x.trim()).length : 0;
+  const sez = (k, v, cls) => '<div class="ar-sez' + (cls ? ' ' + cls : '') + '"><div class="k">' + k + '</div><div class="v">' + (v || '\u2014') + '</div></div>';
   arBody.innerHTML = rows.map(d => {
     const r = REDUND[d.botanica] || {};
-    return `<tr>
-      <td><strong>${d.botanica}</strong></td>
-      <td>${similiHtml(d.botanica, r.simili)}</td>
-      <td>${r.sostitutive || '—'}</td>
-      <td>${r.complementari || '—'}</td>
-      <td>${r.non_accumulare || '—'}</td>
-      <td>${r.rischio || '—'}</td>
-    </tr>`;
+    const sim = similiHtml(d.botanica, r.simili);
+    const nSim = (sim.match(/<strong>/g) || []).length, nNo = conta(r.non_accumulare);
+    const apri = (rows.length === 1 || d.botanica === apertaNome) ? ' open' : '';
+    return '<details class="ar-item" data-n="' + d.botanica.replace(/"/g, '&quot;') + '"' + apri + '><summary><span class="ar-nome">' + (d.icona || '\ud83c\udf3f') + ' ' + d.botanica + '</span>' +
+      '<span class="ar-badge">' + (nSim ? '<span class="b-sim">' + nSim + ' simil' + (nSim === 1 ? 'e' : 'i') + '</span>' : '') + (nNo ? '<span class="b-no">' + nNo + ' da non accumulare</span>' : '') + '</span></summary>' +
+      '<div class="ar-corpo">' + sez('Simili', sim) + sez('Sostitutive', r.sostitutive) + sez('Complementari', r.complementari, 'ok') +
+      sez('Da non accumulare con', r.non_accumulare, 'no') + sez('Rischio principale', r.rischio) + '</div></details>';
   }).join('');
 }
+// Una scheda aperta alla volta.
+arBody.addEventListener('toggle', e => {
+  const t = e.target; if (!t.open || !t.classList || !t.classList.contains('ar-item')) return;
+  arBody.querySelectorAll('details.ar-item[open]').forEach(x => { if (x !== t) x.open = false; });
+}, true);
+arTutteBtn.addEventListener('click', () => { arTutte = !arTutte; renderAr(); if (!arTutte) arSearch.scrollIntoView({block:'nearest'}); });
 arSearch.addEventListener('input', renderAr);
 renderAr();
 document.querySelectorAll('.soglia-slot').forEach(el => { el.innerHTML = sogliaHtml(); });
-// La riga dei titoli resta fissa subito sotto la barra di ricerca: ne misuriamo l'altezza reale
-// (cambia con la larghezza dello schermo) invece di usare un valore fisso.
-(function(){
-  const wrap = document.getElementById('ar-scrollwrap');
-  const bar = wrap && wrap.querySelector('.controls');
-  if (!wrap || !bar) return;
-  function syncAltezza(){ wrap.style.setProperty('--ar-head-h', bar.offsetHeight + 'px'); }
-  syncAltezza();
-  window.addEventListener('resize', syncAltezza);
-  if (window.ResizeObserver) new ResizeObserver(syncAltezza).observe(bar);
-})();
 
 
 // Tavolo di lavoro a radar: 2-4 botaniche sovrapposte. Per ogni asse si somma il peso delle botaniche scelte:
