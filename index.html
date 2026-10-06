@@ -2798,7 +2798,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 6 ottobre 2026, ore 16:40 · infusi in corso in prima pagina: chiuso ed evidenziato</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 6 ottobre 2026, ore 17:10 · diario in ordine di orario di assaggio</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -6416,8 +6416,18 @@ function diaLocale(dt){ const z = n => String(n).padStart(2, '0'); return dt.get
 function diaData(ms){ return new Date(ms).toLocaleString('it-IT', {weekday:'short', day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}); }
 function diaDurata(h){ return h >= 72 ? (Math.round(h / 24 * 10) / 10).toLocaleString('it-IT') + ' giorni' : Math.round(h).toLocaleString('it-IT') + ' h'; }
 function diaNum(v, dec){ return (typeof v === 'number' && isFinite(v)) ? v.toLocaleString('it-IT', {maximumFractionDigits: dec}) : '\u2014'; }
+// Ordine di assaggio: prima gli infusi in corso, dal promemoria piu' vicino (quelli gia' da assaggiare in testa);
+// senza promemoria vale la fine del tempo minimo. In fondo i filtrati, dal piu' recente.
+function diaOraAssaggio(v){ return v.allarme || (v.tmin != null ? v.inizio + v.tmin * 3600000 : Infinity); }
+function diarioOrdina(lista){
+  return lista.slice().sort((a, b) => {
+    if (!a.finito !== !b.finito) return a.finito ? 1 : -1;
+    if (a.finito) return b.finito - a.finito;
+    return diaOraAssaggio(a) - diaOraAssaggio(b) || a.inizio - b.inizio;
+  });
+}
 function diarioRiepilogo(lista){
-  const ora = Date.now(), inCorso = lista.filter(v => !v.finito);
+  const ora = Date.now(), inCorso = diarioOrdina(lista).filter(v => !v.finito);
   const n = document.getElementById('menu-diario-n'); if (n) n.textContent = inCorso.length ? inCorso.length + ' in corso' : '';
   const box = document.getElementById('home-diario'); if (!box) return;
   if (!inCorso.length){ box.hidden = true; box.innerHTML = ''; return; }
@@ -6451,7 +6461,7 @@ function diarioRender(){
   if (sum) sum.textContent = '\ud83d\udcd3 Diario degli infusi' + (lista.length ? ' (' + inCorso + ' in corso' + (lista.length > inCorso ? ', ' + (lista.length - inCorso) + ' filtrati' : '') + ')' : '');
   if (!lista.length){ body.innerHTML = '<p>Ancora nessun infuso annotato. Apri una botanica, imposta le condizioni e tocca \u00ab\ud83d\udcd3 Ho preparato l\u2019infuso\u00bb nel quadro delle variabili.</p>'; return; }
   body.innerHTML = '<p class="cond-hint" style="margin:0 0 10px;">Il promemoria avvisa quando l\u2019app \u00e8 aperta. Per un allarme che suoni anche ad app chiusa, tocca \ud83d\udcc5 e aggiungilo al calendario del telefono.</p>' +
-    lista.map(v => {
+    diarioOrdina(lista).map(v => {
       const scad = !v.finito && v.allarme && v.allarme <= ora;
       const pronto = (v.tmin != null) ? diaData(v.inizio + v.tmin * 3600000) + (v.tmax != null ? ' \u2013 ' + diaData(v.inizio + v.tmax * 3600000) : '') : '\u2014';
       return '<div class="dia-item' + (v.finito ? ' finito' : '') + (scad ? ' scaduto' : '') + '">' +
