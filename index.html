@@ -2730,7 +2730,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 00:55 · assaggi registrati nel diario</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 01:00 · prossimo assaggio calcolato sui tempi di estrazione</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -6636,23 +6636,33 @@ function diarioNota(id, t){
   v.note = t;
   // Una nota scritta quando l'infuso è da assaggiare vale come assaggio fatto.
   const segna = t.trim() && diaDaAssaggiare(v, Date.now());
-  if (segna) (v.assaggi = v.assaggi || []).push(Date.now());
+  if (segna){ (v.assaggi = v.assaggi || []).push(Date.now()); const pr = diaProssimo(v); v.allarme = pr.quando; v.avvisato = false; }
   diarioSalva(l);
   if (segna) diarioRender();
 }
-// Pulsante «Assaggiato»: registra l'assaggio e propone, se serve, quando rifarlo.
+// Prossimo assaggio calcolato sui tempi di estrazione previsti per l'infuso:
+// prima del tempo minimo → alla fine del tempo minimo; tra minimo e massimo → a metà del tempo che resta
+// (se restano meno di 12 ore, direttamente al tempo massimo); oltre il massimo → nessun promemoria, si filtra.
+function diaProssimo(v, ora){
+  ora = ora || Date.now();
+  const H = 3600000, fMin = v.tmin != null ? v.inizio + v.tmin * H : null, fMax = v.tmax != null ? v.inizio + v.tmax * H : null;
+  if (fMax && ora >= fMax) return { quando: null, perche: 'Il tempo massimo di estrazione (' + diaData(fMax) + ') \u00e8 raggiunto: se il gusto ti convince, \u00e8 il momento di filtrare.' };
+  if (fMin && ora < fMin) return { quando: diaNonDiNotte(fMin), perche: 'Alla fine del tempo minimo di estrazione: da l\u00ec l\u2019infuso pu\u00f2 essere pronto.' };
+  if (fMax){
+    const resta = fMax - ora, t = resta < 12 * H ? fMax : ora + resta / 2;
+    return { quando: diaNonDiNotte(t), perche: resta < 12 * H ? 'Al tempo massimo di estrazione: poi si filtra.' : 'A met\u00e0 del tempo che resta fino al massimo di estrazione (' + diaData(fMax) + ').' };
+  }
+  return { quando: diaNonDiNotte(ora + 24 * H), perche: 'Tra 24 ore (per questo infuso non ci sono tempi di estrazione annotati).' };
+}
+// Pulsante «Assaggiato»: registra l'assaggio e fissa da solo il prossimo promemoria sui tempi di estrazione.
 function diarioAssaggiato(id){
-  diarioAggiorna(id, x => { (x.assaggi = x.assaggi || []).push(Date.now()); if (x.allarme && x.allarme <= Date.now()) x.allarme = null; });
-  const v = diarioCarica().find(x => x.id === id); if (!v) return;
+  let pr = null;
+  diarioAggiorna(id, x => { (x.assaggi = x.assaggi || []).push(Date.now()); pr = diaProssimo(x); x.allarme = pr.quando; x.avvisato = false; });
+  const v = diarioCarica().find(x => x.id === id); if (!v || !pr) return;
   const corpo = '<p>Assaggio di <strong>' + diaEsc(v.tipo) + '</strong> registrato. Scrivi le impressioni nel riquadro delle note.</p>' +
-    '<p>Vuoi un promemoria per il prossimo assaggio?</p><div class="dia-new"><label>Prossimo assaggio<select id="dia-pross">' +
-    '<option value="">Nessuno: l\u2019infuso \u00e8 pronto o lo filtro</option><option value="12">Tra 12 ore</option><option value="24" selected>Tra 24 ore</option><option value="48">Tra 2 giorni</option><option value="72">Tra 3 giorni</option></select></label></div>' +
-    '<p class="cond-hint">Tra mezzanotte e le 7 il promemoria slitta alle 7:30.</p>';
-  mostraAvviso('\ud83d\udc45 Assaggio registrato', corpo, 'Ok', () => {
-    const h = parseFloat(document.getElementById('dia-pross').value);
-    diarioAggiorna(id, x => { x.allarme = h ? diaNonDiNotte(Date.now() + h * 3600000) : null; x.avvisato = false; });
-  });
-  document.getElementById('avviso-annulla').textContent = 'Nessun promemoria';
+    (pr.quando ? '<p>\u23f0 Prossimo assaggio: <strong>' + diaData(pr.quando) + '</strong>.<br><span class="cond-hint">' + pr.perche + ' Tra mezzanotte e le 7 slitta alle 7:30; puoi cambiarlo con \u270f\ufe0f Modifica orari.</span></p>'
+      : '<p>\ud83e\uded7 ' + pr.perche + '</p>');
+  mostraAvviso('\ud83d\udc45 Assaggio registrato', corpo, '', null);
 }
 window.diarioAssaggiato = diarioAssaggiato;
 // Una tantum: le note già scritte su infusi segnati come da assaggiare valgono come assaggio fatto.
