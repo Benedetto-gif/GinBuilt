@@ -1119,9 +1119,7 @@ html:not(.avanzato) .radar-wrap .r-norm{display:revert !important;}
 /* ---------------- Ridondanze: elenco a schede ---------------- */
 .ar-elenco{border-radius:var(--r-md);border:1px solid var(--line);box-shadow:var(--sh-1);background:var(--surface);padding:14px 14px 8px;}
 .ar-title{font-family:'Fraunces',serif;font-size:17px;color:var(--juniper-deep);margin-bottom:8px;}
-.ar-head .controls{margin:0 0 8px;}
-.ar-tutte{margin:0 0 8px;}
-.ar-tutte[hidden]{display:none;}
+.ar-sotto{margin:0 0 8px;}
 .ar-item{border-top:1px solid var(--line);}
 .ar-item>summary{list-style:none;cursor:pointer;display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:12px 2px;font-size:14.5px;}
 .ar-item>summary::-webkit-details-marker{display:none;}
@@ -2464,7 +2462,7 @@ footer.note{
           l'ingombro totale: in pratica quanta parte delle due aree si sovrappone. Esempio: liquirizia e angelica condividono solo lo speziato,
           38 %; il dolce della liquirizia bilancia invece l'amaro dell'angelica, quindi sono complementari per gusto pur avendo la stessa funzione di leganti.
           La soglia oltre cui due botaniche contano come simili si regola con il cursore qui sotto (visibile con gli strumenti avanzati accesi, dal menu): l'app ricalcola subito tabella, schede e Builder.</p>
-        <p>Cerca una botanica e leggi le colonne:</p>
+        <p>Sotto il tavolo di lavoro, per ogni botanica scelta trovi:</p>
         <ul>
           <li><strong>Simili</strong> — accanto a ciascuna c'è la percentuale di somiglianza del profilo. In grassetto quelle sopra la soglia: occupano lo stesso spazio aromatico e si sommano. In grigio, con «funzione», quelle che l'erbario accosta per famiglia o funzione (per esempio le radici leganti) ma che al gusto sono diverse.</li>
           <li><strong>Sostitutive</strong> — se una manca o non è di stagione, queste ne fanno le veci.</li>
@@ -2486,14 +2484,8 @@ footer.note{
     </div>
     <div class="soglia-slot" id="soglia-ar"></div>
     <div class="ar-elenco" id="ar-scrollwrap">
-      <div class="ar-head">
-        <div class="ar-title">Simili, sostitutive e complementari di ogni botanica</div>
-        <div class="controls">
-          <input type="text" id="ar-search" placeholder="Cerca botanica…" />
-          <span class="count-tag" id="ar-count"></span>
-        </div>
-        <button type="button" class="ghost-btn ar-tutte" id="ar-tutte">Mostra tutte le botaniche</button>
-      </div>
+      <div class="ar-title">Le botaniche sul tavolo</div>
+      <p class="cond-hint ar-sotto">Simili, sostitutive, complementari e da non accumulare di ciascuna botanica scelta qui sopra. Tocca un nome per aprirlo.</p>
       <div class="ar-lista" id="ar-body"></div>
     </div>
   </section>
@@ -2750,7 +2742,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 6 ottobre 2026, ore 20:40 · ridondanze: elenco a schede richiudibili</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 6 ottobre 2026, ore 20:45 · ridondanze: le schede seguono il tavolo di lavoro, tolta la seconda ricerca</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -3998,32 +3990,21 @@ if (libPrint) libPrint.addEventListener('click', () => {
 
 // ---------- Anti-ridondanza ----------
 const arBody = document.getElementById('ar-body');
-const arSearch = document.getElementById('ar-search');
-const arCount = document.getElementById('ar-count');
 
 // Elenco a schede richiudibili: niente tabella larga con scorrimento interno (sul telefono si faticava a scorrere).
 // Chiuso finche' non si cerca o si chiede l'elenco; si apre una botanica alla volta.
-let arTutte = false;
-const arTutteBtn = document.getElementById('ar-tutte');
 function renderAr(){
-  const q = arSearch.value.trim().toLowerCase();
   const aperta = (arBody.querySelector('details[open]') || {}).dataset;
   const apertaNome = aperta ? aperta.n : null;
-  let rows = MASTER.filter(d => !q || d.botanica.toLowerCase().includes(q));
-  if (q) rows = rows.slice().sort((x, y) => (+!x.botanica.toLowerCase().startsWith(q)) - (+!y.botanica.toLowerCase().startsWith(q)) || x.botanica.localeCompare(y.botanica, 'it'));
-  else rows = rows.slice().sort((x, y) => x.botanica.localeCompare(y.botanica, 'it'));
-  const mostra = q || arTutte;
-  arCount.textContent = q ? rows.length + ' / ' + MASTER.length : '';
-  arTutteBtn.hidden = !!q;
-  arTutteBtn.textContent = arTutte ? 'Richiudi l\u2019elenco' : 'Mostra tutte le ' + MASTER.length + ' botaniche';
-  if (!mostra){ arBody.innerHTML = ''; return; }
+  const rows = (window.wbScelte || []).map(n => byName[n]).filter(Boolean);
+  if (!rows.length){ arBody.innerHTML = '<p class="cond-hint">Nessuna botanica sul tavolo.</p>'; return; }
   const conta = t => t ? t.split(',').filter(x => x.trim()).length : 0;
   const sez = (k, v, cls) => '<div class="ar-sez' + (cls ? ' ' + cls : '') + '"><div class="k">' + k + '</div><div class="v">' + (v || '\u2014') + '</div></div>';
   arBody.innerHTML = rows.map(d => {
     const r = REDUND[d.botanica] || {};
     const sim = similiHtml(d.botanica, r.simili);
     const nSim = (sim.match(/<strong>/g) || []).length, nNo = conta(r.non_accumulare);
-    const apri = (rows.length === 1 || d.botanica === apertaNome) ? ' open' : '';
+    const apri = d.botanica === apertaNome ? ' open' : '';
     return '<details class="ar-item" data-n="' + d.botanica.replace(/"/g, '&quot;') + '"' + apri + '><summary><span class="ar-nome">' + (d.icona || '\ud83c\udf3f') + ' ' + d.botanica + '</span>' +
       '<span class="ar-badge">' + (nSim ? '<span class="b-sim">' + nSim + ' simil' + (nSim === 1 ? 'e' : 'i') + '</span>' : '') + (nNo ? '<span class="b-no">' + nNo + ' da non accumulare</span>' : '') + '</span></summary>' +
       '<div class="ar-corpo">' + sez('Simili', sim) + sez('Sostitutive', r.sostitutive) + sez('Complementari', r.complementari, 'ok') +
@@ -4035,8 +4016,6 @@ arBody.addEventListener('toggle', e => {
   const t = e.target; if (!t.open || !t.classList || !t.classList.contains('ar-item')) return;
   arBody.querySelectorAll('details.ar-item[open]').forEach(x => { if (x !== t) x.open = false; });
 }, true);
-arTutteBtn.addEventListener('click', () => { arTutte = !arTutte; renderAr(); if (!arTutte) arSearch.scrollIntoView({block:'nearest'}); });
-arSearch.addEventListener('input', renderAr);
 renderAr();
 document.querySelectorAll('.soglia-slot').forEach(el => { el.innerHTML = sogliaHtml(); });
 
@@ -4133,6 +4112,8 @@ document.querySelectorAll('.soglia-slot').forEach(el => { el.innerHTML = sogliaH
     const EXTRA = ['#6B7A72','#9A8F6B','#7B6B8F'];
     const aggiunte = baseOn ? BASE.filter(n => PROFILO8[n] && !scelte.some(x => x.n === n)) : [];
     aggiunte.forEach((n,k) => scelte.push({n:n, c:EXTRA[k]}));
+    window.wbScelte = scelte.map(x => x.n);
+    if (typeof renderAr === 'function') renderAr();
     if (scelte.length < 2){
       out.innerHTML = '<div class="radar-nota">Scegli almeno due botaniche' + '.</div>';
       return;
