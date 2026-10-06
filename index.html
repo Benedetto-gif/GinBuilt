@@ -374,6 +374,8 @@ nav.tabs{display:none !important;}
 .menu-pop{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:60;max-height:72vh;overflow-y:auto;padding:10px;border-radius:22px;
   border:1px solid var(--line);background:var(--surface);box-shadow:0 12px 36px rgba(0,0,0,.25);display:grid;grid-template-columns:1fr 1fr;grid-auto-flow:dense;gap:8px;}
 .menu-pop[hidden]{display:none;}
+.menu-pop{overscroll-behavior:contain;-webkit-overflow-scrolling:touch;}
+html.menu-aperto, html.menu-aperto body{overflow:hidden;overscroll-behavior:none;}
 .menu-group-label{grid-column:1/-1;margin:6px 2px 0;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);}
 .menu-group-label:first-of-type{margin-top:2px;}
 .menu-tile{--h:#2F7259;display:flex;flex-direction:column;justify-content:space-between;gap:10px;min-height:76px;padding:12px;border-radius:16px;cursor:pointer;text-align:left;
@@ -1405,6 +1407,7 @@ footer.note{
 .inf-in-scheda{margin:14px 0;}
 .filtri-box .cond-box{margin:10px 0 0;}
 .diario-box .howto-body > p:first-child{margin-top:0;}
+.dia-tecnica{margin:0 0 10px;}
 .dia-new{display:grid;gap:10px;text-align:left;}
 .dia-new label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:650;color:var(--ink-faint);}
 .dia-new input, .dia-new select, .dia-new textarea{font:inherit;font-size:14px;padding:8px 10px;border:1px solid var(--line, rgba(0,0,0,.2));border-radius:8px;background:var(--paper, #fff);color:var(--ink);}
@@ -2020,7 +2023,7 @@ footer.note{
       <h2>Analisi sensoriale</h2>
       <p class="storia-sub">Come assaggiare in modo sistematico, prima la singola infusione e poi il gin finito, e come assegnare a ogni botanica uno dei sei ruoli già usati in Nozioni tecniche e nel Builder — stessa definizione, stessa domanda guida, stesso peso nella dose.</p>
 
-      <details class="howto" open>
+      <details class="howto" open id="analisi-procedura">
         <summary>Procedura generale di assaggio</summary>
         <div class="howto-body">
           <p><strong>Preparazione del campione.</strong> Non assaggiare l'infuso puro alla gradazione di estrazione: l'alcol copre parte delle caratteristiche aromatiche. Versa circa 10 ml di infuso puro in un bicchiere da degustazione.</p>
@@ -2715,7 +2718,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 6 ottobre 2026, ore 22:35 · solubilità selettiva nel quadro delle variabili</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 00:15 · rimando alla tecnica di assaggio nel Diario, menu senza scorrimento della pagina sotto</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -3530,8 +3533,23 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   };
   tileImp('menu-dati', '\ud83d\udcbe', 'I tuoi dati (backup)', '#4C7BB5', () => window.apriDati && window.apriDati());
   tileImp('menu-avanzati', '\ud83e\uddf0', 'Strumenti avanzati', '#5D6F8C', () => window.toggleAvanzati && window.toggleAvanzati());
-  function chiudi(){ pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); }
-  btn.addEventListener('click', e => { e.stopPropagation(); pop.hidden = !pop.hidden; btn.setAttribute('aria-expanded', String(!pop.hidden)); });
+  // Mentre il menu è aperto la pagina sotto resta ferma: scorre solo il riquadro del menu.
+  const bloccaFuori = e => { if (!pop.hidden && !pop.contains(e.target)) e.preventDefault(); };
+  let tY = 0;
+  pop.addEventListener('touchstart', e => { tY = e.touches[0].clientY; }, { passive: true });
+  pop.addEventListener('touchmove', e => {   // ai bordi del menu il gesto non deve passare alla pagina
+    const dy = e.touches[0].clientY - tY, suTop = pop.scrollTop <= 0, giuFondo = pop.scrollTop + pop.clientHeight >= pop.scrollHeight - 1;
+    if ((dy > 0 && suTop) || (dy < 0 && giuFondo)) e.preventDefault();
+  }, { passive: false });
+  document.addEventListener('touchmove', bloccaFuori, { passive: false });
+  document.addEventListener('wheel', bloccaFuori, { passive: false });
+  function imposta(aperto){
+    pop.hidden = !aperto; btn.setAttribute('aria-expanded', String(aperto));
+    document.documentElement.classList.toggle('menu-aperto', aperto);
+    if (aperto) pop.scrollTop = 0;
+  }
+  function chiudi(){ imposta(false); }
+  btn.addEventListener('click', e => { e.stopPropagation(); imposta(pop.hidden); });
   document.addEventListener('click', e => { if (!bar.contains(e.target)) chiudi(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') chiudi(); });
   function aggiorna(name){
@@ -3557,6 +3575,15 @@ function apriInfusi(nome){
   setTimeout(v, 80); setTimeout(v, 360);
 }
 
+// Dal Diario: apre Analisi sensoriale sulla procedura di assaggio degli infusi.
+function apriTecnicaAssaggio(){
+  showTab('analisi');
+  const t = document.getElementById('analisi-procedura'); if (!t) return;
+  t.open = true; t.style.scrollMarginTop = '84px';
+  const v = () => t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  setTimeout(v, 60); setTimeout(v, 420);
+}
+window.apriTecnicaAssaggio = apriTecnicaAssaggio;
 // Apre la pagina del Diario degli infusi (solo il diario, senza le schede delle botaniche).
 function apriDiario(){ showTab('diario'); }
 window.apriDiario = apriDiario;
@@ -6476,8 +6503,9 @@ function diarioRender(){
   const lista = diarioCarica(), ora = Date.now();
   const inCorso = lista.filter(v => !v.finito).length;
   if (sum) sum.textContent = '\ud83d\udcd3 Diario degli infusi' + (lista.length ? ' (' + inCorso + ' in corso' + (lista.length > inCorso ? ', ' + (lista.length - inCorso) + ' filtrati' : '') + ')' : '');
-  if (!lista.length){ body.innerHTML = '<p>Ancora nessun infuso annotato. Apri una botanica, imposta le condizioni e tocca \u00ab\ud83d\udcd3 Ho preparato l\u2019infuso\u00bb nel quadro delle variabili.</p>'; return; }
-  body.innerHTML = '<p class="cond-hint" style="margin:0 0 10px;">Il promemoria avvisa quando l\u2019app \u00e8 aperta. Per un allarme che suoni anche ad app chiusa, tocca \ud83d\udcc5 e aggiungilo al calendario del telefono.</p>' +
+  const tecnica = '<p class="dia-tecnica"><button class="ghost-btn" type="button" onclick="apriTecnicaAssaggio()">\ud83d\udc43 Come si assaggia un infuso \u2192</button></p>';
+  if (!lista.length){ body.innerHTML = tecnica + '<p>Ancora nessun infuso annotato. Apri una botanica, imposta le condizioni e tocca \u00ab\ud83d\udcd3 Ho preparato l\u2019infuso\u00bb nel quadro delle variabili.</p>'; return; }
+  body.innerHTML = tecnica + '<p class="cond-hint" style="margin:0 0 10px;">Il promemoria avvisa quando l\u2019app \u00e8 aperta. Per un allarme che suoni anche ad app chiusa, tocca \ud83d\udcc5 e aggiungilo al calendario del telefono.</p>' +
     diarioOrdina(lista).map(v => {
       const scad = !v.finito && v.allarme && v.allarme <= ora;
       const pronto = (v.tmin != null) ? diaData(v.inizio + v.tmin * 3600000) + (v.tmax != null ? ' \u2013 ' + diaData(v.inizio + v.tmax * 3600000) : '') : '\u2014';
@@ -6486,7 +6514,7 @@ function diarioRender(){
         '<div class="dia-meta">Iniziato ' + diaData(v.inizio) + (v.finito ? ' \u00b7 filtrato ' + diaData(v.finito) : '') + '</div>' +
         '<div class="dia-r">Alcol ' + diaEsc(v.abvS) + '\u00b0 <strong>' + diaNum(v.alcolG, 1) + ' g</strong> \u00b7 acqua <strong>' + diaNum(v.acquaG, 1) + ' g</strong> \u00b7 botanica <strong>' + diaNum(v.botG, 2) + ' g</strong> \u00b7 ' + diaEsc(v.temp) + ' \u00b0C</div>' +
         '<div class="dia-r">Pronto: ' + pronto + '</div>' +
-        (v.allarme ? '<div class="dia-r">' + (scad ? '\u23f0 <strong>Ora di assaggiare</strong> (dal ' + diaData(v.allarme) + ')' : '\u23f0 Promemoria: ' + diaData(v.allarme)) + '</div>' : '') +
+        (v.allarme ? '<div class="dia-r">' + (scad ? '\u23f0 <strong>Ora di assaggiare</strong> (dal ' + diaData(v.allarme) + ') \u00b7 <a href="#" onclick="apriTecnicaAssaggio();return false;">come si assaggia</a>' : '\u23f0 Promemoria: ' + diaData(v.allarme)) + '</div>' : '') +
         '<textarea rows="2" placeholder="Note e assaggi\u2026" onchange="diarioNota(\'' + v.id + '\', this.value)">' + diaEsc(v.note) + '</textarea>' +
         '<div class="dia-btn">' +
           '<button class="ghost-btn" type="button" onclick="diarioOrari(\'' + v.id + '\')">\u270f\ufe0f Modifica orari</button>' +
