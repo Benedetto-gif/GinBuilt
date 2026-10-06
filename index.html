@@ -909,6 +909,12 @@ input:focus, select:focus, textarea:focus{
 .inf-abv-warn{grid-column:1/-1;}
 .inf-lim{grid-column:1/-1;font-size:13px;line-height:1.45;color:var(--ink-soft);}
 .inf-lim:empty{display:none;}
+.grad-tab p{margin:0 0 6px;}
+.grad-tab-wrap{overflow-x:auto;}
+.grad-tab table{width:100%;border-collapse:collapse;font-size:13px;}
+.grad-tab th,.grad-tab td{text-align:left;padding:5px 6px;border-bottom:1px solid var(--line);white-space:nowrap;}
+.grad-tab th{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);}
+.link-btn{background:none;border:0;padding:0;color:var(--juniper-deep);font-weight:700;cursor:pointer;font:inherit;}
 .grad-perche{border:1px solid var(--line, #d9d2c3);border-radius:10px;padding:6px 10px;background:rgba(0,0,0,.02);}
 .grad-perche>summary{cursor:pointer;font-weight:600;color:var(--juniper-deep);font-size:13.5px;}
 .grad-perche .gp-body p{margin:6px 0;}
@@ -1592,8 +1598,7 @@ footer.note{
     <button data-tab="prove">🧪 Schede di prova</button>
     <button data-tab="libreria">🌿 Botaniche e infusi</button>
     <button data-tab="diario">📓 Diario degli infusi</button>
-    <button data-tab="vocabolario">📚 Vocabolario</button>
-    <button data-tab="nozioni">🔬 Nozioni tecniche</button>
+    <button data-tab="nozioni">🔬 Nozioni e vocabolario</button>
     <button data-tab="analisi">👃 Analisi sensoriale</button>
     <button data-tab="ruota">🎡 Ruota degli aromi</button>
     <button data-tab="altrigin">🥃 Gli altri gin</button>
@@ -1883,8 +1888,8 @@ footer.note{
   <!-- NOZIONI TECNICO-SCIENTIFICHE -->
   <section class="panel" id="panel-nozioni">
     <div class="storia">
-      <h2>Nozioni tecnico-scientifiche</h2>
-      <p class="storia-sub">Le spiegazioni sulla chimica e la pratica dell'infusione, raccolte in un solo posto. Si trovano, con lo stesso contenuto, anche nelle pagine di provenienza (Botaniche e infusi, Schede di prova, Gin Builder, Vocabolario): qui sono solo riunite per una consultazione comoda.</p>
+      <h2>Nozioni tecniche e vocabolario</h2>
+      <p class="storia-sub">La chimica e la pratica dell'infusione, i sei ruoli delle botaniche e il glossario, in un solo posto. Le altre pagine rimandano qui con i link 🔬.</p>
 
       <h3>Gradazione e solubilità dell'alcol</h3>
         <details class="howto" id="gradaz-noz">
@@ -2014,7 +2019,7 @@ footer.note{
   <section class="panel" id="panel-analisi">
     <div class="storia">
       <h2>Analisi sensoriale</h2>
-      <p class="storia-sub">Come assaggiare in modo sistematico, prima la singola infusione e poi il gin finito, e come assegnare a ogni botanica uno dei sei ruoli già usati in Vocabolario, Nozioni tecniche e Builder — stessa definizione, stessa domanda guida, stesso peso nella dose.</p>
+      <p class="storia-sub">Come assaggiare in modo sistematico, prima la singola infusione e poi il gin finito, e come assegnare a ogni botanica uno dei sei ruoli già usati in Nozioni tecniche e nel Builder — stessa definizione, stessa domanda guida, stesso peso nella dose.</p>
 
       <details class="howto" open>
         <summary>Procedura generale di assaggio</summary>
@@ -2031,7 +2036,7 @@ footer.note{
       <details class="howto">
         <summary>I sei ruoli durante l'assaggio (promemoria)</summary>
         <div class="howto-body">
-          <p>Definizioni complete in <a href="#" data-goto="vocabolario">Vocabolario</a> e in <a href="#" data-goto="nozioni">Nozioni tecniche</a>: qui solo la domanda guida da porsi all'assaggio e il peso da usare nel compound.</p>
+          <p>Definizioni complete in <a href="#" data-goto="nozioni">Nozioni e vocabolario</a>: qui solo la domanda guida da porsi all'assaggio e il peso da usare nel compound.</p>
           <table>
             <tr><th>Ruolo</th><th>Domanda guida</th><th>Peso</th></tr>
             <tr><td><strong>Base</strong></td><td>Se la tolgo, questo gin perde la sua identità o smette di stare in piedi?</td><td>100%</td></tr>
@@ -2416,29 +2421,6 @@ footer.note{
   </section>
 
   <!-- ANTI-RIDONDANZA -->
-  <section class="panel" id="panel-vocabolario">
-    <div class="storia">
-      <h2>Vocabolario del gin</h2>
-      <p class="storia-sub">Le parole che si usano nella preparazione del gin, spiegate con esempi.</p>
-      <h3>I sei ruoli delle botaniche</h3>
-    <details class="howto" open><summary>Base</summary><div class="howto-body"><p>È il fondo del gin: la botanica che regge tutte le altre e dà identità di gin. Comprende il <strong>ginepro</strong> (obbligatorio, aroma prevalente: note balsamiche, resinose, pungenti) e i <strong>leganti</strong> o fissativi come angelica, iris e liquirizia, che trattengono gli aromi volatili e danno tenuta e rotondità al finale. Peso nella ricetta: 100%.</p><p><em>Esempi:</em> bacche di ginepro, angelica, iris, liquirizia.</p><p><em>Domanda guida:</em> se la tolgo, questo gin perde la sua identità o smette di stare in piedi?</p></div></details>
-    <details class="howto"><summary>Freschezza</summary><div class="howto-body"><p>Una botanica porta freschezza quando alleggerisce la percezione dell'alcol, pulisce il palato e stimola i lati della lingua con note pungenti, balsamiche o agrumate. Nel gin compound l'effetto è più marcato che nel distillato, perché l'infusione a freddo conserva intatte molecole termosensibili che col calore cambierebbero profilo. Ha tre sfumature:</p><ul><li><strong>Agrumata (citrica).</strong> Scorze di limone, arancia amara, pompelmo, bergamotto, lime, lemongrass. Gli oli essenziali (limonene) tagliano la morbidezza e il calore dell'alcol e danno una sferzata acida e verticale che rende il gin dissetante.</li><li><strong>Balsamica / resinosa.</strong> Ginepro (che è Base ma porta anche questa freschezza), cardamomo, aghi di pino, menta, eucalipto. Danno una sensazione di «aria fredda» in bocca, simile al mentolo; il cardamomo regala un colpo esotico e molto volatile già al primo naso.</li><li><strong>Erbacea / verde.</strong> Coriandolo (ponte fra agrumato ed erbaceo), basilico, rosmarino, timo, tè verde. Ricordano erba tagliata o rugiada e danno orizzontalità e profondità, agganciandosi alle note terrose di angelica e iris per evitare un gin cupo, pesante o fangoso.</li></ul><p>Peso nella ricetta: 100%. Alcune botaniche citate non sono ancora nella libreria.</p><p><em>Domanda guida:</em> se la tolgo, il gin diventa più pesante o meno dissetante in apertura?</p></div></details>
-    <details class="howto"><summary>Identità</summary><div class="howto-body"><p>È la botanica che dà carattere allo stile e, quando è legata a un luogo, al territorio: quella che si riconosce subito dopo il ginepro. Cambiando l'identità cambia il tipo di gin, non solo il suo profilo. Peso: 80%.</p><p><em>Esempi:</em> finocchio di mare (Marino), bergamotto (Agrumato), lavanda (Floreale), zenzero, iris in tracce (Secco).</p><p><em>Domanda guida:</em> cambiando questa botanica, cambia il tipo di gin che sto facendo?</p></div></details>
-    <details class="howto"><summary>Cuore</summary><div class="howto-body"><p>È il corpo centrale del profilo: le note di mezzo, che si aprono dopo la testa e danno rotondità e continuità fra la freschezza iniziale e il fondo. Peso: 70%.</p><p><em>Esempi:</em> mirto, lentisco, cedro, cardamomo verde (nel Secco), rosmarino o salvia (Erbaceo), sambuco.</p><p><em>Domanda guida:</em> è una delle note che raccontano davvero che gin è, o il gin diventa più vuoto senza di lei?</p></div></details>
-    <details class="howto"><summary>Firma</summary><div class="howto-body"><p>È la botanica fuori dal comune che rende il gin riconoscibile e diverso dagli altri. Una sola, in dose misurata: si nota senza coprire il resto; più firme si coprono a vicenda. Facoltativa. Peso: 30%.</p><p><em>Esempi:</em> elicriso, grani del paradiso, kumquat, rosa.</p><p><em>Domanda guida:</em> la sua presenza si nota soprattutto quando manca?</p></div></details>
-    <details class="howto"><summary>Rifinitura</summary><div class="howto-body"><p>È il tocco finale, in dose minima («tracce»), che chiude il sorso e rifinisce la coda del gusto. Facoltativa. Peso: 15%.</p><p><em>Esempi:</em> timo o rosmarino in tracce, alloro, cannella, cardamomo, mandorla.</p><p>Il ruolo non è fisso: la stessa botanica cambia ruolo da uno stile all'altro (bergamotto: Freschezza nel Mediterraneo, Identità nell'Agrumato).</p><p><em>Domanda guida:</em> se la tolgo, il finale perde la sua coda o la sua memoria aromatica?</p></div></details>
-      <h3>La solubilità: cosa si estrae e cosa rovina il gusto</h3>
-    <details class="howto"><summary>Terpeni, oli essenziali, resine e cere</summary><div class="howto-body"><p><strong>Terpeni e oli essenziali</strong> (limonene degli agrumi, pinene del ginepro, linalolo del coriandolo): molecole apolari che si sciolgono bene in alcol medio-alto, poco in acqua. Sono l'aroma buono; alla diluizione possono precipitare e dare torbidità (effetto louche). <strong>Resine e cere:</strong> richiedono alcol alto e, in eccesso, danno note di trementina, ruvidità e velature.</p></div></details>
-    <details class="howto"><summary>Clorofilla e pigmenti</summary><div class="howto-body"><p>La <strong>clorofilla</strong> è lipofila: si estrae bene con alcol alto e dà colore verde e note di erba tagliata o fieno. Per questo sulle foglie conviene una gradazione media, poche ore e il buio. Gli <strong>antociani</strong> (ibisco, frutti rossi) e i <strong>carotenoidi</strong> (curcuma, zafferano) sono più idrosolubili e colorano anche a gradazioni basse.</p></div></details>
-    <details class="howto"><summary>Tannini, zuccheri, acidi e sali</summary><div class="howto-body"><p>Sostanze polari che passano con l'acqua della miscela, soprattutto sotto il 45–50%. I <strong>tannini</strong> (cortecce, foglie, semi, bucce) danno astringenza e secchezza; zuccheri e acidi danno sapore ma anche torbidità e fermentazioni se presenti in eccesso.</p></div></details>
-    <details class="howto"><summary>Amari e altre sostanze che danneggiano il gusto</summary><div class="howto-body"><ul><li><strong>Albedo degli agrumi</strong> (parte bianca): amaro netto, dalla naringina e dalla limonina. Si usa solo il flavedo.</li><li><strong>Principi amari</strong> di genziana, artemisia, abrotano, carciofo, cardo: potenti, bastano tempi brevi.</li><li><strong>Tujone</strong> (artemisia, abrotano, salvia): dose minima ed evitare l'uso prolungato.</li><li><strong>Eugenolo e piperina</strong> (chiodo di garofano, pepe): in poco tempo diventano dominanti o ruvidi.</li><li><strong>Ossidazione</strong>: colore bruno e note di cartone; bottiglie piene, chiuse, al buio.</li></ul><p>Regola: un solvente troppo forte trascina cere, resine e amari; uno troppo debole lascia gli oli e porta tannini. Ogni botanica ha la sua gradazione e la sua soglia nelle schede.</p></div></details>
-      <h3>Filtrazione e apparecchiature</h3>
-    <details class="howto"><summary>Metodi di filtrazione</summary><div class="howto-body"><ul><li><strong>Setaccio, tela di cotone, mussola:</strong> tolgono i pezzi grossi. Si usano sempre prima di mescolare gli estratti.</li><li><strong>Filtro da caffè o carta a pieghe, per gravità:</strong> lento ma semplice, per piccoli volumi.</li><li><strong>Büchner sotto vuoto:</strong> filtrazione fine e rapida con carta da laboratorio (8–11 µm, poi 2–3 µm).</li><li><strong>Coadiuvanti</strong> (cellulosa, terra di diatomee): strato filtrante che evita di intasare la carta; non respirare le polveri secche.</li><li><strong>Siringa con filtro a membrana</strong> (0,45 µm): per i campioni di prova.</li><li><strong>Cartucce o filtri a piastre con pompa:</strong> per volumi grandi.</li><li><strong>Filtrazione a freddo:</strong> dopo 24–72 ore in frigo o freezer, ancora freddo, per togliere gli oli che si separano. Il gin non deve intorbidarsi alla temperatura di servizio.</li><li><strong>Carbone attivo alimentare:</strong> schiarisce e toglie note vegetali ma assorbe anche aroma; si prova su un campione.</li><li><strong>Sifone / travaso:</strong> togli il limpido dal deposito, senza filtrare, per conservare più corpo.</li></ul></div></details>
-    <details class="howto"><summary>Apparecchiature</summary><div class="howto-body"><ul><li><strong>Bilancia da 0,01 g</strong> per le botaniche e per pesare alcol e acqua (più precisa dei ml).</li><li><strong>Cilindri o becher graduati</strong>, barattoli di vetro scuro con chiusura ermetica, bottiglie scure.</li><li><strong>Termometro</strong> e un luogo buio a temperatura stabile.</li><li><strong>Alcolometro (densimetro):</strong> misura il grado solo su miscele di alcol e acqua, con zuccheri o estratti dà errori.</li><li><strong>Mortaio o macina</strong> per semi e spezie; <strong>coltello o pelapatate</strong> per il solo flavedo.</li><li><strong>Imbuto Büchner, beuta da vuoto, pompa</strong> (a membrana o ad acqua), tubi e guarnizioni. Alcol infiammabile: ambiente ventilato, niente fiamme, vetreria da vuoto integra.</li></ul></div></details>
-      <h3>Glossario</h3>
-    <details class="howto" open><summary>Glossario A–Z</summary><div class="howto-body"><dl class="voc-dl"><dt>Albedo</dt><dd>parte bianca sotto la scorza degli agrumi, amara; da evitare.</dd><dt>Alcol di partenza</dt><dd>l'alcol alimentare da cui si parte (96% vol qui), poi diluito con acqua.</dd><dt>Base neutra</dt><dd>alcol e acqua alla gradazione di lavoro, senza botaniche.</dd><dt>Botanica</dt><dd>qualsiasi parte vegetale usata per aromatizzare.</dd><dt>Chill haze</dt><dd>velatura che compare quando il gin si raffredda.</dd><dt>Compound gin</dt><dd>gin ottenuto aromatizzando l'alcol con estratti e infusi, senza distillare le botaniche.</dd><dt>Contrazione di volume</dt><dd>l'alcol mescolato con acqua occupa meno della somma dei volumi.</dd><dt>Dose di riferimento</dt><dd>grammi di botanica per 100 ml di infuso dati dalla libreria.</dd><dt>Effetto louche</dt><dd>intorbidamento per oli che si separano quando si diluisce l'alcol.</dd><dt>Estratto / infuso</dt><dd>liquido aromatico ottenuto dalla macerazione di una botanica.</dd><dt>Flavedo</dt><dd>parte colorata della scorza, ricca di oli essenziali.</dd><dt>Gradazione (% vol)</dt><dd>percentuale di alcol in volume.</dd><dt>Idrofilo / idrofobo (lipofilo)</dt><dd>che si scioglie in acqua, oppure in alcol e grassi.</dd><dt>Legante / fissativo</dt><dd>botanica che trattiene gli aromi volatili e allunga il finale.</dd><dt>Macerazione</dt><dd>contatto della botanica con il solvente per estrarne le sostanze.</dd><dt>Micro-emulsione</dt><dd>oli dispersi in goccioline finissime: il velo bianco della torbidità.</dd><dt>Mouthfeel</dt><dd>sensazione in bocca: densità, oleosità, rotondità.</dd><dt>Note di testa, cuore e fondo</dt><dd>l'ordine in cui si percepiscono gli aromi: prima i volatili, poi i medi, infine i persistenti.</dd><dt>Persistenza</dt><dd>quanto a lungo l'aroma resta in bocca dopo il sorso.</dd><dt>Potenza</dt><dd>forza aromatica di una botanica: più è alta, meno se ne usa.</dd><dt>Tannini</dt><dd>sostanze che danno astringenza.</dd><dt>Terpeni</dt><dd>molecole aromatiche degli oli essenziali (limonene, pinene).</dd><dt>Tracce</dt><dd>dose ridotta (circa il 15%) per le botaniche di rifinitura.</dd><dt>Tujone</dt><dd>composto di artemisia, abrotano e salvia, da dosare con cautela.</dd></dl></div></details>
-    </div>
-  </section>
 
   <section class="panel" id="panel-ridondanza">
     <details class="howto">
@@ -2520,17 +2502,9 @@ footer.note{
     <details class="howto" id="vademecum" open hidden>
       <summary>Vademecum: i ruoli delle botaniche</summary>
       <div class="howto-body">
-        <p>In uno stile personalizzato ogni botanica ha un compito, con gli stessi sei ruoli degli stili preordinati. Scegli il ruolo dal menù accanto alla botanica:</p>
-        <ul>
-          <li><strong>Base.</strong> Il ginepro (<em>Juniperus communis</em>) è l'ingrediente obbligatorio per legge e l'anima del gin: note balsamiche, resinose e pungenti, in dose piena. Accanto a lui il legante, come angelica o iris (giaggiolo): fissativo e spina dorsale, trattiene gli aromi volatili e dà persistenza al palato. <em>Domanda guida: se la tolgo, questo gin perde la sua identità o smette di stare in piedi?</em></li>
-          <li><strong>Freschezza.</strong> Le note di testa che aprono il profilo: il coriandolo, di solito con un agrume come limone o bergamotto. Completano il ginepro con un lato speziato e agrumato. <em>Domanda guida: se la tolgo, il gin diventa più pesante o meno dissetante in apertura?</em></li>
-          <li><strong>Identità.</strong> La botanica che dà carattere allo stile e, quando è legata a un luogo, al territorio: finocchio di mare, bergamotto, timo, lavanda, zenzero, iris. Si riconosce subito dopo il ginepro. <em>Domanda guida: cambiando questa botanica, cambia il tipo di gin che sto facendo?</em></li>
-          <li><strong>Cuore.</strong> Il corpo centrale del profilo, le note di mezzo che danno rotondità e continuità: mirto, lentisco, cedro, cardamomo, rosmarino, sambuco. <em>Domanda guida: è una delle note che raccontano davvero che gin è, o il gin diventa più vuoto senza di lei?</em></li>
-          <li><strong>Firma.</strong> La botanica fuori dal comune, magari unica o misteriosa, che rende il gin riconoscibile: elicriso, grani del paradiso, kumquat, rosa. Una sola, in dose misurata: deve farsi notare senza coprire il resto. Il ruolo è facoltativo. <em>Domanda guida: la sua presenza si nota soprattutto quando manca?</em></li>
-          <li><strong>Rifinitura.</strong> Il tocco finale, in dose minima, che chiude il sorso e rifinisce la coda: timo, alloro, cannella, cardamomo, mandorla. Il ruolo è facoltativo. <em>Domanda guida: se la tolgo, il finale perde la sua coda o la sua memoria aromatica?</em></li>
-        </ul>
+        <p>In uno stile personalizzato ogni botanica ha un compito, con gli stessi sei ruoli degli stili preordinati: lo scegli dal menù accanto alla botanica. <button type="button" class="ghost-btn" onclick="document.getElementById('ruoli-def-btn').click()">📖 Definizioni dei ruoli</button></p>
         <p><strong>Il ruolo cambia la quantità.</strong> Ogni ruolo usa una frazione della dose di riferimento della Libreria: <em>Base</em> e <em>Freschezza</em> 100%, <em>Identità</em> 80%, <em>Cuore</em> 70%, <em>Firma</em> 30%, <em>Rifinitura</em> 15% (tracce). Sotto ogni botanica vedi la percentuale applicata; i grammi li trovi nella pagina Infusi. La quota di ginepro, la scheda di prova e la stampa usano questi stessi pesi. Sono valori di partenza, da correggere con gli assaggi.</p>
-        <p><strong>Il ginepro deve superare il 50%?</strong> No: il 50% non è una regola. La normativa europea sul gin chiede che il sapore di ginepro sia <em>predominante</em>, senza indicare nessuna percentuale in peso: il criterio è sensoriale. Il peso dice poco su cosa si sente, perché una botanica potente (cedro, chiodo di garofano) pesa pochissimo ma si fa notare molto. Per questo molti gin moderni hanno una quota di ginepro ben sotto il 50% e restano riconoscibili come gin. Nel Builder la quota di ginepro sul totale è verde da 45% in su, arancio tra 30% e 44%, rossa sotto il 30%: sono soglie pratiche di lavoro, non di legge. Se all'assaggio il ginepro è la prima nota riconoscibile, la miscela è a posto; se è coperto, alza il ginepro o riduci le botaniche potenti. Se il gin è destinato alla vendita, verifica la definizione legale e l'etichetta con le autorità competenti.</p>
+        <p><strong>Quota di ginepro.</strong> Verde da 45% in su, arancio tra 30% e 44%, rossa sotto il 30%: soglie pratiche di lavoro, non di legge. <a href="#" class="noz-link" data-noz="Il ginepro deve superare">Perché il 50% non è una regola</a>.</p>
         <p>Sotto la combinazione compaiono i semafori: <strong>rosso</strong> ridondanza, <strong>arancio</strong> rischio se messe insieme (o da dosare), <strong>verde</strong> complementari.</p>
       </div>
     </details>
@@ -2742,7 +2716,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 6 ottobre 2026, ore 20:45 · ridondanze: le schede seguono il tavolo di lavoro, tolta la seconda ricerca</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 6 ottobre 2026, ore 21:00 · meno ripetizioni: Vocabolario unito a Nozioni, avvisi del Builder in una tabella, ruoli in un solo riquadro</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -3030,7 +3004,7 @@ function radarSVG(serie, size, opts){
   };
   const bR = baricentro(insieme);
   if (opts.insieme && piene.length > 1) gS += freccia(bR, 'var(--ink)', false);
-  let nota = '<div class="radar-nota r-sottr">In sottrazione ogni nota toglie la sua opposta: al centro il profilo \u00e8 neutro, un braccio lungo indica un carattere netto. Lo squilibrio non \u00e8 un difetto: \u00e8 lo stile. ';
+  let nota = '<div class="radar-nota r-sottr">';
   const rifV = opts.rifVals || (opts.stile ? profiloRiferimento(opts.stile, opts.conBase) : null);
   if (rifV){
     const bT = baricentro(rifV);
@@ -3064,6 +3038,8 @@ function toggleSottrazione(){
   const on = !document.documentElement.classList.contains('radar-sottr');
   document.documentElement.classList.toggle('radar-sottr', on);
   try { localStorage.setItem('gb-radar-sottr', on ? '1' : ''); } catch(e){}
+  if (on && typeof mostraAvviso === 'function') mostraAvviso('\u2296 Vista in sottrazione',
+    '<p>Ogni nota toglie la sua opposta (dolce/amaro, acido/salino, agrumato/speziato, floreale/erbaceo): al centro il profilo \u00e8 neutro, un braccio lungo indica un carattere netto.</p><p>Lo squilibrio non \u00e8 un difetto: \u00e8 lo stile. Vale per tutti i radar dell\u2019app; si torna al profilo intero con lo stesso pulsante.</p>', '', null);
 }
 try { if (localStorage.getItem('gb-radar-sottr')) document.documentElement.classList.add('radar-sottr'); } catch(e){}
 
@@ -3519,7 +3495,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   // una ricetta alle pagine di approfondimento/riferimento, invece che nell'ordine dei tab.
   const GROUPS = [
     { label: 'Prima di costruire', tabs: ['ridondanza'] },
-    { label: 'Per approfondire', tabs: ['vocabolario', 'nozioni', 'analisi', 'ruota', 'altrigin'] }
+    { label: 'Per approfondire', tabs: ['nozioni', 'analisi', 'ruota', 'altrigin'] }
   ];
   const fuoriHome = btns.filter(b => IN_HOME.indexOf(b.dataset.tab) < 0 && b.dataset.tab !== 'home');
   const homeBtn = btns.find(b => b.dataset.tab === 'home');
@@ -4494,20 +4470,20 @@ function renderSummary(){
   }
   // Ogni botanica ha una sua gradazione di estrazione consigliata (Libreria). Se la gradazione del gin finito
   // (43%) è fuori dal suo range, segnala la gradazione giusta e i valori ricalcolati, per infonderla a parte.
-  let gradHtml = '';
+  let gradRighe = '';
   uniqueChosen.forEach(n => {
     const est = EST[n]; if (!est) return;
     const d = byName[n]; if (!d) return;
     if (REF_ABV >= est.a[0] && REF_ABV <= est.a[1]) return;
     const mid = est.a[0];
     const ds = DOSE[n] || {};
-    const baseTempo = tempoBaseTxt(d);
     const baseDose = ds.test ?? d.dose;
     const dose2 = adjustedDose(baseDose, mid, REF_TEMP, d.categoria);
-    const tempo2 = adjustedTempo(baseTempo, mid, REF_TEMP, d.categoria);
+    const tempo2 = adjustedTempo(tempoBaseTxt(d), mid, REF_TEMP, d.categoria);
     const nq = n.replace(/'/g, "\\'");
-    gradHtml += `<div class="warn-box">⚠️ <strong>${n}</strong> si estrae meglio a <strong>${estAbvTxt(est.a)}</strong>, non alla gradazione del gin finito. A ${mid}%/${REF_TEMP}°C: ${dose2 ?? (baseDose ?? '—')} g per 100 ml e tempo ${tempo2}. Conviene infonderla da sola a questa gradazione e poi unirla al blend finale. <button type="button" class="ghost-btn" style="margin-top:6px" onclick="apriInfusi('${nq}')">Apri la preparazione →</button></div>`;
+    gradRighe += `<tr><td><strong>${n}</strong></td><td>${estAbvTxt(est.a)}</td><td>${dose2 ?? (baseDose ?? '—')} g</td><td>${tempo2}</td><td><button type="button" class="link-btn" onclick="apriInfusi('${nq}')">Apri →</button></td></tr>`;
   });
+  const gradHtml = gradRighe ? `<div class="adj-box grad-tab"><p>🧪 <strong>Ogni botanica si infonde da sola alla sua gradazione</strong>, poi gli infusi si uniscono e si portano al grado del gin finito. Dose per 100 ml alla gradazione minima indicata, a ${REF_TEMP}°C:</p><div class="grad-tab-wrap"><table><thead><tr><th>Botanica</th><th>Gradazione</th><th>Dose</th><th>Tempo</th><th></th></tr></thead><tbody>${gradRighe}</tbody></table></div></div>` : '';
   const personalizzato = currentStyleName === 'Personalizzato';
   buildWarnings.innerHTML = juniperHtml + gradHtml + (personalizzato ? '' : noteHtml + warnHtml);
   renderSemafori(uniqueChosen);
@@ -5508,7 +5484,7 @@ function labCardHtml(c){
   const col = c.mio ? 'var(--ochre)' : CK_COLORS[c.fam];
   const radar = serie.length ? '<div class="radar-box">' + radarSVG(serie, 240) +
     '<div class="radar-legend"><span><i style="background:var(--juniper)"></i>Previsto</span>' + (serie.length > 1 ? '<span><i style="background:#C0733A"></i>Ultimo assaggio</span>' : '') + '</div>' +
-    '<div class="radar-nota">Forma del profilo, non intensità. Stima dai profili degli ingredienti.</div></div>' : '';
+    '</div>' : '';
   const sel = (i) => '<label>' + ASSI8[i] + '<select class="lab-pa" data-i="' + i + '"><option value="">—</option>' + [0,1,2,3,4,5].map(v => '<option value="' + v + '">' + v + ' · ' + ANCORE_VOTO[v] + '</option>').join('') + '</select></label>';
   const storia = ass.map((a, k) => '<li><span><strong>v' + (k + 1) + '</strong> · ' + (a.data || '') + (a.giudizio ? ' · ' + a.giudizio : '') + (a.ipotesi ? ' · ipotesi: ' + a.ipotesi.toLowerCase() : '') +
     (a.note ? '<br>' + String(a.note).replace(/[<>&]/g, '') : '') + '</span><button type="button" class="lab-x" title="Elimina" data-del="' + k + '" data-id="' + c.id + '">✕</button></li>').join('');
