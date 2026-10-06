@@ -385,7 +385,7 @@ nav.tabs{display:none !important;}
 #nav-indietro .ni-f{font-size:18px;line-height:1;color:var(--juniper);}
 #nav-indietro .ni-t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 @media print{#nav-indietro{display:none !important;}}
-.menu-pop{overscroll-behavior:contain;-webkit-overflow-scrolling:touch;}
+.menu-pop{overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding-bottom:calc(14px + env(safe-area-inset-bottom));}
 .menu-group-label{grid-column:1/-1;margin:6px 2px 0;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);}
 .menu-group-label:first-of-type{margin-top:2px;}
 .menu-tile{--h:#2F7259;display:flex;flex-direction:column;justify-content:space-between;gap:10px;min-height:76px;padding:12px;border-radius:16px;cursor:pointer;text-align:left;
@@ -2730,7 +2730,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 01:00 · prossimo assaggio calcolato sui tempi di estrazione</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 01:05 · menu che scorre fino agli ultimi riquadri</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -3559,8 +3559,20 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   function imposta(aperto){
     pop.hidden = !aperto; btn.setAttribute('aria-expanded', String(aperto));
     document.documentElement.classList.toggle('menu-aperto', aperto);
-    if (aperto) pop.scrollTop = 0;
+    if (aperto){ pop.scrollTop = 0; misura(); setTimeout(misura, 80); setTimeout(misura, 400); }
   }
+  // Il riquadro del menu non deve andare oltre il fondo dello schermo visibile: con 72vh sul telefono
+  // (dove vh include anche la zona sotto la barra del browser) gli ultimi riquadri restavano irraggiungibili.
+  function misura(){
+    if (pop.hidden) return;
+    const alto = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    const top = pop.getBoundingClientRect().top;
+    pop.style.maxHeight = Math.max(200, Math.floor(alto - top - 16)) + 'px';
+  }
+  window.addEventListener('resize', misura);
+  try { new ResizeObserver(misura).observe(document.querySelector('.sticky-head') || bar); } catch(e){}
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', misura);
+  window.addEventListener('scroll', () => { if (!pop.hidden) misura(); }, { passive: true });
   function chiudi(){ imposta(false); }
   btn.addEventListener('click', e => { e.stopPropagation(); imposta(pop.hidden); });
   document.addEventListener('click', e => { if (!bar.contains(e.target)) chiudi(); });
