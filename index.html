@@ -974,6 +974,10 @@ input:focus, select:focus, textarea:focus{
 .radar-box{margin:18px 0 22px;padding:14px 16px 12px;background:var(--surface-2);border:1px solid var(--line);border-radius:14px;text-align:center;}
 .radar-title{font-weight:600;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:4px;}
 .radar8{width:100%;max-width:300px;height:auto;display:block;margin:0 auto;}
+.radar-wrap{position:relative;}
+.radar-sottr-btn{display:block;margin:6px auto 2px;font-size:12.5px;padding:5px 12px;}
+html:not(.radar-sottr) .radar-wrap .r-sottr{display:none;}
+html.radar-sottr .radar-wrap .r-norm{display:none;}
 .radar-base-btn{display:block;width:100%;margin:6px 0 10px;font-size:14px;font-weight:600;color:var(--juniper);border:1.5px solid var(--juniper);background:transparent;padding:9px 14px;}
 .radar-base-btn[aria-pressed="true"]{background:var(--juniper);color:var(--surface);}
 .fase-sel{display:flex;gap:6px;justify-content:center;margin:6px 0 8px;}
@@ -2787,7 +2791,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 6 ottobre 2026, ore 15:45 · radar con le note opposte una di fronte all\'altra</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 6 ottobre 2026, ore 16:00 · radar in sottrazione (equilibrio delle note opposte)</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -3007,15 +3011,50 @@ function radarSVG(serie, size){
     const anc = Math.abs(lx-c) < 6 ? 'middle' : (lx > c ? 'start' : 'end');
     g += '<text x="'+lx+'" y="'+(ly+4)+'" text-anchor="'+anc+'" font-size="12" fill="var(--ink-soft)">'+nm+'</text>';
   });
+  const disegna = (se, vals) => {
+    let h = '';
+    const pts = ORDINE_RADAR.map(i => pt(i, vals[i]).join(',')).join(' ');
+    if (se.dash) return '<polygon points="'+pts+'" fill="none" stroke="'+se.color+'" stroke-width="1.5" stroke-dasharray="4 3" stroke-linejoin="round"/>';
+    h += '<polygon points="'+pts+'" fill="'+se.color+'" fill-opacity=".22" stroke="'+se.color+'" stroke-width="2" stroke-linejoin="round"/>';
+    vals.forEach((v,i) => { if (v > 0){ const [x,y] = pt(i,v); h += '<circle cx="'+x+'" cy="'+y+'" r="2.8" fill="'+se.color+'"/>'; } });
+    return h;
+  };
+  // Vista normale
+  let gN = '', gS = '';
+  serie.forEach(se => { gN += disegna(se, se.vals); });
+  // Vista in sottrazione: per ogni coppia di note opposte resta solo la differenza, dalla parte della piu' forte.
+  // Tutto al centro = equilibrio; un solo braccio lungo = squilibrio massimo. Il punto pieno e' il baricentro (dove pende).
+  const sq = [];
   serie.forEach(se => {
-    const pts = ORDINE_RADAR.map(i => pt(i, se.vals[i]).join(',')).join(' ');
-    if (se.dash){ g += '<polygon points="'+pts+'" fill="none" stroke="'+se.color+'" stroke-width="1.5" stroke-dasharray="4 3" stroke-linejoin="round"/>'; return; }
-    g += '<polygon points="'+pts+'" fill="'+se.color+'" fill-opacity=".22" stroke="'+se.color+'" stroke-width="2" stroke-linejoin="round"/>';
-    se.vals.forEach((v,i) => { if (v > 0){ const [x,y] = pt(i,v); g += '<circle cx="'+x+'" cy="'+y+'" r="2.8" fill="'+se.color+'"/>'; } });
+    const net = se.vals.map((v,i) => Math.max(0, v - se.vals[OPPOSTA_RADAR[i]]));
+    gS += disegna(se, net);
+    let bx = 0, by = 0, tot = 0;
+    se.vals.forEach((v,i) => { const [x,y] = pt(i, v); bx += x - c; by += y - c; tot += v; });
+    const len = Math.hypot(bx, by), pct = tot ? Math.round(len / (R * tot / 5) * 100) : 0;
+    sq.push({ l: se.label || '', c: se.color, pct });
+    if (len > 0.5 && !se.dash){
+      const ux = bx / len, uy = by / len, L = R * pct / 100;
+      gS += '<line x1="'+c+'" y1="'+c+'" x2="'+(c+ux*L)+'" y2="'+(c+uy*L)+'" stroke="'+se.color+'" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="1 4"/>' +
+            '<circle cx="'+(c+ux*L)+'" cy="'+(c+uy*L)+'" r="4.5" fill="'+se.color+'" stroke="var(--surface)" stroke-width="1.5"/>';
+    } else if (!se.dash) gS += '<circle cx="'+c+'" cy="'+c+'" r="4.5" fill="'+se.color+'" stroke="var(--surface)" stroke-width="1.5"/>';
   });
+  gS += '<circle cx="'+c+'" cy="'+c+'" r="3" fill="none" stroke="var(--ink-soft)" stroke-width="1"/>';
   const desc = serie.map(se => (se.label||'') + ': ' + se.vals.map((v,i) => ASSI8[i]+' '+v).join(', ')).join('. ');
-  return '<svg class="radar8" viewBox="-22 0 '+(size+44)+' '+size+'" role="img" aria-label="Profilo sensoriale. '+desc.replace(/"/g,'')+'">'+g+'</svg>';
+  const giud = p => p <= 15 ? 'molto equilibrato' : p <= 35 ? 'equilibrato' : p <= 60 ? 'pende da una parte' : 'molto sbilanciato';
+  const nota = '<div class="radar-nota r-sottr">In sottrazione: ogni nota toglie la sua opposta. Al centro = equilibrio, un braccio lungo = squilibrio; il punto pieno indica dove pende il profilo. ' +
+    sq.map(x => (sq.length > 1 && x.l ? '<strong>' + x.l + '</strong>: ' : 'Squilibrio ') + x.pct + ' % (' + giud(x.pct) + ')').join(' \u00b7 ') + '</div>';
+  return '<div class="radar-wrap"><button type="button" class="ghost-btn radar-sottr-btn" onclick="toggleSottrazione()"><span class="r-norm">\u2296 Vedi in sottrazione</span><span class="r-sottr">\u2295 Vedi il profilo intero</span></button>' +
+    '<svg class="radar8" viewBox="-22 0 '+(size+44)+' '+size+'" role="img" aria-label="Profilo sensoriale. '+desc.replace(/"/g,'')+'">'+g+'<g class="r-norm">'+gN+'</g><g class="r-sottr">'+gS+'</g></svg>' + nota + '</div>';
 }
+// Coppie opposte (indici di ASSI8): Dolce/Amaro, Acido/Salino, Agrumato/Speziato, Floreale/Erbaceo
+const OPPOSTA_RADAR = [1, 0, 3, 2, 7, 6, 5, 4];
+// Il tasto vale per tutti i radar dell'app: cambia solo cosa si vede, senza ricalcolare le pagine.
+function toggleSottrazione(){
+  const on = !document.documentElement.classList.contains('radar-sottr');
+  document.documentElement.classList.toggle('radar-sottr', on);
+  try { localStorage.setItem('gb-radar-sottr', on ? '1' : ''); } catch(e){}
+}
+try { if (localStorage.getItem('gb-radar-sottr')) document.documentElement.classList.add('radar-sottr'); } catch(e){}
 
 // ---------- Testa, cuore, coda: quando si sente ogni botanica ----------
 // Pesi per tempo (testa, cuore, coda) ricavati da ruolo (funzione_compound) e persistenza: stima orientativa
