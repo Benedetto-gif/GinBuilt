@@ -1369,6 +1369,22 @@ footer.note{
 .fonti-et{font-weight:600;font-size:13px;}
 .fonti-riga select,.fonti-riga input,.fonti-nota input{width:100%;box-sizing:border-box;font-size:14px;padding:6px;}
 .fonti-nota{display:block;margin-top:8px;font-size:13px;}
+.ruota-wrap{max-width:520px;margin:10px auto 6px;}
+.ruota-wrap svg{width:100%;height:auto;display:block;touch-action:manipulation;}
+.ruota-wrap path{cursor:pointer;stroke:var(--paper);stroke-width:1.2;transition:opacity .2s;}
+.ruota-wrap svg.dim path{opacity:.35;}
+.ruota-wrap svg path.on{opacity:1;stroke:var(--ink);stroke-width:2;}
+.ruota-wrap text{pointer-events:none;fill:#fff;font-family:inherit;}
+.ruota-q{width:100%;box-sizing:border-box;font-size:16px;padding:8px 10px;margin:4px 0 2px;}
+.ruota-info{min-height:40px;margin:6px 0 14px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--card);}
+.ruota-info h4{margin:0 0 6px;}
+.ruota-info .rq-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.ruota-h3{margin:22px 0 8px;}
+.ruota-fam summary{cursor:pointer;font-weight:600;padding:4px 0;}
+.rf-dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px;}
+.ruota-fam ul{margin:6px 0 10px;padding-left:18px;}
+.ruota-fam li{margin:4px 0;}
+.ruota-fam li button{font:inherit;background:none;border:0;padding:0;color:var(--juniper-deep);text-decoration:underline;cursor:pointer;text-align:left;}
 .est-cal{font-size:13px;}
 .voc-dl dt{font-weight:600;margin-top:8px;}.voc-dl dd{margin:0 0 4px 0;color:var(--ink-faint);}
 .cmp-sel{display:flex;gap:6px;margin-bottom:8px;}.cmp-sel select{flex:1;min-width:0;}
@@ -1491,6 +1507,7 @@ footer.note{
     <button data-tab="vocabolario">📚 Vocabolario</button>
     <button data-tab="nozioni">🔬 Nozioni tecniche</button>
     <button data-tab="analisi">👃 Analisi sensoriale</button>
+    <button data-tab="ruota">🎡 Ruota degli aromi</button>
     <button data-tab="altrigin">🥃 Gli altri gin</button>
     <button data-tab="cocktail">🍸 Cocktail</button>
     <button data-tab="laboratorio">🧪 Laboratorio cocktail</button>
@@ -2131,6 +2148,30 @@ footer.note{
           <button class="ghost-btn" type="button" onclick="stampaHtml(document.getElementById('scheda-c-corpo').innerHTML, 'Scheda finale — Valutazione sensoriale del gin compound')">🖨️ Stampa scheda C</button>
         </div>
       </details>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-ruota">
+    <div class="storia">
+      <h2>Ruota degli aromi</h2>
+      <p class="storia-sub">Le famiglie aromatiche del gin al centro, i descrittori sul giro esterno. Tocca un settore per vedere quali botaniche dell'erbario portano quella nota; tocca una botanica per aprirne la scheda.</p>
+      <details class="howto">
+        <summary>Come si usa e da dove viene</summary>
+        <div class="howto-body">
+          <p><strong>Dal centro verso l'esterno.</strong> Quando annusi, parti dalla famiglia (è agrumato? è floreale?) e solo dopo scendi al descrittore preciso (limone o pompelmo? rosa o violetta?). È il modo in cui lavorano i panel di assaggio: prima la categoria larga, poi la nota fine.</p>
+          <p><strong>Le botaniche nei settori</strong> sono collegate automaticamente ai profili aromatici della pagina Botaniche e infusi. La ruota orienta, non dà verdetti: se all'assaggio senti altro, vale l'assaggio.</p>
+          <p><strong>I difetti</strong> (settore grigio) non sono botaniche ma note sbagliate dell'infuso: per ognuno trovi la causa più probabile e il rimedio.</p>
+          <p><strong>Rapporto con il radar.</strong> Il radar a otto assi misura <em>quanto</em>; la ruota serve a dire <em>che cosa</em>. Dolce, amaro, acido e salino sono gusti in bocca e stanno sul radar; sulla ruota compaiono solo come note aromatiche (il miele, il salmastro).</p>
+          <p><strong>Fonte.</strong> Ruota originale costruita per questa app sulle famiglie aromatiche comunemente usate per descrivere il gin; non riproduce una ruota pubblicata.</p>
+        </div>
+      </details>
+      <label class="inf-q-label" for="ruota-q">Dove sta una botanica sulla ruota?</label>
+      <input type="search" id="ruota-q" class="ruota-q" placeholder="es. Bergamotto" list="ruota-dl" autocomplete="off">
+      <datalist id="ruota-dl"></datalist>
+      <div class="ruota-wrap"><svg id="ruota-svg" viewBox="-200 -200 400 400" role="img" aria-label="Ruota degli aromi del gin"></svg></div>
+      <div id="ruota-info" class="ruota-info"></div>
+      <h3 class="ruota-h3">Tutte le famiglie</h3>
+      <div id="ruota-lista"></div>
     </div>
   </section>
 
@@ -3262,7 +3303,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   // una ricetta alle pagine di approfondimento/riferimento, invece che nell'ordine dei tab.
   const GROUPS = [
     { label: 'Prima di costruire', tabs: ['ridondanza'] },
-    { label: 'Per approfondire', tabs: ['vocabolario', 'nozioni', 'analisi', 'altrigin'] }
+    { label: 'Per approfondire', tabs: ['vocabolario', 'nozioni', 'analisi', 'ruota', 'altrigin'] }
   ];
   const fuoriHome = btns.filter(b => IN_HOME.indexOf(b.dataset.tab) < 0 && b.dataset.tab !== 'home');
   const homeBtn = btns.find(b => b.dataset.tab === 'home');
@@ -5317,6 +5358,130 @@ EST['Elicriso'].n = "Non è un doppione di «Elicriso delle scogliere»: quella 
 EST['Elicriso delle scogliere'].n = "Sottospecie costiera dell'elicriso: più salina e più potente, per questo la dose è la metà di quella dell'Elicriso comune.";
 EST['Vaniglia'].n = "Stessa specie della «Vaniglia bourbon» (origine Madagascar e Riunione): le due schede differiscono per dose e profilo, usane una sola nella ricetta. " + EST_N.baccello;
 EST['Vaniglia bourbon'].n = "Stessa specie della «Vaniglia» generica, di origine Madagascar e Riunione: usane una sola nella ricetta. " + EST_N.baccello;
+/* ===== Ruota degli aromi ===== */
+(function(){
+  const F = [
+    { n:'Ginepro e resine', c:'#2F7259', ax:'Erbaceo · Speziato', d:[
+      ['Pino e ginepro', /ginepro/i], ['Resinoso', /resinos|trementina|lentisco/i], ['Canforato', /canfor|eucalipt|mentolat/i], ['Legnoso', /legnos|betulla|sandalo/i] ]},
+    { n:'Agrumi', c:'#B8921F', ax:'Agrumato', d:[
+      ['Limone e cedro', /limon|cedro|citrino|coriandolo/i], ['Arancia', /arancia|mandarin|clementina|kumquat/i], ['Pompelmo e lime', /pompelmo|lime|yuzu/i], ['Bergamotto', /bergamott|earl grey/i], ['Scorza candita', /candit|\bcera\b/i] ]},
+    { n:'Floreale', c:'#B04A6B', ax:'Floreale', d:[
+      ['Rosa', /\brosa\b(?! canina)|ibisco|moscato/i], ['Violetta e iris', /violett|iris|talco/i], ['Lavanda', /lavand/i], ['Fiori bianchi', /fiori d'arancio|neroli|gelsomin|sambuco|ciliegio/i], ['Fiori delicati', /fiordaliso|malva|floreale delicato|floreale, tenue/i], ['Miele e fieno', /miel|fieno|camomill|ginestra|erica|trifoglio/i] ]},
+    { n:'Erbaceo e verde', c:'#6F8A2E', ax:'Erbaceo', d:[
+      ['Foglia verde', /\bverde\b|\berba\b|vegetale|cetriolo|asparago|sedano|succulent/i], ['Menta', /menta|melissa/i], ['Erbe mediterranee', /mediterrane|macchia|timo|salvia|origano|maggiorana|santoreggia|alloro|mirto foglie/i], ['Tè e tisana', /\btè|tisana|moringa/i] ]},
+    { n:'Speziato caldo', c:'#C0583E', ax:'Speziato', d:[
+      ['Cannella', /cannella|cassia/i], ['Chiodo di garofano', /eugenol|garofano/i], ['Noce moscata', /noce moscata|macis/i], ['Cardamomo', /cardamomo/i], ['Anice e finocchio', /anic|anis|finocchio(?! di mare)|aneto|liquirizia|dragoncello/i] ]},
+    { n:'Speziato pungente', c:'#8E3B2E', ax:'Speziato', d:[
+      ['Pepato', /pepat|\bpepe\b|cubebe|paradiso/i], ['Zenzero', /zenzero|galanga|curcuma/i], ['Pungente', /pungent|senap|formicolant|piccant|sulfure|solforat/i] ]},
+    { n:'Radici e terra', c:'#7A5A3A', ax:'Amaro · Erbaceo', d:[
+      ['Terroso', /terros|radicat/i], ['Muschio e bosco', /muschiat|bosco/i], ['Amaro di radice', /genziana|amarissim|amaro molto|amaro deciso|tarassaco|carciofo|cardo|artemisia|abrotano/i], ['Tostato', /tostat|caffè|cacao|cioccolat|affumicat|castagna/i] ]},
+    { n:'Fruttato', c:'#C4803A', ax:'Dolce · Acido', d:[
+      ['Frutti rossi', /mirtill|ribes|\bmora\b|fragola|lampon|ciliegia|cassis|melograno|gelso|corbezzolo/i], ['Frutta bianca', /\bmela\b|\bpera\b|\buva\b|sorbo/i], ['Tropicale', /tropical|ananas|mango|papaya|litchi|guava|passione|banana|cocco|feijoa|kiwi|rambutan|longan|pitaya|durian/i], ['Frutta secca', /\bfico\b|prugna|uva passa|carruba|frutta secca|mela cotta/i] ]},
+    { n:'Dolce e balsamico', c:'#8A63B0', ax:'Dolce', d:[
+      ['Vaniglia e tonka', /vanigl|tonka|tabacco/i], ['Mandorla', /mandorl|marzapane|amaretto|nocciol/i], ['Balsamico', /balsamic/i], ['Caramellato', /caramell|manna|carruba/i] ]},
+    { n:'Marino', c:'#2F8F8F', ax:'Salino', d:[
+      ['Salino e iodato', /salin|iodat|sapid|salicornia/i], ['Alghe', /\balga|algale|posidonia|poseidonia|spirulina|nori/i], ['Costiero', /costier|di mare|cappero|scogliere|\bmarino\b/i] ]},
+    { n:'Difetti', c:'#7C807D', ax:'—', dif:true, d:[
+      ['Cotto', null, 'Macerazione troppo calda o troppo lunga, soprattutto su agrumi, fiori ed erbe fresche.', 'Accorcia il tempo, resta sotto i 25 °C, conserva al buio.'],
+      ['Tannico', null, 'Grado o tempo eccessivi su cortecce, foglie, bucce e albedo degli agrumi.', 'Scendi di gradazione, usa solo il flavedo, togli prima la botanica.'],
+      ['Amaro crudo', null, 'Albedo bianca degli agrumi, gambi, clorofilla estratta ad alto grado dalle foglie fresche.', 'Pela più sottile, togli i gambi, prova un grado più basso.'],
+      ['Saponoso', null, 'Eccesso di lavanda o di aldeidi verdi (foglie di coriandolo, alcune erbe fresche).', 'Riduci la dose oppure infondi a parte e dosa alla fine.'],
+      ['Ossidato', null, 'Infuso vecchio o esposto ad aria e luce: i terpeni degli agrumi si ossidano e sanno di cartone.', 'Bottiglie piene e scure; usa gli infusi di agrumi entro poche settimane.'],
+      ['Solvente', null, 'Alcol di partenza di qualità scarsa.', 'Usa alcol alimentare 96% di buona qualità.'],
+      ['Metallico', null, 'Contatto con contenitori o utensili metallici, acqua non demineralizzata.', 'Solo vetro e acciaio alimentare, acqua demineralizzata.'] ]}
+  ];
+  const svg = document.getElementById('ruota-svg'); if (!svg) return;
+  const info = document.getElementById('ruota-info'), lista = document.getElementById('ruota-lista'), q = document.getElementById('ruota-q');
+  const tutte = () => (typeof MASTER !== 'undefined' ? MASTER : []);
+  const testo = b => (b.botanica + ' | ' + (b.profilo || '')).toLowerCase();
+  const botDi = re => re ? tutte().filter(b => re.test(testo(b))).map(b => b.botanica).sort((x, y) => x.localeCompare(y, 'it')) : [];
+  const esc = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+  const NS = 'http://www.w3.org/2000/svg', R0 = 44, R1 = 106, R2 = 198;
+  const pt = (r, a) => [r * Math.sin(a), -r * Math.cos(a)];
+  function arco(r1, r2, a1, a2){
+    const g = a2 - a1 > Math.PI ? 1 : 0, [x1, y1] = pt(r2, a1), [x2, y2] = pt(r2, a2), [x3, y3] = pt(r1, a2), [x4, y4] = pt(r1, a1);
+    return `M${x1},${y1}A${r2},${r2} 0 ${g} 1 ${x2},${y2}L${x3},${y3}A${r1},${r1} 0 ${g} 0 ${x4},${y4}Z`;
+  }
+  function el(tag, at, txt){ const e = document.createElementNS(NS, tag); for (const k in at) e.setAttribute(k, at[k]); if (txt != null) e.textContent = txt; return e; }
+  const rotRad = am => { const deg = am * 180 / Math.PI; return deg > 180 ? deg + 90 : deg - 90; };
+  const totD = F.reduce((t, f) => t + f.d.length, 0), passo = 2 * Math.PI / totD;
+  const segs = [], fams = [];
+  let a = 0;
+  F.forEach((f, fi) => {
+    const a0 = a;
+    f.d.forEach((d, di) => {
+      const p = el('path', { d: arco(R1, R2, a, a + passo), fill: f.c, 'fill-opacity': di % 2 ? 1 : .8 });
+      p.dataset.f = fi; p.dataset.d = di;
+      p.addEventListener('click', () => scegliD(fi, di));
+      svg.appendChild(p); segs.push(p);
+      const am = a + passo / 2, [x, y] = pt((R1 + R2) / 2, am);
+      svg.appendChild(el('text', { x, y, 'font-size': 9, 'text-anchor': 'middle', 'dominant-baseline': 'central', transform: `rotate(${rotRad(am)} ${x} ${y})` }, d[0]));
+      a += passo;
+    });
+    const p = el('path', { d: arco(R0, R1, a0, a), fill: f.c });
+    p.dataset.f = fi; p.addEventListener('click', () => scegliF(fi));
+    svg.appendChild(p); fams.push(p);
+    const am = (a0 + a) / 2, [x, y] = pt((R0 + R1) / 2, am), parti = f.n.split(' ');
+    const t = el('text', { x, y, 'font-size': 8, 'font-weight': 700, 'text-anchor': 'middle', 'dominant-baseline': 'central', transform: `rotate(${rotRad(am)} ${x} ${y})` });
+    if (parti.length > 1){
+      const r1 = parti.length > 2 ? parti.slice(0, 2).join(' ') : parti[0], r2 = parti.length > 2 ? parti.slice(2).join(' ') : parti[1];
+      t.appendChild(el('tspan', { x, dy: '-0.55em' }, r1)); t.appendChild(el('tspan', { x, dy: '1.1em' }, r2));
+    } else t.textContent = f.n;
+    svg.appendChild(t);
+  });
+  svg.appendChild(el('circle', { r: R0 - 2, fill: 'var(--juniper-deep)' }));
+  svg.appendChild(el('text', { y: -3, 'font-size': 13, 'font-weight': 700, 'text-anchor': 'middle', style: 'fill:var(--paper)' }, 'GIN'));
+  svg.appendChild(el('text', { y: 12, 'font-size': 7, 'text-anchor': 'middle', style: 'fill:var(--paper)' }, 'aromi'));
+
+  function evidenzia(filtro){
+    svg.classList.toggle('dim', !!filtro);
+    segs.concat(fams).forEach(p => p.classList.toggle('on', !!filtro && filtro(p)));
+  }
+  const chip = n => `<button type="button" class="conf-chip" data-b="${esc(n)}">${esc(n)}</button>`;
+  function apri(n){ showTab('libreria'); if (typeof showDetail === 'function') showDetail(n, true); }
+  function collega(box){ box.querySelectorAll('[data-b]').forEach(b => b.addEventListener('click', () => apri(b.dataset.b))); }
+  const dot = c => `<span class="rf-dot" style="background:${c}"></span>`;
+  function scegliF(fi){
+    const f = F[fi];
+    evidenzia(p => +p.dataset.f === fi);
+    info.innerHTML = `<h4>${dot(f.c)}${f.n}</h4>`
+      + (f.dif ? '<span class="est-nota">Note sbagliate dell\'infuso: tocca una voce per causa e rimedio.</span>'
+               : `<span class="est-nota">Sul radar: ${f.ax}. Tocca una nota per vedere le botaniche che la portano.</span>`)
+      + '<div class="rq-chips">' + f.d.map((d, di) => `<button type="button" class="conf-chip" data-di="${di}">${d[0]}${f.dif ? '' : ' · ' + botDi(d[1]).length}</button>`).join('') + '</div>';
+    info.querySelectorAll('[data-di]').forEach(b => b.addEventListener('click', () => scegliD(fi, +b.dataset.di)));
+  }
+  function scegliD(fi, di){
+    const f = F[fi], d = f.d[di];
+    evidenzia(p => +p.dataset.f === fi && (p.dataset.d === undefined || +p.dataset.d === di));
+    if (f.dif){ info.innerHTML = `<h4>${dot(f.c)}${f.n} · ${d[0]}</h4><p><strong>Causa probabile.</strong> ${d[2]}</p><p><strong>Rimedio.</strong> ${d[3]}</p>`; return; }
+    const b = botDi(d[1]);
+    info.innerHTML = `<h4>${dot(f.c)}${f.n} · ${d[0]}</h4><span class="est-nota">${b.length ? b.length + ' botaniche dell\'erbario portano questa nota. Tocca per aprire la scheda.' : 'Nessuna botanica dell\'erbario ha questa nota nel profilo.'}</span><div class="rq-chips">${b.map(chip).join('')}</div>`;
+    collega(info);
+  }
+  function cercaBot(n){
+    const b = tutte().find(x => x.botanica.toLowerCase() === n.trim().toLowerCase());
+    if (!b){ evidenzia(null); info.innerHTML = '<span class="est-nota">' + (n.trim() ? 'Scegli una botanica dall\'elenco suggerito.' : 'Tocca una famiglia o una nota sulla ruota, oppure cerca una botanica.') + '</span>'; return; }
+    const t = testo(b), hit = [];
+    F.forEach((f, fi) => f.d.forEach((d, di) => { if (d[1] && d[1].test(t)) hit.push([fi, di]); }));
+    const set = new Set(hit.map(h => h.join('-'))), famSet = new Set(hit.map(h => h[0]));
+    evidenzia(p => p.dataset.d === undefined ? famSet.has(+p.dataset.f) : set.has(p.dataset.f + '-' + p.dataset.d));
+    info.innerHTML = `<h4>${esc(b.botanica)}</h4><span class="est-nota">Profilo: ${esc(b.profilo || '—')}</span>`
+      + (hit.length ? '<div class="rq-chips">' + hit.map(([fi, di]) => `<button type="button" class="conf-chip" data-fd="${fi}-${di}">${dot(F[fi].c)}${F[fi].n} · ${F[fi].d[di][0]}</button>`).join('') + '</div>'
+                    : '<p class="est-nota">Il suo profilo non ricade in nessun settore della ruota.</p>')
+      + `<p style="margin:10px 0 0"><button type="button" class="ghost-btn" data-b="${esc(b.botanica)}">Apri la scheda →</button></p>`;
+    info.querySelectorAll('[data-fd]').forEach(x => x.addEventListener('click', () => { const [fi, di] = x.dataset.fd.split('-').map(Number); scegliD(fi, di); }));
+    collega(info);
+  }
+  q.addEventListener('input', () => cercaBot(q.value));
+  document.getElementById('ruota-dl').innerHTML = tutte().map(b => `<option value="${esc(b.botanica)}">`).join('');
+  lista.innerHTML = F.map(f => `<details class="ruota-fam"><summary>${dot(f.c)}${f.n}</summary><ul>`
+    + f.d.map(d => f.dif ? `<li><strong>${d[0]}</strong> — ${d[2]} <em>${d[3]}</em></li>`
+        : `<li><strong>${d[0]}</strong>: ${botDi(d[1]).map(n => `<button type="button" data-b="${esc(n)}">${esc(n)}</button>`).join(', ') || '—'}</li>`).join('')
+    + '</ul></details>').join('');
+  collega(lista);
+  cercaBot('');
+  window._ruotaF = F;
+})();
 /* ===== Affidabilità e fonte dei dati, protette da impronta (WebAuthn locale) ===== */
 const FONTI_KEY = 'gb-fonti', FONTI_CRED = 'gb-fonti-cred';
 const FONTI_VOCI = [
