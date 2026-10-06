@@ -873,6 +873,7 @@ input:focus, select:focus, textarea:focus{
 .inf-q-label input[type=text]{width:100%;}
 .controls label{font-size:11.5px;color:var(--ink-faint);display:flex;flex-direction:column;gap:6px;font-weight:650;text-transform:uppercase;letter-spacing:.06em;}
 .count-tag{font-size:13.5px;color:var(--ink-faint);margin-left:auto;font-variant-numeric:tabular-nums;}
+.cerca-profilo{flex-basis:100%;font-size:13px;padding:4px 10px;}
 #count-tag{cursor:pointer;color:var(--juniper-deep);text-decoration:underline;text-underline-offset:3px;padding:4px 2px;}
 
 .cond-box{
@@ -2758,7 +2759,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 6 ottobre 2026, ore 20:25 · il perché di min e max della gradazione ora sta nel quadro delle variabili</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 6 ottobre 2026, ore 20:30 · la ricerca guarda il nome; il profilo aromatico a richiesta</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -3663,7 +3664,7 @@ function elencoFiltrato(){
     if (pot && (d.potenza10 || 0) < pot) return false;
     if (fStile.value && !botDelloStile(fStile.value).has(d.botanica)) return false;
     if (fUso.value && d.uso !== fUso.value) return false;
-    if (q && !(d.botanica.toLowerCase().includes(q) || (d.profilo||'').toLowerCase().includes(q))) return false;
+    if (q && !(d.botanica.toLowerCase().includes(q) || (window.cercaNelProfilo && (d.profilo||'').toLowerCase().includes(q)))) return false;
     return true;
   });
   if (!q) return risultato;
@@ -3718,6 +3719,16 @@ function renderGrid(){
   assegnaUso();
   const filtered = elencoFiltrato();
   countTag.textContent = filtered.length + ' / ' + MASTER.length + ' botaniche ' + (filtered.length === 1 ? '→ apri la scheda' : filtered.length ? '↓ vedi' : '');
+  // La ricerca guarda il nome; le botaniche che hanno quella nota solo nel profilo aromatico si mostrano a richiesta.
+  let extra = document.getElementById('cerca-profilo');
+  if (!extra){ extra = document.createElement('button'); extra.type = 'button'; extra.id = 'cerca-profilo'; extra.className = 'ghost-btn cerca-profilo';
+    countTag.parentNode.appendChild(extra);
+    extra.addEventListener('click', () => { window.cercaNelProfilo = !window.cercaNelProfilo; if (currentDetailName) chiudiDetailMuto(); renderGrid(); }); }
+  const qq = searchInput.value.trim().toLowerCase();
+  const soloProfilo = qq ? MASTER.filter(d => !d.botanica.toLowerCase().includes(qq) && (d.profilo||'').toLowerCase().includes(qq)).length : 0;
+  if (!soloProfilo) window.cercaNelProfilo = false;
+  extra.hidden = !soloProfilo;
+  extra.textContent = window.cercaNelProfilo ? 'Solo per nome' : '+ ' + soloProfilo + (soloProfilo === 1 ? ' botanica' : ' botaniche') + ' con note di \u201c' + qq + '\u201d nel profilo';
   grid.innerHTML = '';
   const aggiungi = d => {
     const card = document.createElement('div');
@@ -3875,6 +3886,7 @@ function trovaUnica(){
   return esatta ? esatta.botanica : null;
 }
 searchInput.addEventListener('input', () => {
+  window.cercaNelProfilo = false;
   const unica = trovaUnica();
   if (currentDetailName && currentDetailName !== unica) chiudiDetailMuto();
   renderGrid();
