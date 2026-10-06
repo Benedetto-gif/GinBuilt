@@ -569,6 +569,22 @@ section.panel.active{display:block;animation:panelIn .34s var(--ease) both;}
   animation:sheetIn .28s var(--ease) both;
 }
 .avviso-icona{font-size:30px;line-height:1;margin-bottom:12px;}
+.avviso-inner.avviso-largo{max-width:760px;padding:22px 18px;}
+.avviso-inner.avviso-largo .avviso-icona{display:none;}
+/* Scheda di assaggio compilabile (dal Diario): il testo resta quello di Analisi sensoriale */
+.sch-mod h2{font-size:19px;margin:0 0 8px;}
+.sch-mod h3{font-size:16px;margin:18px 0 8px;}
+.sch-mod p{margin:0 0 10px;line-height:1.9;font-size:14.5px;}
+.sch-mod input[type=text]{font:inherit;color:var(--ink);background:transparent;border:0;border-bottom:1.5px solid var(--line-strong);
+  padding:2px 4px;margin:0 2px;min-width:3.5em;max-width:100%;border-radius:0;}
+.sch-mod input[type=text].lungo{display:block;width:100%;margin:2px 0 0;}
+.sch-mod input[type=text]:focus{outline:none;border-bottom-color:var(--juniper);}
+.sch-mod table{width:100%;border-collapse:collapse;font-size:13.5px;margin:0 0 10px;}
+.sch-mod th,.sch-mod td{padding:5px 2px;text-align:center;border-bottom:1px solid var(--line);}
+.sch-mod td:first-child,.sch-mod th:first-child{text-align:left;}
+.sch-mod input[type=radio]{width:18px;height:18px;accent-color:var(--juniper);margin:0;vertical-align:middle;}
+.sch-mod .sch-op{display:inline-flex;align-items:center;gap:4px;margin:2px 8px 2px 0;white-space:nowrap;}
+.sch-mod-az{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px;}
 .avviso-inner h3{margin:0 0 10px;font-size:21px;}
 .avviso-inner p{margin:0 0 10px;font-size:14.5px;color:var(--ink-soft);line-height:1.6;}
 .avviso-inner .avviso-sost{
@@ -2730,7 +2746,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 01:05 · menu che scorre fino agli ultimi riquadri</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 01:20 · Scheda A compilabile dal diario</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -5290,6 +5306,7 @@ const avvisoEl = document.getElementById('avviso');
 let avvisoAzione = null;
 
 function mostraAvviso(titolo, corpoHtml, etichettaOk, onConferma){
+  const inner = document.querySelector('.avviso-inner'); if (inner) inner.classList.remove('avviso-largo');
   document.getElementById('avviso-titolo').textContent = titolo;
   document.getElementById('avviso-testo').innerHTML = corpoHtml;
   const ok = document.getElementById('avviso-ok');
@@ -6494,7 +6511,7 @@ function wrapStepper(input, step, opts){
         note: document.getElementById('dia-note').value.trim(),
         alcolG: r.dil ? r.dil.alcG : null, alcolMl: r.dil ? r.dil.alcMl : null, abvS: c.abvS,
         acquaG: r.dil ? r.dil.acquaG : null, botG: r.g, temp: c.temp,
-        tmin: r.tmin, tmax: r.tmax,
+        tmin: r.tmin, tmax: r.tmax, abv: gr, vol: c.vol,
         allarme: (ore && ore > 0) ? diaNonDiNotte(inizio + ore * 3600000) : null, avvisato: false, finito: null
       };
       const lista = diarioCarica(); lista.unshift(voce); diarioSalva(lista);
@@ -6633,6 +6650,7 @@ function diarioRender(){
         '<textarea rows="2" placeholder="Note e assaggi\u2026" onchange="diarioNota(\'' + v.id + '\', this.value)">' + diaEsc(v.note) + '</textarea>' +
         '<div class="dia-btn">' +
           (!v.finito ? '<button class="ghost-btn" type="button" onclick="diarioAssaggiato(\'' + v.id + '\')">\ud83d\udc45 Assaggiato</button>' : '') +
+          '<button class="ghost-btn" type="button" onclick="diarioSchedaA(\'' + v.id + '\')">\ud83d\udcdd Scheda A' + (v.schedaA && Object.keys(v.schedaA).some(k => v.schedaA[k]) ? ' \u2713' : '') + '</button>' +
           '<button class="ghost-btn" type="button" onclick="diarioOrari(\'' + v.id + '\')">\u270f\ufe0f Modifica orari</button>' +
           (v.allarme && !v.finito ? '<button class="ghost-btn" type="button" onclick="diarioIcs(\'' + v.id + '\')">\ud83d\udcc5 Allarme nel calendario</button>' : '') +
           (v.finito ? '<button class="ghost-btn" type="button" onclick="diarioRiapri(\'' + v.id + '\')">\u21a9\ufe0f Non ancora filtrato</button>'
@@ -6677,6 +6695,107 @@ function diarioAssaggiato(id){
   mostraAvviso('\ud83d\udc45 Assaggio registrato', corpo, '', null);
 }
 window.diarioAssaggiato = diarioAssaggiato;
+// ---------- Scheda A compilabile dal Diario ----------
+// Il modulo si ricava ogni volta dalla Scheda A di Analisi sensoriale (un solo testo, nessuna copia):
+// le righe ____ diventano campi da scrivere, le caselle ☐ diventano scelte da toccare.
+// Le risposte si salvano nell'infuso del diario (v.schedaA) e la scheda si può anche stampare compilata.
+function schedaModulo(sorgenteId){
+  const src = document.getElementById(sorgenteId); if (!src) return null;
+  const box = src.cloneNode(true); box.removeAttribute('id'); box.className = 'sch-mod';
+  let fi = 0, gi = 0;
+  box.querySelectorAll('table').forEach(tab => {
+    tab.querySelectorAll('tr').forEach(tr => {
+      const celle = [...tr.children]; if (!celle.some(c => c.textContent.trim() === '\u2610')) return;
+      const g = 'g' + (gi++);
+      celle.forEach((c, k) => { if (c.textContent.trim() === '\u2610') c.innerHTML = '<input type="radio" name="' + g + '" value="' + (k - 1) + '" aria-label="' + (k - 1) + '">'; });
+    });
+  });
+  const testi = []; const w = document.createTreeWalker(box, NodeFilter.SHOW_TEXT);
+  while (w.nextNode()) { const n = w.currentNode; if (!n.parentNode.closest('table') && /_{3,}|\u2610/.test(n.nodeValue)) testi.push(n); }
+  testi.forEach(n => {
+    const parti = n.nodeValue.split(/(_{3,}|\u2610)/), frag = document.createDocumentFragment();
+    let gruppo = null, num = 0;
+    for (let i = 0; i < parti.length; i++){
+      const t = parti[i]; if (t === '') continue;
+      if (/^_{3,}$/.test(t)){
+        const inp = document.createElement('input'); inp.type = 'text'; inp.dataset.k = 'f' + (fi++);
+        if (t.length >= 20) inp.className = 'lungo'; else inp.size = Math.max(4, Math.min(16, t.length + 2));
+        frag.appendChild(inp); gruppo = null; continue;
+      }
+      if (t === '\u2610'){
+        if (!gruppo){ gruppo = 'g' + (gi++); num = 0; }
+        let seg = parti[i + 1] || '', etichetta = seg, resto = '';
+        if (/^\s*$/.test(seg)) { etichetta = ''; resto = seg; }
+        else { const m = seg.indexOf('\u2014'); if (m >= 0){ etichetta = seg.slice(0, m); resto = seg.slice(m); } else resto = ''; }
+        etichetta = etichetta.trim();
+        const lab = document.createElement('label'); lab.className = 'sch-op';
+        const r = document.createElement('input'); r.type = 'radio'; r.name = gruppo; r.value = etichetta || String(num);
+        lab.appendChild(r); lab.appendChild(document.createTextNode(etichetta || String(num)));
+        frag.appendChild(lab); num++;
+        if (i + 1 < parti.length){ parti[i + 1] = ''; if (resto) frag.appendChild(document.createTextNode(' ' + resto.trim() + ' ')); }
+        if (resto.indexOf('\u2014') >= 0 || /:\s*$/.test(resto)) gruppo = null;
+        continue;
+      }
+      frag.appendChild(document.createTextNode(t)); gruppo = null;
+    }
+    n.parentNode.replaceChild(frag, n);
+  });
+  return box;
+}
+function schedaLeggi(box){
+  const val = {};
+  box.querySelectorAll('input[type=text]').forEach(i => { if (i.value.trim()) val[i.dataset.k] = i.value; });
+  box.querySelectorAll('input[type=radio]:checked').forEach(r => { val[r.name] = r.value; });
+  return val;
+}
+function schedaScrivi(box, val){
+  box.querySelectorAll('input[type=text]').forEach(i => { if (val[i.dataset.k] != null) i.value = val[i.dataset.k]; });
+  box.querySelectorAll('input[type=radio]').forEach(r => { r.checked = val[r.name] === r.value; });
+}
+function schedaStampabile(box){
+  const c = box.cloneNode(true);
+  c.querySelectorAll('input[type=text]').forEach(i => { const sp = document.createElement('span'); sp.textContent = i.value.trim() ? ' ' + i.value.trim() + ' ' : ' ________ '; if (i.value.trim()) sp.style.textDecoration = 'underline'; i.replaceWith(sp); });
+  c.querySelectorAll('input[type=radio]').forEach(r => r.replaceWith(document.createTextNode(r.checked ? '\u2612' : '\u2610')));
+  c.querySelectorAll('.sch-op').forEach(l => { if (l.firstChild && l.firstChild.nodeValue === '\u2610' && /^\d+$/.test(l.textContent.slice(1))) l.textContent = '\u2610 '; else if (l.firstChild && l.firstChild.nodeValue === '\u2612' && /^\d+$/.test(l.textContent.slice(1))) l.textContent = '\u2612' + l.textContent.slice(1) + ' '; else l.appendChild(document.createTextNode(' ')); });
+  return c.innerHTML;
+}
+// Dati che il diario conosce già: vanno nell'intestazione solo se il campo è ancora vuoto.
+function schedaDatiDiario(v){
+  const d = byName[v.botanica] || {}, oggi = new Date();
+  let abv = v.abv, vol = v.vol;
+  const m = String(v.tipo || '').match(/([\d.,]+)\s*% vol/); if (abv == null && m) abv = parseFloat(m[1].replace(',', '.'));
+  const mv = String(v.tipo || '').match(/([\d.,]+)\s*ml/); if (vol == null && mv) vol = parseFloat(mv[1].replace(',', '.'));
+  const fine = v.finito || Date.now(), giorni = (fine - v.inizio) / 3600000;
+  const dataBreve = ms => new Date(ms).toLocaleDateString('it-IT', {day:'numeric', month:'short', year:'numeric'});
+  return { f0: v.botanica || v.tipo, f1: d.parte || '', f3: v.botG != null ? diaNum(v.botG, 2) : '', f4: vol != null ? diaNum(vol, 0) : '',
+    f5: abv != null ? diaNum(abv, 1) : '', f6: diaDurata(giorni), f7: v.temp != null ? String(v.temp) : '', f8: dataBreve(v.inizio),
+    f9: dataBreve(diaUltimoAssaggio(v) || oggi.getTime()) };
+}
+function diarioSchedaA(id){
+  const v = diarioCarica().find(x => x.id === id); if (!v) return;
+  const box = schedaModulo('scheda-a-corpo'); if (!box) return;
+  const auto = schedaDatiDiario(v), salvati = v.schedaA || {}, val = Object.assign({}, salvati);
+  Object.keys(auto).forEach(k => { if (!val[k] && auto[k]) val[k] = auto[k]; });
+  schedaScrivi(box, val);
+  mostraAvviso('\ud83d\udcdd Scheda A \u00b7 ' + v.tipo, '', 'Salva e chiudi', () => salva());
+  const inner = document.querySelector('.avviso-inner'); if (inner){ inner.classList.add('avviso-largo'); inner.scrollTop = 0; }
+  const corpo = document.getElementById('avviso-testo');
+  const az = document.createElement('div'); az.className = 'sch-mod-az';
+  az.innerHTML = '<span class="cond-hint" style="flex:1 1 100%">Si salva da sola mentre scrivi. Intestazione gi\u00e0 compilata con i dati del diario.</span>' +
+    '<button type="button" class="ghost-btn" id="sch-stampa">\ud83d\udda8\ufe0f Stampa compilata</button>';
+  corpo.appendChild(az); corpo.appendChild(box);
+  document.getElementById('avviso-annulla').textContent = 'Chiudi';
+  const salva = () => { const nv = schedaLeggi(box); diarioAggiorna(id, x => { x.schedaA = nv; }); };
+  let t = null; const presto = () => { clearTimeout(t); t = setTimeout(() => { const l = diarioCarica(), x = l.find(y => y.id === id); if (x){ x.schedaA = schedaLeggi(box); diarioSalva(l); } }, 400); };
+  box.addEventListener('input', presto); box.addEventListener('change', presto);
+  // Toccare di nuovo una scelta già segnata la toglie.
+  box.addEventListener('pointerdown', e => { const r = e.target.closest && e.target.closest('.sch-op, td'); const inp = r && r.querySelector('input[type=radio]'); if (inp) inp.dataset.era = inp.checked ? '1' : ''; });
+  box.addEventListener('click', e => { const inp = e.target.matches && e.target.matches('input[type=radio]') ? e.target : null; if (inp && inp.dataset.era === '1'){ inp.checked = false; inp.dataset.era = ''; presto(); } });
+  document.getElementById('sch-stampa').addEventListener('click', () => { salva(); stampaHtml(schedaStampabile(box), 'Scheda A \u2014 ' + v.tipo); });
+  const chiudi = document.getElementById('avviso-annulla'), alChiudere = () => { clearTimeout(t); const l = diarioCarica(), x = l.find(y => y.id === id); if (x){ x.schedaA = schedaLeggi(box); diarioSalva(l); diarioRender(); } chiudi.removeEventListener('click', alChiudere); };
+  chiudi.addEventListener('click', alChiudere);
+}
+window.diarioSchedaA = diarioSchedaA;
 // Una tantum: le note già scritte su infusi segnati come da assaggiare valgono come assaggio fatto.
 (function(){
   try {
