@@ -388,6 +388,15 @@ nav.tabs{display:none !important;}
 .home-diario{margin:0 0 16px;padding:0;border-radius:var(--r-lg);border:1.5px solid #B8921F;box-shadow:var(--sh-1);
   background:var(--surface);background:color-mix(in srgb, #B8921F 14%, var(--surface));}
 .home-diario[hidden]{display:none;}
+.noz-rimando{margin:6px 0 12px;font-size:13.5px;color:var(--ink-soft);line-height:1.5;}
+.noz-rimando a{color:var(--juniper-deep);font-weight:650;}
+.dia-chk{display:flex;align-items:baseline;gap:8px;padding:5px 0;font-size:14px;flex-wrap:wrap;}
+.dia-chk .cond-hint{font-size:12px;}
+.home-dati{margin:18px 0 10px;padding:14px 16px;border-radius:var(--r-lg);border:1px solid var(--line);background:var(--surface);}
+.home-dati.hdati-warn{border-color:var(--ochre);background:color-mix(in srgb, var(--ochre) 10%, var(--surface));}
+.hdati-tit{font-weight:700;font-size:15px;margin-bottom:4px;}
+.hdati-info{font-size:13.5px;color:var(--ink-soft);line-height:1.45;}
+.hdati-btn{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
 .home-diario summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:13px 16px;font-weight:700;font-size:15px;}
 .home-diario summary::-webkit-details-marker{display:none;}
 .home-diario .hd-n{min-width:24px;padding:2px 8px;border-radius:999px;background:#B8921F;color:#fff;font-size:12.5px;text-align:center;}
@@ -985,6 +994,11 @@ input:focus, select:focus, textarea:focus{
 .radar-sottr-btn{display:block;margin:6px auto 2px;font-size:12.5px;padding:5px 12px;}
 html:not(.radar-sottr) .radar-wrap .r-sottr{display:none;}
 html.radar-sottr .radar-wrap .r-norm{display:none;}
+/* Modalita' semplice: strumenti avanzati nascosti, radar sempre nella vista intera */
+html:not(.avanzato) .fase-sel, html:not(.avanzato) .radar-sottr-btn, html:not(.avanzato) .soglia-box,
+html:not(.avanzato) .soglia-slot, html:not(.avanzato) .radar-insieme{display:none !important;}
+html:not(.avanzato) .radar-wrap .r-sottr{display:none !important;}
+html:not(.avanzato) .radar-wrap .r-norm{display:revert !important;}
 .radar-base-btn{display:block;width:100%;margin:6px 0 10px;font-size:14px;font-weight:600;color:var(--juniper);border:1.5px solid var(--juniper);background:transparent;padding:9px 14px;}
 .radar-base-btn[aria-pressed="true"]{background:var(--juniper);color:var(--surface);}
 .fase-sel{display:flex;gap:6px;justify-content:center;margin:6px 0 8px;}
@@ -1670,6 +1684,8 @@ footer.note{
       </div>
     </div>
 
+    <div class="home-dati" id="home-dati"></div>
+
     <p class="home-note">Non è un percorso obbligato: ogni pagina si usa anche da sola, e si può sempre tornare
       indietro a correggere un passo precedente dopo aver assaggiato.</p>
   </section>
@@ -1785,17 +1801,7 @@ footer.note{
         <p>I fattori sono stime orientative: vanno tarate con assaggi (nella scheda trovi «La mia taratura»).</p>
       </div>
     </details>
-    <details class="howto" id="solub-lib">
-      <summary>La solubilità selettiva (la gradazione dell'alcol)</summary>
-      <div class="howto-body">
-        <p>Ogni botanica rilascia le sue molecole migliori solo a una specifica gradazione alcolica. L'alcol funge da solvente, e l'acqua che contiene scioglie un'altra parte delle sostanze.</p>
-        <ul>
-          <li><strong>Molecole idrofobe (oli essenziali).</strong> Il ginepro (ricco di alfa-pinene) e gli agrumi come il cedro (ricchi di limonene) richiedono una gradazione alta per sciogliersi ed essere estratti bene: 60-70% per il ginepro, intorno all'80% per le scorze. Se la gradazione è troppo bassa, una parte del profumo resta nella botanica.</li>
-          <li><strong>Molecole idrofile e parti verdi.</strong> Foglie come quelle di cappero e il finocchio di mare contengono acqua cellulare, clorofilla e componenti idrosolubili. Con un alcol troppo basso, o tempi troppo lunghi, passano note sgradevoli di erba bagnata o fieno. Un alcol altissimo (80-95%) estrae bene anche clorofilla e cere: per le foglie fresche conviene una gradazione media (55–65%) e poche ore al buio, così si preleva soprattutto la frazione aromatica.</li>
-        </ul>
-        <p><strong>Più forte non è meglio.</strong> Un solvente troppo forte non estrae solo gli aromi buoni: trascina anche resine, cere, clorofilla e amari duri, che danno note di trementina, di erba tagliata o di amaro. Un solvente troppo debole lascia gli oli nella botanica e porta tannini e acqua. Per questo ogni botanica ha una gradazione consigliata, una soglia oltre cui evitare di salire e il relativo tempo di macerazione; nelle schede trovi cosa succede oltre e sotto quei limiti. I valori sono stime di partenza: affinali con le tue tarature e con gli assaggi.</p>
-      </div>
-    </details>
+    <p class="noz-rimando">🔬 Perché la gradazione conta: <a href="#" class="noz-link" data-noz="La solubilità selettiva">la solubilità selettiva</a> <span class="cond-hint">(in Nozioni tecniche)</span></p>
     <details class="howto filtri-box" id="filtri-box">
     <summary id="filtri-sum">Filtra ed ordina</summary>
     <div class="cond-box cond-compact">
@@ -2442,7 +2448,7 @@ footer.note{
           (il valore più basso delle due) e l'ingombro totale (il più alto). La somiglianza è la somma delle parti in comune divisa per
           l'ingombro totale: in pratica quanta parte delle due aree si sovrappone. Esempio: liquirizia e angelica condividono solo lo speziato,
           38 %; il dolce della liquirizia bilancia invece l'amaro dell'angelica, quindi sono complementari per gusto pur avendo la stessa funzione di leganti.
-          La soglia oltre cui due botaniche contano come simili si regola con il cursore qui sotto: l'app ricalcola subito tabella, schede e Builder.</p>
+          La soglia oltre cui due botaniche contano come simili si regola con il cursore qui sotto (visibile con gli strumenti avanzati accesi, dal menu): l'app ricalcola subito tabella, schede e Builder.</p>
         <p>Cerca una botanica e leggi le colonne:</p>
         <ul>
           <li><strong>Simili</strong> — accanto a ciascuna c'è la percentuale di somiglianza del profilo. In grassetto quelle sopra la soglia: occupano lo stesso spazio aromatico e si sommano. In grigio, con «funzione», quelle che l'erbario accosta per famiglia o funzione (per esempio le radici leganti) ma che al gusto sono diverse.</li>
@@ -2505,20 +2511,7 @@ footer.note{
       <h2 id="builder-title">—</h2>
       <span class="builder-meta" id="builder-meta"></span>
     </div>
-    <details class="howto" id="perche-ruolo">
-      <summary>Da cosa dipende il ruolo di una botanica</summary>
-      <div class="howto-body">
-        <p>Il ruolo non è una proprietà fissa della botanica: dipende da quello che la botanica fa dentro una ricetta. La Libreria indica la sua <em>tendenza naturale</em>, lo stile decide il ruolo. Contano quattro cose:</p>
-        <ul>
-          <li><strong>Volatilità del suo aroma.</strong> Le note che si sentono per prime e svaniscono prima (agrumi, coriandolo, erbe tenere) fanno <em>Freschezza</em>. Quelle che si aprono a metà sorso (mirto, lentisco, cardamomo, fiori) fanno <em>Cuore</em>. Quelle pesanti e persistenti (ginepro, angelica, iris) reggono il fondo e fanno <em>Base</em>.</li>
-          <li><strong>Potenza e dose.</strong> Una botanica molto potente si usa in tracce: se è rara o fuori dal comune diventa <em>Firma</em>, se serve solo a chiudere il sorso diventa <em>Rifinitura</em>. Una botanica di potenza media, in dose piena, può reggere il <em>Cuore</em>.</li>
-          <li><strong>Cosa deve fare lo stile.</strong> La botanica che definisce l'identità dello stile (il finocchio di mare nel Marino, il bergamotto nell'Agrumato, la lavanda nel Floreale) prende il ruolo di <em>Identità</em>.</li>
-          <li><strong>Cosa c'è già nella ricetta.</strong> Il ruolo serve a completare il profilo: se mancano note di testa, una botanica fresca fa Freschezza; se le ha già, la stessa botanica può passare ad altro.</li>
-        </ul>
-        <p>Per questo la stessa botanica cambia ruolo da uno stile all'altro. Il bergamotto è Freschezza nel Mediterraneo e nel Floreale, ma Identità nell'Agrumato. L'iris è Base nel Floreale, dove fissa gli altri aromi, ma Identità in tracce nel Secco. Il rosmarino è Cuore nell'Erbaceo e Rifinitura nel Mediterraneo. Il cardamomo verde è Cuore nel Secco e Rifinitura nell'Agrumato.</p>
-        <p>Nel campo <em>Funzione operativa</em> di ogni scheda trovi dove la botanica rende meglio: è un punto di partenza, non un obbligo.</p>
-      </div>
-    </details>
+    <p class="noz-rimando">🔬 Approfondisci: <a href="#" class="noz-link" data-noz="Da cosa dipende il ruolo di una botanica">da cosa dipende il ruolo di una botanica</a> <span class="cond-hint">(in Nozioni tecniche)</span></p>
     <details class="howto" id="vademecum" open hidden>
       <summary>Vademecum: i ruoli delle botaniche</summary>
       <div class="howto-body">
@@ -2546,6 +2539,7 @@ footer.note{
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;">
         <button class="primary-btn" id="send-to-test">🧪 Invia al banco di prova</button>
         <button class="ghost-btn" id="print-builder">🖨️ Stampa combinazione</button>
+        <button class="ghost-btn" id="prepara-infusi" type="button" onclick="preparaInfusiRicetta()">📓 Prepara gli infusi della ricetta</button>
       </div>
     </div>
   </section>
@@ -2583,62 +2577,7 @@ footer.note{
       <div class="calc-result" id="calc-result"></div>
     </div>
 
-    <details class="howto" id="guida-louche">
-      <summary>Dopo la diluizione: torbidità (effetto louche) e corpo del gin</summary>
-      <div class="howto-body">
-        <p>Gli estratti singoli sono a gradazione alta, anche 60–80%, e lì gli oli essenziali sono sciolti. Quando li unisci e aggiungi acqua per scendere a 43% vol., molte di quelle molecole, che sono idrofobe (non amano l'acqua), non restano più in soluzione. Si separano in goccioline microscopiche: è una micro-emulsione, e si vede come velatura bianca o lattiginosa. Si chiama <strong>effetto louche</strong> (o effetto ouzo, dal pastis e dall'ouzo che si intorbidano con l'acqua).</p>
-        <ul>
-          <li><strong>Chi la provoca.</strong> Il limonene delle scorze (cedro, limone, bergamotto), l'anetolo di anice, stella di anice e finocchio, il pinene del ginepro e in generale le spezie e i semi ricchi di olio. I semi oleosi (mandorla, sesamo, cocco) lasciano anche un velo grasso.</li>
-          <li><strong>Quando compare.</strong> Soprattutto scendendo di gradazione (con ghiaccio, tonica, nel cocktail) e quando il gin si raffredda: a freddo gli oli sono meno solubili e compare la velatura, detta <em>chill haze</em>.</li>
-          <li><strong>Corpo e sensazione in bocca.</strong> La quantità di oli che resta in soluzione stabile decide come agisce quella botanica: come un profumo leggero e netto, se gli oli sono pochi, oppure come una sensazione più piena, densa e oleosa sul palato (il mouthfeel), se ne restano molti. È una scelta di stile: togliere gli oli rende il gin limpido e pulito ma un po' più magro, lasciarli lo rende più ricco ma meno stabile al freddo e con il ghiaccio.</li>
-          <li><strong>Prova rapida.</strong> Preleva un campione a 43%, diluiscilo 1:1 con acqua fredda e guarda se si intorbida: più si vela, più olio hai in soluzione. Mettilo anche 24 ore nel freezer: se si velava, serve la filtrazione a freddo.</li>
-        </ul>
-      </div>
-    </details>
-    <details class="howto" id="guida-chiarire">
-      <summary>Come intervenire su torbidità e colore</summary>
-      <div class="howto-body">
-        <p>Sequenza consigliata dall'infuso alla bottiglia:</p>
-        <ol>
-          <li><strong>Prima di mescolare.</strong> Filtra ogni estratto con tela di cotone, mussola o filtro da caffè, per togliere le particelle. Scorze senza parte bianca e radici a pezzetti, non in polvere, aiutano già a monte.</li>
-          <li><strong>Diluisci piano.</strong> Unisci gli estratti, poi aggiungi l'acqua in 3–4 passaggi mescolando, non tutta in una volta: così l'olio si separa in modo più uniforme e la miscela si controlla meglio. Usa acqua distillata o demineralizzata: i sali dell'acqua dura possono dare precipitati.</li>
-          <li><strong>Riposa a freddo.</strong> Lascia la miscela da 24 a 72 ore in frigorifero o in freezer (a 43% non congela in un freezer domestico). Gli oli in eccesso si separano come velo, fiocchi o goccioline. Più freddo è, più ne separi, ma la filtrazione è più lenta.</li>
-          <li><strong>Filtra ancora freddo.</strong> La filtrazione deve avvenire alla temperatura più bassa a cui il gin verrà tenuto o servito, altrimenti la velatura ricompare. Raffredda prima anche imbuto e beuta, copri e lavora in fretta: la condensa porta acqua. Le tecniche sono nella scheda successiva.</li>
-          <li><strong>Riposo finale e imbottigliamento.</strong> Qualche giorno a riposo, poi bottiglie piene, ben chiuse, al buio e al fresco.</li>
-        </ol>
-        <p><strong>Se vuoi lasciare più corpo</strong>: salta la filtrazione fine, lascia riposare a freddo 24–48 ore e travasa con un sifone solo la parte limpida, senza smuovere il deposito. Togli il grosso degli oli ma mantieni più aroma.</p>
-        <p><strong>Il colore.</strong> Viene soprattutto da clorofilla (verde, erbe e foglie), carotenoidi e curcuma (giallo), antociani (rosso-viola: ibisco, frutti rossi), tannini e ossidazione (bruno), vaniglia, cacao, caffè, liquirizia, cannella e tonka (ambra). Per limitarlo:</p>
-        <ul>
-          <li>riduci il tempo di macerazione e la gradazione delle erbe verdi (vedi l'estrazione consigliata per ogni botanica);</li>
-          <li>tieni gli estratti al buio: la luce degrada la clorofilla e vira il colore verso il bruno;</li>
-          <li>evita l'ossidazione: bottiglie piene, chiuse, al fresco;</li>
-          <li>la filtrazione toglie le particelle ma non i pigmenti sciolti. Per quelli si può provare il <strong>carbone attivo alimentare</strong>: schiarisce e toglie note vegetali, ma assorbe anche aroma. Prova su un campione, poche ore di contatto, poi filtra fine;</li>
-          <li>un lieve colore naturale (curcuma, ibisco, liquirizia) è normale: dipende dalle botaniche scelte.</li>
-        </ul>
-      </div>
-    </details>
-    <details class="howto" id="guida-filtrazione">
-      <summary>Filtrazione a freddo: Büchner sotto vuoto e alternative</summary>
-      <div class="howto-body">
-        <p><strong>Büchner sotto vuoto</strong> (il metodo più rapido e fine per volumi piccoli e medi).</p>
-        <ol>
-          <li><strong>Attrezzatura:</strong> imbuto Büchner, beuta da vuoto (con tubuladura laterale, a pareti spesse), guarnizione conica di gomma, tubo da vuoto, pompa. Una pompa a membrana o un aspiratore ad acqua vanno bene; per piccoli volumi anche una pompa manuale.</li>
-          <li><strong>Carta:</strong> filtro di carta da laboratorio, tagliato in modo che copra i fori senza salire sulle pareti. Parti con una carta media (circa 8–11 µm) per togliere il grosso, poi una fine (circa 2–3 µm) per la limpidezza. Bagnala con un poco di alcol alla stessa gradazione per farla aderire.</li>
-          <li><strong>Coadiuvante (facoltativo):</strong> per non intasare la carta, forma sul filtro uno strato di 3–5 mm di cellulosa in polvere o terra di diatomee, sospesa in poco alcol e fatta depositare con il vuoto. Poi filtra il gin. Le polveri secche non vanno respirate: usa mascherina e lavora in modo da non sollevarle.</li>
-          <li><strong>Vuoto moderato:</strong> aumentalo piano. Con il vuoto spinto l'alcol bolle a temperatura ambiente e perdi aromi. Se vedi bollicine nel liquido, riduci. Versa in modo che il livello resti sopra la carta, senza farla asciugare del tutto.</li>
-          <li><strong>Prima ripassata:</strong> i primi 20–50 ml escono ancora velati. Rimettili nell'imbuto e filtra di nuovo finché esce limpido.</li>
-        </ol>
-        <p><strong>Sicurezza.</strong> L'alcol è infiammabile: lavora in ambiente ventilato, senza fiamme o scintille e senza far passare i vapori in una pompa non adatta ai solventi. Usa solo vetreria da vuoto integra, senza crepe, e occhiali di protezione.</p>
-        <p><strong>Alternative</strong>:</p>
-        <ul>
-          <li><strong>Per gravità</strong> con filtri da caffè o carta a pieghe in un imbuto: lenta, ma semplice e senza pompa. Va bene per volumi piccoli, da fare al freddo e coperta.</li>
-          <li><strong>Siringa con filtro a membrana</strong> (nylon, 0,45 µm): per i campioni di prova e le quantità minime.</li>
-          <li><strong>Filtro a cartuccia o a piastre con pompa</strong> (1–5 µm): per volumi grandi, rende bene ma costa di più.</li>
-          <li><strong>Sifone dopo il freddo:</strong> senza filtrare, travasa il limpido. Poco fine, ma conserva più corpo.</li>
-        </ul>
-        <p>Più filtri fini usi, più il gin è limpido e stabile, ma si perde qualcosa di aroma e di corpo. Fermati al livello che ti piace in assaggio.</p>
-      </div>
-    </details>
+    <p class="noz-rimando">🔬 Torbidità, colore e filtrazione: <a href="#" class="noz-link" data-noz="Dopo la diluizione: torbidità">effetto louche</a> · <a href="#" class="noz-link" data-noz="Come intervenire su torbidità e colore">torbidità e colore</a> · <a href="#" class="noz-link" data-noz="Filtrazione a freddo">filtrazione a freddo</a> <span class="cond-hint">(in Nozioni tecniche)</span></p>
 
     <div class="prove-head">
       <h2>Le tue schede</h2>
@@ -2798,7 +2737,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 6 ottobre 2026, ore 17:10 · diario in ordine di orario di assaggio</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 6 ottobre 2026, ore 18:00 · backup unico, infusi dal Builder, modalità semplice, riapertura dove eri rimasto</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -3585,6 +3524,15 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
     pop.appendChild(lbl);
     presenti.forEach(b => aggiungiTile(b, hue++));
   });
+  const lblImp = document.createElement('div'); lblImp.className = 'menu-group-label'; lblImp.textContent = 'Impostazioni';
+  pop.appendChild(lblImp);
+  const tileImp = (id, ic, lab, col, fn) => {
+    const el = document.createElement('button'); el.type = 'button'; el.className = 'menu-tile'; el.id = id; el.style.setProperty('--h', col);
+    el.innerHTML = '<span class="mt-ic">' + ic + '</span><span class="mt-l">' + lab + '</span>';
+    el.addEventListener('click', () => { chiudi(); fn(); }); pop.appendChild(el); return el;
+  };
+  tileImp('menu-dati', '\ud83d\udcbe', 'I tuoi dati (backup)', '#4C7BB5', () => window.apriDati && window.apriDati());
+  tileImp('menu-avanzati', '\ud83e\uddf0', 'Strumenti avanzati', '#5D6F8C', () => window.toggleAvanzati && window.toggleAvanzati());
   function chiudi(){ pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); }
   btn.addEventListener('click', e => { e.stopPropagation(); pop.hidden = !pop.hidden; btn.setAttribute('aria-expanded', String(!pop.hidden)); });
   document.addEventListener('click', e => { if (!bar.contains(e.target)) chiudi(); });
@@ -4303,6 +4251,7 @@ function addCustomRoleRow(label, botanica){
 }
 
 function renderBuilder(styleIndex){
+  window._styleIdx = styleIndex;
   const [name, intensity, maxBot, roles] = STYLES[styleIndex];
   baselineSf = {};
   currentStyleName = name;
@@ -4382,6 +4331,7 @@ document.getElementById('ruoli-def-btn').addEventListener('click', () => {
 });
 
 function renderSummary(){
+  try { if (window.salvaStatoBuilder) window.salvaStatoBuilder(); } catch(e){}
   const selects = roleList.querySelectorAll('select:not(.role-label-input)');
   const chosen = [...selects].map(s => s.value);
   const uniqueChosen = [...new Set(chosen)];
@@ -6359,6 +6309,7 @@ function wrapStepper(input, step, opts){
       const lista = diarioCarica(); lista.unshift(voce); diarioSalva(lista);
       if (voce.allarme && 'Notification' in window && Notification.permission === 'default') { try { Notification.requestPermission(); } catch(e){} }
       diarioRender();
+      if (voce.allarme) setTimeout(() => offriCalendario([voce]), 350);
       const box = document.getElementById('diario-box'); if (box){ box.open = true; box.scrollIntoView({behavior:'smooth', block:'start'}); }
     });
     const sel = document.getElementById('dia-allarme');
@@ -6494,6 +6445,89 @@ function diarioFinito(id){
     return;
   }
   diarioAggiorna(id, x => { x.finito = Date.now(); });
+  setTimeout(() => offriScheda(id), 300);
+}
+// Dopo aver filtrato: proporre la scheda di prova con questo infuso (e, a scelta, gli altri filtrati di recente).
+function offriScheda(id){
+  const l = diarioCarica(), v = l.find(x => x.id === id); if (!v) return;
+  const altri = l.filter(x => x.id !== id && x.finito && x.botanica && Date.now() - x.finito < 30 * 864e5);
+  const riga = (x, on) => '<label class="dia-chk"><input type="checkbox" class="sch-inf" value="' + diaEsc(x.botanica) + '"' + (on ? ' checked' : '') + '> ' + diaEsc(x.tipo) + '</label>';
+  const corpo = '<p><strong>' + diaEsc(v.tipo) + '</strong> \u00e8 filtrato. Vuoi preparare la scheda di prova per assaggiarlo e miscelarlo?</p>' +
+    (v.botanica ? riga(v, true) : '') +
+    (altri.length ? '<p class="cond-hint" style="margin:8px 0 4px">Aggiungi anche altri infusi filtrati di recente:</p>' + altri.map(x => riga(x, false)).join('') : '');
+  mostraAvviso('\ud83e\uddea Scheda di prova', corpo, 'Crea la scheda', () => {
+    const nomi = [...document.querySelectorAll('.sch-inf:checked')].map(x => x.value);
+    creaSchedaDaInfusi(nomi);
+  });
+  document.getElementById('avviso-annulla').textContent = 'Non ora';
+}
+function creaSchedaDaInfusi(nomi){
+  nomi = [...new Set(nomi)].filter(n => byName[n]);
+  showTab('prove');
+  openForm(null);
+  document.getElementById('tf-name').value = 'Prova ' + (nomi.length === 1 ? nomi[0] : nomi.length + ' infusi');
+  const oggi = new Date(), z = n => String(n).padStart(2, '0');
+  const dt = document.getElementById('tf-date'); if (dt && !dt.value) dt.value = oggi.getFullYear() + '-' + z(oggi.getMonth() + 1) + '-' + z(oggi.getDate());
+  if (nomi.length){
+    tfBotaniche.innerHTML = ''; activeSyncFns.length = 0;
+    nomi.forEach(n => addBotRow({botanica: n, perc: ''}));   // le percentuali le decide l'assaggio
+    renderMixSummary();
+  }
+  setTimeout(() => { const f = document.getElementById('test-form') || testForm; if (f && f.scrollIntoView) f.scrollIntoView({block: 'start'}); }, 80);
+}
+window.creaSchedaDaInfusi = creaSchedaDaInfusi;
+// Dal Builder: ogni botanica della ricetta in infusione separata, alla sua gradazione consigliata; si annotano tutte nel diario in una volta.
+function preparaInfusiRicetta(){
+  const nomi = [...new Set([...document.querySelectorAll('#panel-builder .role-list select:not(.role-label-input), #role-list select:not(.role-label-input)')].map(x => x.value))].filter(n => byName[n]);
+  if (!nomi.length){ mostraAvviso('Prepara gli infusi', '<p>Scegli prima le botaniche della ricetta.</p>', '', null); return; }
+  const righe = nomi.map((n, k) => '<label class="dia-chk"><input type="checkbox" class="pr-inf" data-n="' + diaEsc(n) + '" checked> ' + diaEsc(n) + ' <span class="cond-hint pr-dett" data-k="' + k + '"></span></label>').join('');
+  const corpo = '<div class="dia-new">' +
+    '<label>Volume di ogni infuso (ml)<input type="number" id="pr-vol" value="100" min="10" step="25"></label>' +
+    '<label>Temperatura di conservazione, al buio (\u00b0C)<input type="number" id="pr-temp" value="20" min="0" max="60"></label>' +
+    '<label>Alcol di partenza (\u00b0)<input type="number" id="pr-abvS" value="96" min="40" max="96" step="0.5"></label>' +
+    '<label>Data e ora di inizio<input type="datetime-local" id="pr-quando" value="' + diaLocale(new Date()) + '"></label></div>' +
+    '<p class="cond-hint" style="margin:8px 0 4px">Ogni botanica alla sua gradazione consigliata in erbario; promemoria al primo assaggio (tra mezzanotte e le 7 slitta alle 7:30).</p>' + righe;
+  const calcola = () => {
+    const vol = parseFloat(document.getElementById('pr-vol').value) || 100, temp = parseFloat(document.getElementById('pr-temp').value), abvS = parseFloat(document.getElementById('pr-abvS').value) || ALCOL_PARTENZA;
+    return nomi.map(n => {
+      const d = byName[n], st = infRif(d), est = estPer(d, st), abv = est ? Math.round((est.a[0] + est.a[1]) / 2) : REF_ABV;
+      return { n, d, abv, r: infusoRiga(d, abv, isNaN(temp) ? REF_TEMP : temp, vol, 'tempo', st, false, abvS), vol, temp: isNaN(temp) ? REF_TEMP : temp, abvS };
+    });
+  };
+  const anteprima = () => calcola().forEach((x, k) => {
+    const el = document.querySelector('.pr-dett[data-k="' + k + '"]'); if (!el) return;
+    el.textContent = '\u00b7 ' + x.abv + '% \u00b7 ' + nf(x.r.g, 1) + ' g \u00b7 ' + (x.r.tmin != null ? diaDurata(x.r.tmin) + (x.r.tmax != null ? '\u2013' + diaDurata(x.r.tmax) : '') : 'tempo n.d.');
+  });
+  mostraAvviso('\ud83d\udcd3 Prepara gli infusi della ricetta', corpo, 'Annota nel diario', () => {
+    const scelte = new Set([...document.querySelectorAll('.pr-inf:checked')].map(x => x.dataset.n));
+    const q = document.getElementById('pr-quando').value, inizio = q ? new Date(q).getTime() : Date.now();
+    const nuove = calcola().filter(x => scelte.has(x.n)).map((x, k) => {
+      const r = x.r, stato = r.stato === 'fresco' ? 'fresca' : 'secca';
+      return { id: (Date.now() + k).toString(36), inizio, botanica: x.n,
+        tipo: x.n + ' \u00b7 ' + stato + ' \u00b7 ' + nf(x.abv, 0) + '% vol \u00b7 ' + nf(x.vol, 0) + ' ml',
+        note: 'Dalla ricetta del Builder' + (currentStyleName ? ' (' + currentStyleName + ')' : ''),
+        alcolG: r.dil ? r.dil.alcG : null, alcolMl: r.dil ? r.dil.alcMl : null, abvS: x.abvS,
+        acquaG: r.dil ? r.dil.acquaG : null, botG: r.g, temp: x.temp, tmin: r.tmin, tmax: r.tmax,
+        allarme: r.assaggio ? diaNonDiNotte(inizio + r.assaggio * 3600000) : null, avvisato: false, finito: null };
+    });
+    if (!nuove.length) return;
+    diarioSalva(nuove.concat(diarioCarica())); diarioRender();
+    if ('Notification' in window && Notification.permission === 'default') { try { Notification.requestPermission(); } catch(e){} }
+    showTab('diario');
+    setTimeout(() => offriCalendario(nuove), 400);
+  });
+  ['pr-vol','pr-temp','pr-abvS'].forEach(id => document.getElementById(id).addEventListener('input', anteprima));
+  anteprima();
+}
+window.preparaInfusiRicetta = preparaInfusiRicetta;
+function offriCalendario(voci){
+  voci = voci.filter(v => v.allarme); if (!voci.length) return;
+  mostraAvviso('\ud83d\udcc5 Promemoria nel calendario',
+    '<p>Il promemoria dell\u2019app suona solo quando l\u2019app \u00e8 aperta. Per un allarme sicuro anche ad app chiusa, aggiungi ' +
+    (voci.length > 1 ? 'i ' + voci.length + ' assaggi' : 'l\u2019assaggio') + ' al calendario del telefono.</p><p>' +
+    voci.map(v => '<strong>' + diaEsc(v.tipo) + '</strong>: ' + diaData(v.allarme)).join('<br>') + '</p>',
+    'Aggiungi al calendario', () => diarioIcsVoci(voci));
+  document.getElementById('avviso-annulla').textContent = 'No, grazie';
 }
 function diarioRiapri(id){ diarioAggiorna(id, x => { x.finito = null; }); diarioControlla(); }
 function diarioElimina(id){
@@ -6533,15 +6567,22 @@ function diarioOrari(id){
 }
 function diarioIcs(id){
   const v = diarioCarica().find(x => x.id === id); if (!v || !v.allarme) return;
+  diarioIcsVoci([v], 'assaggio-' + (v.botanica || 'infuso').replace(/\W+/g, '-').toLowerCase() + '.ics');
+}
+// Un solo file .ics con un evento (e il suo allarme) per ogni infuso: il calendario del telefono li importa tutti insieme.
+function diarioIcsVoci(voci, nomeFile){
+  voci = voci.filter(v => v && v.allarme); if (!voci.length) return;
   const u = ms => new Date(ms).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
   const t = s => String(s || '').replace(/[\\;,]/g, m => '\\' + m).replace(/\n/g, '\\n');
-  const ics = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//GinBuilder//Diario infusi//IT','CALSCALE:GREGORIAN','BEGIN:VEVENT',
+  const righe = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//GinBuilder//Diario infusi//IT','CALSCALE:GREGORIAN'];
+  voci.forEach(v => righe.push('BEGIN:VEVENT',
     'UID:' + v.id + '@ginbuilder', 'DTSTAMP:' + u(Date.now()), 'DTSTART:' + u(v.allarme), 'DTEND:' + u(v.allarme + 15 * 60000),
     'SUMMARY:' + t('Assaggio infuso: ' + v.tipo), 'DESCRIPTION:' + t('Iniziato ' + diaData(v.inizio) + (v.note ? '. ' + v.note : '')),
-    'BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:' + t('Assaggia ' + v.tipo),'TRIGGER:PT0M','END:VALARM',
-    'END:VEVENT','END:VCALENDAR'].join('\r\n');
+    'BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:' + t('Assaggia ' + v.tipo),'TRIGGER:PT0M','END:VALARM','END:VEVENT'));
+  righe.push('END:VCALENDAR');
+  const ics = righe.join('\r\n');
   const blob = new Blob([ics], {type: 'text/calendar'}), url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = 'assaggio-' + (v.botanica || 'infuso').replace(/\W+/g, '-').toLowerCase() + '.ics';
+  const a = document.createElement('a'); a.href = url; a.download = nomeFile || 'assaggi-infusi.ics';
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
@@ -6579,6 +6620,190 @@ setInterval(() => diarioRiepilogo(diarioCarica()), 60000);
   if (navigator.serviceWorker) navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.apri === 'diario') apriDiario(); });
 })();
 document.addEventListener('visibilitychange', () => { if (!document.hidden) diarioControlla(); });
+
+// ---------- I tuoi dati: un solo file con tutto ----------
+// Tutto cio' che l'app salva sul dispositivo (schede di prova, diario, tarature, prezzi, fonti, laboratorio,
+// impostazioni) finisce in un file. Il ripristino aggiunge senza cancellare: a parita' di voce vince quella gia' presente.
+const BK_TUTTO = 'gb-backup-tutto';
+function chiaviApp(){
+  const k = [];
+  try { for (let i = 0; i < localStorage.length; i++){ const n = localStorage.key(i); if (n && (n.indexOf('gb-') === 0 || n === 'erbario_test_sheets_v1') && n !== BK_TUTTO) k.push(n); } } catch(e){}
+  return k.sort();
+}
+function contaDati(){
+  const n = k => { try { const v = JSON.parse(localStorage.getItem(k)); return Array.isArray(v) ? v.length : 0; } catch(e){ return 0; } };
+  return { schede: n('erbario_test_sheets_v1'), diario: n(DIARIO_KEY), lab: n('gb-lab-assaggi') + n('gb-lab-miei') };
+}
+function datiTesto(){
+  const c = contaDati();
+  return c.schede + ' schede di prova, ' + c.diario + ' infusi nel diario' + (c.lab ? ', ' + c.lab + ' prove del laboratorio' : '');
+}
+function ultimoBackup(){ try { return localStorage.getItem(BK_TUTTO); } catch(e){ return null; } }
+function salvaTutto(){
+  const dati = { app: 'GinBuilder', tipo: 'tutto', versione: 2, esportato: new Date().toISOString(), chiavi: {} };
+  chiaviApp().forEach(k => { try { dati.chiavi[k] = localStorage.getItem(k); } catch(e){} });
+  const nome = 'ginbuilder-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+  const blob = new Blob([JSON.stringify(dati)], {type: 'application/json'});
+  const segna = () => { try { localStorage.setItem(BK_TUTTO, new Date().toISOString()); } catch(e){} renderDati(); };
+  // Sul telefono si apre il pannello di condivisione (Salva in File, Drive, e-mail...); altrimenti si scarica.
+  try {
+    const f = new File([blob], nome, {type: 'application/json'});
+    if (navigator.canShare && navigator.canShare({files: [f]})){
+      navigator.share({files: [f], title: 'Backup GinBuilder'}).then(segna).catch(() => {});
+      return;
+    }
+  } catch(e){}
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = nome;
+  document.body.appendChild(a); a.click(); a.remove(); segna();
+}
+function unisci(attuale, nuovo){
+  if (Array.isArray(attuale) && Array.isArray(nuovo)){
+    const chiave = x => (x && typeof x === 'object' && x.id !== undefined) ? 'id:' + x.id : JSON.stringify(x);
+    const visti = new Set(attuale.map(chiave));
+    return attuale.concat(nuovo.filter(x => !visti.has(chiave(x))));
+  }
+  if (attuale && nuovo && typeof attuale === 'object' && typeof nuovo === 'object') return Object.assign({}, nuovo, attuale);
+  return attuale;
+}
+function ripristinaTutto(){
+  const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'application/json,.json';
+  inp.addEventListener('change', () => {
+    const f = inp.files[0]; if (!f) return;
+    const r = new FileReader();
+    r.onload = () => {
+      let dati;
+      try { dati = JSON.parse(r.result); } catch(e){ mostraAvviso('File non valido', '<p>Il file non \u00e8 un backup di GinBuilder.</p>', '', null); return; }
+      // accetta anche il vecchio backup delle sole schede
+      if (dati && !dati.chiavi && (Array.isArray(dati) || dati.schede)){
+        dati = { chiavi: { 'erbario_test_sheets_v1': JSON.stringify(Array.isArray(dati) ? dati : dati.schede),
+          'gb-tarature': JSON.stringify(dati.tarature || {}), 'gb-prezzi': JSON.stringify(dati.prezzi || {}), 'gb-fonti': JSON.stringify(dati.fonti || {}) } };
+      }
+      if (!dati || !dati.chiavi){ mostraAvviso('File non valido', '<p>Il file non \u00e8 un backup di GinBuilder.</p>', '', null); return; }
+      const quando = dati.esportato ? new Date(dati.esportato).toLocaleString('it-IT') : 'data sconosciuta';
+      mostraAvviso('\u2b06 Ripristina i dati', '<p>Backup del ' + quando + '.</p><p>I dati del file si <strong>aggiungono</strong> a quelli gi\u00e0 presenti: niente viene cancellato, e se una voce c\u2019\u00e8 gi\u00e0 resta com\u2019\u00e8.</p>', 'Ripristina', () => {
+        Object.keys(dati.chiavi).forEach(k => {
+          if (!(k.indexOf('gb-') === 0 || k === 'erbario_test_sheets_v1') || k === BK_TUTTO) return;
+          const nuovo = dati.chiavi[k]; if (nuovo == null) return;
+          let att = null; try { att = localStorage.getItem(k); } catch(e){}
+          let val = nuovo;
+          if (att != null){
+            try { val = JSON.stringify(unisci(JSON.parse(att), JSON.parse(nuovo))); } catch(e){ val = att; }
+          }
+          try { localStorage.setItem(k, val); } catch(e){}
+        });
+        location.reload();
+      });
+    };
+    r.readAsText(f);
+  });
+  inp.click();
+}
+function renderDati(){
+  const box = document.getElementById('home-dati'); if (!box) return;
+  const c = contaDati(), d = ultimoBackup(), ci = c.schede + c.diario + c.lab;
+  const giorni = d ? Math.floor((Date.now() - Date.parse(d)) / 864e5) : null;
+  const avviso = ci > 0 && (!d || giorni > 14);
+  box.className = 'home-dati' + (avviso ? ' hdati-warn' : '');
+  box.innerHTML = '<div class="hdati-tit">\ud83d\udcbe I tuoi dati</div>' +
+    '<div class="hdati-info">' + (ci ? datiTesto() + ', solo su questo dispositivo. ' : 'Ancora nessun dato salvato. ') +
+    (d ? 'Ultimo backup: ' + new Date(d).toLocaleDateString('it-IT') + (giorni > 14 ? ' \u2014 conviene rifarlo.' : '.') : (ci ? '<strong>Nessun backup: se cambi telefono o cancelli i dati del browser li perdi.</strong>' : '')) + '</div>' +
+    '<div class="hdati-btn"><button type="button" class="ghost-btn" onclick="salvaTutto()">\u2b07 Salva tutto in un file</button>' +
+    '<button type="button" class="ghost-btn" onclick="ripristinaTutto()">\u2b06 Ripristina da file</button></div>';
+}
+window.salvaTutto = salvaTutto; window.ripristinaTutto = ripristinaTutto;
+
+// ---------- Riaprire dove eri rimasto ----------
+// Si ricordano l'ultima pagina, la botanica aperta e la ricetta del Builder (stile e scelte, anche nel Personalizzato).
+const ULTIMA_KEY = 'gb-ultima', BUILDER_KEY = 'gb-builder';
+let _ripristinoInCorso = true;
+function leggiJ(k){ try { return JSON.parse(localStorage.getItem(k)); } catch(e){ return null; } }
+function scriviJ(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+function salvaUltima(extra){ if (_ripristinoInCorso) return; scriviJ(ULTIMA_KEY, Object.assign(leggiJ(ULTIMA_KEY) || {}, extra)); }
+window.salvaStatoBuilder = function(){
+  if (_ripristinoInCorso || typeof roleList === 'undefined') return;
+  const custom = currentStyleName === 'Personalizzato';
+  const righe = custom
+    ? [...roleList.querySelectorAll('.role-row-custom')].map(r => [r.querySelector('.role-label-input').value, (r.querySelector('select:not(.role-label-input)') || {}).value])
+    : [...roleList.querySelectorAll('select:not(.role-label-input)')].map(x => x.value);
+  scriviJ(BUILDER_KEY, { i: window._styleIdx, nome: currentStyleName, custom, righe });
+};
+(function(){
+  const prevTab = window.showTab;
+  window.showTab = function(name){ prevTab(name); salvaUltima({ tab: name }); };
+  const prevDet = window.showDetail;
+  window.showDetail = function(name, nuova){ prevDet(name, nuova); if (nuova) salvaUltima({ bot: name }); };
+  const prevChiudi = window.chiudiDetail;
+  if (prevChiudi) window.chiudiDetail = function(){ prevChiudi.apply(this, arguments); salvaUltima({ bot: null }); };
+  // Il ripristino parte quando tutto lo script e' caricato (alcune costanti, come i ruoli, sono definite piu' avanti).
+  setTimeout(ripristina, 0);
+})();
+function ripristina(){
+  // Builder
+  const sb = leggiJ(BUILDER_KEY);
+  try {
+    if (sb && STYLES[sb.i] && STYLES[sb.i][0] === sb.nome){
+      const btn = document.querySelectorAll('.style-btn')[sb.i]; if (btn) btn.click();
+      if (sb.custom){
+        roleList.querySelectorAll('.role-row-custom').forEach(r => r.remove());
+        (sb.righe || []).forEach(r => { if (Array.isArray(r) && byName[r[1]]) addCustomRoleRow(r[0], r[1]); });
+      } else {
+        const sels = [...roleList.querySelectorAll('select:not(.role-label-input)')];
+        (sb.righe || []).forEach((v, k) => { const x = sels[k]; if (x && v && [...x.options].some(o => o.value === v) && x.value !== v){ x.value = v; x.dispatchEvent(new Event('change', {bubbles: true})); } });
+      }
+      renderSummary();
+    }
+  } catch(e){}
+  // Pagina e botanica (non quando l'app e' stata aperta dalla scorciatoia del diario)
+  let apri = null; try { apri = new URLSearchParams(location.search).get('apri'); } catch(e){}
+  const u = leggiJ(ULTIMA_KEY);
+  if (!apri && location.hash !== '#diario' && u && u.tab && u.tab !== 'home' && document.getElementById('panel-' + u.tab)){
+    showTab(u.tab);
+    if (u.tab === 'libreria' && u.bot && byName[u.bot]) setTimeout(() => showDetail(u.bot, true), 50);
+  }
+  setTimeout(() => { _ripristinoInCorso = false; window.salvaStatoBuilder(); }, 200);
+}
+
+// ---------- Rimandi alle Nozioni tecniche ----------
+// Le pagine di lavoro tengono solo "Come si usa"; le spiegazioni scientifiche stanno in Nozioni tecniche
+// e si aprono da qui, gia' sul paragrafo giusto.
+document.addEventListener('click', e => {
+  const a = e.target.closest && e.target.closest('.noz-link'); if (!a) return;
+  e.preventDefault();
+  showTab('nozioni');
+  const t = (a.dataset.noz || '').toLowerCase();
+  const det = [...document.querySelectorAll('#panel-nozioni details')].find(d => { const su = d.querySelector('summary'); return su && su.textContent.trim().toLowerCase().indexOf(t) === 0; });
+  if (!det) return;
+  let p = det; while (p){ if (p.tagName === 'DETAILS') p.open = true; p = p.parentElement; }
+  det.style.scrollMarginTop = '84px';
+  const v = () => det.scrollIntoView({block: 'start'}); setTimeout(v, 60); setTimeout(v, 520);
+});
+
+// ---------- Modalita' semplice / Strumenti avanzati ----------
+// Spenti: sui radar restano il profilo, il confronto e le botaniche base. Accesi: testa/cuore/coda, vista in sottrazione,
+// soglia di somiglianza e "macerano tutte insieme".
+function avanzatiAttivi(){ return document.documentElement.classList.contains('avanzato'); }
+function aggiornaTileAvanzati(){
+  const t = document.getElementById('menu-avanzati');
+  if (t) t.querySelector('.mt-l').textContent = 'Strumenti avanzati: ' + (avanzatiAttivi() ? 'accesi' : 'spenti');
+}
+function ridisegnaRadar(){
+  try { ricalcolaSomiglianze(); } catch(e){}
+  const row = document.getElementById('cmp-row'); if (row) row.dispatchEvent(new Event('fase'));
+}
+window.toggleAvanzati = function(){
+  const on = !avanzatiAttivi();
+  document.documentElement.classList.toggle('avanzato', on);
+  try { localStorage.setItem('gb-avanzati', on ? '1' : ''); } catch(e){}
+  if (!on){ window.radarFase = 'tutto'; window.radarInsieme = 0; }
+  aggiornaTileAvanzati(); ridisegnaRadar();
+  mostraAvviso(on ? '\ud83e\uddf0 Strumenti avanzati accesi' : 'Modalit\u00e0 semplice',
+    on ? '<p>Sui radar compaiono di nuovo: <strong>Testa / Cuore / Coda</strong>, la vista <strong>in sottrazione</strong>, la <strong>soglia di somiglianza</strong> e, nel Builder, <strong>macerano tutte insieme</strong>.</p>'
+       : '<p>Sui radar restano il profilo, il confronto e le botaniche base. Gli strumenti avanzati si riaccendono dal menu, sotto Impostazioni.</p>', '', null);
+};
+try { if (localStorage.getItem('gb-avanzati')) document.documentElement.classList.add('avanzato'); else { window.radarFase = 'tutto'; window.radarInsieme = 0; } } catch(e){}
+aggiornaTileAvanzati(); ridisegnaRadar();
+window.apriDati = function(){ showTab('home'); renderDati(); setTimeout(() => { const b = document.getElementById('home-dati'); if (b){ b.style.scrollMarginTop = '84px'; b.scrollIntoView({block: 'start'}); } }, 80); };
+renderDati();
 
 // ---------- Ricerca nei menù delle botaniche ----------
 // Ogni menù lungo (oltre 40 voci) riceve una casella di ricerca: scrivendo la prima lettera
