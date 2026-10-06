@@ -1340,6 +1340,20 @@ footer.note{
 .inf-table .inf-cau{display:block;font-size:11.5px;color:var(--orange-sym);margin-top:3px;}
 .inf-table .inf-sub{display:block;font-size:11.5px;color:var(--ink-faint);}
 .inf-in-scheda{margin:14px 0;}
+.filtri-box .cond-box{margin:10px 0 0;}
+.diario-box .howto-body > p:first-child{margin-top:0;}
+.dia-new{display:grid;gap:10px;text-align:left;}
+.dia-new label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:650;color:var(--ink-faint);}
+.dia-new input, .dia-new select, .dia-new textarea{font:inherit;font-size:14px;padding:8px 10px;border:1px solid var(--line, rgba(0,0,0,.2));border-radius:8px;background:var(--paper, #fff);color:var(--ink);}
+.dia-item{border:1px solid var(--line, rgba(0,0,0,.15));border-radius:10px;padding:10px 12px;margin:0 0 10px;}
+.dia-item.finito{opacity:.6;}
+.dia-item.scaduto{border-color:var(--ochre);box-shadow:0 0 0 1px var(--ochre) inset;}
+.dia-item h5{margin:0 0 4px;font-size:15px;}
+.dia-item .dia-meta{font-size:12.5px;color:var(--ink-faint);margin-bottom:6px;}
+.dia-item .dia-r{font-size:13.5px;margin:2px 0;}
+.dia-item textarea{width:100%;box-sizing:border-box;font:inherit;font-size:13px;padding:6px 8px;margin-top:6px;border:1px solid var(--line, rgba(0,0,0,.2));border-radius:8px;background:transparent;color:var(--ink);}
+.dia-item .dia-btn{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+.dia-item .dia-btn .ghost-btn{padding:5px 10px;font-size:12.5px;}
 .inf-in-scheda h4{margin:0 0 8px;font-size:16px;}
 .inf-list{display:flex;flex-direction:column;gap:6px;margin-top:10px;}
 .inf-item{border:1px solid var(--line);border-radius:12px;background:var(--surface);scroll-margin-top:96px;}
@@ -1735,8 +1749,9 @@ footer.note{
         <p><strong>Più forte non è meglio.</strong> Un solvente troppo forte non estrae solo gli aromi buoni: trascina anche resine, cere, clorofilla e amari duri, che danno note di trementina, di erba tagliata o di amaro. Un solvente troppo debole lascia gli oli nella botanica e porta tannini e acqua. Per questo ogni botanica ha una gradazione consigliata, una soglia oltre cui evitare di salire e il relativo tempo di macerazione; nelle schede trovi cosa succede oltre e sotto quei limiti. I valori sono stime di partenza: affinali con le tue tarature e con gli assaggi.</p>
       </div>
     </details>
+    <details class="howto filtri-box" id="filtri-box">
+    <summary id="filtri-sum">Filtra ed ordina</summary>
     <div class="cond-box cond-compact">
-      <span class="cond-label">Filtra ed ordina:</span>
       <label>Famiglia
         <select id="f-categoria"><option value="">Tutte</option></select>
       </label>
@@ -1770,6 +1785,7 @@ footer.note{
         </select>
       </label>
     </div>
+    </details>
     <div class="controls">
       <label class="inf-q-label">Cerca la botanica<input type="text" id="search" placeholder="Scrivi il nome o la prima lettera…" /></label>
       <span class="count-tag" id="count-tag"></span>
@@ -1787,6 +1803,10 @@ footer.note{
       <div class="inf-ris" id="inf-ris"><span class="cond-hint">Apri una botanica: qui compaiono diluizione, dose e tempi, che cambiano con i tasti − / +.</span></div>
     </div>
     <div id="inf-info"></div>
+    <details class="howto diario-box" id="diario-box">
+      <summary id="diario-sum">📓 Diario degli infusi</summary>
+      <div class="howto-body" id="diario-body"></div>
+    </details>
     <div class="grid" id="grid"></div>
     <div class="detail" id="detail"></div>
     <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;"><button class="ghost-btn" id="inf-print" type="button">🖨️ Stampa scheda della botanica aperta</button><button class="ghost-btn" id="lib-print" type="button">🖨️ Stampa elenco</button></div>
@@ -3513,6 +3533,7 @@ wrapStepper(libAbvInput, 1, { emptyStart: () => {
 function showDetail(name, nuovaScelta){
   const d = byName[name];
   if (!d) return;
+  if (currentDetailName !== name) window.infSchedaAperta = false;
   currentDetailName = name;
   if (window._confDi !== name){ window.radarConfronta = null; window._confDi = name; }
   if (nuovaScelta){
@@ -3581,7 +3602,7 @@ function showDetail(name, nuovaScelta){
     <h3>${d.botanica}</h3>
     <div class="sub">${d.nome_botanico ? d.nome_botanico + ' · ' : ''}${d.categoria} — ${d.sottofamiglia || ''}</div>
     ${radarBox(d.botanica)}
-    <div class="inf-in-scheda"><h4>🧫 Preparazione dell'infuso</h4><div id="inf-body"></div></div>
+    <details class="howto inf-in-scheda" id="inf-sch"${window.infSchedaAperta ? ' open' : ''}><summary>🧫 Preparazione dell'infuso</summary><div id="inf-body"></div></details>
     <div class="detail-grid">
       <div class="field"><div class="k">Profilo aromatico</div><div class="v">${d.profilo || '—'}</div></div>
       <div class="field"><div class="k">Direzione</div><div class="v">${d.direzione || '—'}</div></div>
@@ -3622,6 +3643,15 @@ function chiudiDetail(){
 }
 
 [searchInput, fCategoria, fCarattere, fPotenza, fOrdine, fStile, fUso].forEach(el => el.addEventListener('input', renderGrid));
+// La scheda "Preparazione dell'infuso" ricorda se l'hai aperta o chiusa mentre cambi le condizioni.
+detail.addEventListener('toggle', e => { if (e.target.id === 'inf-sch') window.infSchedaAperta = e.target.open; }, true);
+// Il riquadro dei filtri chiuso dice quanti filtri sono attivi.
+function aggiornaFiltriSum(){
+  const sum = document.getElementById('filtri-sum'); if (!sum) return;
+  const n = [fCategoria, fCarattere, fOrdine, fStile, fUso].filter(el => el && el.value).length + (fPotenza && fPotenza.value !== '0' ? 1 : 0);
+  sum.textContent = 'Filtra ed ordina' + (n ? ' (' + n + (n === 1 ? ' attivo)' : ' attivi)') : '');
+}
+[fCategoria, fCarattere, fPotenza, fOrdine, fStile, fUso].forEach(el => el && el.addEventListener('input', aggiornaFiltriSum));
 renderGrid();
 const libPrint = document.getElementById('lib-print');
 if (libPrint) libPrint.addEventListener('click', () => {
@@ -5942,7 +5972,8 @@ function wrapStepper(input, step, opts){
       x('Acqua demineralizzata', dil ? '<strong>' + nf(dil.acquaG, 1) + ' g</strong> <small>(' + nf(dil.acquaMl, 1) + ' ml)</small>' : '\u2014') +
       x('Botanica', '<strong>' + infFmtG(r.g) + ' g</strong> <small>(' + infFmtG(r.gmin) + '\u2013' + infFmtG(r.gmax) + ' g)</small>') +
       x('Tempo di estrazione', '<strong>' + t + '</strong>') +
-      x('Primo assaggio', a);
+      x('Primo assaggio', a) +
+      '<div class="ris full"><button class="ghost-btn" type="button" onclick="diarioNuovo()">\ud83d\udcd3 Ho preparato l\u2019infuso: annota nel diario</button></div>';
   }
   // La scheda dell'infuso e' quella della botanica aperta nella pagina Botaniche.
   let matchAttuale = null;
@@ -5954,9 +5985,52 @@ function wrapStepper(input, step, opts){
       : '<span class="cond-hint">Apri una botanica: qui compaiono diluizione, dose e tempi, che cambiano con i tasti \u2212 / +.</span>';
     if (!body || !matchAttuale) return;
     body.innerHTML = cardHtml(matchAttuale.d, matchAttuale.r, c);
+    // Chiusa di default; si apre da sola solo se c'e' un avviso da leggere.
+    const sch = $('inf-sch');
+    if (sch && !sch.open && body.querySelector('.warn-box, .adj-box, .inf-cau')){ window.infSchedaAperta = true; sch.open = true; }
     if (abvRange) abvRange.textContent = matchAttuale.r.est ? ('Consigliato in erbario: ' + estAbvTxt(matchAttuale.r.est.a)) : '';
   }
   window.renderInfusoScheda = calcola;
+  window.diarioNuovo = function(){
+    if (!matchAttuale) return;
+    const { d, r } = matchAttuale, c = leggi();
+    const gr = c.abv !== null ? c.abv : Math.round(r.abvEff * 10) / 10;
+    const tipo = d.botanica + ' \u00b7 ' + (r.stato === 'fresco' ? 'fresca' : 'secca') + ' \u00b7 ' + nf(gr, 1) + '% vol \u00b7 ' + nf(c.vol, 0) + ' ml';
+    const opz = [['', 'Nessun promemoria']];
+    if (r.assaggio !== null) opz.push(['a', 'Primo assaggio (dopo ' + diaDurata(r.assaggio) + ')']);
+    if (r.tmin !== null) opz.push(['min', 'Fine tempo minimo (dopo ' + diaDurata(r.tmin) + ')']);
+    if (r.tmax !== null) opz.push(['max', 'Fine tempo massimo (dopo ' + diaDurata(r.tmax) + ')']);
+    opz.push(['ore', 'Dopo un numero di ore a scelta']);
+    const corpo = '<div class="dia-new">' +
+      '<label>Data e ora di inizio<input type="datetime-local" id="dia-quando" value="' + diaLocale(new Date()) + '"></label>' +
+      '<label>Tipo di infuso<input type="text" id="dia-tipo" value="' + diaEsc(tipo) + '"></label>' +
+      '<label>Promemoria per l\u2019assaggio<select id="dia-allarme">' + opz.map(o => '<option value="' + o[0] + '"' + (o[0] === 'a' ? ' selected' : '') + '>' + o[1] + '</option>').join('') + '</select></label>' +
+      '<label id="dia-ore-l" style="display:none">Ore dall\u2019inizio<input type="number" id="dia-ore" min="1" step="1" value="' + Math.max(1, Math.round(r.assaggio || 24)) + '"></label>' +
+      '<label>Note<textarea id="dia-note" rows="2" placeholder="es. bacche schiacciate, vaso da 250 ml"></textarea></label>' +
+      '</div>';
+    mostraAvviso('\ud83d\udcd3 Annota nel diario', corpo, 'Salva nel diario', () => {
+      const q = document.getElementById('dia-quando').value;
+      const inizio = q ? new Date(q).getTime() : Date.now();
+      const scelta = document.getElementById('dia-allarme').value;
+      const ore = scelta === 'a' ? r.assaggio : scelta === 'min' ? r.tmin : scelta === 'max' ? r.tmax :
+                  scelta === 'ore' ? parseFloat(document.getElementById('dia-ore').value) : null;
+      const voce = {
+        id: Date.now().toString(36), inizio, botanica: d.botanica,
+        tipo: document.getElementById('dia-tipo').value.trim() || tipo,
+        note: document.getElementById('dia-note').value.trim(),
+        alcolG: r.dil ? r.dil.alcG : null, alcolMl: r.dil ? r.dil.alcMl : null, abvS: c.abvS,
+        acquaG: r.dil ? r.dil.acquaG : null, botG: r.g, temp: c.temp,
+        tmin: r.tmin, tmax: r.tmax,
+        allarme: (ore && ore > 0) ? inizio + ore * 3600000 : null, avvisato: false, finito: null
+      };
+      const lista = diarioCarica(); lista.unshift(voce); diarioSalva(lista);
+      if (voce.allarme && 'Notification' in window && Notification.permission === 'default') { try { Notification.requestPermission(); } catch(e){} }
+      diarioRender();
+      const box = document.getElementById('diario-box'); if (box){ box.open = true; box.scrollIntoView({behavior:'smooth', block:'start'}); }
+    });
+    const sel = document.getElementById('dia-allarme');
+    sel.addEventListener('change', () => { document.getElementById('dia-ore-l').style.display = sel.value === 'ore' ? '' : 'none'; });
+  };
   [iAbv, iAbvS, iTemp, iVol, iMod].forEach(el => el.addEventListener('input', calcola));
   iSt.addEventListener('change', () => {
     MASTER.forEach(d => { if (iSt.value === 'ref') delete statoMap[d.id]; else statoMap[d.id] = iSt.value; });
@@ -5986,6 +6060,89 @@ function wrapStepper(input, step, opts){
   });
   calcola();
 })();
+
+// ---------- Diario degli infusi e promemoria per l'assaggio ----------
+// Le voci restano nel telefono (localStorage). Il promemoria funziona in due modi: se l'app \u00e8 aperta
+// avvisa da sola (finestra + notifica, se permessa); per un allarme sicuro anche ad app chiusa si aggiunge
+// l'evento al calendario del telefono con il pulsante \ud83d\udcc5, che ha il suo allarme.
+const DIARIO_KEY = 'gb-diario-infusi';
+function diarioCarica(){ try { return JSON.parse(localStorage.getItem(DIARIO_KEY)) || []; } catch(e){ return []; } }
+function diarioSalva(l){
+  try { localStorage.setItem(DIARIO_KEY, JSON.stringify(l)); }
+  catch(e){ alert('Non riesco a salvare il diario (memoria del browser piena o modalit\u00e0 privata).'); }
+}
+function diaEsc(t){ return String(t == null ? '' : t).replace(/[&<>"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch])); }
+function diaLocale(dt){ const z = n => String(n).padStart(2, '0'); return dt.getFullYear() + '-' + z(dt.getMonth() + 1) + '-' + z(dt.getDate()) + 'T' + z(dt.getHours()) + ':' + z(dt.getMinutes()); }
+function diaData(ms){ return new Date(ms).toLocaleString('it-IT', {weekday:'short', day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}); }
+function diaDurata(h){ return h >= 72 ? (Math.round(h / 24 * 10) / 10).toLocaleString('it-IT') + ' giorni' : Math.round(h).toLocaleString('it-IT') + ' h'; }
+function diaNum(v, dec){ return (typeof v === 'number' && isFinite(v)) ? v.toLocaleString('it-IT', {maximumFractionDigits: dec}) : '\u2014'; }
+function diarioRender(){
+  const body = document.getElementById('diario-body'), sum = document.getElementById('diario-sum');
+  if (!body) return;
+  const lista = diarioCarica(), ora = Date.now();
+  const inCorso = lista.filter(v => !v.finito).length;
+  if (sum) sum.textContent = '\ud83d\udcd3 Diario degli infusi' + (lista.length ? ' (' + inCorso + ' in corso' + (lista.length > inCorso ? ', ' + (lista.length - inCorso) + ' filtrati' : '') + ')' : '');
+  if (!lista.length){ body.innerHTML = '<p>Ancora nessun infuso annotato. Apri una botanica, imposta le condizioni e tocca \u00ab\ud83d\udcd3 Ho preparato l\u2019infuso\u00bb nel quadro delle variabili.</p>'; return; }
+  body.innerHTML = '<p class="cond-hint" style="margin:0 0 10px;">Il promemoria avvisa quando l\u2019app \u00e8 aperta. Per un allarme che suoni anche ad app chiusa, tocca \ud83d\udcc5 e aggiungilo al calendario del telefono.</p>' +
+    lista.map(v => {
+      const scad = !v.finito && v.allarme && v.allarme <= ora;
+      const pronto = (v.tmin != null) ? diaData(v.inizio + v.tmin * 3600000) + (v.tmax != null ? ' \u2013 ' + diaData(v.inizio + v.tmax * 3600000) : '') : '\u2014';
+      return '<div class="dia-item' + (v.finito ? ' finito' : '') + (scad ? ' scaduto' : '') + '">' +
+        '<h5>' + diaEsc(v.tipo) + '</h5>' +
+        '<div class="dia-meta">Iniziato ' + diaData(v.inizio) + (v.finito ? ' \u00b7 filtrato ' + diaData(v.finito) : '') + '</div>' +
+        '<div class="dia-r">Alcol ' + diaEsc(v.abvS) + '\u00b0 <strong>' + diaNum(v.alcolG, 1) + ' g</strong> \u00b7 acqua <strong>' + diaNum(v.acquaG, 1) + ' g</strong> \u00b7 botanica <strong>' + diaNum(v.botG, 2) + ' g</strong> \u00b7 ' + diaEsc(v.temp) + ' \u00b0C</div>' +
+        '<div class="dia-r">Pronto: ' + pronto + '</div>' +
+        (v.allarme ? '<div class="dia-r">' + (scad ? '\u23f0 <strong>Ora di assaggiare</strong> (dal ' + diaData(v.allarme) + ')' : '\u23f0 Promemoria: ' + diaData(v.allarme)) + '</div>' : '') +
+        '<textarea rows="2" placeholder="Note e assaggi\u2026" onchange="diarioNota(\'' + v.id + '\', this.value)">' + diaEsc(v.note) + '</textarea>' +
+        '<div class="dia-btn">' +
+          (v.allarme && !v.finito ? '<button class="ghost-btn" type="button" onclick="diarioIcs(\'' + v.id + '\')">\ud83d\udcc5 Allarme nel calendario</button>' : '') +
+          (!v.finito ? '<button class="ghost-btn" type="button" onclick="diarioFinito(\'' + v.id + '\')">\u2713 Filtrato</button>' : '') +
+          '<button class="ghost-btn" type="button" onclick="diarioElimina(\'' + v.id + '\')">\ud83d\uddd1\ufe0f Elimina</button>' +
+        '</div></div>';
+    }).join('');
+}
+function diarioAggiorna(id, fn){ const l = diarioCarica(), v = l.find(x => x.id === id); if (!v) return; fn(v, l); diarioSalva(l); diarioRender(); }
+function diarioNota(id, t){ const l = diarioCarica(), v = l.find(x => x.id === id); if (!v) return; v.note = t; diarioSalva(l); }
+function diarioFinito(id){ diarioAggiorna(id, v => { v.finito = Date.now(); }); }
+function diarioElimina(id){
+  mostraAvviso('Eliminare questa voce?', '<p>La voce del diario sar\u00e0 cancellata.</p>', 'Elimina', () => {
+    diarioSalva(diarioCarica().filter(x => x.id !== id)); diarioRender();
+  });
+}
+function diarioIcs(id){
+  const v = diarioCarica().find(x => x.id === id); if (!v || !v.allarme) return;
+  const u = ms => new Date(ms).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+  const t = s => String(s || '').replace(/[\\;,]/g, m => '\\' + m).replace(/\n/g, '\\n');
+  const ics = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//GinBuilder//Diario infusi//IT','CALSCALE:GREGORIAN','BEGIN:VEVENT',
+    'UID:' + v.id + '@ginbuilder', 'DTSTAMP:' + u(Date.now()), 'DTSTART:' + u(v.allarme), 'DTEND:' + u(v.allarme + 15 * 60000),
+    'SUMMARY:' + t('Assaggio infuso: ' + v.tipo), 'DESCRIPTION:' + t('Iniziato ' + diaData(v.inizio) + (v.note ? '. ' + v.note : '')),
+    'BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:' + t('Assaggia ' + v.tipo),'TRIGGER:PT0M','END:VALARM',
+    'END:VEVENT','END:VCALENDAR'].join('\r\n');
+  const blob = new Blob([ics], {type: 'text/calendar'}), url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'assaggio-' + (v.botanica || 'infuso').replace(/\W+/g, '-').toLowerCase() + '.ics';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+function diarioControlla(){
+  const l = diarioCarica(), ora = Date.now();
+  const dovuti = l.filter(v => !v.finito && v.allarme && v.allarme <= ora && !v.avvisato);
+  if (!dovuti.length) return;
+  dovuti.forEach(v => { v.avvisato = true; });
+  diarioSalva(l); diarioRender();
+  const testo = dovuti.map(v => v.tipo).join(', ');
+  if ('Notification' in window && Notification.permission === 'granted'){
+    const titolo = '\u23f0 \u00c8 ora di assaggiare';
+    try {
+      if (navigator.serviceWorker && navigator.serviceWorker.ready) navigator.serviceWorker.ready.then(reg => reg.showNotification(titolo, {body: testo, tag: 'gb-diario'})).catch(() => {});
+      else new Notification(titolo, {body: testo});
+    } catch(e){}
+  }
+  mostraAvviso('\u23f0 \u00c8 ora di assaggiare', '<p>' + dovuti.map(v => '<strong>' + diaEsc(v.tipo) + '</strong> (iniziato ' + diaData(v.inizio) + ')').join('<br>') + '</p><p>Trovi le voci nel Diario degli infusi, nella pagina Botaniche e infusi.</p>', '', null);
+}
+diarioRender();
+setTimeout(diarioControlla, 1500);
+setInterval(diarioControlla, 60000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) diarioControlla(); });
 
 // ---------- Ricerca nei menù delle botaniche ----------
 // Ogni menù lungo (oltre 40 voci) riceve una casella di ricerca: scrivendo la prima lettera
