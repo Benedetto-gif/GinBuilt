@@ -8,7 +8,7 @@
  * l'app continua comunque a funzionare senza connessione.
  */
 
-const VERSIONE = 'ginbuilder-v59';
+const VERSIONE = 'ginbuilder-v60';
 
 const FILE = [
   './',
@@ -70,5 +70,17 @@ self.addEventListener('fetch', (e) => {
     } catch (err) {
       return Response.error();
     }
+  })());
+});
+
+// Toccando la notifica "È ora di assaggiare" si apre l'app sul Diario degli infusi.
+self.addEventListener('notificationclick', (e) => {
+  e.notification.close();
+  e.waitUntil((async () => {
+    const finestre = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    for (const c of finestre) {
+      if ('focus' in c) { await c.focus(); c.postMessage({ apri: 'diario' }); return; }
+    }
+    if (self.clients.openWindow) await self.clients.openWindow('./?apri=diario');
   })());
 });

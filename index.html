@@ -383,6 +383,17 @@ nav.tabs{display:none !important;}
 .menu-tile .mt-ic{font-size:24px;line-height:1;}
 .menu-tile.active{background:var(--h);color:#fff;border-color:var(--h);}
 .menu-tile:active{transform:scale(.97);}
+.menu-tile .mt-badge{margin-left:auto;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--h);color:#fff;}
+.menu-tile .mt-badge:empty{display:none;}
+.home-diario{margin:0 0 16px;padding:14px 16px;border-radius:var(--r-lg);background:var(--surface);border:1px solid var(--line);box-shadow:var(--sh-1);cursor:pointer;}
+.home-diario[hidden]{display:none;}
+.home-diario h3{margin:0 0 8px;font-size:15px;display:flex;align-items:center;gap:8px;}
+.home-diario h3 .hd-go{margin-left:auto;font-size:13px;font-weight:800;color:var(--juniper-deep);}
+.home-diario ul{list-style:none;margin:0;padding:0;display:grid;gap:6px;}
+.home-diario li{display:flex;justify-content:space-between;gap:10px;font-size:14px;padding-top:6px;border-top:1px solid var(--line);}
+.home-diario li:first-child{border-top:0;padding-top:0;}
+.home-diario li .hd-t{color:var(--ink-soft);white-space:nowrap;font-size:13px;}
+.home-diario li.scaduto .hd-t{color:var(--ochre);font-weight:700;}
 nav.tabs{
   display:flex;
   gap:4px;
@@ -1571,6 +1582,8 @@ footer.note{
         paziente di chi cerca l'equilibrio fra le botaniche.</p>
       <span class="hero-go">Leggi →</span>
     </div>
+
+    <div class="home-diario" id="home-diario" hidden role="button" tabindex="0" aria-label="Apri il Diario degli infusi"></div>
 
     <p class="home-path-label">Il percorso in 3 passi, dalla botanica al bicchiere:</p>
     <div class="home-grid">
@@ -3357,6 +3370,12 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
     pop.appendChild(el);
   };
   if (homeBtn) aggiungiTile(homeBtn, 0, true);
+  // Accesso diretto al Diario degli infusi, con il numero di infusi in corso
+  const dTile = document.createElement('button'); dTile.type = 'button'; dTile.className = 'menu-tile wide'; dTile.id = 'menu-diario';
+  dTile.style.setProperty('--h', '#B8921F');
+  dTile.innerHTML = '<span class="mt-ic">\ud83d\udcd3</span><span class="mt-l">Diario degli infusi</span><span class="mt-badge" id="menu-diario-n"></span>';
+  dTile.addEventListener('click', () => { chiudi(); apriDiario(); });
+  pop.appendChild(dTile);
   let hue = 1;
   GROUPS.forEach(g => {
     const presenti = g.tabs.map(t => fuoriHome.find(b => b.dataset.tab === t)).filter(Boolean);
@@ -3391,6 +3410,16 @@ function apriInfusi(nome){
   const v = () => { const t = document.getElementById('inf-body'); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
   setTimeout(v, 80); setTimeout(v, 360);
 }
+
+// Apre la pagina Botaniche e infusi con il Diario degli infusi aperto e in vista.
+function apriDiario(){
+  showTab('libreria');
+  const box = document.getElementById('diario-box'); if (!box) return;
+  box.open = true; box.style.scrollMarginTop = '84px';
+  const v = () => box.scrollIntoView({ block: 'start' });
+  setTimeout(v, 60); setTimeout(v, 520);
+}
+window.apriDiario = apriDiario;
 
 // ---------- Libreria ----------
 const grid = document.getElementById('grid');
@@ -6169,7 +6198,30 @@ function diaLocale(dt){ const z = n => String(n).padStart(2, '0'); return dt.get
 function diaData(ms){ return new Date(ms).toLocaleString('it-IT', {weekday:'short', day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}); }
 function diaDurata(h){ return h >= 72 ? (Math.round(h / 24 * 10) / 10).toLocaleString('it-IT') + ' giorni' : Math.round(h).toLocaleString('it-IT') + ' h'; }
 function diaNum(v, dec){ return (typeof v === 'number' && isFinite(v)) ? v.toLocaleString('it-IT', {maximumFractionDigits: dec}) : '\u2014'; }
+function diarioRiepilogo(lista){
+  const ora = Date.now(), inCorso = lista.filter(v => !v.finito);
+  const n = document.getElementById('menu-diario-n'); if (n) n.textContent = inCorso.length ? inCorso.length + ' in corso' : '';
+  const box = document.getElementById('home-diario'); if (!box) return;
+  if (!inCorso.length){ box.hidden = true; box.innerHTML = ''; return; }
+  const quando = v => {
+    if (v.allarme && v.allarme <= ora) return '\u23f0 ora di assaggiare';
+    const t = v.tmin != null ? v.inizio + v.tmin * 3600000 : v.allarme;
+    if (!t) return 'in corso';
+    if (t <= ora) return 'pronto';
+    const h = (t - ora) / 3600000;
+    return 'tra ' + (h < 1 ? Math.max(1, Math.round(h * 60)) + ' min' : diaDurata(h));
+  };
+  box.innerHTML = '<h3>\ud83d\udcd3 Infusi in corso (' + inCorso.length + ')<span class="hd-go">Apri il diario \u2192</span></h3><ul>' +
+    inCorso.map(v => { const q = quando(v); return '<li class="' + (q.indexOf('\u23f0') === 0 || q === 'pronto' ? 'scaduto' : '') + '"><span>' + diaEsc(v.tipo) + '</span><span class="hd-t">' + q + '</span></li>'; }).join('') + '</ul>';
+  box.hidden = false;
+}
+(function(){
+  const box = document.getElementById('home-diario'); if (!box) return;
+  box.addEventListener('click', () => apriDiario());
+  box.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); apriDiario(); } });
+})();
 function diarioRender(){
+  diarioRiepilogo(diarioCarica());
   const body = document.getElementById('diario-body'), sum = document.getElementById('diario-sum');
   if (!body) return;
   const lista = diarioCarica(), ora = Date.now();
@@ -6275,11 +6327,22 @@ function diarioControlla(){
       else new Notification(titolo, {body: testo});
     } catch(e){}
   }
-  mostraAvviso('\u23f0 \u00c8 ora di assaggiare', '<p>' + dovuti.map(v => '<strong>' + diaEsc(v.tipo) + '</strong> (iniziato ' + diaData(v.inizio) + ')').join('<br>') + '</p><p>Trovi le voci nel Diario degli infusi, nella pagina Botaniche e infusi.</p>', '', null);
+  mostraAvviso('\u23f0 \u00c8 ora di assaggiare', '<p>' + dovuti.map(v => '<strong>' + diaEsc(v.tipo) + '</strong> (iniziato ' + diaData(v.inizio) + ')').join('<br>') + '</p>', 'Apri il diario', apriDiario);
 }
 diarioRender();
 setTimeout(diarioControlla, 1500);
 setInterval(diarioControlla, 60000);
+setInterval(() => diarioRiepilogo(diarioCarica()), 60000);
+// Scorciatoia dall'icona dell'app (?apri=diario o #diario) e tocco sulla notifica
+(function(){
+  let qs = null; try { qs = new URLSearchParams(location.search).get('apri'); } catch(e){}
+  if (qs === 'diario' || location.hash === '#diario'){
+    setTimeout(apriDiario, 120);
+    try { history.replaceState(null, '', location.pathname); } catch(e){}
+  }
+  window.addEventListener('hashchange', () => { if (location.hash === '#diario'){ apriDiario(); try { history.replaceState(null, '', location.pathname); } catch(e){} } });
+  if (navigator.serviceWorker) navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.apri === 'diario') apriDiario(); });
+})();
 document.addEventListener('visibilitychange', () => { if (!document.hidden) diarioControlla(); });
 
 // ---------- Ricerca nei menù delle botaniche ----------
