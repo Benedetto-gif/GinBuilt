@@ -3143,7 +3143,7 @@ function tempoRifOre(nome){
   const d = byName[nome]; if (!d) return 24;
   const e = typeof estPer === 'function' ? estPer(d) : null;
   if (e && e.t) return Math.max(0.25, (e.t[0] + e.t[1]) / 2);
-  const p = parseTempoRange((DOSE[nome] || {}).tempo || d.tempo);
+  const p = parseTempoRange(tempoBaseTxt(d));
   return p ? Math.max(0.25, toHours((p.min + p.max) / 2, p.unit)) : 24;
 }
 function fracEstratta(t, Tref){ return 1 - Math.exp(-t / (Tref / Math.log(5))); }
@@ -3459,6 +3459,23 @@ function formatRange(min, max, unit){
   return `${Math.round(min)}-${Math.round(max)} h`;
 }
 
+// Tempo di riferimento a 43°/20°C di una botanica, ricavato dal tempo consigliato in erbario (EST, o la tua
+// taratura) riportato dalla sua gradazione consigliata a 43°: cosi' esiste una sola fonte per i tempi e, alla
+// gradazione consigliata, ogni pagina mostra esattamente il tempo dell'erbario. Senza dato in erbario resta il
+// tempo della libreria.
+function tempoBaseTxt(d){
+  if (!d) return '';
+  let e = null;
+  try { e = estPer(d, infRif(d)); } catch (_) { e = null; }   // EST non ancora definita al primo avvio
+  if (e && e.t){
+    const f = timeFactor((e.a[0] + e.a[1]) / 2, REF_TEMP, d.categoria);
+    const mn = e.t[0] / f, mx = e.t[1] / f, u = mx >= 72 ? 'giorni' : 'h';
+    const fm = v => { v = fromHours(v, u); return (Math.round(v * 10) / 10).toLocaleString('it-IT'); };
+    return fm(mn) + '-' + fm(mx) + ' ' + u;
+  }
+  return (DOSE[d.botanica] || {}).tempo || d.tempo || '';
+}
+
 // Tempo adattato alle condizioni date, mantenendo la dose di riferimento.
 function adjustedTempo(baseTempoText, abv, temp, cat){
   const parsed = parseTempoRange(baseTempoText);
@@ -3747,7 +3764,7 @@ function showDetail(name, nuovaScelta){
   }
   const r = REDUND[name] || {};
   const ds = DOSE[name] || {};
-  const baseTempo = ds.tempo || d.tempo || '';
+  const baseTempo = tempoBaseTxt(d);
   const baseDose = ds.test ?? d.dose;
   const E = estPer(d, infRif(d));
   const abvRaw = libAbvInput.value.trim() === '' ? NaN : parseFloat(libAbvInput.value);
@@ -3921,7 +3938,7 @@ if (libPrint) libPrint.addEventListener('click', () => {
   const isRef = (abv === REF_ABV && temp === REF_TEMP);
   const lista = ordinaBotaniche(elencoFiltrato()).filter(x => x.gruppo === undefined);
   const righe = lista.map(d => {
-    const ds = DOSE[d.botanica] || {}, baseTempo = ds.tempo || d.tempo || '', baseDose = ds.test ?? d.dose;
+    const ds = DOSE[d.botanica] || {}, baseTempo = tempoBaseTxt(d), baseDose = ds.test ?? d.dose;
     const dose = isRef ? (ds.test ?? d.dose ?? '—') : (adjustedDose(baseDose, abv, temp, d.categoria) ?? (ds.test ?? d.dose ?? '—'));
     const tempo = isRef ? (baseTempo || '—') : (adjustedTempo(baseTempo, abv, temp, d.categoria) || '—');
     const E = estPer(d, infRif(d));
@@ -4453,7 +4470,7 @@ function renderSummary(){
     if (REF_ABV >= est.a[0] && REF_ABV <= est.a[1]) return;
     const mid = est.a[0];
     const ds = DOSE[n] || {};
-    const baseTempo = ds.tempo || d.tempo || '';
+    const baseTempo = tempoBaseTxt(d);
     const baseDose = ds.test ?? d.dose;
     const dose2 = adjustedDose(baseDose, mid, REF_TEMP, d.categoria);
     const tempo2 = adjustedTempo(baseTempo, mid, REF_TEMP, d.categoria);
@@ -6160,12 +6177,12 @@ function infusoRiga(d, abv, temp, vol, mod, stato, ott, abvS){
   const tOnly = Math.max(0.15, Math.min(6, Math.pow(2, (REF_TEMP - Math.max(0, Math.min(60, temp))) / 10)));
   const f = usaEst ? tOnly : timeFactor(abvEff, temp, d.categoria);
   const fd = mod === 'dose' ? f : 1, ft = mod === 'dose' ? 1 : f;
-  const p = parseTempoRange(ds.tempo || d.tempo);
+  const p = parseTempoRange(tempoBaseTxt(d));
   let tmin = null, tmax = null;
   if (usaEst){ tmin = est.t[0] * ft; tmax = est.t[1] * ft; }
   else if (p){ tmin = toHours(p.min, p.unit) * ft * tfr; tmax = toHours(p.max, p.unit) * ft * tfr; }
   return { f, stato, K, abvEff, g: base * fd * wf * k, gmin: dmin * fd * wf * k, gmax: dmax * fd * wf * k,
-           tmin, tmax, assaggio: tmin === null ? null : tmin * INF_ASSAGGIO, tempoRef: ds.tempo || d.tempo || '', est, dil: diluizione(abv, vol, abvS) };
+           tmin, tmax, assaggio: tmin === null ? null : tmin * INF_ASSAGGIO, tempoRef: tempoBaseTxt(d), est, dil: diluizione(abv, vol, abvS) };
 }
 // Aggiunge pulsanti − / + a un campo numerico, con lo scatto indicato (altrimenti quello dell'attributo step).
 // opts.emptyStart(dir), se fornita, decide da dove partire al primo tocco quando il campo è vuoto
@@ -7244,7 +7261,7 @@ document.getElementById('print-builder').addEventListener('click', () => {
     const bd = byName[r.botanica];
     const base = ds.test ?? bd?.dose;
     const est = EST[r.botanica];
-    const baseTempoP = ds.tempo || bd?.tempo || '';
+    const baseTempoP = tempoBaseTxt(bd);
     const gradP = est ? est.a[0] : undefined;   // dose e tempo alla gradazione consigliata, come nella Libreria
     const baseAdj = (base !== undefined && gradP !== undefined) ? (adjustedDose(base, gradP, REF_TEMP, bd?.categoria) ?? base) : base;
     const tempoP = gradP !== undefined ? (adjustedTempo(baseTempoP, gradP, REF_TEMP, bd?.categoria) || baseTempoP) : baseTempoP;
