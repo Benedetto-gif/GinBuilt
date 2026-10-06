@@ -2730,7 +2730,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 00:50 · riapertura dalla pagina iniziale e comando Esci</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 00:55 · assaggi registrati nel diario</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -6548,6 +6548,18 @@ function diaDurata(h){ return h >= 72 ? (Math.round(h / 24 * 10) / 10).toLocaleS
 function diaNum(v, dec){ return (typeof v === 'number' && isFinite(v)) ? v.toLocaleString('it-IT', {maximumFractionDigits: dec}) : '\u2014'; }
 // Ordine di assaggio: prima gli infusi in corso, dal promemoria piu' vicino (quelli gia' da assaggiare in testa);
 // senza promemoria vale la fine del tempo minimo. In fondo i filtrati, dal piu' recente.
+// Assaggi fatti: si registrano col pulsante «Assaggiato» o scrivendo una nota quando l'infuso è da assaggiare.
+// Un promemoria (o la fine del tempo minimo) conta come «da assaggiare» solo se dopo non c'è stato un assaggio.
+function diaUltimoAssaggio(v){ return (v.assaggi && v.assaggi.length) ? Math.max.apply(null, v.assaggi) : 0; }
+function diaPrimoPronto(v){ return v.tmin != null ? v.inizio + v.tmin * 3600000 : null; }
+function diaDaAssaggiare(v, ora){
+  if (v.finito) return '';
+  const ult = diaUltimoAssaggio(v), pr = diaPrimoPronto(v);
+  if (v.allarme && v.allarme <= ora && ult < v.allarme) return 'allarme';
+  if (!v.allarme && pr && pr <= ora && ult < pr) return 'pronto';
+  return '';
+}
+function diaBreve(ms){ return new Date(ms).toLocaleString('it-IT', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}); }
 function diaOraAssaggio(v){ return v.allarme || (v.tmin != null ? v.inizio + v.tmin * 3600000 : Infinity); }
 function diarioOrdina(lista){
   return lista.slice().sort((a, b) => {
@@ -6562,7 +6574,11 @@ function diarioRiepilogo(lista){
   const box = document.getElementById('home-diario'); if (!box) return;
   if (!inCorso.length){ box.hidden = true; box.innerHTML = ''; return; }
   const quando = v => {
-    if (v.allarme && v.allarme <= ora) return '\u23f0 ora di assaggiare';
+    const da = diaDaAssaggiare(v, ora), ult = diaUltimoAssaggio(v);
+    if (da === 'allarme') return '\u23f0 ora di assaggiare';
+    if (da === 'pronto') return 'pronto';
+    if (v.allarme && v.allarme > ora){ const h = (v.allarme - ora) / 3600000; return (ult ? '\u2713 assaggiato \u00b7 ' : '') + 'prossimo tra ' + (h < 1 ? Math.max(1, Math.round(h * 60)) + ' min' : diaDurata(h)); }
+    if (ult) return '\u2713 assaggiato ' + diaBreve(ult);
     const t = v.tmin != null ? v.inizio + v.tmin * 3600000 : v.allarme;
     if (!t) return 'in corso';
     if (t <= ora) return 'pronto';
@@ -6593,16 +6609,18 @@ function diarioRender(){
   if (!lista.length){ body.innerHTML = tecnica + '<p>Ancora nessun infuso annotato. Apri una botanica, imposta le condizioni e tocca \u00ab\ud83d\udcd3 Ho preparato l\u2019infuso\u00bb nel quadro delle variabili.</p>'; return; }
   body.innerHTML = tecnica + '<p class="cond-hint" style="margin:0 0 10px;">Il promemoria avvisa quando l\u2019app \u00e8 aperta. Per un allarme che suoni anche ad app chiusa, tocca \ud83d\udcc5 e aggiungilo al calendario del telefono.</p>' +
     diarioOrdina(lista).map(v => {
-      const scad = !v.finito && v.allarme && v.allarme <= ora;
+      const scad = !!diaDaAssaggiare(v, ora), ult = diaUltimoAssaggio(v);
       const pronto = (v.tmin != null) ? diaData(v.inizio + v.tmin * 3600000) + (v.tmax != null ? ' \u2013 ' + diaData(v.inizio + v.tmax * 3600000) : '') : '\u2014';
       return '<div class="dia-item' + (v.finito ? ' finito' : '') + (scad ? ' scaduto' : '') + '">' +
         '<h5>' + diaEsc(v.tipo) + '</h5>' +
         '<div class="dia-meta">Iniziato ' + diaData(v.inizio) + (v.finito ? ' \u00b7 filtrato ' + diaData(v.finito) : '') + '</div>' +
         '<div class="dia-r">Alcol ' + diaEsc(v.abvS) + '\u00b0 <strong>' + diaNum(v.alcolG, 1) + ' g</strong> \u00b7 acqua <strong>' + diaNum(v.acquaG, 1) + ' g</strong> \u00b7 botanica <strong>' + diaNum(v.botG, 2) + ' g</strong> \u00b7 ' + diaEsc(v.temp) + ' \u00b0C</div>' +
         '<div class="dia-r">Pronto: ' + pronto + '</div>' +
-        (v.allarme ? '<div class="dia-r">' + (scad ? '\u23f0 <strong>Ora di assaggiare</strong> (dal ' + diaData(v.allarme) + ') \u00b7 <a href="#" onclick="apriTecnicaAssaggio();return false;">come si assaggia</a>' : '\u23f0 Promemoria: ' + diaData(v.allarme)) + '</div>' : '') +
+        (ult ? '<div class="dia-r">\u2713 Assaggiato ' + (v.assaggi.length > 1 ? v.assaggi.length + ' volte, l\u2019ultima ' : '') + diaData(ult) + '</div>' : '') +
+        (v.allarme && (scad || v.allarme > ora || !ult) ? '<div class="dia-r">' + (scad ? '\u23f0 <strong>Ora di assaggiare</strong> (dal ' + diaData(v.allarme) + ') \u00b7 <a href="#" onclick="apriTecnicaAssaggio();return false;">come si assaggia</a>' : '\u23f0 Promemoria: ' + diaData(v.allarme)) + '</div>' : '') +
         '<textarea rows="2" placeholder="Note e assaggi\u2026" onchange="diarioNota(\'' + v.id + '\', this.value)">' + diaEsc(v.note) + '</textarea>' +
         '<div class="dia-btn">' +
+          (!v.finito ? '<button class="ghost-btn" type="button" onclick="diarioAssaggiato(\'' + v.id + '\')">\ud83d\udc45 Assaggiato</button>' : '') +
           '<button class="ghost-btn" type="button" onclick="diarioOrari(\'' + v.id + '\')">\u270f\ufe0f Modifica orari</button>' +
           (v.allarme && !v.finito ? '<button class="ghost-btn" type="button" onclick="diarioIcs(\'' + v.id + '\')">\ud83d\udcc5 Allarme nel calendario</button>' : '') +
           (v.finito ? '<button class="ghost-btn" type="button" onclick="diarioRiapri(\'' + v.id + '\')">\u21a9\ufe0f Non ancora filtrato</button>'
@@ -6613,7 +6631,40 @@ function diarioRender(){
     }).join('');
 }
 function diarioAggiorna(id, fn){ const l = diarioCarica(), v = l.find(x => x.id === id); if (!v) return; fn(v, l); diarioSalva(l); diarioRender(); }
-function diarioNota(id, t){ const l = diarioCarica(), v = l.find(x => x.id === id); if (!v) return; v.note = t; diarioSalva(l); }
+function diarioNota(id, t){
+  const l = diarioCarica(), v = l.find(x => x.id === id); if (!v) return;
+  v.note = t;
+  // Una nota scritta quando l'infuso è da assaggiare vale come assaggio fatto.
+  const segna = t.trim() && diaDaAssaggiare(v, Date.now());
+  if (segna) (v.assaggi = v.assaggi || []).push(Date.now());
+  diarioSalva(l);
+  if (segna) diarioRender();
+}
+// Pulsante «Assaggiato»: registra l'assaggio e propone, se serve, quando rifarlo.
+function diarioAssaggiato(id){
+  diarioAggiorna(id, x => { (x.assaggi = x.assaggi || []).push(Date.now()); if (x.allarme && x.allarme <= Date.now()) x.allarme = null; });
+  const v = diarioCarica().find(x => x.id === id); if (!v) return;
+  const corpo = '<p>Assaggio di <strong>' + diaEsc(v.tipo) + '</strong> registrato. Scrivi le impressioni nel riquadro delle note.</p>' +
+    '<p>Vuoi un promemoria per il prossimo assaggio?</p><div class="dia-new"><label>Prossimo assaggio<select id="dia-pross">' +
+    '<option value="">Nessuno: l\u2019infuso \u00e8 pronto o lo filtro</option><option value="12">Tra 12 ore</option><option value="24" selected>Tra 24 ore</option><option value="48">Tra 2 giorni</option><option value="72">Tra 3 giorni</option></select></label></div>' +
+    '<p class="cond-hint">Tra mezzanotte e le 7 il promemoria slitta alle 7:30.</p>';
+  mostraAvviso('\ud83d\udc45 Assaggio registrato', corpo, 'Ok', () => {
+    const h = parseFloat(document.getElementById('dia-pross').value);
+    diarioAggiorna(id, x => { x.allarme = h ? diaNonDiNotte(Date.now() + h * 3600000) : null; x.avvisato = false; });
+  });
+  document.getElementById('avviso-annulla').textContent = 'Nessun promemoria';
+}
+window.diarioAssaggiato = diarioAssaggiato;
+// Una tantum: le note già scritte su infusi segnati come da assaggiare valgono come assaggio fatto.
+(function(){
+  try {
+    if (localStorage.getItem('gb-diario-mig-assaggi')) return;
+    const l = diarioCarica(), ora = Date.now(); let cambiati = false;
+    l.forEach(v => { if (v.note && String(v.note).trim() && diaDaAssaggiare(v, ora)){ (v.assaggi = v.assaggi || []).push(ora); cambiati = true; } });
+    if (cambiati) diarioSalva(l);
+    localStorage.setItem('gb-diario-mig-assaggi', '1');
+  } catch(e){}
+})();
 // Non si pu\u00f2 segnare come filtrato un infuso prima che sia passato il tempo minimo di estrazione.
 function diaFiltrabileDa(v){ return (v.tmin != null && isFinite(v.tmin)) ? v.inizio + v.tmin * 3600000 : v.inizio; }
 function diarioFinito(id){
