@@ -1818,7 +1818,6 @@ footer.note{
         <p>I fattori sono stime orientative: vanno tarate con assaggi (nella scheda trovi «La mia taratura»).</p>
       </div>
     </details>
-    <p class="noz-rimando">🔬 Perché la gradazione conta: <a href="#" class="noz-link" data-noz="La solubilità selettiva">la solubilità selettiva</a> <span class="cond-hint">(in Nozioni tecniche)</span></p>
     <details class="howto filtri-box" id="filtri-box">
     <summary id="filtri-sum">Filtra ed ordina</summary>
     <div class="cond-box cond-compact">
@@ -2716,7 +2715,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 6 ottobre 2026, ore 21:00 · meno ripetizioni: Vocabolario unito a Nozioni, avvisi del Builder in una tabella, ruoli in un solo riquadro</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 6 ottobre 2026, ore 22:35 · solubilità selettiva nel quadro delle variabili</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -6298,7 +6297,7 @@ function wrapStepper(input, step, opts){
     const p = (k, v) => '<p><strong>' + k + '</strong> ' + v + '</p>';
     return '<details class="grad-perche"' + (apri ? ' open' : '') + ' ontoggle="window.perch\u00e9GradAperto=this.open"><summary>\u2753 ' + tit + '</summary><div class="gp-body">' +
       p('Cosa vuoi estrarre:', MOLECOLE[d.botanica] || 'scheda delle molecole non ancora compilata.') +
-      p('L\u2019alcol fa da filtro.', 'Pi\u00f9 \u00e8 alto il grado, pi\u00f9 scioglie oli essenziali e resine; pi\u00f9 c\u2019\u00e8 acqua, pi\u00f9 passano zuccheri, tannini e sostanze amare. Il range consigliato \u00e8 il punto in cui per ' + d.botanica + ' passano le molecole utili e restano fuori le altre.' + (E && E.n ? ' ' + E.n : '')) +
+      p('L\u2019alcol fa da filtro.', 'Pi\u00f9 \u00e8 alto il grado, pi\u00f9 scioglie oli essenziali e resine; pi\u00f9 c\u2019\u00e8 acqua, pi\u00f9 passano zuccheri, tannini e sostanze amare. Il range consigliato \u00e8 il punto in cui per ' + d.botanica + ' passano le molecole utili e restano fuori le altre.' + (E && E.n ? ' ' + E.n : '') + ' <a href="#" class="noz-link" data-noz="La solubilit\u00e0 selettiva">\ud83d\udd2c La solubilit\u00e0 selettiva, spiegata per intero \u2192</a>') +
       (lim ? p('Sopra ' + lim.m + '% vol (massimo di sicurezza):', lim.altoTxt + '.') + p('Sotto ' + lim.basso + '% vol (minimo di sicurezza):', lim.bassoTxt + '.') +
         (E ? '<p class="cond-hint">Tra il range consigliato e queste soglie l\u2019infuso riesce ancora, ma meno pulito: per questo compare solo una nota, non un allarme.</p>' : '') : '') +
       '<details class="inf-opz"' + (window.prova3Aperta ? ' open' : '') + ' ontoggle="window.prova3Aperta=this.open"><summary>\ud83d\udd2c Verificalo di persona: prova a tre gradazioni (campioni da ' + nf(Math.min(c.vol, 50), 0) + ' ml)</summary>' + prova3Html(d, r, c, lim) + '</details>' +
