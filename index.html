@@ -1443,7 +1443,7 @@ footer.note{
 .passo-tit{display:flex;align-items:center;gap:8px;margin:0 0 8px;font-size:17px;}
 .passo-n{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--tint-info-line);color:#fff;font-size:14px;flex:none;}
 .passo-sub{font-size:13px;font-weight:400;opacity:.7;}
-.passo-btns{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px;}
+.passo-btns{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0;}
 .passo-btns #mostra-tutte{flex:1 1 60%;}
 .vai-prep{margin-top:12px;width:100%;}
 .dia-tecnica{margin:0 0 10px;}
@@ -1839,7 +1839,12 @@ footer.note{
 
   <!-- BOTANICHE -->
   <section class="panel" id="panel-diario">
-    <div id="diario-slot"></div>
+    <div id="diario-slot">
+    <details class="howto diario-box" id="diario-box" open>
+      <summary id="diario-sum">📓 Diario degli infusi</summary>
+      <div class="howto-body" id="diario-body"></div>
+    </details>
+    </div>
     <div style="margin-top:14px;"><button class="ghost-btn" type="button" data-goto="libreria">🌿 Vai a Botaniche e infusi</button></div>
   </section>
 
@@ -1849,21 +1854,20 @@ footer.note{
       <div class="howto-body">
         <p>L'erbario e la preparazione degli infusi in una sola pagina: <span class="bot-count">84</span> botaniche con profilo aromatico, funzione nel gin, potenza e, per ognuna, la scheda per metterla in infusione.</p>
         <ol>
-          <li><strong>Non sai quale botanica analizzare?</strong> Tocca «Apri tutto l'erbario» (lo stesso tasto lo richiude) e restringi l'elenco con i filtri: famiglia, carattere, uso nella miscela, stile, potenza; «Ordina per» le mette in fila o le raggruppa. «Stampa elenco» stampa l'elenco filtrato.</li>
+          <li><strong>Non sai quale botanica analizzare?</strong> Scegli prima i filtri (famiglia, carattere, uso nella miscela, stile, potenza) e con «Ordina per» decidi come metterle in fila o raggrupparle; poi tocca «Apri l'erbario»: si apre filtrato e ordinato così. Lo stesso tasto lo richiude. «Stampa elenco» stampa l'elenco filtrato.</li>
           <li><strong>Sai già quale botanica vuoi?</strong> Scrivi le prime lettere del nome (o usa il microfono): restano solo le schede che corrispondono.</li>
           <li><strong>La scheda della botanica.</strong> Toccando una scheda si apre solo quella e le altre si chiudono. Studia la botanica: il <strong>profilo sensoriale</strong> (il radar, con il confronto con simili, sostitutive e complementari), i dati dell'erbario e il riquadro <em>Da non accumulare con</em>, da leggere sempre prima di portarla in ricetta. «← Torna all'elenco» la richiude.</li>
           <li><strong>Prepara l'infuso.</strong> Sotto la scheda compare il quadro delle variabili: temperatura di conservazione (al buio), alcol di partenza, grado di estrazione e volume da ottenere. Diluizione (alcol + acqua), grammi, tempo, primo assaggio e avvisi si ricalcolano subito; il grado parte dal minimo consigliato in erbario.</li>
           <li>Scegli lo <strong>Stato della botanica</strong>: fresca (appena raccolta) o secca. Peso e tempo si ricalcolano. Le botaniche fresche portano acqua e abbassano un po' la gradazione.</li>
           <li>Assaggia al <strong>primo assaggio</strong> e poi a intervalli: gli estremi dell'intervallo sono limiti, non obiettivi. Le dosi sono per un infuso concentrato, da miscelare a percentuale nelle Schede di prova. «Stampa la scheda» stampa la preparazione della botanica aperta.</li>
-          <li>Quando prepari l'infuso, annotalo nel <strong>Diario degli infusi</strong>, in fondo alla pagina, con il promemoria per l'assaggio.</li>
+          <li>Quando prepari l'infuso, «Ho preparato l'infuso: annota nel diario» lo registra nel <strong>Diario degli infusi</strong> (pagina a sé nel menu), con il promemoria per l'assaggio.</li>
         </ol>
         <p>I fattori sono stime orientative: vanno tarate con assaggi (nella scheda trovi «La mia taratura»).</p>
       </div>
     </details>
     <!-- passi: 1 erbario e filtri → 2 ricerca → 3 scheda → 4 preparazione → diario -->
     <div class="filtri-box passo" id="filtri-box">
-    <h3 class="passo-tit"><span class="passo-n">1</span> Non sai quale botanica? Sfoglia l'erbario <span class="passo-sub" id="filtri-sum"></span></h3>
-    <div class="passo-btns"><button type="button" class="ghost-btn" id="mostra-tutte">🌿 Apri tutto l'erbario</button><button class="ghost-btn" id="lib-print" type="button">🖨️ Stampa elenco</button></div>
+    <h3 class="passo-tit"><span class="passo-n">1</span> Non sai quale botanica? Filtra e apri l'erbario <span class="passo-sub" id="filtri-sum"></span></h3>
     <div class="cond-box cond-compact">
       <label>Famiglia
         <select id="f-categoria"><option value="">Tutte</option></select>
@@ -1898,6 +1902,7 @@ footer.note{
         </select>
       </label>
     </div>
+    <div class="passo-btns"><button type="button" class="ghost-btn" id="mostra-tutte">🌿 Apri tutto l'erbario</button><button class="ghost-btn" id="lib-print" type="button">🖨️ Stampa elenco</button></div>
     </div>
     <div class="passo">
     <h3 class="passo-tit"><span class="passo-n">2</span> Sai già quale botanica? Cercala</h3>
@@ -1928,10 +1933,6 @@ footer.note{
     <div id="inf-info"></div>
       <button class="ghost-btn" id="inf-print" type="button" style="margin-top:12px">🖨️ Stampa la scheda di preparazione</button>
     </div>
-    <details class="howto diario-box" id="diario-box">
-      <summary id="diario-sum">📓 Diario degli infusi</summary>
-      <div class="howto-body" id="diario-body"></div>
-    </details>
   </section>
 
   <!-- NOZIONI TECNICO-SCIENTIFICHE -->
@@ -2765,7 +2766,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 06:10 · Come si usa in cima</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 06:20 · Prima i filtri, poi Apri l’erbario</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -3517,15 +3518,10 @@ function showTab(name){
   spostaDiario(name);
   window.scrollTo(0, 0);
 }
-// Il riquadro del diario è uno solo: nella pagina Diario sta da solo (senza le schede delle botaniche),
-// nella pagina Botaniche e infusi torna al suo posto, sotto il quadro delle condizioni.
-let _diarioPosto = null;
+// Il diario sta solo nella sua pagina: aprendola, il riquadro è già aperto.
 function spostaDiario(name){
-  const box = document.getElementById('diario-box'), slot = document.getElementById('diario-slot');
-  if (!box || !slot) return;
-  if (!_diarioPosto){ _diarioPosto = document.createComment('diario'); box.parentNode.insertBefore(_diarioPosto, box); }
-  if (name === 'diario'){ if (box.parentNode !== slot) slot.appendChild(box); box.open = true; }
-  else if (box.parentNode === slot) _diarioPosto.parentNode.insertBefore(box, _diarioPosto);
+  const box = document.getElementById('diario-box');
+  if (box && name === 'diario') box.open = true;
 }
 document.querySelectorAll('nav.tabs button').forEach(btn => {
   btn.addEventListener('click', () => showTab(btn.dataset.tab));
@@ -3855,10 +3851,10 @@ function renderGrid(){
   grid.innerHTML = '';
   // La pagina si apre con la sola ricerca: le schede compaiono quando si scrivono le lettere
   // (o si usa un filtro, o si chiede di vederle tutte).
-  const attivo = !!(qq || fCategoria.value || fCarattere.value || parseInt(fPotenza.value, 10) || fOrdine.value || fStile.value || fUso.value || window.mostraTutteBot);
+  const attivo = !!(qq || window.mostraTutteBot);
   const hint = document.getElementById('cerca-hint');
   if (hint) hint.hidden = attivo || !!currentDetailName;
-  if (!attivo){ countTag.textContent = MASTER.length + ' botaniche in erbario'; extra.hidden = true; return; }
+  if (!attivo){ countTag.textContent = ''; extra.hidden = true; if (window.aggiornaTutteBtn) window.aggiornaTutteBtn(); return; }
   const aggiungi = d => {
     const card = document.createElement('div');
     card.className = 'bot-card';
@@ -3880,6 +3876,7 @@ function renderGrid(){
     if (x.gruppo === undefined){ aggiungi(x); return; }
     const h = document.createElement('div'); h.className = 'grid-group'; h.textContent = x.gruppo + ' (' + x.n + ')'; grid.appendChild(h);
   });
+  if (window.aggiornaTutteBtn) window.aggiornaTutteBtn();
 }
 
 let currentDetailName = null;
@@ -3897,7 +3894,7 @@ function vaiPreparazione(){
 }
 window.vaiPreparazione = vaiPreparazione;
 const tutteBtn = document.getElementById('mostra-tutte');
-function aggiornaTutteBtn(){ tutteBtn.textContent = window.mostraTutteBot ? '\ud83d\udcd5 Chiudi l\u2019erbario' : '\ud83c\udf3f Apri tutto l\u2019erbario'; }
+function aggiornaTutteBtn(){ const n = elencoFiltrato().length, tutte = n === MASTER.length; tutteBtn.textContent = window.mostraTutteBot ? '\ud83d\udcd5 Chiudi l\u2019erbario' : '\ud83c\udf3f Apri ' + (tutte ? 'tutto l\u2019erbario' : 'l\u2019erbario filtrato') + ' (' + n + ')'; }
 // Non sai quale botanica analizzare? Apri tutto l'erbario; lo stesso tasto lo richiude.
 tutteBtn.addEventListener('click', () => {
   window.mostraTutteBot = !window.mostraTutteBot;
@@ -3906,6 +3903,7 @@ tutteBtn.addEventListener('click', () => {
   if (window.mostraTutteBot) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
 window.aggiornaTutteBtn = aggiornaTutteBtn;
+aggiornaTutteBtn();
 const libAbvInput = document.getElementById('inf-abv');
 const libTempInput = document.getElementById('inf-temp');
 const libVolInput = document.getElementById('inf-vol');
@@ -6577,7 +6575,7 @@ function wrapStepper(input, step, opts){
       if (voce.allarme && 'Notification' in window && Notification.permission === 'default') { try { Notification.requestPermission(); } catch(e){} }
       diarioRender();
       if (voce.allarme) setTimeout(() => offriCalendario([voce]), 350);
-      const box = document.getElementById('diario-box'); if (box){ box.open = true; box.scrollIntoView({behavior:'smooth', block:'start'}); }
+      const box = document.getElementById('diario-box'); if (box) box.open = true;
     });
     const sel = document.getElementById('dia-allarme');
     sel.addEventListener('change', () => { document.getElementById('dia-ore-l').style.display = sel.value === 'ore' ? '' : 'none'; });

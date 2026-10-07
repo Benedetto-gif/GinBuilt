@@ -8,7 +8,7 @@
  * l'app continua comunque a funzionare senza connessione.
  */
 
-const VERSIONE = 'ginbuilder-v93';
+const VERSIONE = 'ginbuilder-v94';
 
 const FILE = [
   './',
