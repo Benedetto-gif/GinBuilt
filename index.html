@@ -1435,6 +1435,12 @@ footer.note{
 .inf-in-scheda{margin:14px 0;}
 .filtri-box .cond-box{margin:10px 0 0;}
 .diario-box .howto-body > p:first-child{margin-top:0;}
+.lib-tit{margin:0 0 8px;font-size:19px;}
+.cerca-hint{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:10px 0;padding:12px 14px;border:1px dashed var(--line-strong);border-radius:12px;font-size:14px;opacity:.9;}
+.cerca-hint[hidden], #lib-lavoro[hidden]{display:none;}
+#lib-lavoro{margin-top:18px;padding-top:12px;border-top:2px solid var(--line-strong);}
+.lavoro-tit{margin:0 0 4px;font-size:17px;}
+.vai-prep{margin-top:12px;width:100%;}
 .dia-tecnica{margin:0 0 10px;}
 .dia-new{display:grid;gap:10px;text-align:left;}
 .dia-new label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:650;color:var(--ink-faint);}
@@ -1833,22 +1839,12 @@ footer.note{
   </section>
 
   <section class="panel" id="panel-libreria">
-    <details class="howto">
-      <summary>Come si usa</summary>
-      <div class="howto-body">
-        <p>L'erbario e la preparazione degli infusi in una sola pagina: <span class="bot-count">84</span> botaniche con profilo aromatico, funzione nel gin, potenza e, per ognuna, la scheda per metterla in infusione.</p>
-        <ol>
-          <li>Filtra per famiglia, carattere, uso o potenza, oppure cerca per nome o per descrizione del profilo.</li>
-          <li>Tocca una scheda per aprirla: in alto il <strong>profilo sensoriale</strong> (il radar, con il confronto con simili, sostitutive e complementari), subito sotto la <strong>preparazione dell'infuso</strong>, poi i dati dell'erbario.</li>
-          <li>Nel quadro <em>Preparazione dell'infuso</em> imposti temperatura di conservazione (al buio), alcol di partenza, grado di estrazione e volume da ottenere: diluizione (alcol + acqua), grammi, tempo, primo assaggio e avvisi si ricalcolano subito. Aperta una botanica, il grado parte dal minimo consigliato in erbario.</li>
-          <li>Scegli lo <strong>Stato</strong>: fresca (appena raccolta) o secca. Peso e tempo si ricalcolano; con «Stato delle botaniche» li imposti tutti insieme. Le botaniche fresche portano acqua e abbassano un po' la gradazione.</li>
-          <li>Assaggia al <strong>primo assaggio</strong> e poi a intervalli: gli estremi dell'intervallo sono limiti, non obiettivi. Le dosi sono per un infuso concentrato, da miscelare a percentuale nelle Schede di prova.</li>
-          <li>Leggi sempre il riquadro <em>Da non accumulare con</em> prima di portare una botanica in ricetta.</li>
-          <li>Due stampe: la scheda della botanica aperta, oppure l'elenco filtrato.</li>
-        </ol>
-        <p>I fattori sono stime orientative: vanno tarate con assaggi (nella scheda trovi «La mia taratura»).</p>
-      </div>
-    </details>
+    <h2 class="lib-tit">🔎 Cerca la botanica</h2>
+    <div class="controls">
+      <label class="inf-q-label">Cerca la botanica<input type="text" id="search" placeholder="Scrivi il nome o la prima lettera…" /></label>
+      <button type="button" class="mic-btn" id="voce-btn" hidden aria-label="Cerca la botanica a voce" title="Cerca a voce">🎤</button>
+      <span class="count-tag" id="count-tag"></span>
+    </div>
     <details class="howto filtri-box" id="filtri-box">
     <summary id="filtri-sum">Filtra ed ordina</summary>
     <div class="cond-box cond-compact">
@@ -1886,13 +1882,14 @@ footer.note{
       </label>
     </div>
     </details>
-    <div class="controls">
-      <label class="inf-q-label">Cerca la botanica<input type="text" id="search" placeholder="Scrivi il nome o la prima lettera…" /></label>
-      <button type="button" class="mic-btn" id="voce-btn" hidden aria-label="Cerca la botanica a voce" title="Cerca a voce">🎤</button>
-      <span class="count-tag" id="count-tag"></span>
-    </div>
+    <div class="cerca-hint" id="cerca-hint"><span>Scrivi le prime lettere di una botanica (o usa i filtri): compaiono le schede che corrispondono. Toccane una per aprirla.</span> <button type="button" class="ghost-btn" id="mostra-tutte">Mostra tutte</button></div>
+    <div class="grid" id="grid"></div>
+    <div class="detail" id="detail"></div>
+    <div id="lib-lavoro" hidden>
+      <h3 class="lavoro-tit" id="lavoro-tit">⚗️ Preparazione dell'infuso</h3>
+      <p class="cond-hint">Studiata la botanica, imposta qui le variabili: diluizione, dose e tempi per estrarre i principi attivi si ricalcolano subito.</p>
     <div class="cond-box cond-compact" id="inf-cond">
-      <span class="cond-label">Preparazione dell'infuso:</span>
+      <span class="cond-label">Variabili e valori:</span>
       <label>Temperatura di conservazione, al buio (°C)<input type="number" id="inf-temp" value="20" step="1" min="0" max="60"></label>
       <label>Alcol di partenza (°)<input type="number" id="inf-abvS" value="96" step="0.5" min="40" max="96"></label>
       <label>Grado di estrazione desiderato (%)<input type="number" id="inf-abv" placeholder="consigliato" step="1" min="20" max="96"><span class="inf-sub" id="inf-abv-range"></span></label>
@@ -1906,13 +1903,28 @@ footer.note{
       <div class="inf-ris" id="inf-ris"><span class="cond-hint">Apri una botanica: qui compaiono diluizione, dose e tempi, che cambiano con i tasti − / +.</span></div>
     </div>
     <div id="inf-info"></div>
+    </div>
     <details class="howto diario-box" id="diario-box">
       <summary id="diario-sum">📓 Diario degli infusi</summary>
       <div class="howto-body" id="diario-body"></div>
     </details>
-    <div class="grid" id="grid"></div>
-    <div class="detail" id="detail"></div>
     <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;"><button class="ghost-btn" id="inf-print" type="button">🖨️ Stampa scheda della botanica aperta</button><button class="ghost-btn" id="lib-print" type="button">🖨️ Stampa elenco</button></div>
+    <details class="howto">
+      <summary>Come si usa questa pagina</summary>
+      <div class="howto-body">
+        <p>L'erbario e la preparazione degli infusi in una sola pagina: <span class="bot-count">84</span> botaniche con profilo aromatico, funzione nel gin, potenza e, per ognuna, la scheda per metterla in infusione.</p>
+        <ol>
+          <li><strong>Cerca</strong>: scrivi le prime lettere del nome (o usa i filtri, o il microfono) e compaiono le schede che corrispondono, le più probabili per prime.</li>
+          <li><strong>Scegli</strong>: toccando una scheda si apre solo quella e le altre si chiudono. Studia la botanica: il <strong>profilo sensoriale</strong> (il radar, con il confronto con simili, sostitutive e complementari) e i dati dell'erbario. «← Torna all'elenco» la richiude.</li>
+          <li><strong>Prepara</strong>: sotto la scheda compare il quadro <em>Preparazione dell'infuso</em>, dove imposti temperatura di conservazione (al buio), alcol di partenza, grado di estrazione e volume da ottenere: diluizione (alcol + acqua), grammi, tempo, primo assaggio e avvisi si ricalcolano subito. Aperta una botanica, il grado parte dal minimo consigliato in erbario.</li>
+          <li>Scegli lo <strong>Stato</strong>: fresca (appena raccolta) o secca. Peso e tempo si ricalcolano; con «Stato delle botaniche» li imposti tutti insieme. Le botaniche fresche portano acqua e abbassano un po' la gradazione.</li>
+          <li>Assaggia al <strong>primo assaggio</strong> e poi a intervalli: gli estremi dell'intervallo sono limiti, non obiettivi. Le dosi sono per un infuso concentrato, da miscelare a percentuale nelle Schede di prova.</li>
+          <li>Leggi sempre il riquadro <em>Da non accumulare con</em> prima di portare una botanica in ricetta.</li>
+          <li>Due stampe: la scheda della botanica aperta, oppure l'elenco filtrato.</li>
+        </ol>
+        <p>I fattori sono stime orientative: vanno tarate con assaggi (nella scheda trovi «La mia taratura»).</p>
+      </div>
+    </details>
   </section>
 
   <!-- NOZIONI TECNICO-SCIENTIFICHE -->
@@ -2746,7 +2758,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 01:20 · Scheda A compilabile dal diario</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 05:40 · Botaniche e infusi: prima la ricerca</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -3829,6 +3841,12 @@ function renderGrid(){
   extra.hidden = !soloProfilo;
   extra.textContent = window.cercaNelProfilo ? 'Solo per nome' : '+ ' + soloProfilo + (soloProfilo === 1 ? ' botanica' : ' botaniche') + ' con note di \u201c' + qq + '\u201d nel profilo';
   grid.innerHTML = '';
+  // La pagina si apre con la sola ricerca: le schede compaiono quando si scrivono le lettere
+  // (o si usa un filtro, o si chiede di vederle tutte).
+  const attivo = !!(qq || fCategoria.value || fCarattere.value || parseInt(fPotenza.value, 10) || fOrdine.value || fStile.value || fUso.value || window.mostraTutteBot);
+  const hint = document.getElementById('cerca-hint');
+  if (hint) hint.hidden = attivo || !!currentDetailName;
+  if (!attivo){ countTag.textContent = MASTER.length + ' botaniche in erbario'; extra.hidden = true; return; }
   const aggiungi = d => {
     const card = document.createElement('div');
     card.className = 'bot-card';
@@ -3853,6 +3871,20 @@ function renderGrid(){
 }
 
 let currentDetailName = null;
+// Il quadro delle variabili (preparazione dell'infuso) compare solo dopo aver scelto e studiato una botanica.
+function mostraLavoro(si){
+  const l = document.getElementById('lib-lavoro'); if (l) l.hidden = !si;
+  const h = document.getElementById('cerca-hint');
+  if (h && si) h.hidden = true;
+  const t = document.getElementById('lavoro-tit');
+  if (t) t.textContent = '\u2697\ufe0f Preparazione dell\u2019infuso' + (si && currentDetailName ? ' \u2014 ' + currentDetailName : '');
+}
+function vaiPreparazione(){
+  const t = document.getElementById('lib-lavoro'); if (!t) return;
+  t.style.scrollMarginTop = '84px'; t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+window.vaiPreparazione = vaiPreparazione;
+document.getElementById('mostra-tutte').addEventListener('click', () => { window.mostraTutteBot = true; renderGrid(); });
 const libAbvInput = document.getElementById('inf-abv');
 const libTempInput = document.getElementById('inf-temp');
 const libVolInput = document.getElementById('inf-vol');
@@ -3950,7 +3982,9 @@ function showDetail(name, nuovaScelta){
       <div class="field"><div class="k">📍 Zone in Italia</div><div class="v">${d.zone_italia || '—'}</div></div>
     </div>
     <div class="warn-box">⚠️ Da non accumulare con: ${r.non_accumulare || 'nessuna nota particolare'}</div>
+    <button class="ghost-btn vai-prep" type="button" onclick="vaiPreparazione()">⚗️ Passa alla preparazione dell'infuso ↓</button>
   `;
+  mostraLavoro(true);
   // Scrolla alla scheda solo quando si apre una nuova botanica: variare le condizioni con i
   // tasti su/giù deve solo aggiornare i numeri, senza far saltare la pagina.
   if (window.renderInfusoScheda) window.renderInfusoScheda();
@@ -3962,6 +3996,7 @@ function chiudiDetail(){
   detail.classList.remove('active');
   detail.innerHTML = '';
   grid.classList.remove('is-hidden');
+  mostraLavoro(false);
   // Senza una botanica aperta le condizioni simulate non si riferiscono a nulla: tornano al punto di partenza.
   libAbvInput.value = '';
   libTempInput.value = REF_TEMP;
@@ -3986,6 +4021,7 @@ function trovaUnica(){
 }
 searchInput.addEventListener('input', () => {
   window.cercaNelProfilo = false;
+  if (!searchInput.value.trim()) window.mostraTutteBot = false;
   const unica = trovaUnica();
   if (currentDetailName && currentDetailName !== unica) chiudiDetailMuto();
   renderGrid();
