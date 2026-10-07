@@ -1075,6 +1075,10 @@ html:not(.avanzato) .radar-wrap .r-norm{display:revert !important;}
 .gin-leg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px;}
 .radar-nota{font-size:12.5px;color:var(--ink-soft);margin-top:6px;line-height:1.4;}
 .radar-legend{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;font-size:13px;margin-top:6px;}
+.leg-off{font:inherit;font-size:13px;background:none;border:0;padding:2px 4px;color:var(--ink);cursor:pointer;border-radius:6px;}
+.leg-off:hover{background:var(--tint-info);}
+.conf-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;border:1px solid #fff;vertical-align:baseline;}
+.sott-box{margin:12px 0 4px;padding-top:10px;border-top:1px dashed var(--line-strong);}
 .radar-legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:baseline;}
 .ar-compare{margin:0 0 18px;}
 .ar-compare .cmp-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px;}
@@ -2993,7 +2997,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 12:00 · Pulsanti e caselle di ricerca chiari e ben visibili col tema scuro</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 14:40 · Radar: più botaniche sovrapposte e grafico per sottrazione</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -3521,17 +3525,64 @@ function parenti(nome){
   }
   return out;
 }
+// Sovrapposizione: si possono accendere più botaniche insieme; toccandone una accesa (nei tasti o nella legenda) si spegne.
+const CONF_COL = ['#C0733A','#4C7BB5','#B04A6B','#8A63B0','#2F8F8F','#B8921F'];
+function confAccese(nome){
+  const l = Array.isArray(window.radarConfronta) ? window.radarConfronta : [];
+  return l.filter(x => x !== nome && PROFILO8[x]);
+}
+// Ogni botanica tiene il suo colore finché resta accesa, anche se se ne spegne un'altra.
+const _confCol = {};
+function confColore(x){ return _confCol[x] || CONF_COL[0]; }
 window.radarConf = function(n){
-  window.radarConfronta = (window.radarConfronta === n) ? null : n;
+  const l = Array.isArray(window.radarConfronta) ? window.radarConfronta.slice() : [];
+  const i = l.indexOf(n);
+  if (i >= 0){ l.splice(i, 1); delete _confCol[n]; }
+  else { const usati = l.map(x => _confCol[x]); _confCol[n] = CONF_COL.find(c => !usati.includes(c)) || CONF_COL[l.length % CONF_COL.length]; l.push(n); }
+  window.radarConfronta = l;
   showDetail(currentDetailName);
 };
+window.radarConfVuota = function(){ window.radarConfronta = []; showDetail(currentDetailName); };
+// Grafico per sottrazione: per ogni nota, quanto la botanica aperta supera le sovrapposte (barra a destra,
+// è il suo contributo proprio) o quanto le sovrapposte la superano (barra a sinistra, lo portano le altre).
+function sottrazioneHtml(nome, v, accese){
+  if (!accese.length) return '';
+  const fase = window.radarFase;
+  const altre = ASSI8.map((_, i) => Math.max.apply(null, accese.map(x => valFase(x, fase)[i])));
+  const W = 300, rowH = 24, top = 22, lab = 74, mid = lab + (W - lab) / 2, half = (W - lab) / 2 - 8, H = top + ASSI8.length * rowH + 6;
+  let g = '<line x1="' + mid + '" y1="' + (top - 6) + '" x2="' + mid + '" y2="' + (H - 4) + '" stroke="var(--line-strong)" stroke-width="1"/>' +
+    '<text x="' + (mid - 6) + '" y="12" text-anchor="end" font-size="11" fill="var(--ink-soft)">\u2190 le altre</text>' +
+    '<text x="' + (mid + 6) + '" y="12" font-size="11" fill="var(--ink-soft)">solo questa \u2192</text>';
+  const proprie = [], mancanti = [];
+  ASSI8.forEach((a, i) => {
+    const d = Math.round((v[i] - altre[i]) * 10) / 10, y = top + i * rowH, w = Math.abs(d) / 5 * half;
+    g += '<text x="' + (lab - 6) + '" y="' + (y + 15) + '" text-anchor="end" font-size="12" fill="var(--ink)">' + a + '</text>';
+    if (d){
+      const x = d > 0 ? mid : mid - w;
+      g += '<rect x="' + x.toFixed(1) + '" y="' + (y + 5) + '" width="' + w.toFixed(1) + '" height="' + (rowH - 10) + '" rx="3" fill="' + (d > 0 ? 'var(--juniper)' : '#C0733A') + '" opacity=".85"/>' +
+        '<text x="' + (d > 0 ? mid + w + 4 : mid - w - 4).toFixed(1) + '" y="' + (y + 15) + '" text-anchor="' + (d > 0 ? 'start' : 'end') + '" font-size="11" fill="var(--ink-soft)">' + (d > 0 ? '+' : '\u2212') + nf(Math.abs(d), 1) + '</text>';
+      if (d >= 1) proprie.push(a.toLowerCase()); else if (d <= -1) mancanti.push(a.toLowerCase());
+    } else {
+      g += '<circle cx="' + mid + '" cy="' + (y + rowH / 2) + '" r="2.5" fill="var(--ink-faint, #999)"/>';
+    }
+  });
+  const chi = accese.length === 1 ? accese[0] : 'le ' + accese.length + ' sovrapposte';
+  return '<div class="sott-box"><div class="radar-title">Per sottrazione: ' + nome + ' meno ' + chi + '</div>' +
+    '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" style="max-width:360px;display:block;margin:0 auto" role="img" aria-label="Differenza nota per nota">' + g + '</svg>' +
+    '<div class="radar-nota">' + (proprie.length ? 'Tolte le note che ' + (accese.length === 1 ? accese[0] + ' già copre' : 'le altre già coprono') + ', ' + nome + ' porta di suo: <strong>' + proprie.join(', ') + '</strong>. ' : 'Tolte le note in comune, ' + nome + ' non porta quasi nulla di suo: rischio di ridondanza. ') +
+      (mancanti.length ? 'Non porta, e lo portano ' + (accese.length === 1 ? accese[0] : 'le altre') + ': ' + mancanti.join(', ') + '.' : '') +
+      (accese.length > 1 ? ' Con più botaniche, per ogni nota si sottrae la più alta tra le sovrapposte.' : '') + '</div></div>';
+}
 function confrontoRadarHtml(nome, v){
   const gr = parenti(nome);
   if (!gr.length) return sogliaHtml();
-  const on = window.radarConfronta;
+  const accese = confAccese(nome), on = accese.length === 1 ? accese[0] : null;
   const chips = gr.map(g => '<div class="conf-riga"><span class="conf-lab">' + g.lab + '</span>' +
-    g.l.map(x => '<button type="button" class="conf-chip conf-' + g.k + (x === on ? ' on' : '') + '" aria-pressed="' + (x === on) + '" data-n="' + x.replace(/"/g,'&quot;') + '" onclick="radarConf(this.dataset.n)">' + x + '</button>').join('') + '</div>').join('');
+    g.l.map(x => { const ac = accese.includes(x); return '<button type="button" class="conf-chip conf-' + g.k + (ac ? ' on' : '') + '" aria-pressed="' + ac + '" data-n="' + x.replace(/"/g,'&quot;') + '" onclick="radarConf(this.dataset.n)">' + (ac ? '<i class="conf-dot" style="background:' + confColore(x) + '"></i>' : '') + x + '</button>'; }).join('') + '</div>').join('');
   let nota = '';
+  if (accese.length > 1){
+    nota = '<div class="radar-nota">Somiglianza con ' + nome + ': ' + accese.map(x => '<strong>' + x + '</strong> ' + Math.round(somiglianza(v, PROFILO8[x]) * 100) + ' %').join(', ') + ' (soglia ' + Math.round(SOGLIA_SIMILI * 100) + ' %). <button type="button" class="conf-chip" onclick="radarConfVuota()">Spegni tutte</button></div>';
+  }
   if (on && PROFILO8[on]){
     const w = PROFILO8[on];
     const com = ASSI8.filter((_,i) => v[i] >= 3 && w[i] >= 3).map(x => x.toLowerCase());
@@ -3546,7 +3597,7 @@ function confrontoRadarHtml(nome, v){
       (porta.length ? on + ' aggiunge ' + porta.join(', ') + '. ' : '') +
       (manca.length ? 'Solo ' + nome + ' porta ' + manca.join(', ') + '.' : '') + '</div>';
   }
-  return '<div class="conf-box"><div class="conf-tit">Confronta con (tocca per sovrapporre, tocca ancora per togliere):</div>' + chips + '</div>' + nota + sogliaHtml();
+  return '<div class="conf-box"><div class="conf-tit">Confronta con (tocca per sovrapporre, anche più di una; tocca ancora per spegnerla):</div>' + chips + '</div>' + nota + sottrazioneHtml(nome, v, accese) + sogliaHtml();
 }
 function radarBox(nome){
   const v = PROFILO8[nome];
@@ -3555,8 +3606,8 @@ function radarBox(nome){
   const conBase = !!window.radarCardBase;
   const COLB = ['#6B7A72','#9A8F6B','#7B6B8F'];
   const serie = [{vals:valFase(nome, window.radarFase), color:'var(--juniper)', label:nome}];
-  const confOn = window.radarConfronta && PROFILO8[window.radarConfronta] && window.radarConfronta !== nome ? window.radarConfronta : null;
-  if (confOn) serie.push({vals:valFase(confOn, window.radarFase), color:'#C0733A', label:confOn});
+  const accese = confAccese(nome);
+  accese.forEach(x => serie.push({vals:valFase(x, window.radarFase), color:confColore(x), label:x}));
   let extra = '';
   const sw = STADI[nome] || [.3,1,.4], nmF = ['testa','cuore','coda'], maxW = Math.max.apply(null, sw);
   const doveSi = nmF.filter((_,i) => sw[i] >= maxW - 0.15).join(' e ');
@@ -3572,7 +3623,7 @@ function radarBox(nome){
   }
   const btn = BASE.length ? '<button type="button" class="ghost-btn radar-base-btn" aria-pressed="' + conBase + '" onclick="window.radarCardBase=!window.radarCardBase;showDetail(currentDetailName)">' + (conBase ? '− Togli le botaniche base' : '+ Aggiungi le botaniche base') + '</button>' : '';
   return '<div class="radar-box"><div class="radar-title">Profilo sensoriale</div>' + faseHtml('showDetail(currentDetailName)') + btn +
-    radarSVG(serie, 280) + (confOn && !conBase ? '<div class="radar-legend"><span><i style="background:var(--juniper)"></i>' + nome + '</span><span><i style="background:#C0733A"></i>' + confOn + '</span></div>' : '') + confrontoRadarHtml(nome, v) + '<div class="radar-nota">' + (FASE_NOTA[window.radarFase] ? FASE_NOTA[window.radarFase] + ' ' : '') + 'Si sente soprattutto in <strong>' + doveSi + '</strong>.</div>' + extra +
+    radarSVG(serie, 280) + (accese.length && !conBase ? '<div class="radar-legend"><span><i style="background:var(--juniper)"></i>' + nome + '</span>' + accese.map(x => '<button type="button" class="leg-off" title="Tocca per spegnerla" data-n="' + x.replace(/"/g,'&quot;') + '" onclick="radarConf(this.dataset.n)"><i style="background:' + confColore(x) + '"></i>' + x + ' \u2715</button>').join('') + '</div>' : '') + confrontoRadarHtml(nome, v) + '<div class="radar-nota">' + (FASE_NOTA[window.radarFase] ? FASE_NOTA[window.radarFase] + ' ' : '') + 'Si sente soprattutto in <strong>' + doveSi + '</strong>.</div>' + extra +
     coerenzaHtml(nome) + '<div class="radar-nota">Stima orientativa (0 = assente, 5 = dominante) di quanto ogni nota pesa nel carattere della botanica. Da validare all\'assaggio. Le note opposte stanno una di fronte all\'altra: dolce e amaro, floreale ed erbaceo, agrumato e speziato, acido e salino.</div></div>';
 }
 
@@ -4164,7 +4215,7 @@ function showDetail(name, nuovaScelta){
   if (!d) return;
   if (currentDetailName !== name) window.infSchedaAperta = false;
   currentDetailName = name;
-  if (window._confDi !== name){ window.radarConfronta = null; window._confDi = name; }
+  if (window._confDi !== name){ window.radarConfronta = []; window._confDi = name; }
   if (nuovaScelta){
     // Scelta una nuova botanica: si riparte dal grado minimo consigliato in erbario per lei
     // (non dal riferimento generico 43°), cosi' i tasti su/giu mostrano da subito come
