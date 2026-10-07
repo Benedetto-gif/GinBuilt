@@ -1443,7 +1443,8 @@ footer.note{
 .passo-tit{display:flex;align-items:center;gap:8px;margin:0 0 8px;font-size:17px;}
 .passo-n{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--tint-info-line);color:#fff;font-size:14px;flex:none;}
 .passo-sub{font-size:13px;font-weight:400;opacity:.7;}
-.tutte-btn{margin-top:10px;width:100%;}
+.passo-btns{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px;}
+.passo-btns #mostra-tutte{flex:1 1 60%;}
 .vai-prep{margin-top:12px;width:100%;}
 .dia-tecnica{margin:0 0 10px;}
 .dia-new{display:grid;gap:10px;text-align:left;}
@@ -1843,11 +1844,26 @@ footer.note{
   </section>
 
   <section class="panel" id="panel-libreria">
-    <!-- passi: filtri → ricerca → schede → scheda scelta → preparazione -->
+    <details class="howto">
+      <summary>Come si usa questa pagina</summary>
+      <div class="howto-body">
+        <p>L'erbario e la preparazione degli infusi in una sola pagina: <span class="bot-count">84</span> botaniche con profilo aromatico, funzione nel gin, potenza e, per ognuna, la scheda per metterla in infusione.</p>
+        <ol>
+          <li><strong>Non sai quale botanica analizzare?</strong> Tocca «Apri tutto l'erbario» (lo stesso tasto lo richiude) e restringi l'elenco con i filtri: famiglia, carattere, uso nella miscela, stile, potenza; «Ordina per» le mette in fila o le raggruppa. «Stampa elenco» stampa l'elenco filtrato.</li>
+          <li><strong>Sai già quale botanica vuoi?</strong> Scrivi le prime lettere del nome (o usa il microfono): restano solo le schede che corrispondono.</li>
+          <li><strong>La scheda della botanica.</strong> Toccando una scheda si apre solo quella e le altre si chiudono. Studia la botanica: il <strong>profilo sensoriale</strong> (il radar, con il confronto con simili, sostitutive e complementari), i dati dell'erbario e il riquadro <em>Da non accumulare con</em>, da leggere sempre prima di portarla in ricetta. «← Torna all'elenco» la richiude.</li>
+          <li><strong>Prepara l'infuso.</strong> Sotto la scheda compare il quadro delle variabili: temperatura di conservazione (al buio), alcol di partenza, grado di estrazione e volume da ottenere. Diluizione (alcol + acqua), grammi, tempo, primo assaggio e avvisi si ricalcolano subito; il grado parte dal minimo consigliato in erbario.</li>
+          <li>Scegli lo <strong>Stato della botanica</strong>: fresca (appena raccolta) o secca. Peso e tempo si ricalcolano. Le botaniche fresche portano acqua e abbassano un po' la gradazione.</li>
+          <li>Assaggia al <strong>primo assaggio</strong> e poi a intervalli: gli estremi dell'intervallo sono limiti, non obiettivi. Le dosi sono per un infuso concentrato, da miscelare a percentuale nelle Schede di prova. «Stampa la scheda» stampa la preparazione della botanica aperta.</li>
+          <li>Quando prepari l'infuso, annotalo nel <strong>Diario degli infusi</strong>, in fondo alla pagina, con il promemoria per l'assaggio.</li>
+        </ol>
+        <p>I fattori sono stime orientative: vanno tarate con assaggi (nella scheda trovi «La mia taratura»).</p>
+      </div>
+    </details>
+    <!-- passi: 1 erbario e filtri → 2 ricerca → 3 scheda → 4 preparazione → diario -->
     <div class="filtri-box passo" id="filtri-box">
     <h3 class="passo-tit"><span class="passo-n">1</span> Non sai quale botanica? Sfoglia l'erbario <span class="passo-sub" id="filtri-sum"></span></h3>
-    <p class="cond-hint">Apri tutto l'erbario oppure restringilo con i filtri.</p>
-    <button type="button" class="ghost-btn tutte-btn" style="margin:0 0 10px" id="mostra-tutte">🌿 Apri tutto l'erbario</button>
+    <div class="passo-btns"><button type="button" class="ghost-btn" id="mostra-tutte">🌿 Apri tutto l'erbario</button><button class="ghost-btn" id="lib-print" type="button">🖨️ Stampa elenco</button></div>
     <div class="cond-box cond-compact">
       <label>Famiglia
         <select id="f-categoria"><option value="">Tutte</option></select>
@@ -1891,12 +1907,10 @@ footer.note{
       <span class="count-tag" id="count-tag"></span>
     </div>
     </div>
-    <div class="cerca-hint" id="cerca-hint">Usa un filtro, apri tutto l'erbario oppure scrivi le lettere del nome: qui compaiono le schede.</div>
     <div class="grid" id="grid"></div>
     <div class="detail" id="detail"></div>
     <div id="lib-lavoro" hidden>
       <h3 class="passo-tit"><span class="passo-n">4</span> <span id="lavoro-tit">Prepara l'infuso</span></h3>
-      <p class="cond-hint">Studiata la botanica, imposta qui le variabili: diluizione, dose e tempi per estrarre i principi attivi si ricalcolano subito.</p>
     <div class="cond-box cond-compact" id="inf-cond">
       <span class="cond-label">Variabili e valori:</span>
       <label>Temperatura di conservazione, al buio (°C)<input type="number" id="inf-temp" value="20" step="1" min="0" max="60"></label>
@@ -1912,27 +1926,11 @@ footer.note{
       <div class="inf-ris" id="inf-ris"><span class="cond-hint">Apri una botanica: qui compaiono diluizione, dose e tempi, che cambiano con i tasti − / +.</span></div>
     </div>
     <div id="inf-info"></div>
+      <button class="ghost-btn" id="inf-print" type="button" style="margin-top:12px">🖨️ Stampa la scheda di preparazione</button>
     </div>
     <details class="howto diario-box" id="diario-box">
       <summary id="diario-sum">📓 Diario degli infusi</summary>
       <div class="howto-body" id="diario-body"></div>
-    </details>
-    <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;"><button class="ghost-btn" id="inf-print" type="button">🖨️ Stampa scheda della botanica aperta</button><button class="ghost-btn" id="lib-print" type="button">🖨️ Stampa elenco</button></div>
-    <details class="howto">
-      <summary>Come si usa questa pagina</summary>
-      <div class="howto-body">
-        <p>L'erbario e la preparazione degli infusi in una sola pagina: <span class="bot-count">84</span> botaniche con profilo aromatico, funzione nel gin, potenza e, per ognuna, la scheda per metterla in infusione.</p>
-        <ol>
-          <li><strong>Cerca</strong>: scrivi le prime lettere del nome (o usa i filtri, o il microfono) e compaiono le schede che corrispondono, le più probabili per prime.</li>
-          <li><strong>Scegli</strong>: toccando una scheda si apre solo quella e le altre si chiudono. Studia la botanica: il <strong>profilo sensoriale</strong> (il radar, con il confronto con simili, sostitutive e complementari) e i dati dell'erbario. «← Torna all'elenco» la richiude.</li>
-          <li><strong>Prepara</strong>: sotto la scheda compare il quadro <em>Preparazione dell'infuso</em>, dove imposti temperatura di conservazione (al buio), alcol di partenza, grado di estrazione e volume da ottenere: diluizione (alcol + acqua), grammi, tempo, primo assaggio e avvisi si ricalcolano subito. Aperta una botanica, il grado parte dal minimo consigliato in erbario.</li>
-          <li>Scegli lo <strong>Stato</strong>: fresca (appena raccolta) o secca. Peso e tempo si ricalcolano; con «Stato delle botaniche» li imposti tutti insieme. Le botaniche fresche portano acqua e abbassano un po' la gradazione.</li>
-          <li>Assaggia al <strong>primo assaggio</strong> e poi a intervalli: gli estremi dell'intervallo sono limiti, non obiettivi. Le dosi sono per un infuso concentrato, da miscelare a percentuale nelle Schede di prova.</li>
-          <li>Leggi sempre il riquadro <em>Da non accumulare con</em> prima di portare una botanica in ricetta.</li>
-          <li>Due stampe: la scheda della botanica aperta, oppure l'elenco filtrato.</li>
-        </ol>
-        <p>I fattori sono stime orientative: vanno tarate con assaggi (nella scheda trovi «La mia taratura»).</p>
-      </div>
     </details>
   </section>
 
@@ -2767,7 +2765,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 06:00 · Apri/Chiudi l’erbario</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 06:10 · Come si usa in cima</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
