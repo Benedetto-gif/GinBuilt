@@ -1845,7 +1845,9 @@ footer.note{
   <section class="panel" id="panel-libreria">
     <!-- passi: filtri → ricerca → schede → scheda scelta → preparazione -->
     <div class="filtri-box passo" id="filtri-box">
-    <h3 class="passo-tit"><span class="passo-n">1</span> Filtra le botaniche <span class="passo-sub" id="filtri-sum"></span></h3>
+    <h3 class="passo-tit"><span class="passo-n">1</span> Non sai quale botanica? Sfoglia l'erbario <span class="passo-sub" id="filtri-sum"></span></h3>
+    <p class="cond-hint">Apri tutto l'erbario oppure restringilo con i filtri.</p>
+    <button type="button" class="ghost-btn tutte-btn" style="margin:0 0 10px" id="mostra-tutte">🌿 Apri tutto l'erbario</button>
     <div class="cond-box cond-compact">
       <label>Famiglia
         <select id="f-categoria"><option value="">Tutte</option></select>
@@ -1880,10 +1882,9 @@ footer.note{
         </select>
       </label>
     </div>
-    <button type="button" class="ghost-btn tutte-btn" id="mostra-tutte">🌿 Apri tutto l'erbario</button>
     </div>
     <div class="passo">
-    <h3 class="passo-tit"><span class="passo-n">2</span> Cerca la botanica</h3>
+    <h3 class="passo-tit"><span class="passo-n">2</span> Sai già quale botanica? Cercala</h3>
     <div class="controls">
       <label class="inf-q-label">Scrivi le prime lettere: restano solo le schede che corrispondono<input type="text" id="search" placeholder="Scrivi il nome o la prima lettera…" /></label>
       <button type="button" class="mic-btn" id="voce-btn" hidden aria-label="Cerca la botanica a voce" title="Cerca a voce">🎤</button>
@@ -2766,7 +2767,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 05:55 · Botaniche e infusi in 4 passi</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 06:00 · Apri/Chiudi l’erbario</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -3897,7 +3898,16 @@ function vaiPreparazione(){
   t.style.scrollMarginTop = '84px'; t.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 window.vaiPreparazione = vaiPreparazione;
-document.getElementById('mostra-tutte').addEventListener('click', () => { window.mostraTutteBot = true; renderGrid(); });
+const tutteBtn = document.getElementById('mostra-tutte');
+function aggiornaTutteBtn(){ tutteBtn.textContent = window.mostraTutteBot ? '\ud83d\udcd5 Chiudi l\u2019erbario' : '\ud83c\udf3f Apri tutto l\u2019erbario'; }
+// Non sai quale botanica analizzare? Apri tutto l'erbario; lo stesso tasto lo richiude.
+tutteBtn.addEventListener('click', () => {
+  window.mostraTutteBot = !window.mostraTutteBot;
+  if (currentDetailName) chiudiDetailMuto();
+  renderGrid(); aggiornaTutteBtn();
+  if (window.mostraTutteBot) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+window.aggiornaTutteBtn = aggiornaTutteBtn;
 const libAbvInput = document.getElementById('inf-abv');
 const libTempInput = document.getElementById('inf-temp');
 const libVolInput = document.getElementById('inf-vol');
@@ -4035,7 +4045,8 @@ function trovaUnica(){
 }
 searchInput.addEventListener('input', () => {
   window.cercaNelProfilo = false;
-  if (!searchInput.value.trim()) window.mostraTutteBot = false;
+  if (searchInput.value.trim()) window.mostraTutteBot = false;
+  if (window.aggiornaTutteBtn) window.aggiornaTutteBtn();
   const unica = trovaUnica();
   if (currentDetailName && currentDetailName !== unica) chiudiDetailMuto();
   renderGrid();
