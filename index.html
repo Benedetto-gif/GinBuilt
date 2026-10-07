@@ -1690,6 +1690,59 @@ footer.note{
   .home-card, .bot-card, .test-card, .ck-card, .pg-sez, .page-hero,
   .pg-bento details.howto, .pg-bento .cond-box, .pg-bento .calc-box, .pg-bento .detail{background:#fff !important;box-shadow:none !important;}
 }
+
+/* ============================================================
+   Tema scuro: riquadri a colore pieno e brillante.
+   Le tinte mescolate allo sfondo scuro diventavano color fango;
+   ora ogni tessera prende il suo colore a luminosità costante
+   (oklch), più saturo, con testo bianco ben leggibile.
+   ============================================================ */
+@supports (color: oklch(from red l c h)){
+:root[data-theme="dark"]{--vv-l:.56;--vv-l2:.47;--vv-cr:1.45;}
+:root[data-theme="dark"] :is(.home-hero, .page-hero, .home-card, .bot-card, .test-list > .test-card, .ck-card, .pg-sez,
+  .pg-bento details.howto, .pg-bento .cond-box, .pg-bento .calc-box, .pg-bento .build-summary,
+  .pg-bento .mix-summary, .pg-bento .detail, .pg-bento .sem-box){
+  --vv:oklch(from var(--c) var(--vv-l) min(.2, calc(c * var(--vv-cr))) h);
+  --vv2:oklch(from var(--c) var(--vv-l2) min(.19, calc(c * var(--vv-cr))) calc(h - 8));
+  background:linear-gradient(155deg, var(--vv), var(--vv2)) !important;
+  border-color:oklch(from var(--c) .74 min(.2, calc(c * 1.4)) h) !important;
+  box-shadow:0 2px 6px rgba(0,0,0,.35), 0 14px 30px -14px oklch(from var(--c) .5 .2 h / .7), inset 0 1px 0 rgba(255,255,255,.18) !important;
+  /* Inchiostri e superfici interne riadattati al fondo colorato */
+  --ink:#FFFFFF;
+  --ink-soft:rgba(255,255,255,.92);
+  --ink-faint:rgba(255,255,255,.80);
+  --ochre:#FFE3A6;
+  --juniper:#FFFFFF;
+  --juniper-deep:#FFFFFF;
+  --surface:rgba(6,10,8,.30);
+  --surface-2:rgba(6,10,8,.20);
+  --line:rgba(255,255,255,.22);
+  --line-strong:rgba(255,255,255,.38);
+  color:#fff;
+}
+:root[data-theme="dark"] .home-hero{--c:var(--c-mediterraneo);}
+:root[data-theme="dark"] .page-hero{--c:var(--pc);}
+:root[data-theme="dark"] .home-hero::after, :root[data-theme="dark"] .page-hero::after{
+  background:radial-gradient(circle, rgba(255,255,255,.22), transparent 68%);
+}
+/* Titoli che prima usavano il colore del riquadro: ora bianchi */
+:root[data-theme="dark"] :is(.home-card h3, .bot-card .name, .test-list > .test-card .tname, .pg-sez > h3,
+  .pg-bento details.howto summary, .pg-bento .cond-label, .pg-bento .sem-box h4, .pg-bento .calc-box h3,
+  .pg-bento .prove-head h2, .page-hero .ph-kicker, .home-hero .hero-kicker, .page-hero h2, .home-hero h2){color:#fff !important;}
+:root[data-theme="dark"] .storia .pg-sez > h3::before{background:#fff;}
+:root[data-theme="dark"] .home-card .hc-step{background:#fff;color:oklch(from var(--c) .38 .14 h);}
+:root[data-theme="dark"] :is(.home-card .hc-icon, .bot-card .card-icon, .page-hero .ph-icon){background:rgba(255,255,255,.20) !important;}
+:root[data-theme="dark"] .home-hero .hero-go{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.35);color:#fff;}
+/* Riquadri a scomparsa dentro un capitolo già colorato: velo più scuro */
+:root[data-theme="dark"] .pg-sez details.howto{background:rgba(6,10,8,.22) !important;border-color:rgba(255,255,255,.25) !important;box-shadow:none !important;}
+:root[data-theme="dark"] .pg-sez .pull{background:rgba(255,255,255,.12);border-left-color:#fff;}
+/* Avvisi dentro un riquadro colorato: fondo scuro pieno per restare leggibili */
+:root[data-theme="dark"] :is(.pg-bento, .pg-sez) :is(.warn-box, .adj-box, .risk-box){background:rgba(8,12,10,.62);}
+/* Etichette (carattere, potenza…) su fondo colorato: pillola scura, testo bianco */
+:root[data-theme="dark"] :is(.bot-card, .pg-bento .detail, .test-card, .ck-card) .tag{background:rgba(6,10,8,.38) !important;color:#fff !important;border-color:rgba(255,255,255,.28) !important;}
+/* Pulsanti dentro un riquadro: bordo chiaro, testo bianco */
+:root[data-theme="dark"] .pg-bento :is(.cond-box, .calc-box, .detail, details.howto) .num-step-btn{color:#fff;}
+}
 </style>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0C110E" id="meta-theme-color">
@@ -2919,7 +2972,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 10:30 · Bento più vivaci: tinte piene e fascia colorata</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 11:30 · Riquadri a colore pieno e brillante col tema scuro</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
