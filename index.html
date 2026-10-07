@@ -1651,6 +1651,45 @@ footer.note{
   .pg-sez{padding:4px 16px 10px;}
 }
 @media print{ .page-hero .ph-icon, .page-hero::after{display:none;} .pg-sez{box-shadow:none;} }
+
+/* ============================================================
+   Più vivacità ai bento: le tinte al 8-10% sfumate verso lo sfondo
+   sparivano (soprattutto col tema scuro) e tutto sembrava dello
+   stesso colore cupo. Ora ogni tessera ha una tinta piena e ben
+   riconoscibile, un bordo del suo colore e una fascia di colore.
+   ============================================================ */
+:root{--tinta:26%;--tinta-2:14%;--tinta-bordo:60%;--tinta-hero:36%;}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){--tinta:36%;--tinta-2:21%;--tinta-bordo:70%;--tinta-hero:48%;} }
+:root[data-theme="dark"]{--tinta:36%;--tinta-2:21%;--tinta-bordo:70%;--tinta-hero:48%;}
+
+.home-hero{
+  background:linear-gradient(145deg, color-mix(in srgb, var(--c-mediterraneo) var(--tinta-hero), var(--surface)), color-mix(in srgb, var(--c-mediterraneo) var(--tinta-2), var(--surface)));
+  border-color:color-mix(in srgb, var(--c-mediterraneo) var(--tinta-bordo), var(--surface));
+}
+.page-hero{
+  background:linear-gradient(145deg, color-mix(in srgb, var(--pc) var(--tinta-hero), var(--surface)), color-mix(in srgb, var(--pc) var(--tinta-2), var(--surface)));
+  border-color:color-mix(in srgb, var(--pc) var(--tinta-bordo), var(--surface));
+}
+.page-hero .ph-icon{background:color-mix(in srgb, var(--pc) 45%, var(--surface));}
+
+.home-card, .bot-card, .test-list > .test-card, .ck-card, .pg-sez,
+.pg-bento details.howto, .pg-bento .cond-box, .pg-bento .calc-box, .pg-bento .build-summary,
+.pg-bento .mix-summary, .pg-bento .detail, .pg-bento .sem-box{
+  background:linear-gradient(160deg, color-mix(in srgb, var(--c) var(--tinta), var(--surface)), color-mix(in srgb, var(--c) var(--tinta-2), var(--surface)));
+  border-color:color-mix(in srgb, var(--c) var(--tinta-bordo), var(--surface));
+  box-shadow:inset 0 4px 0 var(--c), var(--sh-1);
+}
+.pg-bento details.howto{box-shadow:var(--sh-1);}
+.home-card .hc-icon, .bot-card .card-icon{background:color-mix(in srgb, var(--c) 40%, var(--surface));}
+/* Dentro una sezione già colorata, i riquadri a scomparsa restano un po' più chiari */
+.pg-sez details.howto{
+  background:color-mix(in srgb, var(--c) var(--tinta-2), var(--surface));
+  box-shadow:none;
+}
+@media print{
+  .home-card, .bot-card, .test-card, .ck-card, .pg-sez, .page-hero,
+  .pg-bento details.howto, .pg-bento .cond-box, .pg-bento .calc-box, .pg-bento .detail{background:#fff !important;box-shadow:none !important;}
+}
 </style>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0C110E" id="meta-theme-color">
@@ -2880,7 +2919,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 09:00 · Tutte le pagine in stile bento colorato</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 10:30 · Bento più vivaci: tinte piene e fascia colorata</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
