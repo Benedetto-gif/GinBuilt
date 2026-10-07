@@ -1541,6 +1541,116 @@ footer.note{
 .sem-row{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--line);font-size:13.5px;line-height:1.45;color:var(--ink-soft);}
 .sem-row .sem-dot{flex:0 0 13px;margin-top:4px;margin-right:0;}
 .sem-row strong{color:var(--ink);}
+
+/* ============================================================
+   Pagine interne in stile bento, come la prima pagina:
+   una tessera d'apertura colorata e riquadri con la loro tinta.
+   --pc è il colore della pagina, --c quello del singolo riquadro.
+   ============================================================ */
+:root{--c-viola:#8A63B0;}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){--c-viola:#B08ED6;} }
+:root[data-theme="dark"]{--c-viola:#B08ED6;}
+
+.page-hero{
+  position:relative;overflow:hidden;
+  border-radius:var(--r-lg);padding:28px 30px 26px;margin-bottom:18px;
+  border:1px solid color-mix(in srgb, var(--pc) 30%, var(--line));
+  background:var(--surface);
+  background:linear-gradient(145deg, color-mix(in srgb, var(--pc) 16%, var(--surface)), var(--surface) 64%);
+  box-shadow:var(--sh-2), var(--sh-inset);
+}
+.page-hero::after{
+  content:"";position:absolute;right:-60px;top:-70px;width:240px;height:240px;border-radius:50%;
+  background:radial-gradient(circle, color-mix(in srgb, var(--pc) 26%, transparent), transparent 68%);
+  pointer-events:none;
+}
+.page-hero .ph-kicker{
+  font-size:11px;text-transform:uppercase;letter-spacing:.1em;font-weight:800;
+  color:var(--pc);margin:0 0 10px;padding-right:66px;
+}
+.page-hero h2{font-size:clamp(25px,4.4vw,34px);margin:0 0 10px;padding-right:66px;color:var(--ink);}
+.page-hero p.ph-sub, .page-hero p.storia-sub{
+  position:relative;z-index:1;margin:0;color:var(--ink-soft);font-size:15px;line-height:1.55;max-width:660px;
+}
+.page-hero .ph-icon{
+  position:absolute;top:22px;right:22px;z-index:1;
+  width:52px;height:52px;border-radius:var(--r-sm);
+  display:flex;align-items:center;justify-content:center;font-size:25px;line-height:1;
+  background:color-mix(in srgb, var(--pc) 20%, var(--surface));
+  box-shadow:var(--sh-1), var(--sh-inset);
+}
+/* Nelle pagine a testo lungo, il titolo e il sottotitolo stanno ora nella tessera */
+.storia .page-hero{margin-bottom:22px;}
+
+/* Riquadri colorati: ognuno ha la sua tinta, come le tessere della prima pagina */
+.pg-bento details.howto,
+.pg-bento .cond-box, .pg-bento .calc-box, .pg-bento .build-summary,
+.pg-bento .mix-summary, .pg-bento .detail, .pg-bento .sem-box{
+  --c:var(--pc);
+  border-color:color-mix(in srgb, var(--c) 28%, var(--line));
+  background:var(--surface);
+  background:linear-gradient(160deg, color-mix(in srgb, var(--c) 9%, var(--surface)), var(--surface) 72%);
+}
+.pg-bento details.howto{border-left:4px solid var(--c);}
+.pg-bento details.howto summary,
+.pg-bento .cond-label, .pg-bento .sem-box h4{color:var(--c);}
+.pg-bento .calc-box h3, .pg-bento .prove-head h2{color:var(--c, var(--pc));}
+
+/* Sezioni delle pagine a testo lungo: ogni capitolo diventa una tessera */
+.pg-sez{
+  --c:var(--pc);
+  margin:0 0 18px;padding:6px 24px 14px;border-radius:var(--r-md);
+  border:1px solid color-mix(in srgb, var(--c) 26%, var(--line));
+  background:var(--surface);
+  background:linear-gradient(160deg, color-mix(in srgb, var(--c) 10%, var(--surface)), var(--surface) 70%);
+  box-shadow:var(--sh-1), var(--sh-inset);
+}
+.storia .pg-sez > h3{
+  margin:16px 0 14px;padding:0 0 0 14px;border-top:0;position:relative;color:var(--c);
+}
+.storia .pg-sez > h3::before{
+  content:"";position:absolute;left:0;top:.18em;bottom:.18em;width:4px;border-radius:4px;background:var(--c);
+}
+/* Dentro una sezione già colorata i riquadri a scomparsa restano leggeri */
+.pg-sez details.howto{
+  --c:inherit;
+  background:color-mix(in srgb, var(--c) 5%, var(--surface));
+  box-shadow:none;margin-bottom:12px;
+}
+.pg-sez .pull{border-left-color:var(--c);
+  background:linear-gradient(120deg, color-mix(in srgb, var(--c) 12%, var(--surface)), var(--surface));}
+
+/* Schede delle botaniche: tinta del loro carattere aromatico */
+.bot-card{--c:var(--c-neutro);
+  background:var(--surface);
+  background:linear-gradient(160deg, color-mix(in srgb, var(--c) 10%, var(--surface)), var(--surface) 70%);
+  border-color:color-mix(in srgb, var(--c) 26%, var(--line));}
+.bot-card .card-icon{background:color-mix(in srgb, var(--c) 18%, var(--surface));}
+.bot-card .name{color:var(--c);}
+
+/* Schede di prova e cocktail: le tessere della griglia cambiano colore a giro */
+.test-list > .test-card{--c:var(--c-siciliano);
+  background:var(--surface);
+  background:linear-gradient(160deg, color-mix(in srgb, var(--c) 10%, var(--surface)), var(--surface) 70%);
+  border-color:color-mix(in srgb, var(--c) 26%, var(--line));}
+.test-list > .test-card:nth-child(6n+2){--c:var(--c-agrumato);}
+.test-list > .test-card:nth-child(6n+3){--c:var(--c-marino);}
+.test-list > .test-card:nth-child(6n+4){--c:var(--c-erbaceo);}
+.test-list > .test-card:nth-child(6n+5){--c:var(--c-viola);}
+.test-list > .test-card:nth-child(6n){--c:var(--c-mediterraneo);}
+.test-list > .test-card .tname{color:var(--c);}
+.ck-card{
+  background:var(--surface);
+  background:linear-gradient(160deg, color-mix(in srgb, var(--c) 10%, var(--surface)), var(--surface) 70%);
+  border-color:color-mix(in srgb, var(--c) 26%, var(--line));}
+
+@media (max-width:640px){
+  .page-hero{padding:22px 20px 20px;border-radius:var(--r-md);}
+  .page-hero .ph-icon{top:18px;right:16px;width:44px;height:44px;font-size:21px;}
+  .page-hero .ph-kicker, .page-hero h2{padding-right:54px;}
+  .pg-sez{padding:4px 16px 10px;}
+}
+@media print{ .page-hero .ph-icon, .page-hero::after{display:none;} .pg-sez{box-shadow:none;} }
 </style>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0C110E" id="meta-theme-color">
@@ -2770,7 +2880,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 07:40 · Ginepro protetto anche alla riapertura</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 09:00 · Tutte le pagine in stile bento colorato</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -3875,6 +3985,7 @@ function renderGrid(){
   const aggiungi = d => {
     const card = document.createElement('div');
     card.className = 'bot-card';
+    card.style.setProperty('--c', coloreCarattere(d.carattere));
     card.innerHTML = `
       <div class="card-icon">${d.icona || '🌿'}</div>
       <p class="name">${d.botanica}</p>
@@ -7705,6 +7816,90 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("service-worker.js").catch(() => {});
   });
 }
+</script>
+<script>
+// ---------- Pagine interne in stile bento ----------
+// Ogni pagina riceve una tessera d'apertura colorata (come quella della prima pagina)
+// e i suoi riquadri prendono tinte diverse, a giro, partendo dal colore della pagina.
+(function(){
+  const PAGINE = {
+    storia:      { c:'--c-mediterraneo', k:'Per cominciare' },
+    diario:      { c:'--yellow-sym',     k:'Il lavoro in corso',
+                   s:'Gli infusi in macerazione, con i promemoria per controllarli e filtrarli al momento giusto.' },
+    libreria:    { c:'--c-erbaceo',      k:'Passo 1 di 3',
+                   s:'Le schede delle botaniche, con profilo aromatico, radar e zone italiane, e per ognuna la preparazione dell’infuso: gradazione, diluizione, grammi e tempo.' },
+    builder:     { c:'--c-secco',        k:'Passo 2 di 3',
+                   s:'Scegli uno stile e assegna le botaniche ai sei ruoli: base, freschezza, identità, cuore, firma, rifinitura.' },
+    prove:       { c:'--c-siciliano',    k:'Passo 3 di 3',
+                   s:'Registra le miscele, valutale all’assaggio e porta il gin alla gradazione finale con il calcolatore della diluizione.' },
+    ridondanza:  { c:'--c-agrumato',     k:'Prima di costruire',
+                   s:'Il tavolo di lavoro per combinare tre o quattro botaniche e vedere dove i profili si sommano e dove si completano.' },
+    nozioni:     { c:'--c-marino',       k:'Per approfondire' },
+    analisi:     { c:'--c-speziato',     k:'Per approfondire' },
+    ruota:       { c:'--c-viola',        k:'Per approfondire' },
+    altrigin:    { c:'--c-dolce',        k:'Per approfondire' },
+    cocktail:    { c:'--c-floreale',     k:'Il banco di prova',
+                   s:'Venti classici a base gin con le dosi standard, per vedere la tua ricetta all’opera.' },
+    laboratorio: { c:'--ochre',          k:'Il banco di prova',
+                   s:'Cocktail sperimentali con un’ipotesi da verificare, il radar previsto e gli assaggi annotati versione dopo versione.' }
+  };
+  // Tinte a giro per i riquadri: dopo il colore della pagina, le caratteristiche aromatiche.
+  const GIRO = ['--c-agrumato','--c-marino','--c-floreale','--c-erbaceo','--c-viola','--c-mediterraneo','--c-speziato','--c-secco','--c-siciliano'];
+  const CARD = 'details.howto, .cond-box, .calc-box, .build-summary, .mix-summary, .sem-box';
+  const v = n => 'var(' + n + ')';
+
+  Object.keys(PAGINE).forEach(id => {
+    const panel = document.getElementById('panel-' + id);
+    if (!panel || panel.querySelector(':scope .page-hero')) return;
+    const cfg = PAGINE[id];
+    panel.classList.add('pg-bento');
+    panel.style.setProperty('--pc', v(cfg.c));
+    const giro = [cfg.c].concat(GIRO.filter(x => x !== cfg.c));
+
+    // Titolo e icona dalla voce di menu
+    const tab = document.querySelector('nav.tabs button[data-tab="' + id + '"]');
+    const testo = tab ? tab.textContent.trim() : id, sp = testo.indexOf(' ');
+    const icona = sp > 0 ? testo.slice(0, sp) : '', titolo = sp > 0 ? testo.slice(sp + 1) : testo;
+
+    const hero = document.createElement('div'); hero.className = 'page-hero';
+    hero.innerHTML = '<span class="ph-icon" aria-hidden="true">' + icona + '</span><p class="ph-kicker">' + cfg.k + '</p>';
+    const st = panel.querySelector(':scope > .storia');
+    const h2 = st && st.querySelector(':scope > h2');
+    if (h2){
+      // Pagine a testo lungo: il loro titolo e il primo sottotitolo entrano nella tessera
+      const sub = h2.nextElementSibling && h2.nextElementSibling.classList.contains('storia-sub') ? h2.nextElementSibling : null;
+      st.insertBefore(hero, h2);
+      hero.appendChild(h2); if (sub) hero.appendChild(sub);
+      // Ogni capitolo (h3 e ciò che lo segue) diventa una tessera colorata
+      let sez = null, n = 0;
+      [...st.children].forEach(el => {
+        if (el === hero) return;
+        if (el.tagName === 'H3'){
+          sez = document.createElement('div'); sez.className = 'pg-sez';
+          sez.style.setProperty('--c', v(giro[n++ % giro.length]));
+          st.insertBefore(sez, el);
+        }
+        if (sez) sez.appendChild(el);
+      });
+      // Riquadri prima del primo capitolo
+      let m = 0;
+      [...st.children].forEach(el => { if (el.matches && el.matches(CARD)) el.style.setProperty('--c', v(giro[m++ % giro.length])); });
+    } else {
+      hero.insertAdjacentHTML('beforeend', '<h2></h2>' + (cfg.s ? '<p class="ph-sub"></p>' : ''));
+      hero.querySelector('h2').textContent = titolo;
+      if (cfg.s) hero.querySelector('.ph-sub').textContent = cfg.s;
+      panel.insertBefore(hero, panel.firstChild);
+      // Riquadri della pagina: a giro, senza ricolorare quelli annidati in un altro riquadro
+      let m = 0;
+      panel.querySelectorAll(CARD).forEach(el => {
+        if (el.closest('.avviso')) return;
+        const padre = el.parentElement && el.parentElement.closest(CARD);
+        if (padre && panel.contains(padre)) return;
+        el.style.setProperty('--c', v(giro[m++ % giro.length]));
+      });
+    }
+  });
+})();
 </script>
 </body>
 </html>
