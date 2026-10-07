@@ -1433,13 +1433,17 @@ footer.note{
 .inf-table .inf-cau{display:block;font-size:11.5px;color:var(--orange-sym);margin-top:3px;}
 .inf-table .inf-sub{display:block;font-size:11.5px;color:var(--ink-faint);}
 .inf-in-scheda{margin:14px 0;}
-.filtri-box .cond-box{margin:10px 0 0;}
+.filtri-box .cond-box{margin:0;}
 .diario-box .howto-body > p:first-child{margin-top:0;}
 .lib-tit{margin:0 0 8px;font-size:19px;}
 .cerca-hint{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:10px 0;padding:12px 14px;border:1px dashed var(--line-strong);border-radius:12px;font-size:14px;opacity:.9;}
 .cerca-hint[hidden], #lib-lavoro[hidden]{display:none;}
 #lib-lavoro{margin-top:18px;padding-top:12px;border-top:2px solid var(--line-strong);}
-.lavoro-tit{margin:0 0 4px;font-size:17px;}
+.passo{margin:0 0 14px;}
+.passo-tit{display:flex;align-items:center;gap:8px;margin:0 0 8px;font-size:17px;}
+.passo-n{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--tint-info-line);color:#fff;font-size:14px;flex:none;}
+.passo-sub{font-size:13px;font-weight:400;opacity:.7;}
+.tutte-btn{margin-top:10px;width:100%;}
 .vai-prep{margin-top:12px;width:100%;}
 .dia-tecnica{margin:0 0 10px;}
 .dia-new{display:grid;gap:10px;text-align:left;}
@@ -1839,14 +1843,9 @@ footer.note{
   </section>
 
   <section class="panel" id="panel-libreria">
-    <h2 class="lib-tit">🔎 Cerca la botanica</h2>
-    <div class="controls">
-      <label class="inf-q-label">Cerca la botanica<input type="text" id="search" placeholder="Scrivi il nome o la prima lettera…" /></label>
-      <button type="button" class="mic-btn" id="voce-btn" hidden aria-label="Cerca la botanica a voce" title="Cerca a voce">🎤</button>
-      <span class="count-tag" id="count-tag"></span>
-    </div>
-    <details class="howto filtri-box" id="filtri-box">
-    <summary id="filtri-sum">Filtra ed ordina</summary>
+    <!-- passi: filtri → ricerca → schede → scheda scelta → preparazione -->
+    <div class="filtri-box passo" id="filtri-box">
+    <h3 class="passo-tit"><span class="passo-n">1</span> Filtra le botaniche <span class="passo-sub" id="filtri-sum"></span></h3>
     <div class="cond-box cond-compact">
       <label>Famiglia
         <select id="f-categoria"><option value="">Tutte</option></select>
@@ -1881,12 +1880,21 @@ footer.note{
         </select>
       </label>
     </div>
-    </details>
-    <div class="cerca-hint" id="cerca-hint"><span>Scrivi le prime lettere di una botanica (o usa i filtri): compaiono le schede che corrispondono. Toccane una per aprirla.</span> <button type="button" class="ghost-btn" id="mostra-tutte">Mostra tutte</button></div>
+    <button type="button" class="ghost-btn tutte-btn" id="mostra-tutte">🌿 Apri tutto l'erbario</button>
+    </div>
+    <div class="passo">
+    <h3 class="passo-tit"><span class="passo-n">2</span> Cerca la botanica</h3>
+    <div class="controls">
+      <label class="inf-q-label">Scrivi le prime lettere: restano solo le schede che corrispondono<input type="text" id="search" placeholder="Scrivi il nome o la prima lettera…" /></label>
+      <button type="button" class="mic-btn" id="voce-btn" hidden aria-label="Cerca la botanica a voce" title="Cerca a voce">🎤</button>
+      <span class="count-tag" id="count-tag"></span>
+    </div>
+    </div>
+    <div class="cerca-hint" id="cerca-hint">Usa un filtro, apri tutto l'erbario oppure scrivi le lettere del nome: qui compaiono le schede.</div>
     <div class="grid" id="grid"></div>
     <div class="detail" id="detail"></div>
     <div id="lib-lavoro" hidden>
-      <h3 class="lavoro-tit" id="lavoro-tit">⚗️ Preparazione dell'infuso</h3>
+      <h3 class="passo-tit"><span class="passo-n">4</span> <span id="lavoro-tit">Prepara l'infuso</span></h3>
       <p class="cond-hint">Studiata la botanica, imposta qui le variabili: diluizione, dose e tempi per estrarre i principi attivi si ricalcolano subito.</p>
     <div class="cond-box cond-compact" id="inf-cond">
       <span class="cond-label">Variabili e valori:</span>
@@ -2758,7 +2766,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 05:40 · Botaniche e infusi: prima la ricerca</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 05:55 · Botaniche e infusi in 4 passi</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -3764,6 +3772,11 @@ uniqueSorted(MASTER.map(d=>d.carattere)).forEach(c=>{
   const o = document.createElement('option'); o.value=c; o.textContent=c; fCarattere.appendChild(o);
 });
 
+// Le lettere scritte devono essere l'inizio del nome o di una sua parola (es. «gi» → Ginepro, Pepe di Giava).
+function nomeCorrisponde(nome, q){
+  const n = nome.toLowerCase();
+  return n.startsWith(q) || n.split(/[\s\/\-(]+/).some(w => w.startsWith(q));
+}
 function elencoFiltrato(){
   const q = searchInput.value.trim().toLowerCase();
   const cat = fCategoria.value;
@@ -3775,7 +3788,7 @@ function elencoFiltrato(){
     if (pot && (d.potenza10 || 0) < pot) return false;
     if (fStile.value && !botDelloStile(fStile.value).has(d.botanica)) return false;
     if (fUso.value && d.uso !== fUso.value) return false;
-    if (q && !(d.botanica.toLowerCase().includes(q) || (window.cercaNelProfilo && (d.profilo||'').toLowerCase().includes(q)))) return false;
+    if (q && !(nomeCorrisponde(d.botanica, q) || (window.cercaNelProfilo && (d.profilo||'').toLowerCase().includes(q)))) return false;
     return true;
   });
   if (!q) return risultato;
@@ -3836,7 +3849,7 @@ function renderGrid(){
     countTag.parentNode.appendChild(extra);
     extra.addEventListener('click', () => { window.cercaNelProfilo = !window.cercaNelProfilo; if (currentDetailName) chiudiDetailMuto(); renderGrid(); }); }
   const qq = searchInput.value.trim().toLowerCase();
-  const soloProfilo = qq ? MASTER.filter(d => !d.botanica.toLowerCase().includes(qq) && (d.profilo||'').toLowerCase().includes(qq)).length : 0;
+  const soloProfilo = qq ? MASTER.filter(d => !nomeCorrisponde(d.botanica, qq) && (d.profilo||'').toLowerCase().includes(qq)).length : 0;
   if (!soloProfilo) window.cercaNelProfilo = false;
   extra.hidden = !soloProfilo;
   extra.textContent = window.cercaNelProfilo ? 'Solo per nome' : '+ ' + soloProfilo + (soloProfilo === 1 ? ' botanica' : ' botaniche') + ' con note di \u201c' + qq + '\u201d nel profilo';
@@ -3877,7 +3890,7 @@ function mostraLavoro(si){
   const h = document.getElementById('cerca-hint');
   if (h && si) h.hidden = true;
   const t = document.getElementById('lavoro-tit');
-  if (t) t.textContent = '\u2697\ufe0f Preparazione dell\u2019infuso' + (si && currentDetailName ? ' \u2014 ' + currentDetailName : '');
+  if (t) t.textContent = 'Prepara l\u2019infuso' + (si && currentDetailName ? ' di ' + currentDetailName : '');
 }
 function vaiPreparazione(){
   const t = document.getElementById('lib-lavoro'); if (!t) return;
@@ -3962,6 +3975,7 @@ function showDetail(name, nuovaScelta){
   detail.classList.add('active');
   grid.classList.add('is-hidden');
   detail.innerHTML = `
+    <h3 class="passo-tit"><span class="passo-n">3</span> La scheda della botanica</h3>
     <button class="ghost-btn bot-back" type="button" onclick="chiudiDetail()">← Torna all'elenco</button>
     <div class="detail-icon">${d.icona || '🌿'}</div>
     <h3>${d.botanica}</h3>
@@ -4114,7 +4128,7 @@ detail.addEventListener('toggle', e => { if (e.target.classList && e.target.clas
 function aggiornaFiltriSum(){
   const sum = document.getElementById('filtri-sum'); if (!sum) return;
   const n = [fCategoria, fCarattere, fOrdine, fStile, fUso].filter(el => el && el.value).length + (fPotenza && fPotenza.value !== '0' ? 1 : 0);
-  sum.textContent = 'Filtra ed ordina' + (n ? ' (' + n + (n === 1 ? ' attivo)' : ' attivi)') : '');
+  sum.textContent = n ? '(' + n + (n === 1 ? ' attivo)' : ' attivi)') : '';
 }
 [fCategoria, fCarattere, fPotenza, fOrdine, fStile, fUso].forEach(el => el && el.addEventListener('input', aggiornaFiltriSum));
 renderGrid();
