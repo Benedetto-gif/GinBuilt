@@ -1738,6 +1738,27 @@ footer.note{
 :root[data-theme="dark"] .pg-sez .pull{background:rgba(255,255,255,.12);border-left-color:#fff;}
 /* Avvisi dentro un riquadro colorato: fondo scuro pieno per restare leggibili */
 :root[data-theme="dark"] :is(.pg-bento, .pg-sez) :is(.warn-box, .adj-box, .risk-box){background:rgba(8,12,10,.62);}
+/* Campi di ricerca, menù a tendina e pulsanti: chiari e ben visibili
+   sia sullo sfondo scuro sia dentro i riquadri colorati */
+:root[data-theme="dark"] :is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]), select, textarea){
+  background-color:#F7F9F4 !important;color:#122019 !important;
+  border:2px solid #9FE3C4 !important;font-weight:600;
+}
+:root[data-theme="dark"] :is(input, textarea)::placeholder{color:#5B6B61 !important;opacity:1;font-weight:500;}
+:root[data-theme="dark"] :is(input, select, textarea):focus{border-color:#FFC94A !important;box-shadow:0 0 0 3px rgba(255,201,74,.45) !important;}
+:root[data-theme="dark"] option{background:#F7F9F4;color:#122019;}
+
+:root[data-theme="dark"] :is(.ghost-btn, .min-btn, .mic-btn, .num-step-btn, .conf-chip, .nota-chip, .fase-btn){
+  background:#EAF6EF !important;color:#123526 !important;border:1.5px solid #FFFFFF !important;
+  font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,.35) !important;opacity:1 !important;
+}
+:root[data-theme="dark"] :is(.conf-chip.on, .nota-chip[aria-pressed="true"], .fase-btn[aria-pressed="true"], .min-btn.attivo, .mic-btn.ascolto){
+  background:#FFC94A !important;color:#2A1C00 !important;border-color:#FFE7A8 !important;
+}
+:root[data-theme="dark"] .num-step-btn:active{background:#FFC94A !important;}
+:root[data-theme="dark"] .primary-btn{background:#FFC94A !important;color:#2A1C00 !important;font-weight:800;box-shadow:0 4px 14px rgba(255,201,74,.35) !important;}
+:root[data-theme="dark"] .danger-btn{background:#E5533F !important;color:#fff !important;border:1.5px solid #FFB3A6 !important;}
+:root[data-theme="dark"] .menu-btn{background:#EAF6EF !important;color:#123526 !important;border:1.5px solid #fff !important;}
 /* Etichette (carattere, potenza…) su fondo colorato: pillola scura, testo bianco */
 :root[data-theme="dark"] :is(.bot-card, .pg-bento .detail, .test-card, .ck-card) .tag{background:rgba(6,10,8,.38) !important;color:#fff !important;border-color:rgba(255,255,255,.28) !important;}
 /* Pulsanti dentro un riquadro: bordo chiaro, testo bianco */
@@ -2972,7 +2993,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 11:30 · Riquadri a colore pieno e brillante col tema scuro</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 12:00 · Pulsanti e caselle di ricerca chiari e ben visibili col tema scuro</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
