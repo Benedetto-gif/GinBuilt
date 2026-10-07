@@ -1078,7 +1078,9 @@ html:not(.avanzato) .radar-wrap .r-norm{display:revert !important;}
 .leg-off{font:inherit;font-size:13px;background:none;border:0;padding:2px 4px;color:var(--ink);cursor:pointer;border-radius:6px;}
 .leg-off:hover{background:var(--tint-info);}
 .conf-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;border:1px solid #fff;vertical-align:baseline;}
-.sott-box{margin:12px 0 4px;padding-top:10px;border-top:1px dashed var(--line-strong);}
+.camb-box{margin:12px 0 4px;padding-top:10px;border-top:1px dashed var(--line-strong);text-align:left;}
+.camb-riga{display:grid;grid-template-columns:96px 1fr;gap:8px;font-size:14px;padding:4px 0;border-bottom:1px solid var(--line);}
+.camb-k{font-weight:600;color:var(--ink-soft);}
 .radar-legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:baseline;}
 .ar-compare{margin:0 0 18px;}
 .ar-compare .cmp-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px;}
@@ -2997,7 +2999,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 15:50 · Sottrazione: le note in comune si sommano</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 16:05 · Sovrapposizione: come cambiano profilo, direzione e carattere</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -3301,11 +3303,11 @@ function radarSVG(serie, size, opts){
       forza = bR.pct < bT.pct * 0.6 ? ', con un carattere meno marcato del riferimento' : (bR.pct > bT.pct * 1.4 && bR.pct - bT.pct > 10) ? ', con un carattere pi\u00f9 marcato del riferimento' : '';
     }
     nota += '<br><strong>' + opts.stile + (opts.rifVals ? '</strong> (la ricetta proposta dallo stile, con le stesse dosi)' : '</strong>') + ' pende verso <strong>' + direzioneTesto(bT) + '</strong> (carattere ' + carattereTesto(bT.pct) + ', ' + bT.pct + ' %, cerchio vuoto). ' +
-      (opts.insieme ? 'La combinazione' : 'La ricetta') + ' pende verso <strong>' + direzioneTesto(bR) + '</strong> (' + carattereTesto(bR.pct) + ', ' + bR.pct + ' %' + (opts.insieme && piene.length > 1 ? ', punto scuro' : '') + ')' +
+      (opts.insieme ? 'La combinazione' : 'La ricetta') + ' pende verso <strong>' + direzioneTesto(bR) + '</strong> (' + carattereTesto(bR.pct) + ', ' + bR.pct + ' %' + (opts.insieme && piene.length > 1 ? ', punto grande' : '') + ')' +
       ': <strong>' + esito + '</strong>' + (d > 25 ? ' (scarto di ' + Math.round(d) + '\u00b0)' : '') + forza + '.';
   } else {
     nota += sq.map(x => (sq.length > 1 && x.l ? '<strong>' + x.l + '</strong>' : 'Il profilo') + ' pende verso ' + direzioneTesto(baricentro((serie.find(se => (se.label||'') === x.l) || serie[0]).vals)) + ' (carattere ' + carattereTesto(x.pct) + ', ' + x.pct + ' %)').join(' \u00b7 ') + '.';
-    if (opts.insieme && piene.length > 1) nota += ' <strong>Insieme</strong> (punto scuro) pendono verso ' + direzioneTesto(bR) + ' (' + carattereTesto(bR.pct) + ', ' + bR.pct + ' %).';
+    if (opts.insieme && piene.length > 1) nota += ' <strong>Insieme</strong> (punto grande) pendono verso ' + direzioneTesto(bR) + ' (' + carattereTesto(bR.pct) + ', ' + bR.pct + ' %).';
   }
   if (rifV) nota += ' <em>Stima da tarare con gli assaggi.</em>';
   nota += '</div>';
@@ -3543,41 +3545,38 @@ window.radarConf = function(n){
   showDetail(currentDetailName);
 };
 window.radarConfVuota = function(){ window.radarConfronta = []; showDetail(currentDetailName); };
-// Grafico per sottrazione: per ogni nota, quanto la botanica aperta supera le sovrapposte (barra a destra,
-// è il suo contributo proprio) o quanto le sovrapposte la superano (barra a sinistra, lo portano le altre).
-function sottrazioneHtml(nome, v, accese){
+// Come cambia la botanica aperta quando le si aggiungono le sovrapposte: profilo (le note che dominano),
+// direzione e carattere (dal baricentro, la stessa misura della vista in sottrazione del radar),
+// note in comune che si sommano e note che porta in più.
+function cambiamentoHtml(nome, v0, accese){
   if (!accese.length) return '';
-  const fase = window.radarFase;
-  const altre = ASSI8.map((_, i) => Math.max.apply(null, accese.map(x => valFase(x, fase)[i])));
-  const W = 300, rowH = 24, top = 22, lab = 74, mid = lab + (W - lab) / 2, half = (W - lab) / 2 - 8, H = top + ASSI8.length * rowH + 6;
-  let g = '<line x1="' + mid + '" y1="' + (top - 6) + '" x2="' + mid + '" y2="' + (H - 4) + '" stroke="var(--line-strong)" stroke-width="1"/>' +
-    '<text x="' + (mid - 6) + '" y="12" text-anchor="end" font-size="11" fill="var(--ink-soft)">\u2190 le altre</text>' +
-    '<text x="' + (mid + 6) + '" y="12" font-size="11" fill="var(--ink-soft)">solo questa \u2192</text>';
-  const proprie = [], mancanti = [], somma = [];
-  ASSI8.forEach((a, i) => {
-    const d = Math.round((v[i] - altre[i]) * 10) / 10, y = top + i * rowH, w = Math.abs(d) / 5 * half;
-    g += '<text x="' + (lab - 6) + '" y="' + (y + 15) + '" text-anchor="end" font-size="12" fill="var(--ink)">' + a + '</text>';
-    if (d){
-      const x = d > 0 ? mid : mid - w;
-      g += '<rect x="' + x.toFixed(1) + '" y="' + (y + 5) + '" width="' + w.toFixed(1) + '" height="' + (rowH - 10) + '" rx="3" fill="' + (d > 0 ? 'var(--juniper)' : '#C0733A') + '" opacity=".85"/>' +
-        '<text x="' + (d > 0 ? mid + w + 4 : mid - w - 4).toFixed(1) + '" y="' + (y + 15) + '" text-anchor="' + (d > 0 ? 'start' : 'end') + '" font-size="11" fill="var(--ink-soft)">' + (d > 0 ? '+' : '\u2212') + nf(Math.abs(d), 1) + '</text>';
-      if (d >= 1) proprie.push(a.toLowerCase()); else if (d <= -1) mancanti.push(a.toLowerCase());
-    }
-    if (v[i] >= 2 && altre[i] >= 2) somma.push(a.toLowerCase());
-    if (!d){
-      g += '<circle cx="' + mid + '" cy="' + (y + rowH / 2) + '" r="2.5" fill="var(--ink-faint, #999)"/>';
-    }
-  });
-  const chi = accese.length === 1 ? accese[0] : 'le ' + accese.length + ' sovrapposte';
-  const chiA = accese.length === 1 ? 'a ' + accese[0] : 'alle altre', rispetto = 'rispetto ' + chiA;
-  return '<div class="sott-box"><div class="radar-title">Per sottrazione: ' + nome + ' meno ' + chi + '</div>' +
-    '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" style="max-width:360px;display:block;margin:0 auto" role="img" aria-label="Differenza nota per nota">' + g + '</svg>' +
-    '<div class="radar-nota">Il grafico non mostra cosa resta nel gin, ma la differenza nota per nota. ' +
-      (somma.length ? 'Nella miscela le note in comune non si annullano, <strong>si sommano</strong>: ' + somma.join(', ') + (somma.length === 1 ? ' si rafforza' : ' si rafforzano') + ' (attenzione a non superare la soglia voluta). ' : '') +
-      (proprie.length ? 'In più ' + rispetto + ', ' + nome + ' porta: <strong>' + proprie.join(', ') + '</strong>. '
-        : 'Rispetto ' + chiA + ', ' + nome + ' non porta quasi nulla in più: aggiunta alla miscela rafforzerebbe soltanto note già presenti' + (somma.length ? ', ed è questo il rischio di ridondanza' : '') + '. ') +
-      (mancanti.length ? 'Non porta, e ' + (accese.length === 1 ? 'lo porta ' + accese[0] : 'lo portano le altre') + ': ' + mancanti.join(', ') + '. ' : '') +
-      (accese.length > 1 ? 'Con più botaniche, per ogni nota si sottrae la più alta tra le sovrapposte.' : '') + '</div></div>';
+  const fase = window.radarFase, v = valFase(nome, fase);
+  const lista = accese.map(x => valFase(x, fase));
+  const mix = ASSI8.map((_, i) => v[i] + lista.reduce((a, w) => a + w[i], 0));
+  const altre = ASSI8.map((_, i) => Math.max.apply(null, lista.map(w => w[i])));
+  const top = vals => { const mx = Math.max.apply(null, vals); return ASSI8.map((a, i) => [a.toLowerCase(), vals[i]]).filter(z => z[1] > 0 && z[1] >= mx * 0.6).sort((a, b) => b[1] - a[1]).slice(0, 3).map(z => z[0]); };
+  const b0 = baricentro(v), bM = baricentro(mix);
+  let d = Math.abs(b0.ang - bM.ang) * 180 / Math.PI; if (d > 180) d = 360 - d;
+  const con = accese.length === 1 ? accese[0] : accese.slice(0, -1).join(', ') + ' e ' + accese[accese.length - 1];
+  const dir0 = direzioneTesto(b0), dirM = direzioneTesto(bM);
+  let spost;
+  // sotto il 12 % un profilo e' quasi neutro e la sua direzione conta poco (stesso criterio del radar)
+  if (b0.pct < 12 && bM.pct < 12) spost = 'resta equilibrata, senza una direzione precisa';
+  else if (b0.pct < 12) spost = 'prende una direzione che da sola quasi non aveva';
+  else if (bM.pct < 12) spost = 'perde la sua direzione: le note opposte si compensano';
+  else spost = d <= 25 ? 'mantiene la sua direzione' : d <= 60 ? 'devia in parte (' + Math.round(d) + '\u00b0)' : 'cambia direzione (' + Math.round(d) + '\u00b0)';
+  const c0 = carattereTesto(b0.pct), cM = carattereTesto(bM.pct), piu = bM.pct > b0.pct + 8, meno = bM.pct < b0.pct - 8;
+  const car = c0 === cM ? (piu ? 'resta ' + cM + ', un po\u2019 più deciso' : meno ? 'resta ' + cM + ', un po\u2019 più sfumato' : 'resta ' + cM) : (piu ? 'diventa più marcato' : 'diventa più sfumato');
+  const somma = ASSI8.filter((_, i) => v[i] >= 2 && altre[i] >= 2).map(a => a.toLowerCase());
+  const proprie = ASSI8.filter((_, i) => v[i] - altre[i] >= 1).map(a => a.toLowerCase());
+  const r = (k, t) => '<div class="camb-riga"><span class="camb-k">' + k + '</span><span>' + t + '</span></div>';
+  return '<div class="camb-box"><div class="radar-title">Come cambia ' + nome + ' con ' + con + '</div>' +
+    r('Profilo', 'da sola: ' + (top(v).join(', ') || '\u2014') + ' \u2192 insieme: <strong>' + (top(mix).join(', ') || '\u2014') + '</strong>') +
+    r('Direzione', 'da sola pende verso ' + dir0 + ' \u2192 insieme verso <strong>' + dirM + '</strong>: ' + spost) +
+    r('Carattere', 'da ' + c0 + ' (' + b0.pct + ' %) a <strong>' + cM + '</strong> (' + bM.pct + ' %): ' + car) +
+    (somma.length ? r('Si sommano', 'le note in comune non si annullano, si rafforzano: <strong>' + somma.join(', ') + '</strong> (attenzione a non superare la soglia voluta)') : '') +
+    r('Porta in più', proprie.length ? proprie.join(', ') : 'quasi nulla: rafforzerebbe soltanto note già presenti' + (somma.length ? ' (ridondanza)' : '')) +
+    '<div class="radar-nota">Il profilo insieme è la somma delle botaniche a pari peso. Con «\u2296 Vedi in sottrazione» sul radar le note opposte si compensano e il punto grande mostra dove pende la miscela.</div></div>';
 }
 function confrontoRadarHtml(nome, v){
   const gr = parenti(nome);
@@ -3603,7 +3602,7 @@ function confrontoRadarHtml(nome, v){
       (porta.length ? on + ' aggiunge ' + porta.join(', ') + '. ' : '') +
       (manca.length ? 'Solo ' + nome + ' porta ' + manca.join(', ') + '.' : '') + '</div>';
   }
-  return '<div class="conf-box"><div class="conf-tit">Confronta con (tocca per sovrapporre, anche più di una; tocca ancora per spegnerla):</div>' + chips + '</div>' + nota + sottrazioneHtml(nome, v, accese) + sogliaHtml();
+  return '<div class="conf-box"><div class="conf-tit">Confronta con (tocca per sovrapporre, anche più di una; tocca ancora per spegnerla):</div>' + chips + '</div>' + nota + cambiamentoHtml(nome, v, accese) + sogliaHtml();
 }
 function radarBox(nome){
   const v = PROFILO8[nome];
@@ -3629,7 +3628,7 @@ function radarBox(nome){
   }
   const btn = BASE.length ? '<button type="button" class="ghost-btn radar-base-btn" aria-pressed="' + conBase + '" onclick="window.radarCardBase=!window.radarCardBase;showDetail(currentDetailName)">' + (conBase ? '− Togli le botaniche base' : '+ Aggiungi le botaniche base') + '</button>' : '';
   return '<div class="radar-box"><div class="radar-title">Profilo sensoriale</div>' + faseHtml('showDetail(currentDetailName)') + btn +
-    radarSVG(serie, 280) + (accese.length && !conBase ? '<div class="radar-legend"><span><i style="background:var(--juniper)"></i>' + nome + '</span>' + accese.map(x => '<button type="button" class="leg-off" title="Tocca per spegnerla" data-n="' + x.replace(/"/g,'&quot;') + '" onclick="radarConf(this.dataset.n)"><i style="background:' + confColore(x) + '"></i>' + x + ' \u2715</button>').join('') + '</div>' : '') + confrontoRadarHtml(nome, v) + '<div class="radar-nota">' + (FASE_NOTA[window.radarFase] ? FASE_NOTA[window.radarFase] + ' ' : '') + 'Si sente soprattutto in <strong>' + doveSi + '</strong>.</div>' + extra +
+    radarSVG(serie, 280, accese.length ? {insieme: true} : undefined) + (accese.length && !conBase ? '<div class="radar-legend"><span><i style="background:var(--juniper)"></i>' + nome + '</span>' + accese.map(x => '<button type="button" class="leg-off" title="Tocca per spegnerla" data-n="' + x.replace(/"/g,'&quot;') + '" onclick="radarConf(this.dataset.n)"><i style="background:' + confColore(x) + '"></i>' + x + ' \u2715</button>').join('') + '</div>' : '') + confrontoRadarHtml(nome, v) + '<div class="radar-nota">' + (FASE_NOTA[window.radarFase] ? FASE_NOTA[window.radarFase] + ' ' : '') + 'Si sente soprattutto in <strong>' + doveSi + '</strong>.</div>' + extra +
     coerenzaHtml(nome) + '<div class="radar-nota">Stima orientativa (0 = assente, 5 = dominante) di quanto ogni nota pesa nel carattere della botanica. Da validare all\'assaggio. Le note opposte stanno una di fronte all\'altra: dolce e amaro, floreale ed erbaceo, agrumato e speziato, acido e salino.</div></div>';
 }
 
