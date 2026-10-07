@@ -1434,6 +1434,7 @@ footer.note{
 .inf-table .inf-sub{display:block;font-size:11.5px;color:var(--ink-faint);}
 .inf-in-scheda{margin:14px 0;}
 .filtri-box .cond-box{margin:8px 0 0;}
+.howto-chiudi{display:block;margin:14px auto 2px;}
 .filtri-det > summary{cursor:pointer;font-weight:600;font-size:15px;padding:6px 0;}
 .diario-box .howto-body > p:first-child{margin-top:0;}
 .lib-tit{margin:0 0 8px;font-size:19px;}
@@ -1911,7 +1912,7 @@ footer.note{
     <div class="passo">
     <h3 class="passo-tit"><span class="passo-n">2</span> Cerca per nome</h3>
     <div class="controls">
-      <label class="inf-q-label">Scrivi le prime lettere<input type="text" id="search" placeholder="Scrivi il nome o la prima lettera…" /></label>
+      <label class="inf-q-label">Scrivi le prime lettere o fallo a voce<input type="text" id="search" placeholder="Scrivi il nome o la prima lettera…" /></label>
       <button type="button" class="mic-btn" id="voce-btn" hidden aria-label="Cerca la botanica a voce" title="Cerca a voce">🎤</button>
       <span class="count-tag" id="count-tag"></span>
     </div>
@@ -2770,7 +2771,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 06:30 · Filtri richiudibili</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 06:40 · ▲ Chiudi in fondo ai riquadri</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -3523,6 +3524,19 @@ function showTab(name){
   window.scrollTo(0, 0);
 }
 // Il diario sta solo nella sua pagina: aprendola, il riquadro è già aperto.
+(function(){
+  function aggiungi(det){
+    if (det.querySelector(':scope > .howto-chiudi')) return;
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'ghost-btn howto-chiudi'; b.textContent = '\u25b2 Chiudi';
+    b.addEventListener('click', () => {
+      det.open = false;
+      const sm = det.querySelector(':scope > summary'); if (sm){ sm.style.scrollMarginTop = '84px'; sm.scrollIntoView({ block: 'start' }); }
+    });
+    det.appendChild(b);
+  }
+  document.querySelectorAll('details.howto').forEach(aggiungi);
+  window.aggiungiChiudiHowto = aggiungi;
+})();
 function spostaDiario(name){
   const box = document.getElementById('diario-box');
   if (box && name === 'diario') box.open = true;
