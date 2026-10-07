@@ -1858,7 +1858,7 @@ footer.note{
       <div class="howto-body">
         <p>Le botaniche e la preparazione degli infusi in una sola pagina: <span class="bot-count">84</span> botaniche con profilo aromatico, funzione nel gin, potenza e, per ognuna, la scheda per metterla in infusione.</p>
         <ol>
-          <li><strong>Scegli per caratteristiche o mostra tutte le botaniche</strong>, se non sai ancora quale analizzare. Tocca «Filtri» e scegli famiglia, carattere, uso nella miscela, stile e potenza; con «Ordina per» decidi come metterle in fila o raggrupparle; poi tocca «Mostra le botaniche»: compaiono filtrate e ordinate così. Lo stesso tasto le nasconde. Con dei filtri attivi compare «Stampa elenco», che stampa l'elenco filtrato.</li>
+          <li><strong>Scegli per caratteristiche o mostra tutte le botaniche</strong>, se non sai ancora quale analizzare. Tocca «Filtri» e scegli famiglia, carattere, uso nella miscela, stile e potenza; con «Ordina per» decidi come metterle in fila o raggrupparle; poi tocca «Botaniche selezionate (n)»: compaiono filtrate e ordinate così. Lo stesso tasto le nasconde. Con dei filtri attivi compare «Stampa elenco», che stampa l'elenco filtrato.</li>
           <li><strong>Cerca per nome</strong>, se sai già quale botanica vuoi: scrivi le prime lettere del nome o usa il microfono, e restano solo le schede che corrispondono.</li>
           <li><strong>La scheda della botanica.</strong> Toccando una scheda si apre solo quella e le altre si chiudono. Studia la botanica: il <strong>profilo sensoriale</strong> (il radar, con il confronto con simili, sostitutive e complementari), i dati della botanica e il riquadro <em>Da non accumulare con</em>, da leggere sempre prima di portarla in ricetta. «← Torna all'elenco» la richiude.</li>
           <li><strong>Prepara l'infuso.</strong> Sotto la scheda compare il quadro delle variabili: temperatura di conservazione (al buio), alcol di partenza, grado di estrazione e volume da ottenere. Diluizione (alcol + acqua), grammi, tempo, primo assaggio e avvisi si ricalcolano subito; il grado parte dal minimo consigliato.</li>
@@ -2770,7 +2770,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 07:05 · Via la dicitura erbario</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 07:10 · Botaniche selezionate (n)</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -3915,7 +3915,7 @@ const tutteBtn = document.getElementById('mostra-tutte');
   const fb = document.getElementById('filtri-btn'), fp = document.getElementById('filtri-pannello');
   fb.addEventListener('click', () => { fp.hidden = !fp.hidden; fb.setAttribute('aria-expanded', String(!fp.hidden)); });
 })();
-function aggiornaTutteBtn(){ const n = elencoFiltrato().length, tutte = n === MASTER.length; const lp = document.getElementById('lib-print'); if (lp) lp.hidden = tutte || n === 0; tutteBtn.classList.toggle('attivo', !!window.mostraTutteBot); tutteBtn.textContent = window.mostraTutteBot ? 'Nascondi le botaniche' : (tutte ? 'Mostra tutte le botaniche' : 'Mostra le botaniche filtrate') + ' (' + n + ')'; }
+function aggiornaTutteBtn(){ const n = elencoFiltrato().length, tutte = n === MASTER.length; const lp = document.getElementById('lib-print'); if (lp) lp.hidden = tutte || n === 0; tutteBtn.classList.toggle('attivo', !!window.mostraTutteBot); tutteBtn.textContent = window.mostraTutteBot ? 'Nascondi le botaniche' : (tutte ? 'Mostra tutte le botaniche' : 'Botaniche selezionate') + ' (' + n + ')'; }
 // Non sai quale botanica analizzare? Mostra tutte le botaniche; lo stesso tasto le nasconde.
 tutteBtn.addEventListener('click', () => {
   window.mostraTutteBot = !window.mostraTutteBot;
