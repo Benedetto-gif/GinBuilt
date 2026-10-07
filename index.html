@@ -2770,7 +2770,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 07:25 · Personalizzato: ginepro bloccato</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 07:40 · Ginepro protetto anche alla riapertura</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -4494,10 +4494,12 @@ function addCustomRoleRow(label, botanica, protetta){
   const rmBtn = document.createElement('button');
   rmBtn.className = 'rm-row';
   rmBtn.addEventListener('click', () => {
+    if (select._bloccata) return;
     chiediRimozione(select.value, () => { row.remove(); renderSummary(); });
   });
   select.addEventListener('change', () => aggiornaProtezione(rmBtn, select.value));
   aggiornaProtezione(rmBtn, select.value);
+  if (protetta) row.dataset.protetta = '1';
 
   const left = document.createElement('div');
   left.appendChild(labelInput);
@@ -4535,11 +4537,12 @@ function renderBuilder(styleIndex){
     roles.forEach((role, ri) => {
       const [roleName, suggestion] = role;
       const gruppi = gruppiRuolo(suggestion);
-      gruppi.forEach(grp => {
+      gruppi.forEach((grp, gi) => {
         const row = document.createElement('div');
         row.className = 'role-row';
         const select = document.createElement('select');
         select.dataset.role = roleName;
+        select.dataset.k = ri + '-' + gi;
         if (grp.tracce) select.dataset.trace = '1';
         allBotNames.forEach(n => {
           const o = document.createElement('option'); o.value = n; o.textContent = n; select.appendChild(o);
@@ -4560,6 +4563,7 @@ function renderBuilder(styleIndex){
         const rmBtn = document.createElement('button');
         rmBtn.className = 'rm-row';
         rmBtn.addEventListener('click', () => {
+          if (select._bloccata) return;
           chiediRimozione(select.value, () => { row.remove(); renderSummary(); });
         });
         select.addEventListener('change', () => aggiornaProtezione(rmBtn, select.value));
@@ -5433,7 +5437,7 @@ function proteggiSostituzione(select, ruolo){
   let prev = select.value;
   const f = FONDAMENTALI[prev];
   const sost = sostituteDi(prev).split(/,|;/).map(x => x.trim()).filter(n => n && byName[n] && n !== prev);
-  if (f && f.blocco){ select.disabled = true; select.title = 'Botanica fondamentale: non sostituibile'; return; }
+  if (f && f.blocco){ select.disabled = true; select._bloccata = true; select.title = 'Botanica fondamentale: non sostituibile'; return; }
   if (!f && !(ruolo === 'Base' && sost.length)) return;
   if (!sost.length){ select.disabled = true; select.title = 'Nessuna sostituta equivalente in libreria: per cambiarla rimuovi la riga'; return; }
   const nomi = [prev].concat(sost);
@@ -7180,9 +7184,9 @@ window.salvaStatoBuilder = function(){
   if (_ripristinoInCorso || typeof roleList === 'undefined') return;
   const custom = currentStyleName === 'Personalizzato';
   const righe = custom
-    ? [...roleList.querySelectorAll('.role-row-custom')].map(r => [r.querySelector('.role-label-input').value, (r.querySelector('select:not(.role-label-input)') || {}).value])
-    : [...roleList.querySelectorAll('select:not(.role-label-input)')].map(x => x.value);
-  scriviJ(BUILDER_KEY, { i: window._styleIdx, nome: currentStyleName, custom, righe });
+    ? [...roleList.querySelectorAll('.role-row-custom')].map(r => [r.querySelector('.role-label-input').value, (r.querySelector('select:not(.role-label-input)') || {}).value, r.dataset.protetta ? 1 : 0])
+    : [...roleList.querySelectorAll('select:not(.role-label-input)')].map(x => [x.dataset.k || '', x.value]);
+  scriviJ(BUILDER_KEY, { v: 2, i: window._styleIdx, nome: currentStyleName, custom, righe });
 };
 (function(){
   const prevTab = window.showTab;
@@ -7202,10 +7206,17 @@ function ripristina(){
       const btn = document.querySelectorAll('.style-btn')[sb.i]; if (btn) btn.click();
       if (sb.custom){
         roleList.querySelectorAll('.role-row-custom').forEach(r => r.remove());
-        (sb.righe || []).forEach(r => { if (Array.isArray(r) && byName[r[1]]) addCustomRoleRow(r[0], r[1]); });
-      } else {
-        const sels = [...roleList.querySelectorAll('select:not(.role-label-input)')];
-        (sb.righe || []).forEach((v, k) => { const x = sels[k]; if (x && v && [...x.options].some(o => o.value === v) && x.value !== v){ x.value = v; x.dispatchEvent(new Event('change', {bubbles: true})); } });
+        (sb.righe || []).forEach(r => { if (Array.isArray(r) && byName[r[1]]) addCustomRoleRow(r[0], r[1], !!r[2] || r[1] === 'Bacche di ginepro'); });
+      } else if (sb.v === 2){
+        // Ogni riga si ripristina dalla sua chiave (stile, ruolo, posizione): le righe tolte restano tolte e
+        // nessun valore finisce nella riga sbagliata. Il ginepro non viene mai toccato.
+        const salvate = {}; (sb.righe || []).forEach(r => { if (Array.isArray(r)) salvate[r[0]] = r[1]; });
+        [...roleList.querySelectorAll('select:not(.role-label-input)')].forEach(x => {
+          if (x._bloccata || x.disabled) return;
+          if (!(x.dataset.k in salvate)){ const row = x.closest('.role-row'); if (row) row.remove(); return; }
+          const v = salvate[x.dataset.k];
+          if (v && x.value !== v && [...x.options].some(o => o.value === v)){ x._ok = true; x.value = v; x.dispatchEvent(new Event('change', {bubbles: true})); }
+        });
       }
       renderSummary();
     }
