@@ -1770,6 +1770,61 @@ footer.note{
 /* Pulsanti dentro un riquadro: bordo chiaro, testo bianco */
 :root[data-theme="dark"] .pg-bento :is(.cond-box, .calc-box, .detail, details.howto) .num-step-btn{color:#fff;}
 }
+
+/* ============================================================
+   Icone delle tessere su un disco color crema: la fogliolina
+   verde non si confonde più col riquadro verde (e così le altre).
+   ============================================================ */
+:root:root:root:root :is(.page-hero .ph-icon, .home-card .hc-icon, .bot-card .card-icon){
+  background:#FBF6EA !important;
+  box-shadow:0 2px 6px rgba(0,0,0,.25), inset 0 0 0 1px rgba(0,0,0,.06) !important;
+}
+
+/* ============================================================
+   Riquadri di informazioni ("Come si usa", spiegazioni a
+   scomparsa): sempre lo stesso colore, grigio perla col tema
+   chiaro e tortora col tema scuro, con la (i) di informazione,
+   così si riconoscono subito in ogni pagina.
+   ============================================================ */
+html details.howto, html .pg-bento details.howto, html .pg-sez details.howto{
+  --ink:#2E2924; --ink-soft:#3F3832; --ink-faint:#6B6158;
+  --juniper:#5E5246; --juniper-deep:#4A3F35; --ochre:#7A5A2E;
+  --surface:rgba(255,255,255,.55); --surface-2:rgba(255,255,255,.4);
+  --line:rgba(60,50,40,.18); --line-strong:rgba(60,50,40,.3);
+  background:linear-gradient(155deg,#F1EEE9,#E3DED6) !important;
+  border:1px solid #B9AFA3 !important;
+  border-left:5px solid #9C8F80 !important;
+  box-shadow:0 1px 3px rgba(40,30,20,.12) !important;
+  color:#2E2924;
+}
+html details.howto summary,
+html .pg-bento details.howto summary{color:#4E4339 !important;}
+html details.howto summary::after{
+  content:"i";margin-left:auto;flex:0 0 auto;
+  width:24px;height:24px;border-radius:50%;
+  display:inline-flex;align-items:center;justify-content:center;
+  font:italic 800 15px/1 Georgia, 'Fraunces', serif;text-transform:none;letter-spacing:0;
+  background:#7D7064;color:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);
+}
+html details.howto a{color:#5A3E1C;}
+:root[data-theme="dark"] details.howto,
+:root[data-theme="dark"] .pg-bento details.howto,
+:root[data-theme="dark"] .pg-sez details.howto{
+  --ink:#FFFFFF; --ink-soft:rgba(255,255,255,.93); --ink-faint:rgba(255,255,255,.8);
+  --juniper:#FFFFFF; --juniper-deep:#FFFFFF; --ochre:#FFE3A6;
+  --surface:rgba(0,0,0,.18); --surface-2:rgba(0,0,0,.12);
+  --line:rgba(255,255,255,.22); --line-strong:rgba(255,255,255,.38);
+  background:linear-gradient(155deg,#857A6F,#6C6258) !important;
+  border:1px solid #B3A799 !important;
+  border-left:5px solid #D8CCBD !important;
+  box-shadow:0 2px 6px rgba(0,0,0,.35) !important;
+  color:#fff;
+}
+:root[data-theme="dark"] details.howto summary,
+:root[data-theme="dark"] .pg-bento details.howto summary{color:#fff !important;}
+:root[data-theme="dark"] details.howto summary::after{background:#F3ECE2;color:#5A4E43;}
+:root[data-theme="dark"] details.howto a{color:#FFE3A6;}
+@media print{ html details.howto{background:#fff !important;box-shadow:none !important;} html details.howto summary::after{display:none;} }
 </style>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0C110E" id="meta-theme-color">
@@ -2999,7 +3054,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 16:05 · Sovrapposizione: come cambiano profilo, direzione e carattere</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 20:00 · Riquadri informativi tortora con la (i); icone su disco crema</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
