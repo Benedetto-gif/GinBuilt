@@ -2770,7 +2770,7 @@ footer.note{
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 07:15 · Tasto Filtri acceso solo con filtri attivi</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 07:25 · Personalizzato: ginepro bloccato</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -4461,7 +4461,7 @@ function guessDefaultBotanica(suggestionText, used, usedSf){
   return pick || cand[0];
 }
 
-function addCustomRoleRow(label, botanica){
+function addCustomRoleRow(label, botanica, protetta){
   const row = document.createElement('div');
   row.className = 'role-row role-row-custom';
   const labelInput = document.createElement('select');
@@ -4483,6 +4483,12 @@ function addCustomRoleRow(label, botanica){
     const o = document.createElement('option'); o.value = n; o.textContent = n; select.appendChild(o);
   });
   select.value = botanica || allBotNames[0];
+  // Anche nel Personalizzato le basi di partenza seguono le regole degli stili: il ginepro non si cambia,
+  // l'angelica solo con le sue sostitute (dopo un avviso), e il loro ruolo resta Base.
+  if (protetta){
+    proteggiSostituzione(select, 'Base');
+    labelInput.disabled = true; labelInput.title = 'Botanica di base: il ruolo resta Base';
+  }
   select.addEventListener('change', () => { aggHint(); aggQuant(); renderSummary(); });
   aggHint(); aggQuant();
   const rmBtn = document.createElement('button');
@@ -4519,8 +4525,8 @@ function renderBuilder(styleIndex){
     // stile "Personalizzato": ruoli liberi definiti dall'utente
     builderMeta.textContent = 'Combinazione libera: definisci tu i ruoli e le botaniche';
     addRoleBtn.style.display = 'inline-block';
-    addCustomRoleRow('Base', 'Bacche di ginepro');
-    addCustomRoleRow('Base', 'Angelica');
+    addCustomRoleRow('Base', 'Bacche di ginepro', true);
+    addCustomRoleRow('Base', 'Angelica', true);
     addCustomRoleRow('Freschezza', allBotNames.includes('Coriandolo') ? 'Coriandolo' : allBotNames[0]);
   } else {
     addRoleBtn.style.display = 'inline-block';
