@@ -161,8 +161,9 @@ add('uso.xhtml', 'Come usare questo libro', USO, 1)
 
 # ---------- 1. Storia ----------
 stor = [t for t, _ in PAN['storia'] if t]
-add('cap1.xhtml', 'Capitolo 1 · Storia del gin', '<section epub:type="chapter"><h1>Capitolo 1<br/>Storia del gin</h1>' +
-    ''.join('<section><h2>%s</h2>%s</section>' % (e(t), sez('storia', t)) for t in stor) + '</section>', 1)
+add('cap1.xhtml', 'Capitolo 1 · Storia del gin', '<section epub:type="chapter"><h1>Capitolo 1<br/>Storia del gin</h1><ol class="indice">' +
+    ''.join('<li><a href="#st-%s">%s</a></li>' % (slug(t), e(t)) for t in stor) + '</ol>' +
+    ''.join('<section id="st-%s"><h2>%s</h2>%s</section>' % (slug(t), e(t), sez('storia', t)) for t in stor) + '</section>', 1)
 
 # ---------- 2. Le botaniche ----------
 c2 = '''<section epub:type="chapter"><h1>Capitolo 2<br/>Le botaniche</h1>
@@ -363,24 +364,9 @@ toc += '</li>' + '</ol></li>' * (liv - 1) + '</ol>'
 nav = page('Indice', '<nav epub:type="toc" id="toc"><h1>Indice</h1>%s</nav>' % toc)
 # indice del libro con le tendine: capitoli > sezioni > (famiglie) > botaniche, tutto chiuso finché non si tocca
 def tendine():
-    out = ''; i = 0
-    while i < len(files):
-        fid, href, title, _, _, lvl = files[i]
-        figli = []; j = i + 1
-        while j < len(files) and files[j][5] > 1: figli.append(files[j]); j += 1
-        if not figli: out += '<li class="foglia"><a href="%s">%s</a></li>' % (href, e(title))
-        else:
-            sub = '<li class="foglia"><a href="%s">Apri: %s</a></li>' % (href, e(title))
-            k = 0
-            while k < len(figli):
-                f = figli[k]; nip = []; m = k + 1
-                while m < len(figli) and figli[m][5] > 2: nip.append(figli[m]); m += 1
-                # le famiglie portano alla loro pagina, dove le botaniche sono già elencate
-                sub += '<li class="foglia"><a href="%s">%s</a>%s</li>' % (f[1], e(f[2]), (' <span class="nota">(%d)</span>' % len(nip)) if nip else '')
-                k = m
-            out += '<li><details class="tendina cap"><summary>%s</summary><ul>%s</ul></details></li>' % (e(title), sub)
-        i = j
-    return '<section><h1>Indice</h1><p class="nota">Tocca un capitolo per aprirlo. Nelle botaniche, tocca una famiglia: si apre la sua pagina con tutte le botaniche da scegliere.</p><ul class="indice-t">%s</ul></section>' % out
+    # indice omogeneo: solo i capitoli, tutti uguali; ogni capitolo apre la sua prima pagina con il menu delle scelte già aperto
+    righe = ''.join('<li><a href="%s">%s</a></li>' % (href, e(title)) for fid, href, title, _, _, lvl in files if lvl == 1)
+    return '<section><h1>Indice</h1><ul class="fam-lista indice-cap">%s</ul></section>' % righe
 oggi = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
 man = ['<item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>',
        '<item id="css" href="libro.css" media-type="text/css"/>', '<item id="js" href="libro.js" media-type="application/javascript"/>',
