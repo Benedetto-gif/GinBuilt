@@ -1,0 +1,10 @@
+const {JSDOM,VirtualConsole}=require('jsdom');const fs=require('fs');
+const vc=new VirtualConsole();
+const dom=new JSDOM(fs.readFileSync('../index.html','utf8'),{runScripts:'dangerously',pretendToBeVisual:true,virtualConsole:vc,url:'https://x.test/'});
+setTimeout(()=>{const w=dom.window,d=w.document;
+ const data=w.eval('JSON.stringify({P:PROFILO8,ASSI:ASSI8,ORD:ORDINE_RADAR,MOL:MOLECOLE,MASTER:MASTER,DOSE:DATA.dose,MAT:window.MATRICE_SENTORI})');
+ const ser=new w.XMLSerializer();
+ const box=id=>{const el=[...d.querySelectorAll('#panel-matrice details.howto')].find(x=>x.querySelector('summary').textContent.includes(id));const b=el.querySelector('.howto-body');return ser.serializeToString(b);};
+ const out=JSON.parse(data); out.QUATTRO=box('Quattro sistemi'); out.CANALI=box('I canali e dove');
+ fs.writeFileSync('dati.json',JSON.stringify(out));
+ console.log(Object.keys(out.P).length,out.MASTER.length,out.MAT.length,out.CANALI.length);process.exit(0);},3000);
