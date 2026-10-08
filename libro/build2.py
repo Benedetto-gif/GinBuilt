@@ -25,7 +25,7 @@ def radar(vals, size=220, rid='', colore='#2F7259'):
         anc = 'middle' if abs(lx-c) < 6 else ('start' if lx > c else 'end')
         g += '<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#d8d2c6" stroke-width="1"/>' % (c, c, x, y)
         g += '<text x="%.1f" y="%.1f" text-anchor="%s" font-size="10" font-family="sans-serif" fill="#555555">%s</text>' % (lx, ly + 3.5, anc, e(a))
-    pts = ' '.join('%.1f,%.1f' % pt(i, v, c, R) for i, v in enumerate(vals))
+    pts = ' '.join('%.1f,%.1f' % pt(i, vals[i], c, R) for i in ORD)
     return ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="-34 0 %d %d" class="radar"%s role="img" aria-label="Profilo radar">%s'
             '<polygon points="%s" fill="%s" fill-opacity="0.25" stroke="%s" stroke-width="2"/>'
             '<polygon points="" class="ro" fill="#C0733A" fill-opacity="0.22" stroke="#C0733A" stroke-width="2" stroke-dasharray="4 3"/></svg>') % (
