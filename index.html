@@ -1846,6 +1846,10 @@ html details.howto a{color:#5A3E1C;}
 .ton-fam{background:color-mix(in srgb, var(--c) 18%, transparent);color:var(--c);border:1px solid color-mix(in srgb, var(--c) 40%, transparent);white-space:normal;}
 .ton-livelli{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--ink-soft);margin:0 0 10px;}
 :root[data-theme="dark"] .ton-fam{color:#fff;}
+
+.gar-web{display:inline-flex;align-items:center;gap:6px;margin-top:12px;text-decoration:none;font-size:13px;}
+.gar-azioni{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+.gar-azioni .gar-web{margin-top:0;}
 </style>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0C110E" id="meta-theme-color">
@@ -3162,7 +3166,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 8 ottobre 2026, ore 06:15 · Nuova pagina Acque toniche e tonica consigliata nel Builder</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 8 ottobre 2026, ore 06:30 · Garnish: tasto per vedere presentazioni sul web</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -8249,6 +8253,11 @@ if ("serviceWorker" in navigator) {
   const SALINE = ['Oliva','Salicornia','Finocchio di mare'];
   const esc = t => String(t).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const badge = tipo => '<span class="gar-tipo gar-' + tipo + '">' + tipo + '</span>';
+  // Tasto verso le immagini sul web: presentazioni di gin tonic con quella guarnizione
+  const webBtn = (garnish, extra) => {
+    const q = 'gin tonic ' + garnish.replace(/\s*\(.*?\)/g, '').replace(/, svegliato sul palmo|, la stessa erba della ricetta| espressa/g, '') + ' garnish' + (extra ? ' ' + extra : '');
+    return '<a class="ghost-btn gar-web" href="https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(q) + '" target="_blank" rel="noopener">🔎 Vedi presentazioni sul web</a>';
+  };
 
   function scheda(nome, s){
     return '<div class="ck-card gar-card" style="--c:var(' + s.c + ')">' +
@@ -8256,7 +8265,8 @@ if ("serviceWorker" in navigator) {
       '<p class="gar-g">' + esc(s.g) + '</p>' +
       '<p class="ck-origin">In alternativa: ' + esc(s.alt) + '</p>' +
       '<p class="ck-desc">' + esc(s.perche) + '</p>' +
-      '<div class="ck-meta"><strong>Come</strong> ' + esc(s.come) + '<br><strong>Da evitare</strong> ' + esc(s.evita) + '</div></div>';
+      '<div class="ck-meta"><strong>Come</strong> ' + esc(s.come) + '<br><strong>Da evitare</strong> ' + esc(s.evita) + '</div>' +
+      webBtn(s.g) + '</div>';
   }
   function renderPagina(){
     const a = document.getElementById('gar-grid-app'), b = document.getElementById('gar-grid-altri'), l = document.getElementById('gar-assi');
@@ -8324,6 +8334,7 @@ if ("serviceWorker" in navigator) {
     const r = suggerisci(nomi, pesi, stile);
     const st = r.stile ? GARNISH_STILI[r.stile] : null;
     let h = '<div class="radar-box gar-box"><div class="radar-title">🍋 Garnish consigliata</div>';
+    const gWeb = (st && invariata) ? st.g : r.g;
     if (st && invariata){
       h += '<p class="gar-g">' + esc(st.g) + ' ' + badge(st.tipo) + '</p>' +
         '<div class="radar-nota">Ricetta dello stile <strong>' + esc(r.stile) + '</strong>: ' + esc(st.perche) + '</div>' +
@@ -8335,7 +8346,7 @@ if ("serviceWorker" in navigator) {
       if (st) h += '<div class="radar-nota">Hai cambiato la ricetta proposta: per lo stile <strong>' + esc(r.stile) + '</strong> la mappa indicava ' + esc(st.g.charAt(0).toLowerCase() + st.g.slice(1)) + ' (' + st.tipo + ').</div>';
     }
     if (r.eco.length) h += '<div class="radar-nota">Dalla ricetta, usabili freschi come eco: ' + r.eco.map(esc).join(', ') + '.</div>';
-    h += '<button type="button" class="ghost-btn" style="margin-top:8px;" onclick="showTab(\'garnish\')">Apri la mappa delle garnish →</button></div>';
+    h += '<div class="gar-azioni"><button type="button" class="ghost-btn" onclick="showTab(\'garnish\')">Apri la mappa delle garnish →</button>' + webBtn(gWeb) + '</div></div>';
     return h;
   }
   window.GARNISH_STILI = GARNISH_STILI;
