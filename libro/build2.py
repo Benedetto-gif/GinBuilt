@@ -27,13 +27,13 @@ def radar(vals, size=220, rid='', colore='#2F7259'):
         g += '<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#d8d2c6" stroke-width="1"/>' % (c, c, x, y)
         g += '<text x="%.1f" y="%.1f" text-anchor="%s" font-size="10" font-family="sans-serif" fill="#555555">%s</text>' % (lx, ly + 3.5, anc, e(a))
     pts = ' '.join('%.1f,%.1f' % pt(i, vals[i], c, R) for i in ORD)
-    return ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="-34 0 %d %d" class="radar"%s role="img" aria-label="Profilo radar">%s'
+    return ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="-48 0 %d %d" class="radar"%s role="img" aria-label="Profilo radar">%s'
             '<polygon points="%s" class="rp" fill="%s" fill-opacity="0.5" stroke="%s" stroke-width="2"/>'
             '<polygon points="" class="ro" fill="#C0733A" fill-opacity="0.22" stroke="#C0733A" stroke-width="2" stroke-dasharray="4 3"/></svg>') % (
-            size + 68, size, (' id="%s" data-s="%d"' % (rid, size)) if rid else '', g, pts, colore, colore)
+            size + 96, size, (' id="%s" data-s="%d"' % (rid, size)) if rid else '', g, pts, colore, colore)
 SENS_COL = '#B8921F'
-def radar_sens(vals, size=200):
-    n = len(ASSI_SENS); c = size/2; R = size/2 - 34
+def radar_sens(vals, size=220):
+    n = len(ASSI_SENS); c = size/2; R = size/2 - 38
     def q(i, v):
         a = -math.pi/2 + i*2*math.pi/n
         return (c + R*v/5*math.cos(a), c + R*v/5*math.sin(a))
@@ -49,13 +49,13 @@ def radar_sens(vals, size=200):
         size + 96, size, e(', '.join('%s %s' % (a, v) for a, v in zip(ASSI_SENS, vals))), g)
 UMAMI_NOTA = 'È un gusto, non una sensazione, e resta fuori dal radar: in un gin per macerazione passa poco, perché glutammato e nucleotidi non sono volatili e si sciolgono male nell\'alcol forte.'
 def sens_blocco(n):
-    v = SENS.get(n)
-    if not v: return ''
+    v = SENS.get(n) or [0]*len(ASSI_SENS)
     forti = sorted([(a, x) for a, x in zip(ASSI_SENS, v) if x >= 3], key=lambda t: -t[1])
-    h = '<div class="bot-sens"><p class="sens-tit"><strong>Sensazioni in bocca</strong></p>' + radar_sens(v)
+    h = radar_sens(v)
     h += '<p class="nota">%s</p>' % (('Marcate: ' + ', '.join('%s %d/5' % (a.lower(), x) for a, x in forti) + '.') if forti else 'Nessuna sensazione marcata: lavora soprattutto su gusto e aroma.')
-    if UMAMI.get(n): h += '<p class="nota"><strong>Umami %d/5.</strong> %s</p>' % (UMAMI[n], UMAMI_NOTA)
-    return h + '</div>'
+    u = UMAMI.get(n, 0)
+    h += '<p class="nota"><strong>Umami:</strong> %s</p>' % (('%d/5. ' % u + UMAMI_NOTA) if u else 'assente.')
+    return h
 POT_SCALA = ['#3B4CC0','#3E7FD9','#3FB0D6','#4CC79A','#8CD15A','#D9D93E','#F5B83A','#F28A2E','#E0492B','#A3195B']
 def pot_colore(p):
     p = max(1, min(10, p or 1)); i = int(p) - 1; f = p - int(p)
@@ -237,27 +237,31 @@ for c in cat_list:
                  ('Potenza', '%s/10 (intensità %s/5, persistenza %s/5)' % (m.get('potenza10', '—'), m.get('intensita', '—'), m.get('persistenza', '—'))),
                  ('Dose di riferimento', ('%s g per 100 ml a 43%%, tempo %s' % (str(dose.get('test')).replace('.', ','), e(dose.get('tempo') or m.get('tempo') or '—'))) if dose.get('test') else '—'),
                  ('Raccolta', e(m.get('periodo_raccolta') or '—')), ('Zone in Italia', e(m.get('zone_italia') or '—'))]
-        if m.get('sicurezza') and 'verificare' not in m['sicurezza'].lower(): campi.append(('Sicurezza', e(m['sicurezza'])))
         mol = MOL.get(n) or (MOL.get('Mirto foglie') if n == 'Mirto' else None)
-        body += '<article class="bot" id="b-%s"><h2>%s %s</h2>' % (slug(n), e(m.get('icona') or ''), e(n))
-        if v:
-            rid = 'r-' + slug(n)
-            vic = sorted(((x, prof(x), cos(v, prof(x))) for x in nomi_prof if x != n), key=lambda t: -t[2])[:4]
-            pz = potenza(n)
-            ctrl = ('<p class="pot-tua solo-js"><span>La tua potenza: <strong class="pv">%s</strong>/10 <span class="nota pst"></span></span><br/>'
-                    '<input type="range" class="pot-range" min="1" max="10" step="0.5" value="%s" aria-label="Potenza"/><br/>'
-                    '<button type="button" class="chip pfix">📌 Fissa</button> <button type="button" class="chip prip">↺ Valore di libreria</button></p>') % (fmt1(pz), pz) if pz else ''
-            body += '<div class="bot-radar" data-n="%s" data-p="%s">' % (e(n), pz or '') + radar(v, 220, rid, pot_colore(pz) if pz else '#2F7259') + pot_legenda(pz) + ctrl + chips(rid, vic) + '</div>'
-        body += sens_blocco(n)
-        body += '<dl class="campi">' + ''.join('<dt>%s</dt><dd>%s</dd>' % (k, val) for k, val in campi) + '</dl>'
-        if mol: body += '<p class="mol"><strong>Molecole da estrarre.</strong> %s</p>' % e(mol)
-        if m.get('effetto_sovra'): body += '<p class="nota">Se si esagera: %s.</p>' % e(m['effetto_sovra'])
-        body += '</article>'
         prev = fam[k-1]['botanica'] if k > 0 else None; nxt = fam[k+1]['botanica'] if k + 1 < len(fam) else None
         naviga = '<p class="naviga">%s<a href="cap2-%s.xhtml">%s</a>%s</p>' % (
-            ('<a href="b-%s.xhtml">← %s</a> · ' % (slug(prev), e(prev))) if prev else '', slug(c), e(c),
-            (' · <a href="b-%s.xhtml">%s →</a>' % (slug(nxt), e(nxt))) if nxt else '')
-        add('b-%s.xhtml' % slug(n), n, '<section>' + body + naviga + '</section>', 3, True)
+            ('<a href="b-%s.xhtml">← %s</a> · ' % (slug(prev), e(prev))) if prev else '<span class="nav-vuoto">inizio famiglia</span> · ', slug(c), e(c),
+            (' · <a href="b-%s.xhtml">%s →</a>' % (slug(nxt), e(nxt))) if nxt else ' · <span class="nav-vuoto">fine famiglia</span>')
+        # Struttura fissa, uguale per ogni botanica: intestazione, due radar, scheda, molecole, eccessi, profili vicini.
+        sic = m.get('sicurezza') or ''
+        campi.append(('Sicurezza', e(sic) if sic and 'verificare' not in sic.lower() else 'nessuna avvertenza particolare'))
+        rid = 'r-' + slug(n); pz = potenza(n) or 5
+        vic = sorted(((x, prof(x), cos(v, prof(x))) for x in nomi_prof if x != n), key=lambda t: -t[2])[:4] if v else []
+        ctrl = ('<p class="pot-tua solo-js"><span>La tua potenza: <strong class="pv">%s</strong>/10 <span class="nota pst"></span></span><br/>'
+                '<input type="range" class="pot-range" min="1" max="10" step="0.5" value="%s" aria-label="Potenza"/><br/>'
+                '<button type="button" class="chip pfix">📌 Fissa</button> <button type="button" class="chip prip">↺ Valore di libreria</button></p>') % (fmt1(pz), pz)
+        sez = lambda t, h, cl='': '<section class="bsez%s"><h3>%s</h3>%s</section>' % (cl, t, h)
+        body = '<article class="bot" id="b-%s">' % slug(n)
+        body += naviga
+        body += '<h2>%s %s</h2><p class="bsub"><em>%s</em> · %s · %s</p>' % (e(m.get('icona') or '🌿'), e(n), e(m.get('nome_botanico') or '—'), e(c), e(m.get('parte') or '—'))
+        body += sez('1 · Profilo sensoriale', '<div class="bot-radar" data-n="%s" data-p="%s">' % (e(n), pz) + radar(v or [0]*len(ASSI), 220, rid, pot_colore(pz)) + pot_legenda(pz) + ctrl + '</div>')
+        body += sez('2 · Sensazioni in bocca', '<div class="bot-sens">' + sens_blocco(n) + '</div>')
+        body += sez('3 · Scheda', '<dl class="campi">' + ''.join('<dt>%s</dt><dd>%s</dd>' % (kk, val) for kk, val in campi if kk not in ('Nome botanico', 'Parte usata')) + '</dl>')
+        body += sez('4 · Molecole da estrarre', '<p class="mol">%s</p>' % (e(mol) if mol else '—'))
+        body += sez('5 · Se si esagera', '<p>%s.</p>' % e((m.get('effetto_sovra') or '—').rstrip('.')))
+        body += sez('6 · Profili vicini', (chips(rid, vic).replace('Profilo vicino: ', '') if vic else '<p>—</p>') + '<p class="nota">Tocca un nome per sovrapporne il profilo al radar 1.</p>')
+        body += '</article>' + naviga
+        add('b-%s.xhtml' % slug(n), n, '<section>' + body + '</section>', 3, True)
 
 # ---------- 3. L'estrazione ----------
 ESTR = ["Gradazione e solubilità dell'alcol", 'Le molecole estratte e cosa rovina il gusto', 'Dopo la diluizione: torbidità, corpo e colore', 'Filtrazione e apparecchiature']

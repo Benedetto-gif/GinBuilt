@@ -133,3 +133,13 @@ ol.indice li{border-bottom:1px solid #e3ddd1;margin:0;}
 ol.indice a{display:block;padding:.55em .2em;text-decoration:none;color:#1F4D3D;font-size:1.05em;}
 ul.indice-cap a{color:#1F4D3D;}
 ul.fam-lista a::after, ol.indice a::after{content:"›";float:right;color:#9aa89f;}
+
+/* Scheda botanica: struttura fissa, uguale per tutte */
+article.bot h2{margin:.3em 0 .1em;}
+.bsub{margin:0 0 .8em;color:#555;font-size:.92em;}
+.bsez{margin:1em 0 0;padding-top:.5em;border-top:1px solid #e6e0d4;}
+.bsez h3{margin:0 0 .4em;font-size:1em;letter-spacing:.02em;color:#2F7259;}
+.bsez .sim{margin:.2em 0;}
+.bot-sens{border-top:0;padding-top:0;margin:0;}
+.nav-vuoto{color:#999;}
+article.bot .naviga{margin:.2em 0 .6em;}
