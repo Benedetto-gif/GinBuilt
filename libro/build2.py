@@ -196,7 +196,7 @@ for c in cat_list:
             vic = sorted(((x, prof(x), cos(v, prof(x))) for x in nomi_prof if x != n), key=lambda t: -t[2])[:4]
             pz = potenza(n)
             ctrl = ('<p class="pot-tua solo-js"><span>La tua potenza: <strong class="pv">%s</strong>/10 <span class="nota pst"></span></span><br/>'
-                    '<input type="range" min="1" max="10" step="0.5" value="%s" aria-label="Potenza"/><br/>'
+                    '<input type="range" class="pot-range" min="1" max="10" step="0.5" value="%s" aria-label="Potenza"/><br/>'
                     '<button type="button" class="chip pfix">📌 Fissa</button> <button type="button" class="chip prip">↺ Valore di libreria</button></p>') % (fmt1(pz), pz) if pz else ''
             body += '<div class="bot-radar" data-n="%s" data-p="%s">' % (e(n), pz or '') + radar(v, 220, rid, pot_colore(pz) if pz else '#2F7259') + pot_legenda(pz) + ctrl + chips(rid, vic) + '</div>'
         body += '<dl class="campi">' + ''.join('<dt>%s</dt><dd>%s</dd>' % (k, val) for k, val in campi) + '</dl>'
@@ -367,7 +367,7 @@ for fid, href, title, xh, scr, lvl in files:
 opf = '''<?xml version="1.0" encoding="UTF-8"?>
 <package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="uid" xml:lang="it">
 <metadata xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:identifier id="uid">urn:uuid:3e8b6f0a-2c4d-4f71-9a5e-0b7c1d2e3f40</dc:identifier>
-<dc:title id="t">Gin in provetta</dc:title><meta refines="#t" property="title-type">main</meta><dc:title id="st">Quaderno di laboratorio sul gin compound</dc:title><meta refines="#st" property="title-type">subtitle</meta><dc:creator>Benedetto Sgroi</dc:creator><dc:language>it</dc:language>
+<dc:title>Gin in provetta</dc:title><dc:description>Quaderno di laboratorio: appunti sul gin compound, dalle pagine di GinBuilder.</dc:description><dc:creator>Benedetto Sgroi</dc:creator><dc:language>it</dc:language>
 <meta property="dcterms:modified">%s</meta><meta name="cover" content="cover"/></metadata>
 <manifest>%s</manifest><spine>%s</spine></package>''' % (oggi, ''.join(man), ''.join(spine))
 with zipfile.ZipFile(OUT, 'w') as z:

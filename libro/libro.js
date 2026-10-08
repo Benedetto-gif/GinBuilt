@@ -96,6 +96,7 @@
     var pol = bx.querySelector('.rp'), mk = bx.querySelector('.pmk'), tx = bx.querySelector('.ptx');
     function mostra(p, pers){
       var c = col(p); if (pol){ pol.setAttribute('fill', c); pol.setAttribute('stroke', c); }
+      try { inp.style.setProperty('--pc', c); inp.style.accentColor = c; } catch(e){}
       if (mk) mk.setAttribute('x', (20 + (p - 1) / 9 * 239 - 1.5).toFixed(1));
       if (tx) tx.textContent = 'Potenza ' + fmt(p) + '/10' + (pers ? ' (tua)' : '');
       pv.textContent = fmt(p); pst.textContent = pers ? 'personalizzata · libreria ' + fmt(lib) : 'valore di libreria';

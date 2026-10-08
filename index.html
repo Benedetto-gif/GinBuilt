@@ -1947,7 +1947,11 @@ html details.howto a{color:#5A3E1C;}
 .pot-tua{max-width:300px;margin:6px auto 10px;padding:8px 10px;border:1px dashed var(--line);border-radius:12px;text-align:left;}
 .pot-tua-t{font-size:13px;color:var(--ink);}
 .pot-pers{font-size:11.5px;color:var(--ink-soft);}
-.pot-tua input[type=range]{width:100%;margin:6px 0;accent-color:#F28A2E;}
+.pot-tua input[type=range]{width:100%;margin:8px 0;}
+.pot-range{-webkit-appearance:none;appearance:none;height:12px;border-radius:6px;background:linear-gradient(90deg,#3B4CC0,#3E7FD9,#3FB0D6,#4CC79A,#8CD15A,#D9D93E,#F5B83A,#F28A2E,#E0492B,#A3195B);outline:none;accent-color:var(--pc);}
+.pot-range::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:26px;height:26px;border-radius:50%;background:var(--pc,#F28A2E);border:3px solid #fff;box-shadow:0 0 0 1.5px rgba(0,0,0,.45),0 2px 4px rgba(0,0,0,.3);cursor:pointer;}
+.pot-range::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--pc,#F28A2E);border:3px solid #fff;box-shadow:0 0 0 1.5px rgba(0,0,0,.45);cursor:pointer;}
+.pot-range::-moz-range-track{height:12px;border-radius:6px;background:transparent;}
 .pot-tua-b{display:flex;gap:8px;flex-wrap:wrap;}
 </style>
 <link rel="manifest" href="manifest.json">
@@ -3442,7 +3446,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 8 ottobre 2026, ore 09:45 · Potenza personale per ogni botanica</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 8 ottobre 2026, ore 10:00 · Cursore della potenza con i colori della scala</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -3700,7 +3704,7 @@ function potControllo(nome){
   return '<div class="pot-tua" data-n="' + n.replace(/"/g, '&quot;') + '">' +
     '<div class="pot-tua-t">La tua potenza: <strong class="pot-v">' + f(p) + '</strong>/10 ' +
     (u ? '<span class="pot-pers">personalizzata · libreria ' + f(lib) + '</span>' : '<span class="pot-pers">valore di libreria</span>') + '</div>' +
-    '<input type="range" min="1" max="10" step="0.5" value="' + p + '" oninput="potAnteprima(this)" aria-label="Potenza di ' + n.replace(/"/g, '&quot;') + '">' +
+    '<input type="range" class="pot-range" style="--pc:' + potColore(p) + '" min="1" max="10" step="0.5" value="' + p + '" oninput="potAnteprima(this)" aria-label="Potenza di ' + n.replace(/"/g, '&quot;') + '">' +
     '<div class="pot-tua-b"><button type="button" class="ghost-btn" onclick="potFissa(this)">📌 Fissa</button>' +
     (u ? '<button type="button" class="ghost-btn" onclick="potRipristina(this)">↺ Valore di libreria</button>' : '') + '</div>' +
     '<div class="radar-nota">Se la tua botanica è più debole o più forte del previsto (raccolta, varietà, freschezza), sposta il cursore e fissala: il colore, la potenza media del Builder e quella dei confronti useranno il tuo valore. Resta salvato su questo telefono ed entra nel backup completo.</div></div>';
@@ -3708,6 +3712,7 @@ function potControllo(nome){
 // anteprima mentre si trascina: ricolora l'area del radar e sposta la tacca, senza salvare
 window.potAnteprima = function(inp){
   const box = inp.closest('.radar-box'), p = parseFloat(inp.value), col = potColore(p);
+  inp.style.setProperty('--pc', col);
   const v = inp.closest('.pot-tua').querySelector('.pot-v'); if (v) v.textContent = String(p).replace('.', ',');
   if (!box) return;
   const g = box.querySelector('svg.radar8 g.r-norm'); if (g){
