@@ -1,5 +1,5 @@
 (function(){
-  var ORD = [0, 9, 5, 4, 2, 1, 8, 6, 7, 3], POS = [];
+  var ORD = [0, 3, 6, 7, 8, 1, 4, 5, 2, 9], POS = [];
   for (var k = 0; k < ORD.length; k++) POS[ORD[k]] = k;
   function punti(vals, size){
     var c = size / 2, R = size / 2 - 38, out = [];
