@@ -3460,7 +3460,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 8 ottobre 2026, ore 12:00 · 22 nuove botaniche e due gin giapponesi</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 8 ottobre 2026, ore 12:30 · Equilibrio giudicato con le botaniche base</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -3787,6 +3787,11 @@ function radarSVG(serie, size, opts){
   size = size || 280; opts = opts || {};
   serie = (serie || []).map(se => Object.assign({}, se, {vals: ASSI8.map((_,i) => +((se.vals || [])[i]) || 0)}));
   if (opts.rifVals) opts = Object.assign({}, opts, {rifVals: ASSI8.map((_,i) => +opts.rifVals[i] || 0)});
+  // opts.eq: per ogni serie, il profilo dello stesso gin con le base dentro (null = la serie le contiene gia').
+  // opts.eqInsieme: lo stesso per la somma delle serie (tavolo di lavoro). Servono solo a giudicare l'equilibrio.
+  const a5 = v => { const w = ASSI8.map((_,i) => +v[i] || 0), m = Math.max.apply(null, w) || 1; return w.map(x => x / m * 5); };
+  const EQ = opts.eq ? serie.map((_,k) => opts.eq[k] ? a5(opts.eq[k]) : null) : null;
+  const EQI = opts.eqInsieme ? a5(opts.eqInsieme) : null;
   const c = size/2, R = size/2 - 62, n = ASSI8.length;
   const POS = []; ORDINE_RADAR.forEach((d, k) => { POS[d] = k; });
   const pt = (i, v) => { const a = -Math.PI/2 + POS[i]*2*Math.PI/n; return [c + R*v/5*Math.cos(a), c + R*v/5*Math.sin(a)]; };
@@ -3815,13 +3820,20 @@ function radarSVG(serie, size, opts){
   // Vista in sottrazione: per ogni coppia di note opposte resta solo la differenza, dalla parte della piu' forte.
   // Tutto al centro = equilibrio; un solo braccio lungo = squilibrio massimo. Il punto pieno e' il baricentro (dove pende).
   const sq = [];
-  serie.forEach(se => {
-    const net = se.vals.map((v,i) => Math.max(0, v - se.vals[OPPOSTA_RADAR[i]]));
+  serie.forEach((se, k) => {
+    const ev = (EQ && EQ[k]) || se.vals;
+    const net = ev.map((v,i) => Math.max(0, v - ev[OPPOSTA_RADAR[i]]));
     gS += disegna(se, net);
     let bx = 0, by = 0, tot = 0;
-    se.vals.forEach((v,i) => { const [x,y] = pt(i, v); bx += x - c; by += y - c; tot += v; });
+    ev.forEach((v,i) => { const [x,y] = pt(i, v); bx += x - c; by += y - c; tot += v; });
     const len = Math.hypot(bx, by), pct = tot ? Math.round(len / (R * tot / 5) * 100) : 0;
-    sq.push({ l: se.label || '', c: se.color, pct });
+    sq.push({ l: se.label || '', c: se.color, pct, ev: EQ && EQ[k] ? ev : null, fv: se.vals });
+    if (EQ && EQ[k] && !se.dash && !(opts.insieme && serie.length > 1)){   // dove pende la sola firma: freccia tratteggiata vuota
+      const bf = baricentro(se.vals);
+      if (bf.pct >= 3){ const Lf = R * bf.pct / 100, fx = c + Math.cos(bf.ang) * Lf, fy = c + Math.sin(bf.ang) * Lf;
+        gS += '<line x1="'+c+'" y1="'+c+'" x2="'+fx+'" y2="'+fy+'" stroke="'+se.color+'" stroke-width="1.5" stroke-dasharray="5 4"/>' +
+              '<circle cx="'+fx+'" cy="'+fy+'" r="4.5" fill="var(--surface)" stroke="'+se.color+'" stroke-width="1.5"/>'; }
+    }
     if (len > 0.5 && !se.dash){
       const ux = bx / len, uy = by / len, L = R * pct / 100;
       gS += '<line x1="'+c+'" y1="'+c+'" x2="'+(c+ux*L)+'" y2="'+(c+uy*L)+'" stroke="'+se.color+'" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="1 4"/>' +
@@ -3839,8 +3851,13 @@ function radarSVG(serie, size, opts){
     return '<line x1="'+c+'" y1="'+c+'" x2="'+(c+ux*L)+'" y2="'+(c+uy*L)+'" stroke="'+col+'" stroke-width="2" stroke-dasharray="'+(vuoto ? '5 4' : '1 0')+'" stroke-linecap="round"/>' +
       '<circle cx="'+(c+ux*L)+'" cy="'+(c+uy*L)+'" r="5.5" fill="'+(vuoto ? 'var(--surface)' : col)+'" stroke="'+col+'" stroke-width="2"/>';
   };
-  const bR = baricentro(insieme);
-  if (opts.insieme && piene.length > 1) gS += freccia(bR, 'var(--ink)', false);
+  const bR = baricentro(insieme);                      // la combinazione cosi' com'e' (firma)
+  const bE = EQI ? baricentro(EQI) : null;              // la stessa con le base dentro
+  if (opts.insieme && piene.length > 1){
+    if (bE){ gS += freccia(bE, 'var(--ink)', false) + freccia(bR, 'var(--ink)', true); }
+    else gS += freccia(bR, 'var(--ink)', false);
+  }
+  const conBaseTxt = b => 'con le base nel bicchiere pende verso <strong>' + direzioneTesto(b) + '</strong> (carattere ' + carattereTesto(b.pct) + ', ' + b.pct + ' %)';
   let nota = '<div class="radar-nota r-sottr">';
   const rifV = opts.rifVals || (opts.stile ? profiloRiferimento(opts.stile, opts.conBase) : null);
   if (rifV){
@@ -3859,14 +3876,38 @@ function radarSVG(serie, size, opts){
     nota += '<br><strong>' + opts.stile + (opts.rifVals ? '</strong> (la ricetta proposta dallo stile, con le stesse dosi)' : '</strong>') + ' pende verso <strong>' + direzioneTesto(bT) + '</strong> (carattere ' + carattereTesto(bT.pct) + ', ' + bT.pct + ' %, cerchio vuoto). ' +
       (opts.insieme ? 'La combinazione' : 'La ricetta') + ' pende verso <strong>' + direzioneTesto(bR) + '</strong> (' + carattereTesto(bR.pct) + ', ' + bR.pct + ' %' + (opts.insieme && piene.length > 1 ? ', punto grande' : '') + ')' +
       ': <strong>' + esito + '</strong>' + (d > 25 ? ' (scarto di ' + Math.round(d) + '\u00b0)' : '') + forza + '.';
+    const eq0 = bE || (sq.find(x => x.ev) ? baricentro(sq.find(x => x.ev).ev) : null);
+    if (eq0) nota += ' Il confronto con lo stile \u00e8 fra firme; ' + (opts.insieme ? 'la combinazione ' : 'la ricetta ') + conBaseTxt(eq0) + '.';
   } else {
-    nota += sq.map(x => (sq.length > 1 && x.l ? '<strong>' + x.l + '</strong>' : 'Il profilo') + ' pende verso ' + direzioneTesto(baricentro((serie.find(se => (se.label||'') === x.l) || serie[0]).vals)) + ' (carattere ' + carattereTesto(x.pct) + ', ' + x.pct + ' %)').join(' \u00b7 ') + '.';
-    if (opts.insieme && piene.length > 1) nota += ' <strong>Insieme</strong> (punto grande) pendono verso ' + direzioneTesto(bR) + ' (' + carattereTesto(bR.pct) + ', ' + bR.pct + ' %).';
+    const solo = opts.insieme && piene.length > 1;
+    nota += sq.map(x => {
+      const nome = sq.length > 1 && x.l ? '<strong>' + x.l + '</strong>' : 'Il profilo';
+      if (x.ev && !solo){ const be = baricentro(x.ev), bf = baricentro(x.fv);
+        return (sq.length > 1 && x.l ? '<strong>' + x.l + '</strong>: ' : 'Il gin ') + conBaseTxt(be) + '; la sola firma pende verso ' + direzioneTesto(bf) + ' (' + bf.pct + ' %, freccia tratteggiata)'; }
+      return nome + (x.ev ? ', da sola,' : '') + ' pende verso ' + direzioneTesto(baricentro(x.fv)) + ' (carattere ' + carattereTesto(baricentro(x.fv).pct) + ', ' + baricentro(x.fv).pct + ' %)';
+    }).join(' \u00b7 ') + '.';
+    if (solo) nota += bE ? ' <strong>Insieme</strong> ' + conBaseTxt(bE) + ' (punto pieno); senza le base pendono verso ' + direzioneTesto(bR) + ' (' + bR.pct + ' %, punto vuoto).'
+                         : ' <strong>Insieme</strong> (punto grande) pendono verso ' + direzioneTesto(bR) + ' (' + carattereTesto(bR.pct) + ', ' + bR.pct + ' %).';
   }
   if (rifV) nota += ' <em>Stima da tarare con gli assaggi.</em>';
   nota += '</div>';
   return '<div class="radar-wrap' + (opts.sottrSempre ? ' sottr-sempre' : '') + '"><button type="button" class="ghost-btn radar-sottr-btn" onclick="toggleSottrazione()"><span class="r-norm">\u2296 Vedi in sottrazione</span><span class="r-sottr">\u2295 Vedi il profilo intero</span></button>' +
     '<svg class="radar8" viewBox="-22 0 '+(size+44)+' '+size+'" role="img" aria-label="Profilo sensoriale. '+desc.replace(/"/g,'')+'">'+g+'<g class="r-norm">'+gN+'</g><g class="r-sottr">'+gS+'</g></svg>' + potLegenda(serie) + nota + '</div>';
+}
+// ---------- Equilibrio con le base ----------
+// La forma del radar mostra la firma (senza ginepro, coriandolo e angelica), ma l'equilibrio di un gin si giudica
+// con le base dentro, perche' nel bicchiere ci sono sempre. Ogni botanica pesa una "parte" alla sua dose di
+// riferimento; le base mancanti si aggiungono con una parte ciascuna. Stima orientativa.
+const BASE_EQ = ['Bacche di ginepro','Coriandolo','Angelica'];
+function unitaFirma(el){   // porta pesi qualsiasi a "parti": il totale vale quante sono le botaniche
+  const ok = el.filter(x => PROFILO8[x.n]); const t = ok.reduce((a,x) => a + (x.w === undefined ? 1 : x.w), 0) || 1;
+  return ok.map(x => ({n: x.n, w: (x.w === undefined ? 1 : x.w) / t * ok.length}));
+}
+function eqConBase(el, fase){
+  const tutte = el.filter(x => PROFILO8[x.n]).map(x => ({n: x.n, w: x.w === undefined ? 1 : x.w}));
+  BASE_EQ.forEach(n => { if (PROFILO8[n] && !tutte.some(x => x.n === n)) tutte.push({n, w: 1}); });
+  const tot = tutte.reduce((a,x) => a + x.w, 0) || 1;
+  return ASSI8.map((_,i) => tutte.reduce((a,x) => a + (valFase(x.n, fase || window.radarFase)[i] || 0) * x.w, 0) / tot);
 }
 // Coppie opposte (indici di ASSI8): Dolce/Amaro, Acido/Salino, Agrumato/Speziato, Floreale/Erbaceo, Resinoso/Fruttato
 const OPPOSTA_RADAR = [1, 0, 3, 2, 7, 6, 5, 4, 9, 8];
@@ -3876,7 +3917,7 @@ function toggleSottrazione(){
   document.documentElement.classList.toggle('radar-sottr', on);
   try { localStorage.setItem('gb-radar-sottr', on ? '1' : ''); } catch(e){}
   if (on && typeof mostraAvviso === 'function') mostraAvviso('\u2296 Vista in sottrazione',
-    '<p>Ogni nota toglie la sua opposta (dolce/amaro, acido/salino, agrumato/speziato, floreale/erbaceo, resinoso/fruttato): al centro il profilo \u00e8 neutro, un braccio lungo indica un carattere netto.</p><p>Lo squilibrio non \u00e8 un difetto: \u00e8 lo stile. Vale per tutti i radar dell\u2019app; si torna al profilo intero con lo stesso pulsante.</p>', '', null);
+    '<p>Ogni nota toglie la sua opposta (dolce/amaro, acido/salino, agrumato/speziato, floreale/erbaceo, resinoso/fruttato): al centro il profilo \u00e8 neutro, un braccio lungo indica un carattere netto.</p><p>L\u2019equilibrio si giudica sempre <strong>con le botaniche base dentro</strong> (ginepro, coriandolo, angelica), perch\u00e9 nel bicchiere ci sono sempre: una botanica fruttata da sola pende tutta sul fruttato, ma il ginepro la bilancia con il resinoso. La freccia tratteggiata mostra dove pende la sola firma.</p><p>Lo squilibrio non \u00e8 un difetto: \u00e8 lo stile. Vale per tutti i radar dell\u2019app; si torna al profilo intero con lo stesso pulsante.</p>', '', null);
 }
 try { if (localStorage.getItem('gb-radar-sottr')) document.documentElement.classList.add('radar-sottr'); } catch(e){}
 
@@ -4184,8 +4225,9 @@ function radarBox(nome){
   }
   const btn = BASE.length ? '<button type="button" class="ghost-btn radar-base-btn" aria-pressed="' + conBase + '" onclick="window.radarCardBase=!window.radarCardBase;showDetail(currentDetailName)">' + (conBase ? '− Togli le botaniche base' : '+ Aggiungi le botaniche base') + '</button>' : '';
   return '<div class="radar-box"><div class="radar-title">Profilo sensoriale</div>' + faseHtml('showDetail(currentDetailName)') + btn +
-    radarSVG(serie, 280, accese.length ? {insieme: true, sottrSempre: true} : undefined) + (accese.length && !conBase ? '<div class="radar-legend"><span><i style="background:var(--juniper)"></i>' + nome + '</span>' + accese.map(x => '<button type="button" class="leg-off" title="Tocca per spegnerla" data-n="' + x.replace(/"/g,'&quot;') + '" onclick="radarConf(this.dataset.n)"><i style="background:' + confColore(x) + '"></i>' + x + ' \u2715</button>').join('') + '</div>' : '') + confrontoRadarHtml(nome, v) + '<div class="radar-nota">' + (FASE_NOTA[window.radarFase] ? FASE_NOTA[window.radarFase] + ' ' : '') + 'Si sente soprattutto in <strong>' + doveSi + '</strong>.</div>' + extra +
-    potControllo(nome) + coerenzaHtml(nome) + '<div class="radar-nota">Il colore dell\'area indica la <strong>potenza</strong> della botanica, dal blu (delicata) al porpora (potentissima): due botaniche possono avere la stessa forma ma colori diversi. Stima orientativa (0 = assente, 5 = dominante) di quanto ogni nota pesa nel carattere della botanica. Da validare all\'assaggio. Le note opposte stanno una di fronte all\'altra: dolce e amaro, fruttato e resinoso, floreale ed erbaceo, agrumato e speziato, acido e salino.</div></div>';
+    radarSVG(serie, 280, conBase ? {insieme: true, sottrSempre: !!accese.length} : Object.assign(accese.length ? {insieme: true, sottrSempre: true, eqInsieme: eqConBase(serie.map(se => ({n: se.label})))} : {},
+      {eq: serie.map(se => eqConBase([{n: se.label}]))})) + (accese.length && !conBase ? '<div class="radar-legend"><span><i style="background:var(--juniper)"></i>' + nome + '</span>' + accese.map(x => '<button type="button" class="leg-off" title="Tocca per spegnerla" data-n="' + x.replace(/"/g,'&quot;') + '" onclick="radarConf(this.dataset.n)"><i style="background:' + confColore(x) + '"></i>' + x + ' \u2715</button>').join('') + '</div>' : '') + confrontoRadarHtml(nome, v) + '<div class="radar-nota">' + (FASE_NOTA[window.radarFase] ? FASE_NOTA[window.radarFase] + ' ' : '') + 'Si sente soprattutto in <strong>' + doveSi + '</strong>.</div>' + extra +
+    potControllo(nome) + coerenzaHtml(nome) + '<div class="radar-nota">Il colore dell\'area indica la <strong>potenza</strong> della botanica, dal blu (delicata) al porpora (potentissima): due botaniche possono avere la stessa forma ma colori diversi. Stima orientativa (0 = assente, 5 = dominante) di quanto ogni nota pesa nel carattere della botanica. Da validare all\'assaggio. Le note opposte stanno una di fronte all\'altra: dolce e amaro, fruttato e resinoso, floreale ed erbaceo, agrumato e speziato, acido e salino. La forma è quella della sola botanica; la direzione (vista in sottrazione) è giudicata con le base dentro, come nel bicchiere.</div></div>';
 }
 
 // ---------- Botaniche fondamentali ----------
@@ -5176,7 +5218,8 @@ document.querySelectorAll('.soglia-slot').forEach(el => { el.innerHTML = sogliaH
     if (grigi.length) sintesi += '<strong>Aree scoperte: ' + grigi.join(', ').toLowerCase() + '.</strong> Possono essere una scelta di stile; se ti servono, cerca una botanica complementare. ';
     if (!sintesi) sintesi = 'Nessun asse saturo e nessun vuoto evidente: la combinazione è equilibrata.';
     if (window.radarFase !== 'tutto'){ const nf_ = noteDiFase(scelte.map(x => ({n:x.n}))).find(r => r[0] === window.radarFase)[1]; sintesi = '<strong>In ' + window.radarFase + ' prevalgono: ' + (nf_.length ? nf_.join(', ') : 'quasi nulla') + '.</strong> Grigio qui vuol dire solo che quella nota non si sente in questo tempo, non che manca nella ricetta: guarda "Tutto" per il giudizio complessivo.'; }
-    out.innerHTML = radarSVG(scelte.map(x => ({vals:V(x.n), color:x.c, label:x.n})), 300, {insieme: true, stile: wbRif, conBase: baseOn}) +
+    out.innerHTML = radarSVG(scelte.map(x => ({vals:V(x.n), color:x.c, label:x.n})), 300, {insieme: true, stile: wbRif, conBase: baseOn,
+      eqInsieme: baseOn ? null : eqConBase(scelte.map(x => ({n: x.n})))}) +
       '<div class="radar-legend">' + scelte.map(x => '<span><i style="background:'+x.c+'"></i>'+x.n+'</span>').join('') + '</div>' +
       (aggiunte.length ? '<div class="radar-nota">Con le base aggiunte: ' + aggiunte.join(', ') + '.</div>' : '') +
       (GIN_RIF[stSel.value] ? '<div class="radar-nota">Dalla lista pubblica del produttore, senza le base' + (GIN_RIF[stSel.value].manca ? ' e senza ' + GIN_RIF[stSel.value].manca + ' (non entra negli 8 posti)' : '') + '. Le dosi non sono dichiarate.</div>' : '') +
@@ -5466,6 +5509,12 @@ function renderSummary(){
     const elRif = (currentStyleName !== 'Personalizzato' && window._rifStile.nome === currentStyleName)
       ? window._rifStile.elenco.filter(x => window.radarConBase || !x.fond).map(x => ({n: x.n, w: x.w})) : [];
     const oreIns = window.radarInsieme > 0 ? window.radarInsieme : 0;
+    const vt = new Set(), elTutto = [];
+    [...selects].forEach(sel => { if (vt.has(sel.value) || !PROFILO8[sel.value]) return; vt.add(sel.value);
+      elTutto.push({n: sel.value, w: Math.max(0.0001, pesoRiga(sel, doseLibreria(sel.value) ?? 0))}); });
+    if (oreIns) elTutto.forEach(x => { x.w = Math.max(0.0001, x.w * moltEstrazione(x.n, oreIns)); });
+    const eqRicetta = window.radarConBase ? null : (elTutto.some(x => BASE_EQ.includes(x.n)) ?
+      (() => { const t = elTutto.reduce((a,x) => a + x.w, 0); return ASSI8.map((_,i) => elTutto.reduce((a,x) => a + valFase(x.n, window.radarFase)[i] * x.w, 0) / t); })() : null);
     if (oreIns) elenco.forEach(x => { x.m = moltEstrazione(x.n, oreIns); x.w = Math.max(0.0001, x.w * x.m); });
     if (oreIns) elRif.forEach(x => { x.w = Math.max(0.0001, x.w * moltEstrazione(x.n, oreIns)); });
     const insBox = '<div class="radar-insieme"><label><input type="checkbox" class="ins-on"' + (oreIns ? ' checked' : '') + '> Macerano tutte insieme per</label> <input type="number" class="ins-ore" min="0.5" step="0.5" value="' + (window.radarInsieme || 24) + '"> ore</div>';
@@ -5483,7 +5532,7 @@ function renderSummary(){
     const mx = Math.max.apply(null, mediaDi('tutto')) || 1;      // stessa scala per tutti i tempi, cosi' si confrontano
     const vals = mediaDi(window.radarFase).map(x => Math.min(5, Math.round(x / mx * 50) / 10));
     box.innerHTML = '<div class="radar-box"><div class="radar-title">Profilo della ricetta' + (window.radarConBase ? ' (con le base)' : ' (senza le base)') + '</div>' + fasiBtn + btnBase + insBox +
-      radarSVG([{vals:vals,color:'var(--juniper)',label:'Ricetta', potenza: potenzaMedia(elenco)}], 280, {stile: elRif.length ? currentStyleName : null, rifVals: elRif.length ? ASSI8.map((_,i) => elRif.reduce((a,x) => a + valFase(x.n, window.radarFase)[i] * x.w, 0)) : null}) + insNota +
+      radarSVG([{vals:vals,color:'var(--juniper)',label:'Ricetta', potenza: potenzaMedia(elenco)}], 280, {stile: elRif.length ? currentStyleName : null, rifVals: elRif.length ? ASSI8.map((_,i) => elRif.reduce((a,x) => a + valFase(x.n, window.radarFase)[i] * x.w, 0)) : null, eq: eqRicetta ? [eqRicetta] : null}) + insNota +
       ordineNoteHtml(elenco) +
       (FASE_NOTA[window.radarFase] ? '<div class="radar-nota">' + FASE_NOTA[window.radarFase] + '</div>' : '') +
       '<div class="radar-nota">Mostra la forma del profilo (quali note prevalgono), non l\'intensità. Pesato sulle quantità reali; stima orientativa da validare all\'assaggio.</div></div>';
@@ -7152,7 +7201,8 @@ function radarGinHtml(nome, conf, aperto){
   const firma = pf ? pf.el.slice().sort((a,b) => b.w - a.w).slice(0,3).map(x => x.n).join(', ') : '—';
   const leg = '<div class="gin-leg">' + (!conBase ? '<span><i style="background:transparent;border:1.5px dashed var(--ink-soft)"></i>gin medio</span>' : '') +
     '<span><i style="background:var(--juniper)"></i>' + breve(nome) + '</span>' + (pc ? '<span><i style="background:#C0733A"></i>' + breve(conf) + '</span>' : '') + '</div>';
-  return '<div class="radar-title">' + (conBase ? 'Profilo completo stimato' : 'La firma del gin, senza le base') + '</div>' + radarSVG(serie, 300) + leg +
+  const eqGin = conBase ? null : serie.map(se => { if (se.dash) return null; const g2 = Object.keys(GIN_LISTE).find(x => x === se.label || breve(x) === se.label); const p2 = g2 && profiloGin(g2, true); return p2 ? p2.vals : null; });
+  return '<div class="radar-title">' + (conBase ? 'Profilo completo stimato' : 'La firma del gin, senza le base') + '</div>' + radarSVG(serie, 300, {eq: eqGin}) + leg +
     '<div style="text-align:center;margin:6px 0 2px"><button type="button" class="ghost-btn gin-base-btn" aria-pressed="' + conBase + '">' + (conBase ? '− Togli le botaniche base' : '+ Aggiungi le botaniche base') + '</button></div>' +
     distingue + cmp +
     '<div class="radar-nota">Botaniche che pesano di più nella firma: ' + firma + '.</div>' +
@@ -7214,7 +7264,9 @@ function radarGinHtml(nome, conf, aperto){
       {vals: B.vals, color: '#C0733A', label: b, dash: true},
       {vals: M, color: '#8A63B0', label: 'Miscela'}
     ];
-    h += '<div class="radar-title">' + (base ? 'Profilo completo stimato' : 'La firma della miscela, senza le base') + '</div>' + radarSVG(serie, 300) +
+    const A1 = profiloGin(a, true), B1 = profiloGin(b, true);
+    const eqMix = (base || !A1 || !B1) ? null : [null, null, ASSI8.map((_, i) => A1.vals[i] * fa + B1.vals[i] * fb)];
+    h += '<div class="radar-title">' + (base ? 'Profilo completo stimato' : 'La firma della miscela, senza le base') + '</div>' + radarSVG(serie, 300, {eq: eqMix}) +
       '<div class="gin-leg"><span><i style="background:transparent;border:1.5px dashed var(--juniper)"></i>' + breve(a) + '</span><span><i style="background:transparent;border:1.5px dashed #C0733A"></i>' + breve(b) + '</span><span><i style="background:#8A63B0"></i>Miscela</span></div>' +
       '<div style="text-align:center;margin:6px 0 2px"><button type="button" class="ghost-btn mix-base" aria-pressed="' + base + '">' + (base ? '− Togli le botaniche base' : '+ Aggiungi le botaniche base') + '</button></div>';
     // cosa cambia rispetto al gin A
@@ -9040,7 +9092,7 @@ if ("serviceWorker" in navigator) {
       if (!found.length){ box.innerHTML = h + '<div class="radar-nota">Alza almeno un asse per cominciare.</div>'; aggancia(); return; }
       const v = profilo(found), sim = Math.round(coseno(v, t) * 100);
       const tot = found.reduce((a, x) => a + x.w, 0);
-      h += radarSVG([{vals: scala5(t), color: '#C0733A', label: 'Desiderato', dash: true}, {vals: scala5(v), color: 'var(--juniper)', label: 'Ricetta trovata'}], 300) +
+      h += radarSVG([{vals: scala5(t), color: '#C0733A', label: 'Desiderato', dash: true}, {vals: scala5(v), color: 'var(--juniper)', label: 'Ricetta trovata'}], 300, {eq: [null, eqConBase(unitaFirma(found), 'tutto')]}) +
         '<div class="gin-leg"><span><i style="background:transparent;border:1.5px dashed #C0733A"></i>Desiderato</span><span><i style="background:var(--juniper)"></i>Ricetta trovata</span></div>' +
         '<div class="radar-nota">Somiglianza di forma con il profilo desiderato: <strong>' + sim + '%</strong>.</div>' +
         '<ol class="inv-lista">' + found.map((x, j) => '<li><strong>' + esc(x.n) + '</strong> · ' + Math.round(x.w / tot * 100) + '% della parte di carattere · ruolo ' + RUOLI_RANGO[j] + '</li>').join('') + '</ol>' +
@@ -9075,7 +9127,7 @@ if ("serviceWorker" in navigator) {
     const best = lista[0];
     const piu = ASSI8.filter((_, i) => v[i] - best.p.vals[i] >= 0.6).map(a => a.toLowerCase()), meno = ASSI8.filter((_, i) => best.p.vals[i] - v[i] >= 0.6).map(a => a.toLowerCase());
     box.innerHTML = '<p class="gar-g">' + esc(r.nome) + ' → ' + esc(breveGin(best.n)) + ' <span class="gin-badge" style="--c:var(--juniper)">' + best.c + '%</span></p>' +
-      radarSVG([{vals: v.map(r1), color: 'var(--juniper)', label: r.nome}, {vals: best.p.vals, color: '#C0733A', label: best.n, dash: true}], 300) +
+      radarSVG([{vals: v.map(r1), color: 'var(--juniper)', label: r.nome}, {vals: best.p.vals, color: '#C0733A', label: best.n, dash: true}], 300, {eq: [eqConBase(unitaFirma(firma), 'tutto'), null]}) +
       '<div class="gin-leg"><span><i style="background:var(--juniper)"></i>La tua ricetta</span><span><i style="background:transparent;border:1.5px dashed #C0733A"></i>' + esc(breveGin(best.n)) + '</span></div>' +
       '<div class="radar-nota">Rispetto a ' + esc(breveGin(best.n)) + ' la tua ricetta è ' + (piu.length ? 'più ' + piu.join(', ') : '') + (piu.length && meno.length ? ' e ' : '') + (meno.length ? 'meno ' + meno.join(', ') : (piu.length ? '' : 'quasi identica sui dieci assi')) + '.</div>' +
       '<div class="radar-nota">Seguono: ' + lista.slice(1, 4).map(g => esc(breveGin(g.n)) + ' ' + g.c + '%').join(', ') + '. Il più lontano: ' + esc(breveGin(lista[lista.length - 1].n)) + ' ' + lista[lista.length - 1].c + '%.</div>' +
@@ -9099,7 +9151,7 @@ if ("serviceWorker" in navigator) {
       let h = testa;
       const fatto = giro.risp !== null, giusto = giro.risp === giro.g;
       if (modo === 'nome'){
-        h += '<div class="radar-title">Di quale gin è questa firma?</div>' + radarSVG([{vals: profiloGin(giro.g, false).vals, color: 'var(--juniper)', label: '?'}], 280) +
+        h += '<div class="radar-title">Di quale gin è questa firma?</div>' + radarSVG([{vals: profiloGin(giro.g, false).vals, color: 'var(--juniper)', label: '?'}], 280, {eq: [profiloGin(giro.g, true).vals]}) +
           '<div class="cie-opz">' + giro.opz.map(n => '<button type="button" class="ghost-btn cie-o' + (fatto ? (n === giro.g ? ' giusta' : n === giro.risp ? ' sbagliata' : '') : '') + '" data-n="' + esc(n) + '"' + (fatto ? ' disabled' : '') + '>' + esc(breveGin(n)) + '</button>').join('') + '</div>';
       } else {
         h += '<div class="radar-title">Quale radar è la firma di <strong>' + esc(breveGin(giro.g)) + '</strong>?</div><div class="cie-radar">' +
@@ -9151,7 +9203,7 @@ if ("serviceWorker" in navigator) {
       const zona = n => { const m = MASTER.find(x => x.botanica === n || (n === 'Mirto foglie' && x.botanica === 'Mirto')); return m && m.zone_italia ? m.zone_italia : ''; };
       box.innerHTML = '<div class="inv-ctrl">' + Object.keys(PAE).map(k => '<button type="button" class="conf-chip' + (k === scelto ? ' on' : '') + '" data-p="' + esc(k) + '">' + esc(k) + '</button>').join(' ') + '</div>' +
         '<p class="gar-g">' + esc(scelto) + '</p><div class="radar-nota" style="margin-top:0">' + esc(P.d) + '</div>' +
-        (v ? radarSVG([{vals: v.map(r1), color: 'var(--juniper)', label: scelto}], 280) : '') +
+        (v ? radarSVG([{vals: v.map(r1), color: 'var(--juniper)', label: scelto}], 280, {eq: [eqConBase(unitaFirma(firma), 'tutto')]}) : '') +
         '<ul class="inv-lista">' + righe.map(([r, n]) => '<li><strong>' + r + '</strong> · ' + esc(n) + (zona(n) ? ' <span class="cond-hint">(' + esc(zona(n)) + ')</span>' : '') + '</li>').join('') + '</ul>' +
         '<div class="radar-nota">' + esc(P.p) + '</div>' +
         '<button type="button" class="primary-btn pae-porta" style="margin-top:8px;">🏞️ Porta nel Gin Builder</button>';
@@ -9227,7 +9279,7 @@ if ("serviceWorker" in navigator) {
       lab = '<div class="eti-lab">' +
         '<div class="eti-k">Compound gin</div><div class="eti-n">' + esc(nome || 'Il mio gin') + '</div>' +
         (dom.length ? '<div class="eti-s">nota ' + dom.join(' · ') + '</div>' : '') +
-        (v ? '<div class="eti-r">' + soloSvg(radarSVG([{vals: v.map(r1), color: '#2F7259', label: ''}], 170)) + '</div>' : '') +
+        (v ? '<div class="eti-r">' + soloSvg(radarSVG([{vals: v.map(r1), color: '#2F7259', label: ''}], 170, {eq: [eqConBase(unitaFirma(firma.length ? firma : el), 'tutto')]})) + '</div>' : '') +
         '<div class="eti-b">' + ordinate.map(esc).join(' · ') + '</div>' +
         ((g || t) ? '<div class="eti-serv">' + (g ? 'Garnish: ' + esc(g.g.charAt(0).toLowerCase() + g.g.slice(1)) : '') + (g && t ? '<br>' : '') + (t ? 'Tonica ' + TN[t.k] : '') + '</div>' : '') +
         '<div class="eti-piede"><span>' + virg(abv) + '% vol.</span><span>' + esc(lotto) + '</span><span>' + cl + ' cl</span></div></div>';
