@@ -96,3 +96,5 @@ ul.ck-ing li span + span{float:right;color:#666;}
 .chip.giusta{background:#2F7259;border-color:#2F7259;color:#fff;}
 .chip.sbagliata{background:#C0583E;border-color:#C0583E;color:#fff;}
 .mesi{line-height:2.4;}
+
+svg.potleg{display:block;width:80%;max-width:280px;height:auto;margin:0 auto .4em;}

@@ -27,9 +27,36 @@ def radar(vals, size=220, rid='', colore='#2F7259'):
         g += '<text x="%.1f" y="%.1f" text-anchor="%s" font-size="10" font-family="sans-serif" fill="#555555">%s</text>' % (lx, ly + 3.5, anc, e(a))
     pts = ' '.join('%.1f,%.1f' % pt(i, vals[i], c, R) for i in ORD)
     return ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="-34 0 %d %d" class="radar"%s role="img" aria-label="Profilo radar">%s'
-            '<polygon points="%s" fill="%s" fill-opacity="0.25" stroke="%s" stroke-width="2"/>'
+            '<polygon points="%s" fill="%s" fill-opacity="0.5" stroke="%s" stroke-width="2"/>'
             '<polygon points="" class="ro" fill="#C0733A" fill-opacity="0.22" stroke="#C0733A" stroke-width="2" stroke-dasharray="4 3"/></svg>') % (
             size + 68, size, (' id="%s" data-s="%d"' % (rid, size)) if rid else '', g, pts, colore, colore)
+POT_SCALA = ['#3B4CC0','#3E7FD9','#3FB0D6','#4CC79A','#8CD15A','#D9D93E','#F5B83A','#F28A2E','#E0492B','#A3195B']
+def pot_colore(p):
+    p = max(1, min(10, p or 1)); i = int(p) - 1; f = p - int(p)
+    if i >= 9 or f < .01: return POT_SCALA[min(9, round(p) - 1)]
+    a = [int(POT_SCALA[i][k:k+2], 16) for k in (1, 3, 5)]; b = [int(POT_SCALA[i+1][k:k+2], 16) for k in (1, 3, 5)]
+    return '#' + ''.join('%02x' % round(x + (y - x) * f) for x, y in zip(a, b))
+POT = {}
+def potenza(n):
+    n = 'Mirto' if n in ('Mirto foglie', 'Mirto bacche') else n
+    return POT.get(n)
+def pot_media(el):
+    el = [(potenza(n), w) for n, w in el if potenza(n)]
+    t = sum(w for _, w in el)
+    return sum(p * w for p, w in el) / t if t else None
+def fmt1(p):
+    p = round(p, 1)
+    return str(int(p)) if p == int(p) else str(p).replace('.', ',')
+def pot_legenda(p):
+    if not p: return ''
+    w = 24; bar = ''.join('<rect x="%d" y="6" width="%d" height="10" fill="%s"/>' % (20 + k*w, w, c) for k, c in enumerate(POT_SCALA))
+    x = 20 + (p - 1) / 9 * (w * 10 - 1)
+    return ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 34" class="potleg" role="img" aria-label="Potenza %s su 10">%s'
+            '<rect x="%.1f" y="1" width="3" height="20" rx="1" fill="#222222" stroke="#ffffff" stroke-width="1"/>'
+            '<text x="20" y="31" font-size="10" font-family="sans-serif" fill="#555555">delicata</text>'
+            '<text x="140" y="31" text-anchor="middle" font-size="10.5" font-weight="bold" font-family="sans-serif" fill="#222222">Potenza %s/10</text>'
+            '<text x="260" y="31" text-anchor="end" font-size="10" font-family="sans-serif" fill="#555555">potente</text></svg>') % (
+            fmt1(p), bar, x - 1.5, fmt1(p))
 def cos(a, b):
     d = sum(x*y for x, y in zip(a, b)); n = math.hypot(*a)*math.hypot(*b)
     return d/n if n else 0
@@ -55,6 +82,8 @@ def add(href, title, body, lvl, scripted=False):
 
 # ---------- botaniche: indice e collegamenti ----------
 seen = set(); per_cat = {}
+for m in MASTER:
+    if m.get('potenza10'): POT.setdefault(m['botanica'], float(m['potenza10']))
 for m in MASTER:
     if m['botanica'] in seen: continue
     seen.add(m['botanica']); per_cat.setdefault(m['categoria'], []).append(m)
@@ -147,10 +176,11 @@ c2 = '''<section epub:type="chapter"><h1>Capitolo 2<br/>Le botaniche</h1>
 <p>Le %d botaniche della libreria di GinBuilder, divise in %d famiglie. Ogni scheda riporta il nome botanico, la parte usata, il profilo aromatico, il carattere, la potenza, la dose di riferimento, le molecole da estrarre, il periodo di raccolta e le zone italiane, con il suo radar.</p>
 <h2>Come leggere il radar</h2>
 <p>Gli otto assi sono quattro di gusto, sentiti dalla lingua (<strong>dolce, amaro, acido, salino</strong>), e quattro di aroma, sentiti dal naso (<strong>agrumato, floreale, erbaceo, speziato</strong>). Ogni valore va da 0 a 5. Il radar mostra la <em>forma</em> del profilo, cioè quali note prevalgono, non la quantità: una botanica potente e una delicata possono avere la stessa forma.</p>
-%s
+<p>Per questo il <strong>colore dell'area</strong> indica la <strong>potenza</strong>, da 1 a 10, con una scala come quella delle previsioni del tempo: blu per le botaniche delicate, verde e giallo per quelle medie, arancio, rosso e porpora per le più potenti. Due radar con la stessa forma e colori diversi raccontano due botaniche che vanno dosate in modo molto diverso. Nelle ricette e nei gin il colore è la potenza media, pesata sulle dosi.</p>
+%s%s
 <p>Sotto ogni radar ci sono le botaniche dal profilo più vicino, con la somiglianza in percentuale: toccandone una, il suo profilo si sovrappone in arancio.</p>
 <h2>Le famiglie</h2><ol class="indice">%s</ol></section>''' % (
-    len(seen), len(cat_list), radar([1,0.5,1,0,4,2,2,3], 240),
+    len(seen), len(cat_list), radar([1,0.5,1,0,4,2,2,3], 240, '', pot_colore(3)) + radar([1,0.5,1,0,4,2,2,3], 240, '', pot_colore(9)), '<p class="nota" style="text-align:center">Stessa forma: a sinistra potenza 3, a destra potenza 9.</p>' + pot_legenda(5.5).replace('Potenza 5,5/10', 'Scala della potenza'),
     ''.join('<li><a href="cap2-%s.xhtml">%s</a> <span class="nota">(%d)</span></li>' % (slug(c), e(c), len(per_cat[c])) for c in cat_list))
 add('cap2.xhtml', 'Capitolo 2 · Le botaniche', c2, 1)
 for c in cat_list:
@@ -170,7 +200,8 @@ for c in cat_list:
         if v:
             rid = 'r-' + slug(n)
             vic = sorted(((x, prof(x), cos(v, prof(x))) for x in nomi_prof if x != n), key=lambda t: -t[2])[:4]
-            body += '<div class="bot-radar">' + radar(v, 220, rid) + chips(rid, vic) + '</div>'
+            pz = potenza(n)
+            body += '<div class="bot-radar">' + radar(v, 220, rid, pot_colore(pz) if pz else '#2F7259') + pot_legenda(pz) + chips(rid, vic) + '</div>'
         body += '<dl class="campi">' + ''.join('<dt>%s</dt><dd>%s</dd>' % (k, val) for k, val in campi) + '</dl>'
         if mol: body += '<p class="mol"><strong>Molecole da estrarre.</strong> %s</p>' % e(mol)
         if m.get('effetto_sovra'): body += '<p class="nota">Se si esagera: %s.</p>' % e(m['effetto_sovra'])
@@ -211,7 +242,8 @@ for nome, inten, maxb, ruoli in D['STYLES']:
             if n not in BASE: el.append((n, (DOSE.get(n, {}).get('test') or 1) * fr * (0.3 if tr else 1)))
     v = media(el)
     stili += '<article class="bot" id="s-%s"><h2>%s</h2><p class="nota">Intensità %s su 5 · fino a %s botaniche</p>' % (slug(nome), e(nome), inten, maxb)
-    if v: stili += '<div class="bot-radar">' + radar(v, 220) + '</div>'
+    pz = pot_media(el)
+    if v: stili += '<div class="bot-radar">' + radar(v, 220, '', pot_colore(pz) if pz else '#2F7259') + pot_legenda(pz) + '</div>'
     stili += '<table class="ruoli"><tbody>' + ''.join('<tr><th>%s</th><td>%s</td></tr>' % (e(r), e(t)) for r, t in ruoli) + '</tbody></table>'
     g = GARN.get(nome)
     if g: stili += '<p class="nota">Garnish: %s (%s). <a href="cap7-garnish.xhtml">Il servizio →</a></p>' % (e(g['g'].lower()), e(g['tipo']))
@@ -264,7 +296,8 @@ def con_radar(frag):
         v = PG[n]; rid = 'g-' + slug(n)
         vic = sorted(((breve(x), PG[x], cos(v, PG[x])) for x in PG if x != n), key=lambda t: -t[2])[:3]
         firma = ', '.join(sorted({b for b, _ in prof_gin(n)[1]}))
-        extra = '<div class="bot-radar">' + radar(v, 220, rid) + chips(rid, vic) + '</div><p class="nota">Firma (senza ginepro, coriandolo e angelica): %s.%s</p>' % (
+        pz = pot_media(prof_gin(n)[1])
+        extra = '<div class="bot-radar">' + radar(v, 220, rid, pot_colore(pz) if pz else '#2F7259') + pot_legenda(pz) + chips(rid, vic) + '</div><p class="nota">Firma (senza ginepro, coriandolo e angelica): %s.%s</p>' % (
             e(firma), (' Lista incompleta: ' + e(GIN[n]['parziale'])) if GIN[n].get('parziale') else '')
         return m.group(0)[:-len('</section>')] + extra + '</section>'
     return re.sub(r'<section class="box"><h3>(.*?)</h3>[\s\S]*?</section>', fai, frag)

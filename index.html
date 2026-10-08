@@ -1936,6 +1936,13 @@ html details.howto a{color:#5A3E1C;}
 .can-corp{fill:color-mix(in srgb,#5D6F8C 30%,var(--surface));stroke:#5D6F8C;stroke-width:1.2;}
 .can-tit{margin:14px 0 4px;font-size:14px;}
 .mat-dove{font-size:12px;white-space:nowrap;}
+
+/* ---------------- Potenza come colore ---------------- */
+.pot-leg{max-width:280px;margin:2px auto 6px;font-size:11.5px;color:var(--ink-soft);}
+.pot-bar{position:relative;height:9px;border-radius:5px;}
+.pot-mk{position:absolute;top:-4px;width:3px;height:17px;margin-left:-1.5px;background:var(--ink);border-radius:2px;box-shadow:0 0 0 1.5px var(--surface);}
+.pot-lab{display:flex;justify-content:space-between;gap:6px;margin-top:3px;}
+.pot-lab span:nth-child(2){font-weight:700;color:var(--ink);}
 </style>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0C110E" id="meta-theme-color">
@@ -3429,7 +3436,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 8 ottobre 2026, ore 09:00 · Matrice: fonti scientifiche</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 8 ottobre 2026, ore 09:30 · Radar: la potenza diventa colore</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -3662,6 +3669,28 @@ function profiloRiferimento(nome, conBase){
   const ok = lista.filter(n => PROFILO8[n]); if (!ok.length) return null;
   return ASSI8.map((_,i) => ok.reduce((a,n) => a + PROFILO8[n][i], 0));
 }
+// ---------- Potenza come colore (scala tipo previsioni del tempo: blu = delicata, porpora = potentissima) ----------
+const POT_SCALA = ['#3B4CC0','#3E7FD9','#3FB0D6','#4CC79A','#8CD15A','#D9D93E','#F5B83A','#F28A2E','#E0492B','#A3195B'];
+function potColore(p){
+  p = Math.max(1, Math.min(10, p || 1)); const i = Math.floor(p) - 1, f = p - Math.floor(p);
+  if (i >= 9 || f < 0.01) return POT_SCALA[Math.min(9, Math.round(p) - 1)];
+  const h = x => [1,3,5].map(k => parseInt(x.substr(k, 2), 16)), a = h(POT_SCALA[i]), b = h(POT_SCALA[i + 1]);
+  return '#' + a.map((v, k) => Math.round(v + (b[k] - v) * f).toString(16).padStart(2, '0')).join('');
+}
+function potenzaDi(nome){
+  const n = nome === 'Mirto foglie' || nome === 'Mirto bacche' ? 'Mirto' : nome;
+  const m = MASTER.find(x => x.botanica === n); return m && m.potenza10 ? +m.potenza10 : null;
+}
+// media della potenza pesata sulle quantità ({n, w})
+function potenzaMedia(el){
+  let t = 0, a = 0; el.forEach(x => { const p = potenzaDi(x.n); if (p){ a += p * x.w; t += x.w; } }); return t ? a / t : null;
+}
+function potLegenda(serie){
+  const pp = serie.filter(se => se.potenza && !se.dash); if (!pp.length) return '';
+  return '<div class="pot-leg"><div class="pot-bar" style="background:linear-gradient(90deg,' + POT_SCALA.join(',') + ')">' +
+    pp.map(se => '<span class="pot-mk" style="left:' + ((se.potenza - 1) / 9 * 100).toFixed(1) + '%" title="' + (se.label || '') + '"></span>').join('') + '</div>' +
+    '<div class="pot-lab"><span>delicata</span><span>Potenza ' + pp.map(se => (pp.length > 1 && se.label ? se.label + ' ' : '') + String(Math.round(se.potenza * 10) / 10).replace('.', ',')).join(' · ') + '/10</span><span>potente</span></div></div>';
+}
 function radarSVG(serie, size, opts){
   size = size || 280; opts = opts || {};
   const c = size/2, R = size/2 - 62, n = ASSI8.length;
@@ -3681,8 +3710,9 @@ function radarSVG(serie, size, opts){
     let h = '';
     const pts = ORDINE_RADAR.map(i => pt(i, vals[i]).join(',')).join(' ');
     if (se.dash) return '<polygon points="'+pts+'" fill="none" stroke="'+se.color+'" stroke-width="1.5" stroke-dasharray="4 3" stroke-linejoin="round"/>';
-    h += '<polygon points="'+pts+'" fill="'+se.color+'" fill-opacity=".22" stroke="'+se.color+'" stroke-width="2" stroke-linejoin="round"/>';
-    vals.forEach((v,i) => { if (v > 0){ const [x,y] = pt(i,v); h += '<circle cx="'+x+'" cy="'+y+'" r="2.8" fill="'+se.color+'"/>'; } });
+    const col = se.potenza ? potColore(se.potenza) : se.color;
+    h += '<polygon points="'+pts+'" fill="'+col+'" fill-opacity="'+(se.potenza ? '.5' : '.22')+'" stroke="'+col+'" stroke-width="2" stroke-linejoin="round"/>';
+    vals.forEach((v,i) => { if (v > 0){ const [x,y] = pt(i,v); h += '<circle cx="'+x+'" cy="'+y+'" r="2.8" fill="'+col+'"/>'; } });
     return h;
   };
   // Vista normale
@@ -3742,7 +3772,7 @@ function radarSVG(serie, size, opts){
   if (rifV) nota += ' <em>Stima da tarare con gli assaggi.</em>';
   nota += '</div>';
   return '<div class="radar-wrap' + (opts.sottrSempre ? ' sottr-sempre' : '') + '"><button type="button" class="ghost-btn radar-sottr-btn" onclick="toggleSottrazione()"><span class="r-norm">\u2296 Vedi in sottrazione</span><span class="r-sottr">\u2295 Vedi il profilo intero</span></button>' +
-    '<svg class="radar8" viewBox="-22 0 '+(size+44)+' '+size+'" role="img" aria-label="Profilo sensoriale. '+desc.replace(/"/g,'')+'">'+g+'<g class="r-norm">'+gN+'</g><g class="r-sottr">'+gS+'</g></svg>' + nota + '</div>';
+    '<svg class="radar8" viewBox="-22 0 '+(size+44)+' '+size+'" role="img" aria-label="Profilo sensoriale. '+desc.replace(/"/g,'')+'">'+g+'<g class="r-norm">'+gN+'</g><g class="r-sottr">'+gS+'</g></svg>' + potLegenda(serie) + nota + '</div>';
 }
 // Coppie opposte (indici di ASSI8): Dolce/Amaro, Acido/Salino, Agrumato/Speziato, Floreale/Erbaceo
 const OPPOSTA_RADAR = [1, 0, 3, 2, 7, 6, 5, 4];
@@ -4040,7 +4070,7 @@ function radarBox(nome){
   const BASE = ['Bacche di ginepro','Coriandolo','Angelica'].filter(n => n !== nome && PROFILO8[n]);
   const conBase = !!window.radarCardBase;
   const COLB = ['#6B7A72','#9A8F6B','#7B6B8F'];
-  const serie = [{vals:valFase(nome, window.radarFase), color:'var(--juniper)', label:nome}];
+  const serie = [{vals:valFase(nome, window.radarFase), color:'var(--juniper)', label:nome, potenza: potenzaDi(nome)}];
   const accese = confAccese(nome);
   accese.forEach(x => serie.push({vals:valFase(x, window.radarFase), color:confColore(x), label:x}));
   let extra = '';
@@ -4059,7 +4089,7 @@ function radarBox(nome){
   const btn = BASE.length ? '<button type="button" class="ghost-btn radar-base-btn" aria-pressed="' + conBase + '" onclick="window.radarCardBase=!window.radarCardBase;showDetail(currentDetailName)">' + (conBase ? '− Togli le botaniche base' : '+ Aggiungi le botaniche base') + '</button>' : '';
   return '<div class="radar-box"><div class="radar-title">Profilo sensoriale</div>' + faseHtml('showDetail(currentDetailName)') + btn +
     radarSVG(serie, 280, accese.length ? {insieme: true, sottrSempre: true} : undefined) + (accese.length && !conBase ? '<div class="radar-legend"><span><i style="background:var(--juniper)"></i>' + nome + '</span>' + accese.map(x => '<button type="button" class="leg-off" title="Tocca per spegnerla" data-n="' + x.replace(/"/g,'&quot;') + '" onclick="radarConf(this.dataset.n)"><i style="background:' + confColore(x) + '"></i>' + x + ' \u2715</button>').join('') + '</div>' : '') + confrontoRadarHtml(nome, v) + '<div class="radar-nota">' + (FASE_NOTA[window.radarFase] ? FASE_NOTA[window.radarFase] + ' ' : '') + 'Si sente soprattutto in <strong>' + doveSi + '</strong>.</div>' + extra +
-    coerenzaHtml(nome) + '<div class="radar-nota">Stima orientativa (0 = assente, 5 = dominante) di quanto ogni nota pesa nel carattere della botanica. Da validare all\'assaggio. Le note opposte stanno una di fronte all\'altra: dolce e amaro, floreale ed erbaceo, agrumato e speziato, acido e salino.</div></div>';
+    coerenzaHtml(nome) + '<div class="radar-nota">Il colore dell\'area indica la <strong>potenza</strong> della botanica, dal blu (delicata) al porpora (potentissima): due botaniche possono avere la stessa forma ma colori diversi. Stima orientativa (0 = assente, 5 = dominante) di quanto ogni nota pesa nel carattere della botanica. Da validare all\'assaggio. Le note opposte stanno una di fronte all\'altra: dolce e amaro, floreale ed erbaceo, agrumato e speziato, acido e salino.</div></div>';
 }
 
 // ---------- Botaniche fondamentali ----------
@@ -5355,7 +5385,7 @@ function renderSummary(){
     const mx = Math.max.apply(null, mediaDi('tutto')) || 1;      // stessa scala per tutti i tempi, cosi' si confrontano
     const vals = mediaDi(window.radarFase).map(x => Math.min(5, Math.round(x / mx * 50) / 10));
     box.innerHTML = '<div class="radar-box"><div class="radar-title">Profilo della ricetta' + (window.radarConBase ? ' (con le base)' : ' (senza le base)') + '</div>' + fasiBtn + btnBase + insBox +
-      radarSVG([{vals:vals,color:'var(--juniper)',label:'Ricetta'}], 280, {stile: elRif.length ? currentStyleName : null, rifVals: elRif.length ? ASSI8.map((_,i) => elRif.reduce((a,x) => a + valFase(x.n, window.radarFase)[i] * x.w, 0)) : null}) + insNota +
+      radarSVG([{vals:vals,color:'var(--juniper)',label:'Ricetta', potenza: potenzaMedia(elenco)}], 280, {stile: elRif.length ? currentStyleName : null, rifVals: elRif.length ? ASSI8.map((_,i) => elRif.reduce((a,x) => a + valFase(x.n, window.radarFase)[i] * x.w, 0)) : null}) + insNota +
       ordineNoteHtml(elenco) +
       (FASE_NOTA[window.radarFase] ? '<div class="radar-nota">' + FASE_NOTA[window.radarFase] + '</div>' : '') +
       '<div class="radar-nota">Mostra la forma del profilo (quali note prevalgono), non l\'intensità. Pesato sulle quantità reali; stima orientativa da validare all\'assaggio.</div></div>';
@@ -6978,7 +7008,7 @@ function radarGinHtml(nome, conf, aperto){
   const breve = n => n.startsWith('Gin ') ? n : n.replace(/ (London Dry|Japanese Craft|Japanese|Premium|Islay Dry|Extra Dry|Dry)? ?Gin$/, '');
   const serie = [];
   if (!conBase) serie.push({vals:ginMedio().map(v => Math.round(v*10)/10), color:'var(--ink-soft)', label:'gin medio', dash:true});
-  serie.push({vals:p.vals, color:'var(--juniper)', label:nome});
+  serie.push({vals:p.vals, color:'var(--juniper)', label:nome, potenza: potenzaMedia(p.el)});
   const pc = conf && conf !== nome ? profiloGin(conf, conBase) : null;
   if (pc) serie.push({vals:pc.vals, color:'#C0733A', label:conf});
   // cosa lo distingue dal gin medio
