@@ -57,6 +57,15 @@ FONTI = '''<section epub:type="bibliography"><h1>Fonti e bibliografia</h1>
 <li>D. M. Bautista et al., «Pungent agents from Szechuan peppers excite sensory neurons by inhibiting two-pore potassium channels», <em>Nature Neuroscience</em> 11 (2008), 772–779. Il sanshool e i canali KCNK.</li>
 <li>N. Hagura, H. Barber, P. Haggard, «Food vibrations: Asian spice sets lips trembling», <em>Proceedings of the Royal Society B</em> 280 (2013). Il formicolio del sansho percepito come una vibrazione di circa 50 Hz.</li>
 </ul>
+<h2>L'origine dei nomi e le domande del curioso</h2>
+<ul>
+<li>D. J. Cosens, A. Manning, «Abnormal electroretinogram from a Drosophila mutant», <em>Nature</em> 224 (1969), 285–287; C. Montell, G. M. Rubin, «Molecular characterization of the Drosophila trp locus: a putative integral membrane protein required for phototransduction», <em>Neuron</em> 2 (1989), 1313–1323. Il moscerino da cui viene il nome TRP.</li>
+<li>L. M. Duncan et al., «Down-regulation of the novel gene melastatin correlates with potential for melanoma metastasis», <em>Cancer Research</em> 58 (1998), 1515–1520. L'origine della M di TRPM.</li>
+<li>B. Hurle et al., «Non-syndromic vestibular disorder with otoconial agenesis in tilted/mergulhador mice caused by mutations in otopetrin 1», <em>Human Molecular Genetics</em> 12 (2003), 777–789. L'otopetrina e gli otoliti.</li>
+<li>Y. Zhang et al., «Coding of sweet, bitter, and umami tastes: different receptor cells sharing similar signaling pathways», <em>Cell</em> 112 (2003), 293–301. TRPM5 nella catena del segnale del gusto.</li>
+<li>K. Talavera et al., «Heat activation of TRPM5 underlies thermal sensitivity of sweet taste», <em>Nature</em> 438 (2005), 1022–1025. Il dolce più intenso al caldo.</li>
+<li>D. P. Hänig, «Zur Psychophysik des Geschmackssinnes», <em>Philosophische Studien</em> 17 (1901), 576–623; V. B. Collings, «Human taste response as a function of locus of stimulation on the tongue and soft palate», <em>Perception &amp; Psychophysics</em> 16 (1974), 169–174. Lo studio originale e la smentita della «mappa della lingua».</li>
+</ul>
 <h2>Percezione visiva e memoria delle immagini</h2>
 <ul>
 <li>H. Chernoff, «The use of faces to represent points in k-dimensional space graphically», <em>Journal of the American Statistical Association</em> 68 (1973), 361–368. Dati a molte dimensioni tradotti in figure, perché l'occhio riconosce le forme meglio dei numeri.</li>

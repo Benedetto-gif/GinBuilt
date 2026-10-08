@@ -36,7 +36,7 @@ setTimeout(()=>{const w=dom.window,d=w.document,ser=new w.XMLSerializer();
  }
  data.PAN={}; ['storia','nozioni','analisi','ruota','altrigin','ridondanza','cocktail','laboratorio','garnish','toniche','prove'].forEach(id=>data.PAN[id]=sezioni(id));
  const box=(pid,txt,k)=>{const el=[...d.querySelectorAll('#panel-'+pid+' details')].find(x=>x.querySelector('summary').textContent.includes(txt));return el?xs(clean(el.querySelector('.howto-body,.tar-body')||el,k)):'';};
- data.QUATTRO=box('matrice','Quattro sistemi'); data.CANALI=box('matrice','I canali e dove',true);
+ data.QUATTRO=box('matrice','Quattro sistemi'); data.CANALI=box('matrice','I canali e dove',true); data.SIGLE=box('matrice','Che cosa vogliono dire le sigle'); data.CURIOSO=box('matrice','Le domande del curioso');
  data.RIDGUIDA=box('ridondanza','Come si usa'); data.TARATURA=box('prove','Taratura del palato');
  data.ABV={}; d.querySelectorAll('#panel-altrigin details.howto > summary').forEach(s=>{const t=s.textContent,n=Object.keys(data.GIN).find(x=>t.startsWith(x));if(n)data.ABV[n]=t.split(' — ')[1]||'';});
  fs.writeFileSync(OUT,JSON.stringify(data));
