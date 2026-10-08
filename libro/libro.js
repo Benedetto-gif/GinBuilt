@@ -18,9 +18,16 @@
     for (var j = 0; j < chips.length; j++) chips[j].addEventListener('click', function(){
       var on = this.className.indexOf(' on') >= 0;
       for (var x = 0; x < chips.length; x++) chips[x].className = 'chip';
-      if (on){ poli.setAttribute('points', ''); return; }
+      var ss = document.getElementById(p.getAttribute('data-r').replace(/^r-/, 's-')), so = ss ? ss.querySelector('.ro') : null;
+      if (on){ poli.setAttribute('points', ''); if (so) so.setAttribute('points', ''); return; }
       this.className = 'chip on';
       poli.setAttribute('points', punti(this.getAttribute('data-v').split(',').map(parseFloat), size));
+      var dv = this.getAttribute('data-s');
+      if (so && dv){
+        var sv = dv.split(',').map(parseFloat), n = sv.length, sz = parseFloat(ss.getAttribute('data-s')) || 220, c = sz / 2, R = sz / 2 - 38, out = [];
+        for (var i = 0; i < n; i++){ var a = -Math.PI / 2 + i * 2 * Math.PI / n; out.push((c + R * sv[i] / 5 * Math.cos(a)).toFixed(1) + ',' + (c + R * sv[i] / 5 * Math.sin(a)).toFixed(1)); }
+        so.setAttribute('points', out.join(' '));
+      }
     });
   })(gruppi[g]);
   // matrice dei sentori
