@@ -71,3 +71,28 @@ table.mol td:first-child{width:45%;font-weight:bold;}
 .can-ker rect{fill:#c8e0e0;stroke:#2F8F8F;stroke-width:1;}
 .can-corp{fill:#cfd4dd;stroke:#5D6F8C;stroke-width:1.2;}
 .cond-hint{font-size:.85em;color:#666;}
+/* frammenti dall'app */
+.bozza{font-family:sans-serif;font-size:.8em;text-transform:uppercase;letter-spacing:.1em;color:#C0583E;}
+.firma{text-align:right;font-style:italic;margin-top:1.5em;}
+section.box{margin:1.2em 0;}
+section.box > h3{color:#1F4D3D;}
+.storia-sub{font-style:italic;}
+table{border-collapse:collapse;width:100%;font-size:.9em;margin:.6em 0;}
+td,th{border:1px solid #ddd5c8;padding:.3em .4em;vertical-align:top;text-align:left;}
+table.ruoli th{width:38%;font-family:sans-serif;font-size:.85em;color:#555;}
+.ck-card{border-top:2px solid #C0733A;margin:1.4em 0;padding-top:.3em;}
+.ck-card h3{color:#1F4D3D;margin:.3em 0 .1em;}
+.ck-origin{font-family:sans-serif;font-size:.78em;text-transform:uppercase;letter-spacing:.06em;color:#888;}
+ul.ck-ing{list-style:none;padding:0;margin:.4em 0;}
+ul.ck-ing li{border-bottom:1px dotted #ccc;padding:.2em 0;}
+ul.ck-ing li span + span{float:right;color:#666;}
+.ck-meta{font-size:.92em;}
+.tag,.gar-tipo,.lab-tec{font-family:sans-serif;font-size:.75em;text-transform:uppercase;letter-spacing:.05em;color:#7a4a1c;}
+.gar-head h3{display:inline;}
+.ton-livelli span{margin-right:1em;font-size:.9em;}
+.print-meta{font-family:sans-serif;font-size:.85em;line-height:1.9;}
+.quiz{border-top:2px solid #8A63B0;margin-top:1.6em;}
+.opz{text-align:center;line-height:2.4;}
+.chip.giusta{background:#2F7259;border-color:#2F7259;color:#fff;}
+.chip.sbagliata{background:#C0583E;border-color:#C0583E;color:#fff;}
+.mesi{line-height:2.4;}

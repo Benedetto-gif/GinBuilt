@@ -48,3 +48,27 @@
   });
   if (q) q.addEventListener('input', applica);
 })();
+(function(){
+  // gioco: riconosci il gin
+  var q = document.querySelectorAll('.quiz');
+  for (var i = 0; i < q.length; i++) (function(art){
+    var bs = art.querySelectorAll('.q-o'), es = art.querySelector('.esito'), fatto = false;
+    for (var j = 0; j < bs.length; j++) bs[j].addEventListener('click', function(){
+      if (fatto) return; fatto = true;
+      for (var k = 0; k < bs.length; k++) if (bs[k].getAttribute('data-ok') === '1') bs[k].className += ' giusta';
+      if (this.getAttribute('data-ok') !== '1'){ this.className += ' sbagliata'; es.textContent = 'No: la risposta giusta è in verde.'; }
+      else es.textContent = 'Esatto!';
+    });
+  })(q[i]);
+  if (q.length){ var s = document.querySelector('.soluzioni'); if (s){ s.className += ' nascosto'; var h = s.previousElementSibling; if (h) h.className += ' nascosto'; } }
+  // calendario: un mese alla volta
+  var mb = document.querySelectorAll('.cal-b'), ms = document.querySelectorAll('.cal-mese');
+  if (mb.length){
+    var mostra = function(m){
+      for (var a = 0; a < ms.length; a++) ms[a].className = 'cal-mese' + (ms[a].getAttribute('data-m') === String(m) ? '' : ' nascosto');
+      for (var b = 0; b < mb.length; b++) mb[b].className = 'chip cal-b' + (mb[b].getAttribute('data-m') === String(m) ? ' on' : '');
+    };
+    for (var c = 0; c < mb.length; c++) mb[c].addEventListener('click', function(){ mostra(this.getAttribute('data-m')); });
+    mostra(new Date().getMonth());
+  }
+})();
