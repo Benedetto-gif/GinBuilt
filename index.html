@@ -1830,6 +1830,17 @@ html details.howto a{color:#5A3E1C;}
 :root[data-theme="dark"] details.howto summary::after{background:#F3ECE2;color:#5A4E43;}
 :root[data-theme="dark"] details.howto a{color:#FFE3A6;}
 @media print{ html details.howto{background:#fff !important;box-shadow:none !important;} html details.howto summary::after{display:none;} }
+
+/* ---------------- Garnish ---------------- */
+.gar-sez{margin:28px 0 12px;font-size:18px;}
+.gar-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+.gar-g{font-weight:700;font-size:15.5px;margin:4px 0 6px;color:var(--ink);}
+.gar-tipo{display:inline-block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:3px 9px;border-radius:999px;white-space:nowrap;vertical-align:middle;}
+.gar-rinforzo{background:color-mix(in srgb, var(--c-erbaceo) 18%, transparent);color:var(--c-erbaceo);border:1px solid color-mix(in srgb, var(--c-erbaceo) 40%, transparent);}
+.gar-contrasto{background:color-mix(in srgb, var(--c-siciliano) 18%, transparent);color:var(--c-siciliano);border:1px solid color-mix(in srgb, var(--c-siciliano) 40%, transparent);}
+.gar-box{text-align:left;}
+.gar-box .radar-title{text-align:center;}
+:root[data-theme="dark"] .gar-tipo{color:#fff;}
 </style>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0C110E" id="meta-theme-color">
@@ -1938,6 +1949,7 @@ html details.howto a{color:#5A3E1C;}
     <button data-tab="ruota">🎡 Ruota degli aromi</button>
     <button data-tab="altrigin">🥃 Gli altri gin</button>
     <button data-tab="cocktail">🍸 Cocktail</button>
+    <button data-tab="garnish">🍋 Garnish</button>
     <button data-tab="laboratorio">🧪 Laboratorio cocktail</button>
   </nav>
   </div>
@@ -2856,6 +2868,7 @@ html details.howto a{color:#5A3E1C;}
     <div class="build-summary">
       <div class="count" id="build-count">0 botaniche selezionate</div>
       <div id="build-radar"></div>
+      <div id="build-garnish"></div>
       <div id="build-semafori"></div>
       <div class="build-warnings" id="build-warnings"></div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;">
@@ -3016,7 +3029,7 @@ html details.howto a{color:#5A3E1C;}
 
     <div class="ck-filters" id="ck-filters"></div>
     <div class="ck-grid" id="ck-grid"></div>
-    <p style="margin:18px 0 0;"><button type="button" class="ghost-btn" onclick="showTab('laboratorio')">🧪 Vai al Laboratorio: cocktail sperimentali →</button></p>
+    <p style="margin:18px 0 0;display:flex;gap:10px;flex-wrap:wrap;"><button type="button" class="ghost-btn" onclick="showTab('laboratorio')">🧪 Vai al Laboratorio: cocktail sperimentali →</button> <button type="button" class="ghost-btn" onclick="showTab('garnish')">🍋 Quale garnish per il tuo gin →</button></p>
     <p class="home-note">Le dosi sono quelle consolidate nella letteratura di bar: sono un punto di partenza, non un dogma.
       Il rapporto fra gin e vermouth nel Martini, per dire, è cambiato di dieci volte in un secolo.</p>
   </section>
@@ -3058,8 +3071,53 @@ html details.howto a{color:#5A3E1C;}
     <p style="margin:18px 0 0;"><button type="button" class="ghost-btn" onclick="showTab('cocktail')">← I cocktail classici</button></p>
   </section>
 
+  <!-- ============ GARNISH ============ -->
+  <section class="panel" id="panel-garnish">
+    <details class="howto">
+      <summary>Come si usa</summary>
+      <div class="howto-body">
+        <p>La mappa abbina a ogni stile di gin la guarnizione che lo serve meglio, con il perché. Le schede dell'app vengono prima; in fondo ci sono gli stili commerciali che l'app non costruisce (Old Tom, Navy Strength, Sloe gin).</p>
+        <ul>
+          <li>Ogni scheda dice se la garnish è un <strong>rinforzo</strong> (ripete un'aromatica già presente nel gin) o un <strong>contrasto</strong> (corregge un eccesso, come la dolcezza o un profumo troppo carico).</li>
+          <li>Nel <strong>Gin Builder</strong>, sotto il radar, trovi la garnish suggerita per la tua ricetta: è calcolata dal profilo delle botaniche scelte, oltre che dallo stile.</li>
+          <li>Le regole generali (scorza o fetta, quante garnish, come preparare le erbe) sono nel riquadro qui sotto.</li>
+        </ul>
+      </div>
+    </details>
+    <details class="howto" open>
+      <summary>Perché la garnish conta</summary>
+      <div class="howto-body">
+        <p>La garnish lavora soprattutto sul naso: il profumo arriva prima del sorso e prepara il palato a ciò che sentirà. Per questo si sceglie in due modi.</p>
+        <ul>
+          <li><strong>Rinforzo.</strong> Ripete una nota già presente nel gin, spesso con le stesse molecole: limone e ginepro condividono limonene e pinene, il rosmarino porta lo stesso cineolo di mirto e lentisco. La nota si sente prima e più nitida.</li>
+          <li><strong>Contrasto.</strong> Corregge un eccesso: un agrume amaro sgrassa un gin dolce, il cetriolo asciuga un gin floreale troppo profumato.</li>
+        </ul>
+        <p><strong>Scorza, non fetta.</strong> Torcendo la scorza sopra il bicchiere (con la buccia verso il drink) si liberano gli oli essenziali senza acidità. La fetta porta succo e l'amaro dell'albedo, e sposta l'equilibrio del drink.</p>
+        <p><strong>Le erbe vanno svegliate.</strong> Un colpo leggero del rametto sul palmo rompe le ghiandole oleose: senza, il rosmarino quasi non si sente.</p>
+        <p><strong>Una garnish, al massimo due elementi.</strong> Con tre o più il gin si perde.</p>
+        <p><strong>La gradazione decide l'intensità.</strong> Più alcol c'è, più la garnish deve essere decisa per emergere. E il drink conta: nel Martini si esprime la scorza e spesso la si scarta, nel gin tonic la si lascia nel bicchiere.</p>
+      </div>
+    </details>
+    <details class="howto">
+      <summary>Dal radar alla garnish</summary>
+      <div class="howto-body">
+        <p>Se il gin non rientra in uno stile, si parte dalla nota che prevale sul radar (senza contare le botaniche base).</p>
+        <ul id="gar-assi"></ul>
+      </div>
+    </details>
+    <h3 class="gar-sez">Gli stili dell'app</h3>
+    <div class="ck-grid" id="gar-grid-app"></div>
+    <h3 class="gar-sez">Altri stili di gin</h3>
+    <div class="ck-grid" id="gar-grid-altri"></div>
+    <p style="margin:18px 0 0;display:flex;gap:10px;flex-wrap:wrap;">
+      <button type="button" class="ghost-btn" onclick="showTab('builder')">🎯 Garnish della tua ricetta, nel Gin Builder →</button>
+      <button type="button" class="ghost-btn" onclick="showTab('cocktail')">🍸 I cocktail classici</button>
+    </p>
+    <p class="home-note">Le garnish sono punti di partenza, non regole: la prova vera è annusare il bicchiere prima e dopo averla messa.</p>
+  </section>
+
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 7 ottobre 2026, ore 21:05 · Sottrazione sempre visibile nella scheda botanica</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 8 ottobre 2026, ore 06:00 · Nuova pagina Garnish e garnish consigliata nel Builder</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -3896,6 +3954,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   // una ricetta alle pagine di approfondimento/riferimento, invece che nell'ordine dei tab.
   const GROUPS = [
     { label: 'Prima di costruire', tabs: ['ridondanza'] },
+    { label: 'Il servizio', tabs: ['garnish'] },
     { label: 'Per approfondire', tabs: ['nozioni', 'analisi', 'ruota', 'altrigin'] }
   ];
   const fuoriHome = btns.filter(b => IN_HOME.indexOf(b.dataset.tab) < 0 && b.dataset.tab !== 'home');
@@ -4988,6 +5047,20 @@ function renderSummary(){
       (FASE_NOTA[window.radarFase] ? '<div class="radar-nota">' + FASE_NOTA[window.radarFase] + '</div>' : '') +
       '<div class="radar-nota">Mostra la forma del profilo (quali note prevalgono), non l\'intensità. Pesato sulle quantità reali; stima orientativa da validare all\'assaggio.</div></div>';
     aggancia();
+  })();
+
+  // garnish consigliata: dal profilo delle botaniche scelte (senza le base) e dallo stile
+  (function(){
+    const box = document.getElementById('build-garnish');
+    if (!box || !window.garnishBoxRicetta) return;
+    const visti = new Set(), nomi = [], pesi = [];
+    [...selects].forEach(sel => {
+      if (!sel.value || visti.has(sel.value)) return; visti.add(sel.value);
+      nomi.push(sel.value); pesi.push(pesoRiga(sel, doseLibreria(sel.value) ?? 0));
+    });
+    const rif = window._rifStile && window._rifStile.nome === currentStyleName ? window._rifStile.elenco.map(x => x.n) : null;
+    const invariata = !!rif && rif.length === nomi.filter(n => PROFILO8[n]).length && rif.every(n => nomi.indexOf(n) >= 0);
+    try { box.innerHTML = nomi.length ? window.garnishBoxRicetta(nomi, pesi, currentStyleName, invariata) : ''; } catch(e){ box.innerHTML = ''; }
   })();
 
   // quota reale del ginepro sul totale (tracce già ridotte alla quantità effettiva)
@@ -8047,6 +8120,185 @@ if ("serviceWorker" in navigator) {
 }
 </script>
 <script>
+// ---------- Garnish: mappa per stile e suggerimento per la ricetta del Builder ----------
+(function(){
+  const S = (g, alt, tipo, perche, come, evita, c) => ({g, alt, tipo, perche, come, evita, c});
+  const GARNISH_STILI = {
+    'Mediterraneo': S('Rametto di rosmarino e scorza di limone', 'Oliva verde o una foglia di basilico', 'rinforzo',
+      'Il rosmarino ripete al naso il cuore erbaceo-resinoso (lentisco, mirto, elicriso); la scorza di limone dà la testa agrumata che lega con il bergamotto.',
+      'Batti il rametto sul palmo prima di metterlo: libera cineolo e canfora.',
+      'Più erbe insieme: diventa un mazzetto e copre l’elicriso.', '--c-mediterraneo'),
+    'Agrumato': S('Scorza di pompelmo espressa', 'Scorza di bergamotto o una ruota sottile di cedro', 'rinforzo',
+      'Lo stile vive di oli agrumati: la scorza aggiunge limonene senza acidità e allunga la testa invece di coprirla.',
+      'Taglia la scorza larga, senza albedo; piegala sopra il bicchiere con la buccia verso il drink e strofina il bordo.',
+      'Spicchi spremuti: acidità e amaro dell’albedo appiattiscono il bergamotto.', '--c-agrumato'),
+    'Marino': S('Oliva verde e scorza di limone', 'Rametto di salicornia o di finocchio di mare', 'rinforzo',
+      'La sapidità dell’oliva ripete la nota salina del finocchio di mare; il limone tiene alta la freschezza ed evita l’effetto brodo.',
+      'Oliva poco salata e sciacquata; la salicornia fresca e soda.',
+      'Olive in salamoia forte o farcite: il sale copre l’alga.', '--c-marino'),
+    'Secco (London Dry)': S('Scorza di limone espressa', 'Scorza di lime nel gin tonic, di pompelmo per un tocco amaro', 'rinforzo',
+      'Limone e ginepro condividono terpeni (limonene, pinene): la scorza accende la nota resinosa e la rende più nitida, senza toccare la struttura secca.',
+      'Esprimi gli oli sopra il bicchiere; nel Martini scarta la scorza, nel gin tonic lasciala dentro.',
+      'Garnish dolci o fruttate: tradiscono lo stile.', '--c-secco'),
+    'Erbaceo': S('Rametto di timo o di salvia, la stessa erba della ricetta', 'Una foglia di alloro', 'rinforzo',
+      'L’erba fresca ripete le note di cuore (timolo, carvacrolo, cineolo) e le porta al naso prima del sorso.',
+      'Una sola erba, già presente in ricetta, svegliata sul palmo.',
+      'Rosmarino e salvia insieme: si sommano e diventano medicinali.', '--c-erbaceo'),
+    'Floreale': S('Nastro di cetriolo', 'Un petalo di rosa edibile o un lampone', 'contrasto',
+      'Il cetriolo porta una nota verde e acquosa che asciuga il profumo dei fiori e lo rende meno stucchevole.',
+      'Taglia un nastro sottile con il pelapatate e appoggialo alla parete del bicchiere.',
+      'Fiori interi molto profumati: lavanda e rosa in eccesso sanno di sapone.', '--c-floreale'),
+    'Speziato': S('Scorza d’arancia e stecca di cannella', 'Qualche grano di pepe rosa o una stella di anice', 'rinforzo',
+      'L’arancia ha una dolcezza calda che fa da ponte tra spezie diverse; la stecca ripete la rifinitura e prolunga la coda.',
+      'Fiamma la scorza solo se vuoi note tostate; la stecca va intera, non spezzata.',
+      'Chiodi di garofano in garnish: dominano tutto il resto.', '--c-speziato'),
+    'Resinoso': S('Bacche di ginepro schiacciate e scorza di pompelmo', 'Un rametto di rosmarino', 'rinforzo',
+      'Le bacche fresche liberano pinene e mircene; il pompelmo ha la stessa amarezza resinosa. Insieme sottolineano lentisco e mirto.',
+      'Schiaccia appena tre o quattro bacche con il dorso del cucchiaio.',
+      'Troppe bacche: il pino diventa trementina.', '--c-viola'),
+    'Siciliano': S('Scorza di arancia rossa o di bergamotto', 'Foglia di limone strofinata sul bordo, o una mandorla tostata', 'rinforzo',
+      'L’agrume siciliano richiama il bergamotto o il mandarino verde della freschezza; la mandorla chiude come la rifinitura della ricetta.',
+      'La foglia di limone va strofinata sul bordo e poi appoggiata: i suoi oli sono più verdi della buccia.',
+      'Fette intere d’arancia: zuccherano il drink.', '--c-siciliano'),
+    'Dolce aromatico': S('Scorza di pompelmo', 'Scorza di arancia amara', 'contrasto',
+      'Vaniglia, tonka e fico sono già morbidi: un agrume amaro porta oli pungenti che sgrassano la dolcezza e allungano il finale senza zucchero.',
+      'Esprimi la scorza e scartala se il drink è già corposo.',
+      'Frutta candita o ciliegie sciroppate: raddoppiano il dolce.', '--c-dolce')
+  };
+  const GARNISH_ALTRI = {
+    'Old Tom': S('Scorza d’arancia', 'Ciliegia al maraschino, solo nei cocktail classici', 'contrasto',
+      'Lo zucchero dell’Old Tom chiede oli amari: la scorza d’arancia bilancia senza aggiungere acidità.',
+      'Esprimi e lascia nel bicchiere.', 'Agrumi dolci in fetta: il drink diventa sciropposo.', '--c-dolce'),
+    'Navy Strength': S('Scorza di lime o di pompelmo, generosa', 'Ruota di lime nel gin tonic', 'rinforzo',
+      'Sopra il 57 % l’alcol trattiene e copre gli aromi: serve una garnish ricca di oli per emergere.',
+      'Scorza lunga, espressa con decisione.', 'Garnish delicate (fiori, cetriolo): spariscono.', '--c-marino'),
+    'Sloe gin': S('Scorza d’arancia', 'Qualche mora o ribes rosso', 'rinforzo',
+      'I frutti rossi ripetono il prugnolo; l’arancia dà profondità e tiene a bada la dolcezza.',
+      'Pochi frutti interi, non schiacciati.', 'Lime: l’acido stona con il frutto cotto.', '--c-floreale')
+  };
+  const ASSI_GAR = [
+    ['Agrumato', 'scorza dello stesso agrume della ricetta (rinforzo)'],
+    ['Floreale', 'nastro di cetriolo (contrasto), oppure un solo petalo (rinforzo leggero)'],
+    ['Erbaceo', 'rametto della stessa erba della ricetta, svegliato sul palmo (rinforzo)'],
+    ['Speziato', 'scorza d’arancia con una spezia intera (rinforzo, l’arancia fa da ponte)'],
+    ['Salino', 'oliva verde o rametto di salicornia (rinforzo)'],
+    ['Dolce', 'agrume amaro, pompelmo o arancia amara (contrasto)'],
+    ['Amaro', 'scorza d’arancia dolce (contrasto)'],
+    ['Acido', 'solo scorze, niente fette né succo (evita di aggiungere acidità)']
+  ];
+  // Botaniche della ricetta che si possono usare fresche come garnish
+  const ECO = {'Limone':'scorza di limone','Lime':'scorza di lime','Pompelmo':'scorza di pompelmo','Arancia dolce':'scorza d’arancia',
+    'Arancia amara':'scorza di arancia amara','Bergamotto':'scorza di bergamotto','Cedro':'scorza di cedro','Mandarino':'scorza di mandarino',
+    'Mandarino verde':'scorza di mandarino verde','Clementina':'scorza di clementina','Yuzu':'scorza di yuzu','Kumquat':'kumquat a rondelle',
+    'Rosmarino':'rametto di rosmarino','Timo':'rametto di timo','Timo limonato':'rametto di timo limonato','Salvia':'foglia di salvia',
+    'Basilico':'foglia di basilico','Alloro':'foglia di alloro','Menta':'cima di menta','Melissa':'foglia di melissa','Verbena odorosa':'foglia di verbena',
+    'Mirto foglie':'rametto di mirto','Finocchio di mare':'rametto di finocchio di mare','Salicornia':'rametto di salicornia','Oliva':'oliva verde',
+    'Cetriolo':'nastro di cetriolo','Pepe rosa':'grani di pepe rosa','Cannella Ceylon':'stecca di cannella','Cassia':'stecca di cassia',
+    'Stella di anice':'stella di anice','Cardamomo verde':'baccello di cardamomo schiacciato','Lavanda':'una spiga di lavanda','Rosa':'petalo di rosa edibile',
+    'Lamponi':'un lampone','Fragola':'fettina di fragola','Mirtillo':'qualche mirtillo','Mora':'una mora','Ribes rosso':'grappolino di ribes'};
+  const AGRUMI = ['Pompelmo','Limone','Bergamotto','Lime','Arancia amara','Arancia dolce','Cedro','Mandarino','Mandarino verde','Clementina','Yuzu','Kumquat'];
+  const ERBE = ['Rosmarino','Timo','Timo limonato','Salvia','Basilico','Alloro','Menta','Mirto foglie','Melissa','Verbena odorosa'];
+  const SPEZIE = ['Cannella Ceylon','Cassia','Pepe rosa','Stella di anice','Cardamomo verde'];
+  const SALINE = ['Oliva','Salicornia','Finocchio di mare'];
+  const esc = t => String(t).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const badge = tipo => '<span class="gar-tipo gar-' + tipo + '">' + tipo + '</span>';
+
+  function scheda(nome, s){
+    return '<div class="ck-card gar-card" style="--c:var(' + s.c + ')">' +
+      '<div class="gar-head"><h3>' + esc(nome) + '</h3>' + badge(s.tipo) + '</div>' +
+      '<p class="gar-g">' + esc(s.g) + '</p>' +
+      '<p class="ck-origin">In alternativa: ' + esc(s.alt) + '</p>' +
+      '<p class="ck-desc">' + esc(s.perche) + '</p>' +
+      '<div class="ck-meta"><strong>Come</strong> ' + esc(s.come) + '<br><strong>Da evitare</strong> ' + esc(s.evita) + '</div></div>';
+  }
+  function renderPagina(){
+    const a = document.getElementById('gar-grid-app'), b = document.getElementById('gar-grid-altri'), l = document.getElementById('gar-assi');
+    if (a) a.innerHTML = Object.keys(GARNISH_STILI).map(n => scheda(n, GARNISH_STILI[n])).join('');
+    if (b) b.innerHTML = Object.keys(GARNISH_ALTRI).map(n => scheda(n, GARNISH_ALTRI[n])).join('');
+    if (l) l.innerHTML = ASSI_GAR.map(([asse, t]) => '<li><strong>' + asse + ' alto</strong>: ' + t + '.</li>').join('');
+  }
+
+  // Suggerimento per la ricetta: nomi = botaniche scelte, pesi = quantità relative (stesso ordine)
+  function suggerisci(nomi, pesi, stile){
+    const P = window.PROFILO8 || (typeof PROFILO8 !== 'undefined' ? PROFILO8 : {});
+    const F = (typeof FONDAMENTALI !== 'undefined') ? FONDAMENTALI : {};
+    const car = [];
+    nomi.forEach((n, i) => { if (P[n] && !F[n]) car.push({n, w: Math.max(0.0001, pesi[i] || 0)}); });
+    const primo = l => l.find(x => nomi.indexOf(x) >= 0);
+    const eco = [...new Set(nomi.filter(n => ECO[n]).map(n => ECO[n]))];
+    const out = { eco, correzioni: [], stile: (stile && GARNISH_STILI[stile]) ? stile : null };
+    if (!car.length){
+      Object.assign(out, { g: 'Scorza di limone espressa', tipo: 'rinforzo', asse: null,
+        perche: 'Con le sole botaniche base il gin è un secco classico: la scorza di limone accende il ginepro con i terpeni che condivide.' });
+      return out;
+    }
+    const tot = car.reduce((a, x) => a + x.w, 0);
+    const v = [0,1,2,3,4,5,6,7].map(i => car.reduce((a, x) => a + P[x.n][i] * x.w, 0) / tot);
+    const mx = Math.max.apply(null, v) || 1;
+    let dom = 4; [5,6,7].forEach(i => { if (v[i] > v[dom]) dom = i; });
+    if (v[3] >= 0.6 * mx && v[3] >= 0.7 * v[dom]) dom = 3;
+    else if (v[0] > v[dom] && v[0] >= mx) dom = 0;
+    else if (v[1] > v[dom] && v[1] >= mx) dom = 1;
+    const nomeAsse = ['Dolce','Amaro','Acido','Salino','Agrumato','Floreale','Erbaceo','Speziato'][dom];
+    if (dom === 4){
+      const ag = primo(AGRUMI) || 'Pompelmo';
+      Object.assign(out, { g: (ECO[ag] || 'scorza di pompelmo').replace(/^./, c => c.toUpperCase()) + ' espressa', tipo: 'rinforzo',
+        perche: 'Prevale la nota agrumata: la scorza dello stesso agrume ne aggiunge gli oli senza acidità e allunga la testa del sorso.' });
+    } else if (dom === 5){
+      Object.assign(out, { g: 'Nastro di cetriolo', tipo: 'contrasto',
+        perche: 'Prevale la nota floreale: il cetriolo porta un verde acquoso che asciuga il profumo e lo tiene lontano dallo stucchevole.' });
+    } else if (dom === 6){
+      const e = primo(ERBE) || 'Rosmarino';
+      Object.assign(out, { g: (ECO[e] || 'rametto di rosmarino').replace(/^./, c => c.toUpperCase()) + ', svegliato sul palmo', tipo: 'rinforzo',
+        perche: 'Prevale la nota erbacea: la stessa erba fresca porta al naso le molecole del cuore prima ancora del sorso.' });
+    } else if (dom === 7){
+      const sp = primo(SPEZIE);
+      Object.assign(out, { g: 'Scorza d’arancia' + (sp ? ' e ' + ECO[sp] : ' e stecca di cannella'), tipo: 'rinforzo',
+        perche: 'Prevale la nota speziata: l’arancia fa da ponte fra le spezie e la spezia intera ne prolunga la coda.' });
+    } else if (dom === 0){
+      Object.assign(out, { g: 'Scorza di pompelmo', tipo: 'contrasto',
+        perche: 'Prevale la nota dolce: un agrume amaro porta oli pungenti che sgrassano la morbidezza e allungano il finale senza zucchero.' });
+    } else if (dom === 1){
+      Object.assign(out, { g: 'Scorza d\u2019arancia dolce', tipo: 'contrasto',
+        perche: 'Prevale la nota amara: la scorza d\u2019arancia porta oli rotondi che smussano l\u2019amaro senza aggiungere zucchero.' });
+    } else {
+      const s = primo(SALINE);
+      Object.assign(out, { g: s ? ECO[s].replace(/^./, c => c.toUpperCase()) + ' e scorza di limone' : 'Oliva verde e scorza di limone', tipo: 'rinforzo',
+        perche: 'Prevale la nota salina: l’oliva o la pianta di scogliera ripetono la sapidità, il limone tiene alta la freschezza.' });
+    }
+    out.asse = nomeAsse;
+    if (v[0] >= 0.7 * mx && dom !== 0 && out.tipo !== 'contrasto') out.correzioni.push('Il profilo è anche dolce: se il drink risulta morbido, aggiungi o preferisci una scorza di pompelmo o di arancia amara (contrasto).');
+    if (v[1] >= 0.7 * mx && dom !== 1) out.correzioni.push('Il profilo è anche amaro: una scorza d’arancia dolce lo arrotonda (contrasto).');
+    if (v[2] >= 0.7 * mx) out.correzioni.push('Il profilo è già acido: usa solo scorze, niente fette né succo.');
+    return out;
+  }
+  // invariata = la ricetta coincide ancora con quella proposta dallo stile: allora vale la scheda dello stile
+  function boxRicetta(nomi, pesi, stile, invariata){
+    const r = suggerisci(nomi, pesi, stile);
+    const st = r.stile ? GARNISH_STILI[r.stile] : null;
+    let h = '<div class="radar-box gar-box"><div class="radar-title">🍋 Garnish consigliata</div>';
+    if (st && invariata){
+      h += '<p class="gar-g">' + esc(st.g) + ' ' + badge(st.tipo) + '</p>' +
+        '<div class="radar-nota">Ricetta dello stile <strong>' + esc(r.stile) + '</strong>: ' + esc(st.perche) + '</div>' +
+        '<div class="radar-nota"><strong>Come</strong> ' + esc(st.come) + ' <strong>Da evitare</strong> ' + esc(st.evita) + '</div>';
+    } else {
+      h += '<p class="gar-g">' + esc(r.g) + ' ' + badge(r.tipo) + '</p>' +
+        '<div class="radar-nota">' + (r.asse ? 'Nella tua ricetta, senza le base, prevale la nota <strong>' + ({Dolce:'dolce',Amaro:'amara',Acido:'acida',Salino:'salina',Agrumato:'agrumata',Floreale:'floreale',Erbaceo:'erbacea',Speziato:'speziata'}[r.asse] || r.asse.toLowerCase()) + '</strong>. ' : '') + esc(r.perche) + '</div>';
+      r.correzioni.forEach(c => { h += '<div class="radar-nota">' + esc(c) + '</div>'; });
+      if (st) h += '<div class="radar-nota">Hai cambiato la ricetta proposta: per lo stile <strong>' + esc(r.stile) + '</strong> la mappa indicava ' + esc(st.g.charAt(0).toLowerCase() + st.g.slice(1)) + ' (' + st.tipo + ').</div>';
+    }
+    if (r.eco.length) h += '<div class="radar-nota">Dalla ricetta, usabili freschi come eco: ' + r.eco.map(esc).join(', ') + '.</div>';
+    h += '<button type="button" class="ghost-btn" style="margin-top:8px;" onclick="showTab(\'garnish\')">Apri la mappa delle garnish →</button></div>';
+    return h;
+  }
+  window.GARNISH_STILI = GARNISH_STILI;
+  window.garnishSuggerita = suggerisci;
+  window.garnishBoxRicetta = boxRicetta;
+  renderPagina();
+  try { if (typeof renderSummary === 'function') renderSummary(); } catch(e){}
+})();
+</script>
+<script>
 // ---------- Pagine interne in stile bento ----------
 // Ogni pagina riceve una tessera d'apertura colorata (come quella della prima pagina)
 // e i suoi riquadri prendono tinte diverse, a giro, partendo dal colore della pagina.
@@ -8070,7 +8322,9 @@ if ("serviceWorker" in navigator) {
     cocktail:    { c:'--c-floreale',     k:'Il banco di prova',
                    s:'Venti classici a base gin con le dosi standard, per vedere la tua ricetta all’opera.' },
     laboratorio: { c:'--ochre',          k:'Il banco di prova',
-                   s:'Cocktail sperimentali con un’ipotesi da verificare, il radar previsto e gli assaggi annotati versione dopo versione.' }
+                   s:'Cocktail sperimentali con un’ipotesi da verificare, il radar previsto e gli assaggi annotati versione dopo versione.' },
+    garnish:     { c:'--c-agrumato',     k:'Il servizio',
+                   s:'Quale guarnizione mettere in base allo stile del gin, e perché: rinforzo di una nota o contrasto a un eccesso.' }
   };
   // Tinte a giro per i riquadri: dopo il colore della pagina, le caratteristiche aromatiche.
   const GIRO = ['--c-agrumato','--c-marino','--c-floreale','--c-erbaceo','--c-viola','--c-mediterraneo','--c-speziato','--c-secco','--c-siciliano'];
