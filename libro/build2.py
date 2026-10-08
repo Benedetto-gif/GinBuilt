@@ -12,10 +12,10 @@ e = lambda t: html.escape(str(t), quote=True)
 def slug(t):
     t = unicodedata.normalize('NFKD', t).encode('ascii', 'ignore').decode()
     return re.sub(r'[^a-z0-9]+', '-', t.lower()).strip('-')
-POS = [0]*8
+POS = [0]*len(ASSI)
 for k, d in enumerate(ORD): POS[d] = k
 def pt(i, v, c, R):
-    a = -math.pi/2 + POS[i]*2*math.pi/8
+    a = -math.pi/2 + POS[i]*2*math.pi/len(ASSI)
     return (c + R*v/5*math.cos(a), c + R*v/5*math.sin(a))
 def radar(vals, size=220, rid='', colore='#2F7259'):
     c = size/2; R = size/2 - 38
@@ -68,7 +68,7 @@ def media(el):
     el = [(n, w) for n, w in el if prof(n) and w > 0]
     if not el: return None
     t = sum(w for _, w in el)
-    return [round(sum(prof(n)[i]*w for n, w in el)/t, 2) for i in range(8)]
+    return [round(sum(prof(n)[i]*w for n, w in el)/t, 2) for i in range(len(ASSI))]
 def chips(rid, vicini):
     return '<p class="sim" data-r="%s">Profilo vicino: %s</p>' % (rid, ' '.join(
         '<button type="button" class="chip" data-v="%s">%s %d%%</button>' % (','.join(str(x) for x in v), e(n), round(c*100)) for n, v, c in vicini))
@@ -152,7 +152,7 @@ def sez(pan, titolo):
     raise KeyError(titolo)
 
 # ---------- copertina, introduzione ----------
-cr = radar([1,1,0,0,2,0,2,5], 300)
+cr = radar(P['Bacche di ginepro'], 300)
 cr = re.sub(r'<svg[^>]*>', '<g transform="translate(150,400)">', cr, count=1).replace('</svg>', '</g>')
 cr = re.sub(r'<polygon points="" class="ro"[^>]*/>', '', cr).replace('stroke="#d8d2c6"', 'stroke="#E9D8A6" stroke-opacity="0.5"').replace('fill="#555555"', 'fill="#E9D8A6"').replace('font-size="10"', 'font-size="12"').replace('fill="#2F7259" fill-opacity="0.25" stroke="#2F7259"', 'fill="#E9D8A6" fill-opacity="0.35" stroke="#FBF8F1"')
 cover_svg = open(os.path.join(QUI, 'copertina.svg')).read()
@@ -170,14 +170,14 @@ add('cap2.xhtml', 'Capitolo 2 · Le botaniche', '''<section epub:type="chapter">
 <p>Le %d botaniche della libreria di GinBuilder, divise in %d famiglie. Ogni scheda riporta il nome botanico, la parte usata, il profilo aromatico, il carattere, la potenza, la dose di riferimento, le molecole da estrarre, il periodo di raccolta e le zone italiane, con il suo radar.</p>
 <ol class="indice"><li><a href="cap2-radar.xhtml">Come leggere il radar</a></li><li><a href="cap2-famiglie.xhtml">Le famiglie delle botaniche</a></li></ol></section>''' % (len(seen), len(cat_list)), 1)
 add('cap2-radar.xhtml', 'Come leggere il radar', '''<section><h1>Come leggere il radar</h1>
-<p>Gli otto assi sono quattro di gusto, sentiti dalla lingua (<strong>dolce, amaro, acido, salino</strong>), e quattro di aroma, sentiti dal naso (<strong>agrumato, floreale, erbaceo, speziato</strong>). Ogni valore va da 0 a 5. Il radar mostra la <em>forma</em> del profilo, cioè quali note prevalgono, non la quantità: una botanica potente e una delicata possono avere la stessa forma.</p>
+<p>I dieci assi sono quattro di gusto, sentiti dalla lingua (<strong>dolce, amaro, acido, salino</strong>), e sei di aroma, sentiti dal naso (<strong>agrumato, floreale, erbaceo, speziato, resinoso, fruttato</strong>). Ogni valore va da 0 a 5. Ogni nota sta di fronte alla sua opposta: dolce e amaro, fruttato e resinoso, floreale ed erbaceo, agrumato e speziato, acido e salino. Il <strong>resinoso</strong> raccoglie le note di conifera e di balsamo (pino, ginepro, lentisco), il <strong>fruttato</strong> la frutta che non è agrume (bacche, frutta matura, frutta tropicale). Il radar mostra la <em>forma</em> del profilo, cioè quali note prevalgono, non la quantità: una botanica potente e una delicata possono avere la stessa forma.</p>
 <p>Per questo il <strong>colore dell'area</strong> indica la <strong>potenza</strong>, da 1 a 10, con una scala come quella delle previsioni del tempo: blu per le botaniche delicate, verde e giallo per quelle medie, arancio, rosso e porpora per le più potenti. Due radar con la stessa forma e colori diversi raccontano due botaniche che vanno dosate in modo molto diverso. Nelle ricette e nei gin il colore è la potenza media, pesata sulle dosi.</p>
 %s
 <p>La potenza è anche soggettiva: se una tua botanica rende più o meno del previsto, sotto il suo radar puoi spostare il cursore e fissare la tua potenza. Il lettore la ricorda; il valore di libreria si ripristina con un tocco.</p>
 <p>Sotto ogni radar ci sono le botaniche dal profilo più vicino, con la somiglianza in percentuale: toccandone una, il suo profilo si sovrappone in arancio.</p>
 <p class="naviga"><a href="cap2.xhtml">Capitolo 2</a> · <a href="cap2-famiglie.xhtml">Le famiglie delle botaniche →</a></p></section>''' % (
-    radar([1,0.5,1,0,4,2,2,3], 240, '', pot_colore(3)) + '<p class="nota" style="text-align:center">Potenza 3: una botanica delicata.</p>' +
-    radar([1,0.5,1,0,4,2,2,3], 240, '', pot_colore(9)) + '<p class="nota" style="text-align:center">Stessa forma, potenza 9: una botanica potente.</p>' +
+    radar([1,0.5,1,0,4,2,2,3,2,1], 240, '', pot_colore(3)) + '<p class="nota" style="text-align:center">Potenza 3: una botanica delicata.</p>' +
+    radar([1,0.5,1,0,4,2,2,3,2,1], 240, '', pot_colore(9)) + '<p class="nota" style="text-align:center">Stessa forma, potenza 9: una botanica potente.</p>' +
     pot_legenda(5.5).replace('Potenza 5,5/10', 'Scala della potenza')), 2)
 add('cap2-famiglie.xhtml', 'Le famiglie delle botaniche', '''<section><h1>Le famiglie delle botaniche</h1>
 <p class="nota">Tocca una famiglia: si apre la sua pagina con tutte le botaniche da scegliere.</p><ol class="indice">%s</ol>
@@ -288,7 +288,7 @@ add('cap5-matrice.xhtml', 'La matrice dei sentori', '''<section><h1>La matrice d
 add('cap5-ruota.xhtml', 'La ruota degli aromi', '<section><h1>La ruota degli aromi</h1><p>Le famiglie aromatiche del gin e i loro descrittori, con le botaniche dell\'app che portano ciascuna nota. Si parte dalla famiglia e si scende al descrittore preciso.</p>%s<h2>Tutte le famiglie</h2>%s</section>' % (
     sez('ruota', ''), sez('ruota', 'Tutte le famiglie')), 2)
 add('cap5-assaggio.xhtml', "L'analisi sensoriale", '<section><h1>L\'analisi sensoriale</h1>%s</section>' % sez('analisi', ''), 2)
-add('cap5-taratura.xhtml', 'La taratura del palato', '<section><h1>La taratura del palato</h1><p>Per dare voti confrontabili sugli otto assi conviene tarare il palato con soluzioni di riferimento, come fanno i panel di assaggio professionali.</p>%s</section>' % pulisci(D['TARATURA']).replace("Il voto dell'app è", 'Il voto è'), 2)
+add('cap5-taratura.xhtml', 'La taratura del palato', '<section><h1>La taratura del palato</h1><p>Per dare voti confrontabili sui dieci assi conviene tarare il palato con soluzioni di riferimento, come fanno i panel di assaggio professionali.</p>%s</section>' % pulisci(D['TARATURA']).replace("Il voto dell'app è", 'Il voto è'), 2)
 add('cap5-schede.xhtml', 'Le schede di assaggio', '<section><h1>Le schede di assaggio</h1>%s</section>' % sez('analisi', 'Schede di assaggio da stampare'), 2)
 
 # ---------- 6. I gin del mondo ----------

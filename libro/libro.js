@@ -1,10 +1,10 @@
 (function(){
-  var ORD = [0, 5, 4, 2, 1, 6, 7, 3], POS = [];
+  var ORD = [0, 9, 5, 4, 2, 1, 8, 6, 7, 3], POS = [];
   for (var k = 0; k < ORD.length; k++) POS[ORD[k]] = k;
   function punti(vals, size){
     var c = size / 2, R = size / 2 - 38, out = [];
     for (var o = 0; o < ORD.length; o++){
-      var i = ORD[o], a = -Math.PI / 2 + POS[i] * 2 * Math.PI / 8;
+      var i = ORD[o], a = -Math.PI / 2 + POS[i] * 2 * Math.PI / ORD.length;
       out.push((c + R * vals[i] / 5 * Math.cos(a)).toFixed(1) + ',' + (c + R * vals[i] / 5 * Math.sin(a)).toFixed(1));
     }
     return out.join(' ');
