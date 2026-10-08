@@ -1040,19 +1040,10 @@ ul.prova3 li{margin:3px 0;}
 .radar-title{font-weight:600;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:4px;}
 .radar8{width:100%;max-width:300px;height:auto;display:block;margin:0 auto;}
 .radar-wrap{position:relative;}
-.radar-sottr-btn{display:block;margin:6px auto 2px;font-size:12.5px;padding:5px 12px;}
-html:not(.radar-sottr) .radar-wrap .r-sottr{display:none;}
-html.radar-sottr .radar-wrap .r-norm{display:none;}
 /* Modalita' semplice: strumenti avanzati nascosti, radar sempre nella vista intera */
-html:not(.avanzato) .fase-sel, html:not(.avanzato) .radar-sottr-btn, html:not(.avanzato) .soglia-box,
+html:not(.avanzato) .fase-sel, html:not(.avanzato) .soglia-box,
 html:not(.avanzato) .soglia-slot, html:not(.avanzato) .radar-insieme{display:none !important;}
-html:not(.avanzato) .radar-wrap .r-sottr{display:none !important;}
 html:not(.avanzato) .radar-wrap .r-norm{display:revert !important;}
-/* Nella scheda botanica, con botaniche sovrapposte, la vista in sottrazione c'e' sempre (anche senza strumenti avanzati) */
-html:not(.avanzato) .radar-wrap.sottr-sempre .radar-sottr-btn{display:block !important;}
-html.radar-sottr:not(.avanzato) .radar-wrap.sottr-sempre .r-sottr{display:revert !important;}
-html.radar-sottr:not(.avanzato) .radar-wrap.sottr-sempre .r-norm{display:none !important;}
-html:not(.radar-sottr):not(.avanzato) .radar-wrap.sottr-sempre .r-sottr{display:none !important;}
 .radar-base-btn{display:block;width:100%;margin:6px 0 10px;font-size:14px;font-weight:600;color:var(--juniper);border:1.5px solid var(--juniper);background:transparent;padding:9px 14px;}
 .radar-base-btn[aria-pressed="true"]{background:var(--juniper);color:var(--surface);}
 .fase-sel{display:flex;gap:6px;justify-content:center;margin:6px 0 8px;}
@@ -3460,7 +3451,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 9 ottobre 2026, ore 00:05 · Radar: torna la disposizione degli assi precedente</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 9 ottobre 2026, ore 00:30 · Radar: giudizi sui valori delle note, tolta la vista in sottrazione</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -3769,26 +3760,34 @@ function sensRicettaBox(el){
 // Acido / Salino (la coppia piu' debole). Vicine fra loro le note affini: fruttato fra dolce e floreale,
 // agrumato accanto all'acido, resinoso fra amaro ed erbaceo.
 const ORDINE_RADAR = [0, 9, 5, 4, 2, 1, 8, 6, 7, 3];
-// Baricentro di un profilo sul radar: dove pende e quanto (0 % = tutte le note si compensano, 100 % = una sola nota).
-function _posRadar(){ const P = []; ORDINE_RADAR.forEach((d, k) => { P[d] = k; }); return P; }
+// Carattere di un profilo, indipendente dalla disposizione degli assi sul disegno (la forma e l'area del radar
+// cambiano se si spostano gli assi; questi numeri no).
+// - note: le note che prevalgono (almeno il 60 % della piu' alta, al massimo due).
+// - pct: concentrazione 0-100 (indice di Herfindahl normalizzato sulle quote delle dieci note):
+//   0 = tutte le note uguali, 100 = una sola nota; due note pari ~44, tre pari ~26.
 function baricentro(vals){
-  const P = _posRadar(); let x = 0, y = 0, tot = 0;
-  vals.forEach((v,i) => { if (P[i] === undefined) return; const a = -Math.PI/2 + P[i]*2*Math.PI/ASSI8.length; x += v*Math.cos(a); y += v*Math.sin(a); tot += v; });
-  const len = Math.hypot(x, y);
-  // Le note che danno il nome alla direzione: quelle rimaste dopo la sottrazione, pesate per quanto
-  // spingono nella direzione del baricentro (cosi' i nomi e il verdetto vengono dalla stessa misura).
-  const ang = Math.atan2(y, x);
-  const net = vals.map((v,i) => v - (vals[OPPOSTA_RADAR[i]] || 0));
-  const spinta = net.map((v,i) => { const a = -Math.PI/2 + P[i]*2*Math.PI/ASSI8.length; return [i, v > 0 ? v * Math.cos(a - ang) : 0]; });
-  const mx = Math.max.apply(null, spinta.map(z => z[1]));
-  const note = spinta.filter(z => z[1] > 0 && z[1] >= mx * 0.5).sort((a,b) => b[1]-a[1]).slice(0,2).map(z => ASSI8[z[0]].toLowerCase());
-  return { x, y, tot, pct: tot ? Math.round(len / tot * 100) : 0, ang, note };
+  const v = ASSI8.map((_,i) => Math.max(0, +vals[i] || 0)), tot = v.reduce((a,x) => a + x, 0);
+  if (!tot) return { pct: 0, note: [], tot: 0 };
+  const n = v.length, h = v.reduce((a,x) => a + (x/tot) * (x/tot), 0);
+  const mx = Math.max.apply(null, v);
+  const note = v.map((x,i) => [i, x]).filter(z => z[1] > 0 && z[1] >= mx * 0.6).sort((a,b) => b[1]-a[1]).slice(0,2).map(z => ASSI8[z[0]].toLowerCase());
+  return { pct: Math.max(0, Math.round((h - 1/n) / (1 - 1/n) * 100)), note, tot };
 }
 function direzioneTesto(b){
-  if (b.pct < 8 || !b.note.length) return 'nessuna nota in particolare';
+  if (!b.note.length) return 'nessuna nota';
   return b.note.length > 1 ? b.note[0] + (/^e/.test(b.note[1]) ? ' ed ' : ' e ') + b.note[1] : b.note[0];
 }
-const carattereTesto = p => p <= 15 ? 'neutro' : p <= 35 ? 'sfumato' : p <= 60 ? 'marcato' : 'netto';
+const carattereTesto = p => p <= 6 ? 'equilibrato' : p <= 15 ? 'sfumato' : p <= 35 ? 'marcato' : 'netto';
+// Profilo portato a "forma": la nota piu' alta vale 5. Serve a confrontare ricette di dosi diverse.
+function forma5(v){ const w = ASSI8.map((_,i) => +v[i] || 0), m = Math.max.apply(null, w) || 1; return w.map(x => x / m * 5); }
+// Giudizio di stile: somiglianza nota per nota fra le due forme (la stessa misura dei profili vicini).
+function giudizioStile(ric, rif){
+  const a = forma5(ric), b = forma5(rif), sim = somiglianza(a, b);
+  const esito = sim >= 0.70 ? 'in stile' : sim >= 0.50 ? 'in parte in stile' : 'fuori stile';
+  const piu = ASSI8.filter((_,i) => a[i] - b[i] >= 1).map(x => x.toLowerCase());
+  const meno = ASSI8.filter((_,i) => b[i] - a[i] >= 1).map(x => x.toLowerCase());
+  return { sim: Math.round(sim * 100), esito, piu, meno };
+}
 // Profilo di riferimento di uno stile dell'app o di un gin commerciale (somma delle sue botaniche).
 function profiloRiferimento(nome, conBase){
   const lista = ((window.STILI_RIF || {})[nome] || ((window.GIN_RIF || {})[nome] || {}).b || []).slice();
@@ -3893,85 +3892,39 @@ function radarSVG(serie, size, opts){
     vals.forEach((v,i) => { if (v > 0){ const [x,y] = pt(i,v); h += '<circle cx="'+x+'" cy="'+y+'" r="2.8" fill="'+col+'"/>'; } });
     return h;
   };
-  // Vista normale
-  let gN = '', gS = '';
+  let gN = '';
   serie.forEach(se => { gN += disegna(se, se.vals); });
-  // Vista in sottrazione: per ogni coppia di note opposte resta solo la differenza, dalla parte della piu' forte.
-  // Tutto al centro = equilibrio; un solo braccio lungo = squilibrio massimo. Il punto pieno e' il baricentro (dove pende).
-  const sq = [];
-  serie.forEach((se, k) => {
-    const ev = (EQ && EQ[k]) || se.vals;
-    const net = ev.map((v,i) => Math.max(0, v - ev[OPPOSTA_RADAR[i]]));
-    gS += disegna(se, net);
-    let bx = 0, by = 0, tot = 0;
-    ev.forEach((v,i) => { const [x,y] = pt(i, v); bx += x - c; by += y - c; tot += v; });
-    const len = Math.hypot(bx, by), pct = tot ? Math.round(len / (R * tot / 5) * 100) : 0;
-    sq.push({ l: se.label || '', c: se.color, pct, ev: EQ && EQ[k] ? ev : null, fv: se.vals });
-    if (EQ && EQ[k] && !se.dash && !(opts.insieme && serie.length > 1)){   // dove pende la sola firma: freccia tratteggiata vuota
-      const bf = baricentro(se.vals);
-      if (bf.pct >= 3){ const Lf = R * bf.pct / 100, fx = c + Math.cos(bf.ang) * Lf, fy = c + Math.sin(bf.ang) * Lf;
-        gS += '<line x1="'+c+'" y1="'+c+'" x2="'+fx+'" y2="'+fy+'" stroke="'+se.color+'" stroke-width="1.5" stroke-dasharray="5 4"/>' +
-              '<circle cx="'+fx+'" cy="'+fy+'" r="4.5" fill="var(--surface)" stroke="'+se.color+'" stroke-width="1.5"/>'; }
-    }
-    if (len > 0.5 && !se.dash){
-      const ux = bx / len, uy = by / len, L = R * pct / 100;
-      gS += '<line x1="'+c+'" y1="'+c+'" x2="'+(c+ux*L)+'" y2="'+(c+uy*L)+'" stroke="'+se.color+'" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="1 4"/>' +
-            '<circle cx="'+(c+ux*L)+'" cy="'+(c+uy*L)+'" r="4.5" fill="'+se.color+'" stroke="var(--surface)" stroke-width="1.5"/>';
-    } else if (!se.dash) gS += '<circle cx="'+c+'" cy="'+c+'" r="4.5" fill="'+se.color+'" stroke="var(--surface)" stroke-width="1.5"/>';
-  });
-  gS += '<circle cx="'+c+'" cy="'+c+'" r="3" fill="none" stroke="var(--ink-soft)" stroke-width="1"/>';
   const desc = serie.map(se => (se.label||'') + ': ' + se.vals.map((v,i) => ASSI8[i]+' '+v).join(', ')).join('. ');
-  // Il profilo da giudicare: la somma delle serie (tavolo di lavoro) o la prima serie
+  // Il profilo da giudicare: la somma delle serie (tavolo di lavoro) o la prima serie.
+  // I giudizi usano solo i valori delle note, mai la forma o l'area del disegno.
   const piene = serie.filter(se => !se.dash);
   const insieme = opts.insieme ? ASSI8.map((_,i) => piene.reduce((a,se) => a + se.vals[i], 0)) : (piene[0] || serie[0] || {vals:[]}).vals;
-  const freccia = (b, col, vuoto) => {
-    if (b.pct < 3) return '';
-    const L = R * b.pct / 100, ux = Math.cos(b.ang), uy = Math.sin(b.ang);
-    return '<line x1="'+c+'" y1="'+c+'" x2="'+(c+ux*L)+'" y2="'+(c+uy*L)+'" stroke="'+col+'" stroke-width="2" stroke-dasharray="'+(vuoto ? '5 4' : '1 0')+'" stroke-linecap="round"/>' +
-      '<circle cx="'+(c+ux*L)+'" cy="'+(c+uy*L)+'" r="5.5" fill="'+(vuoto ? 'var(--surface)' : col)+'" stroke="'+col+'" stroke-width="2"/>';
-  };
-  const bR = baricentro(insieme);                      // la combinazione cosi' com'e' (firma)
-  const bE = EQI ? baricentro(EQI) : null;              // la stessa con le base dentro
-  if (opts.insieme && piene.length > 1){
-    if (bE){ gS += freccia(bE, 'var(--ink)', false) + freccia(bR, 'var(--ink)', true); }
-    else gS += freccia(bR, 'var(--ink)', false);
-  }
-  const conBaseTxt = b => 'con le base nel bicchiere pende verso <strong>' + direzioneTesto(b) + '</strong> (carattere ' + carattereTesto(b.pct) + ', ' + b.pct + ' %)';
-  let nota = '<div class="radar-nota r-sottr">';
+  const car = b => '<strong>' + direzioneTesto(b) + '</strong> (carattere ' + carattereTesto(b.pct) + ', concentrazione ' + b.pct + ' %)';
+  const bR = baricentro(insieme), bE = EQI ? baricentro(EQI) : null;
+  const sq = serie.map((se, k) => ({ l: se.label || '', fv: se.vals, ev: EQ && EQ[k] ? EQ[k] : null, dash: se.dash }));
+  let nota = '<div class="radar-nota r-giudizio">';
   const rifV = opts.rifVals || (opts.stile ? profiloRiferimento(opts.stile, opts.conBase) : null);
   if (rifV){
-    const bT = baricentro(rifV);
-    gS += freccia(bT, 'var(--ink-soft)', true);
-    let d = Math.abs(bR.ang - bT.ang) * 180 / Math.PI; if (d > 180) d = 360 - d;
-    const fT = bT.pct >= 12, fR = bR.pct >= 12;   // sotto il 12 % un profilo e' quasi neutro e la sua direzione conta poco
-    let esito, forza = '';
-    if (!fT && !fR){ esito = 'in stile'; forza = ': tutti e due quasi equilibrati'; d = 0; }
-    else if (!fT){ esito = bR.pct < 25 ? 'in stile' : 'fuori stile'; forza = bR.pct < 25 ? ', appena pi\u00f9 marcato del riferimento, che \u00e8 quasi equilibrato' : ': il riferimento \u00e8 equilibrato, la ricetta invece pende'; d = 0; }
-    else if (!fR && bR.pct < 5){ esito = 'fuori stile'; forza = ': la ricetta \u00e8 neutra, il riferimento ha un carattere preciso'; d = 0; }
-    else {
-      esito = d <= 25 ? 'in stile' : d <= 60 ? 'in parte in stile' : 'fuori stile';
-      forza = bR.pct < bT.pct * 0.6 ? ', con un carattere meno marcato del riferimento' : (bR.pct > bT.pct * 1.4 && bR.pct - bT.pct > 10) ? ', con un carattere pi\u00f9 marcato del riferimento' : '';
-    }
-    nota += '<br><strong>' + opts.stile + (opts.rifVals ? '</strong> (la ricetta proposta dallo stile, con le stesse dosi)' : '</strong>') + ' pende verso <strong>' + direzioneTesto(bT) + '</strong> (carattere ' + carattereTesto(bT.pct) + ', ' + bT.pct + ' %, cerchio vuoto). ' +
-      (opts.insieme ? 'La combinazione' : 'La ricetta') + ' pende verso <strong>' + direzioneTesto(bR) + '</strong> (' + carattereTesto(bR.pct) + ', ' + bR.pct + ' %' + (opts.insieme && piene.length > 1 ? ', punto grande' : '') + ')' +
-      ': <strong>' + esito + '</strong>' + (d > 25 ? ' (scarto di ' + Math.round(d) + '\u00b0)' : '') + forza + '.';
+    const gS = giudizioStile(insieme, rifV), bT = baricentro(rifV);
+    nota += '<strong>' + opts.stile + (opts.rifVals ? '</strong> (la ricetta proposta dallo stile, con le stesse dosi)' : '</strong>') + ': prevalgono ' + car(bT) + '. ' +
+      (opts.insieme ? 'La combinazione' : 'La ricetta') + ': prevalgono ' + car(bR) + '. ' +
+      'Somiglianza con lo stile ' + gS.sim + ' %: <strong>' + gS.esito + '</strong>' +
+      (gS.piu.length || gS.meno.length ? ' (' + [gS.piu.length ? 'pi\u00f9 ' + gS.piu.join(', ') : '', gS.meno.length ? 'meno ' + gS.meno.join(', ') : ''].filter(Boolean).join('; ') + ')' : '') + '.';
     const eq0 = bE || (sq.find(x => x.ev) ? baricentro(sq.find(x => x.ev).ev) : null);
-    if (eq0) nota += ' Il confronto con lo stile \u00e8 fra firme; ' + (opts.insieme ? 'la combinazione ' : 'la ricetta ') + conBaseTxt(eq0) + '.';
+    if (eq0) nota += ' Il confronto \u00e8 fra firme; con le base nel bicchiere prevalgono ' + car(eq0) + '.';
+    nota += ' <em>Stima da tarare con gli assaggi.</em>';
   } else {
     const solo = opts.insieme && piene.length > 1;
-    nota += sq.map(x => {
-      const nome = sq.length > 1 && x.l ? '<strong>' + x.l + '</strong>' : 'Il profilo';
-      if (x.ev && !solo){ const be = baricentro(x.ev), bf = baricentro(x.fv);
-        return (sq.length > 1 && x.l ? '<strong>' + x.l + '</strong>: ' : 'Il gin ') + conBaseTxt(be) + '; la sola firma pende verso ' + direzioneTesto(bf) + ' (' + bf.pct + ' %, freccia tratteggiata)'; }
-      return nome + (x.ev ? ', da sola,' : '') + ' pende verso ' + direzioneTesto(baricentro(x.fv)) + ' (carattere ' + carattereTesto(baricentro(x.fv).pct) + ', ' + baricentro(x.fv).pct + ' %)';
+    nota += sq.filter(x => !x.dash).map(x => {
+      const nome = sq.length > 1 && x.l ? '<strong>' + x.l + '</strong>: ' : '';
+      if (x.ev && !solo) return nome + 'prevalgono ' + car(baricentro(x.fv)) + '; con le base nel bicchiere ' + car(baricentro(x.ev));
+      return nome + 'prevalgono ' + car(baricentro(x.fv));
     }).join(' \u00b7 ') + '.';
-    if (solo) nota += bE ? ' <strong>Insieme</strong> ' + conBaseTxt(bE) + ' (punto pieno); senza le base pendono verso ' + direzioneTesto(bR) + ' (' + bR.pct + ' %, punto vuoto).'
-                         : ' <strong>Insieme</strong> (punto grande) pendono verso ' + direzioneTesto(bR) + ' (' + carattereTesto(bR.pct) + ', ' + bR.pct + ' %).';
+    if (solo) nota += ' <strong>Insieme</strong> prevalgono ' + car(bR) + (bE ? '; con le base nel bicchiere ' + car(bE) : '') + '.';
   }
-  if (rifV) nota += ' <em>Stima da tarare con gli assaggi.</em>';
   nota += '</div>';
-  return '<div class="radar-wrap' + (opts.sottrSempre ? ' sottr-sempre' : '') + '"><button type="button" class="ghost-btn radar-sottr-btn" onclick="toggleSottrazione()"><span class="r-norm">\u2296 Vedi in sottrazione</span><span class="r-sottr">\u2295 Vedi il profilo intero</span></button>' +
-    '<svg class="radar8" viewBox="-22 0 '+(size+44)+' '+size+'" role="img" aria-label="Profilo sensoriale. '+desc.replace(/"/g,'')+'">'+g+'<g class="r-norm">'+gN+'</g><g class="r-sottr">'+gS+'</g></svg>' + potLegenda(serie) + nota + '</div>';
+  return '<div class="radar-wrap">' +
+    '<svg class="radar8" viewBox="-22 0 '+(size+44)+' '+size+'" role="img" aria-label="Profilo sensoriale. '+desc.replace(/"/g,'')+'">'+g+'<g class="r-norm">'+gN+'</g></svg>' + potLegenda(serie) + nota + '</div>';
 }
 // ---------- Equilibrio con le base ----------
 // La forma del radar mostra la firma (senza ginepro, coriandolo e angelica), ma l'equilibrio di un gin si giudica
@@ -3988,17 +3941,7 @@ function eqConBase(el, fase){
   const tot = tutte.reduce((a,x) => a + x.w, 0) || 1;
   return ASSI8.map((_,i) => tutte.reduce((a,x) => a + (valFase(x.n, fase || window.radarFase)[i] || 0) * x.w, 0) / tot);
 }
-// Coppie opposte (indici di ASSI8): Dolce/Amaro, Acido/Salino, Agrumato/Speziato, Floreale/Erbaceo, Resinoso/Fruttato
-const OPPOSTA_RADAR = [1, 0, 3, 2, 7, 6, 5, 4, 9, 8];
-// Il tasto vale per tutti i radar dell'app: cambia solo cosa si vede, senza ricalcolare le pagine.
-function toggleSottrazione(){
-  const on = !document.documentElement.classList.contains('radar-sottr');
-  document.documentElement.classList.toggle('radar-sottr', on);
-  try { localStorage.setItem('gb-radar-sottr', on ? '1' : ''); } catch(e){}
-  if (on && typeof mostraAvviso === 'function') mostraAvviso('\u2296 Vista in sottrazione',
-    '<p>Ogni nota toglie la sua opposta (dolce/amaro, acido/salino, agrumato/speziato, floreale/erbaceo, resinoso/fruttato): al centro il profilo \u00e8 neutro, un braccio lungo indica un carattere netto.</p><p>L\u2019equilibrio si giudica sempre <strong>con le botaniche base dentro</strong> (ginepro, coriandolo, angelica), perch\u00e9 nel bicchiere ci sono sempre: una botanica fruttata da sola pende tutta sul fruttato, ma il ginepro la bilancia con il resinoso. La freccia tratteggiata mostra dove pende la sola firma.</p><p>Lo squilibrio non \u00e8 un difetto: \u00e8 lo stile. Vale per tutti i radar dell\u2019app; si torna al profilo intero con lo stesso pulsante.</p>', '', null);
-}
-try { if (localStorage.getItem('gb-radar-sottr')) document.documentElement.classList.add('radar-sottr'); } catch(e){}
+try { localStorage.removeItem('gb-radar-sottr'); } catch(e){}
 
 // ---------- Testa, cuore, coda: quando si sente ogni botanica ----------
 // Pesi per tempo (testa, cuore, coda) ricavati da ruolo (funzione_compound) e persistenza: stima orientativa
@@ -4222,7 +4165,7 @@ window.radarConf = function(n){
 };
 window.radarConfVuota = function(){ window.radarConfronta = []; showDetail(currentDetailName); };
 // Come cambia la botanica aperta quando le si aggiungono le sovrapposte: profilo (le note che dominano),
-// direzione e carattere (dal baricentro, la stessa misura della vista in sottrazione del radar),
+// note che prevalgono, somiglianza e carattere (misure che non dipendono dalla disposizione degli assi),
 // note in comune che si sommano e note che porta in più.
 function cambiamentoHtml(nome, v0, accese){
   if (!accese.length) return '';
@@ -4232,27 +4175,22 @@ function cambiamentoHtml(nome, v0, accese){
   const altre = ASSI8.map((_, i) => Math.max.apply(null, lista.map(w => w[i])));
   const top = vals => { const mx = Math.max.apply(null, vals); return ASSI8.map((a, i) => [a.toLowerCase(), vals[i]]).filter(z => z[1] > 0 && z[1] >= mx * 0.6).sort((a, b) => b[1] - a[1]).slice(0, 3).map(z => z[0]); };
   const b0 = baricentro(v), bM = baricentro(mix);
-  let d = Math.abs(b0.ang - bM.ang) * 180 / Math.PI; if (d > 180) d = 360 - d;
   const con = accese.length === 1 ? accese[0] : accese.slice(0, -1).join(', ') + ' e ' + accese[accese.length - 1];
   const dir0 = direzioneTesto(b0), dirM = direzioneTesto(bM);
-  let spost;
-  // sotto il 12 % un profilo e' quasi neutro e la sua direzione conta poco (stesso criterio del radar)
-  if (b0.pct < 12 && bM.pct < 12) spost = 'resta equilibrata, senza una direzione precisa';
-  else if (b0.pct < 12) spost = 'prende una direzione che da sola quasi non aveva';
-  else if (bM.pct < 12) spost = 'perde la sua direzione: le note opposte si compensano';
-  else spost = d <= 25 ? 'mantiene la sua direzione' : d <= 60 ? 'devia in parte (' + Math.round(d) + '\u00b0)' : 'cambia direzione (' + Math.round(d) + '\u00b0)';
-  const c0 = carattereTesto(b0.pct), cM = carattereTesto(bM.pct), piu = bM.pct > b0.pct + 8, meno = bM.pct < b0.pct - 8;
+  const sm = Math.round(somiglianza(forma5(v), forma5(mix)) * 100);
+  const spost = sm >= 70 ? 'resta simile a com\u2019era (somiglianza ' + sm + ' %)' : sm >= 50 ? 'cambia in parte (somiglianza ' + sm + ' %)' : 'cambia carattere (somiglianza ' + sm + ' %)';
+  const c0 = carattereTesto(b0.pct), cM = carattereTesto(bM.pct), piu = bM.pct > b0.pct + 5, meno = bM.pct < b0.pct - 5;
   const car = c0 === cM ? (piu ? 'resta ' + cM + ', un po\u2019 più deciso' : meno ? 'resta ' + cM + ', un po\u2019 più sfumato' : 'resta ' + cM) : (piu ? 'diventa più marcato' : 'diventa più sfumato');
   const somma = ASSI8.filter((_, i) => v[i] >= 2 && altre[i] >= 2).map(a => a.toLowerCase());
   const proprie = ASSI8.filter((_, i) => v[i] - altre[i] >= 1).map(a => a.toLowerCase());
   const r = (k, t) => '<div class="camb-riga"><span class="camb-k">' + k + '</span><span>' + t + '</span></div>';
   return '<div class="camb-box"><div class="radar-title">Come cambia ' + nome + ' con ' + con + '</div>' +
     r('Profilo', 'da sola: ' + (top(v).join(', ') || '\u2014') + ' \u2192 insieme: <strong>' + (top(mix).join(', ') || '\u2014') + '</strong>') +
-    r('Direzione', 'da sola pende verso ' + dir0 + ' \u2192 insieme verso <strong>' + dirM + '</strong>: ' + spost) +
+    r('Prevalgono', 'da sola ' + dir0 + ' \u2192 insieme <strong>' + dirM + '</strong>: ' + spost) +
     r('Carattere', 'da ' + c0 + ' (' + b0.pct + ' %) a <strong>' + cM + '</strong> (' + bM.pct + ' %): ' + car) +
     (somma.length ? r('Si sommano', 'le note in comune non si annullano, si rafforzano: <strong>' + somma.join(', ') + '</strong> (attenzione a non superare la soglia voluta)') : '') +
     r('Porta in più', proprie.length ? proprie.join(', ') : 'quasi nulla: rafforzerebbe soltanto note già presenti' + (somma.length ? ' (ridondanza)' : '')) +
-    '<div class="radar-nota">Il profilo insieme è la somma delle botaniche a pari peso. Con «\u2296 Vedi in sottrazione» sul radar le note opposte si compensano e il punto grande mostra dove pende la miscela.</div></div>';
+    '<div class="radar-nota">Il profilo insieme è la somma delle botaniche a pari peso. Somiglianza e carattere si calcolano sui valori delle note, non sulla forma del disegno.</div></div>';
 }
 function confrontoRadarHtml(nome, v){
   const gr = parenti(nome);
@@ -4304,9 +4242,9 @@ function radarBox(nome){
   }
   const btn = BASE.length ? '<button type="button" class="ghost-btn radar-base-btn" aria-pressed="' + conBase + '" onclick="window.radarCardBase=!window.radarCardBase;showDetail(currentDetailName)">' + (conBase ? '− Togli le botaniche base' : '+ Aggiungi le botaniche base') + '</button>' : '';
   return '<div class="radar-box"><div class="radar-title">Profilo sensoriale</div>' + faseHtml('showDetail(currentDetailName)') + btn +
-    radarSVG(serie, 280, conBase ? {insieme: true, sottrSempre: !!accese.length} : Object.assign(accese.length ? {insieme: true, sottrSempre: true, eqInsieme: eqConBase(serie.map(se => ({n: se.label})))} : {},
+    radarSVG(serie, 280, conBase ? {insieme: true} : Object.assign(accese.length ? {insieme: true, eqInsieme: eqConBase(serie.map(se => ({n: se.label})))} : {},
       {eq: serie.map(se => eqConBase([{n: se.label}]))})) + (accese.length && !conBase ? '<div class="radar-legend"><span><i style="background:var(--juniper)"></i>' + nome + '</span>' + accese.map(x => '<button type="button" class="leg-off" title="Tocca per spegnerla" data-n="' + x.replace(/"/g,'&quot;') + '" onclick="radarConf(this.dataset.n)"><i style="background:' + confColore(x) + '"></i>' + x + ' \u2715</button>').join('') + '</div>' : '') + confrontoRadarHtml(nome, v) + '<div class="radar-nota">' + (FASE_NOTA[window.radarFase] ? FASE_NOTA[window.radarFase] + ' ' : '') + 'Si sente soprattutto in <strong>' + doveSi + '</strong>.</div>' + extra +
-    potControllo(nome) + coerenzaHtml(nome) + '<div class="radar-nota">Il colore dell\'area indica la <strong>potenza</strong> della botanica, dal blu (delicata) al porpora (potentissima): due botaniche possono avere la stessa forma ma colori diversi. Stima orientativa (0 = assente, 5 = dominante) di quanto ogni nota pesa nel carattere della botanica. Da validare all\'assaggio. Le note opposte stanno una di fronte all\'altra: dolce e amaro, fruttato e resinoso, floreale ed erbaceo, agrumato e speziato, acido e salino. La forma è quella della sola botanica; la direzione (vista in sottrazione) è giudicata con le base dentro, come nel bicchiere.</div></div>';
+    potControllo(nome) + coerenzaHtml(nome) + '<div class="radar-nota">Il colore dell\'area indica la <strong>potenza</strong> della botanica, dal blu (delicata) al porpora (potentissima): due botaniche possono avere la stessa forma ma colori diversi. Stima orientativa (0 = assente, 5 = dominante) di quanto ogni nota pesa nel carattere della botanica. Da validare all\'assaggio. Si leggono i raggi, non l\'area: la forma e l\'area cambiano se si cambia l\'ordine degli assi, i valori no. La forma è quella della sola botanica; le note che prevalgono nel bicchiere si giudicano con le base dentro.</div></div>';
 }
 
 // ---------- Botaniche fondamentali ----------
@@ -8317,7 +8255,7 @@ document.addEventListener('click', e => {
 });
 
 // ---------- Modalita' semplice / Strumenti avanzati ----------
-// Spenti: sui radar restano il profilo, il confronto e le botaniche base. Accesi: testa/cuore/coda, vista in sottrazione,
+// Spenti: sui radar restano il profilo, il confronto e le botaniche base. Accesi: testa/cuore/coda,
 // soglia di somiglianza e "macerano tutte insieme".
 function avanzatiAttivi(){ return document.documentElement.classList.contains('avanzato'); }
 function aggiornaTileAvanzati(){
@@ -8335,7 +8273,7 @@ window.toggleAvanzati = function(){
   if (!on){ window.radarFase = 'tutto'; window.radarInsieme = 0; }
   aggiornaTileAvanzati(); ridisegnaRadar();
   mostraAvviso(on ? '\ud83e\uddf0 Strumenti avanzati accesi' : 'Modalit\u00e0 semplice',
-    on ? '<p>Sui radar compaiono di nuovo: <strong>Testa / Cuore / Coda</strong>, la vista <strong>in sottrazione</strong>, la <strong>soglia di somiglianza</strong> e, nel Builder, <strong>macerano tutte insieme</strong>.</p>'
+    on ? '<p>Sui radar compaiono di nuovo: <strong>Testa / Cuore / Coda</strong>, la <strong>soglia di somiglianza</strong> e, nel Builder, <strong>macerano tutte insieme</strong>.</p>'
        : '<p>Sui radar restano il profilo, il confronto e le botaniche base. Gli strumenti avanzati si riaccendono dal menu, sotto Impostazioni.</p>', '', null);
 };
 try { if (localStorage.getItem('gb-avanzati')) document.documentElement.classList.add('avanzato'); else { window.radarFase = 'tutto'; window.radarInsieme = 0; } } catch(e){}
