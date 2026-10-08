@@ -57,6 +57,15 @@ FONTI = '''<section epub:type="bibliography"><h1>Fonti e bibliografia</h1>
 <li>D. M. Bautista et al., «Pungent agents from Szechuan peppers excite sensory neurons by inhibiting two-pore potassium channels», <em>Nature Neuroscience</em> 11 (2008), 772–779. Il sanshool e i canali KCNK.</li>
 <li>N. Hagura, H. Barber, P. Haggard, «Food vibrations: Asian spice sets lips trembling», <em>Proceedings of the Royal Society B</em> 280 (2013). Il formicolio del sansho percepito come una vibrazione di circa 50 Hz.</li>
 </ul>
+<h2>Percezione visiva e memoria delle immagini</h2>
+<ul>
+<li>H. Chernoff, «The use of faces to represent points in k-dimensional space graphically», <em>Journal of the American Statistical Association</em> 68 (1973), 361–368. Dati a molte dimensioni tradotti in figure, perché l'occhio riconosce le forme meglio dei numeri.</li>
+<li>R. N. Shepard, «Recognition memory for words, sentences, and pictures», <em>Journal of Verbal Learning and Verbal Behavior</em> 6 (1967), 156–163; L. Standing, «Learning 10,000 pictures», <em>Quarterly Journal of Experimental Psychology</em> 25 (1973), 207–222. Le immagini si riconoscono molto meglio delle parole, anche a migliaia.</li>
+<li>A. Paivio, <em>Imagery and Verbal Processes</em>, Holt, Rinehart and Winston, New York 1971. La doppia codifica: ciò che è anche immagine si ricorda meglio.</li>
+<li>N. Cowan, «The magical number 4 in short-term memory: a reconsideration of mental storage capacity», <em>Behavioral and Brain Sciences</em> 24 (2001), 87–114. La memoria di lavoro tiene circa quattro elementi alla volta.</li>
+<li>K. Koffka, <em>Principles of Gestalt Psychology</em>, Harcourt, Brace, New York 1935. La chiusura: l'occhio completa e raccoglie in una figura i punti uniti da un contorno.</li>
+<li>K. Grill-Spector, R. Malach, «The human visual cortex», <em>Annual Review of Neuroscience</em> 27 (2004), 649–677. Le aree della corteccia visiva che riconoscono oggetti e forme.</li>
+</ul>
 <p class="nota">Titoli, riviste e anni sono stati controllati; prima di un'eventuale pubblicazione conviene verificare anche pagine e DOI di ogni voce.</p>
 <p class="nota">Le soglie di temperatura dei canali (circa 43 °C per TRPV1, sotto circa 25 °C per TRPM8, fra circa 33 e 39 °C per TRPV3) sono valori misurati in laboratorio su cellule; nella bocca cambiano con la concentrazione delle molecole e con la persona.</p></section>'''
 

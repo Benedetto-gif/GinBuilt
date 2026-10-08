@@ -105,6 +105,7 @@ def page(title, body, scripted=False):
             e(title), '<script src="libro.js" defer="defer"></script>' if scripted else '', body)
 files = []
 def add(href, title, body, lvl, scripted=False):
+    if '@@TAB@@' in body: body = body.replace('@@TAB@@', TAB_ES).replace('@@IMP@@', IMP_ES)
     files.append((slug(href.replace('.xhtml', '')), href, title, page(title, body, scripted), scripted, lvl))
 
 # ---------- botaniche: indice e collegamenti ----------
@@ -196,10 +197,31 @@ add('cap1.xhtml', 'Capitolo 1 · Storia del gin', '<section epub:type="chapter">
 add('cap2.xhtml', 'Capitolo 2 · Le botaniche', '''<section epub:type="chapter"><h1>Capitolo 2<br/>Le botaniche</h1>
 <p>Le %d botaniche della libreria di GinBuilder, divise in %d famiglie. Ogni scheda riporta il nome botanico, la parte usata, il profilo aromatico, il carattere, la potenza, la dose di riferimento, le molecole da estrarre, il periodo di raccolta e le zone italiane, con i suoi due radar: il profilo sensoriale e le sensazioni in bocca.</p>
 <ol class="indice"><li><a href="cap2-radar.xhtml">Come leggere il radar</a></li><li><a href="cap2-famiglie.xhtml">Le famiglie delle botaniche</a></li></ol></section>''' % (len(seen), len(cat_list)), 1)
+ES_BOT = ['Limone', 'Bacche di ginepro', 'Rosa', 'Bergamotto', 'Lentisco']
+TAB_ES = ('<table class="matrice-es"><thead><tr><th></th>' + ''.join('<th title="%s">%s</th>' % (e(a), e(a[:3])) for a in ASSI) + '</tr></thead><tbody>' +
+          ''.join('<tr><th>%s</th>%s</tr>' % (e(n.replace('Bacche di ginepro', 'Ginepro')), ''.join('<td>%d</td>' % x for x in P[n])) for n in ES_BOT) + '</tbody></table>' +
+          '<p class="nota" style="text-align:center">' + ' · '.join('%s = %s' % (e(a[:3]), e(a.lower())) for a in ASSI) + '</p>')
+IMP_ES = ''.join('<div class="impronta">%s<p>%s</p></div>' % (radar(P[n], 200, '', pot_colore(potenza(n)) if potenza(n) else '#2F7259'), e(n.replace('Bacche di ginepro', 'Ginepro'))) for n in ES_BOT)
 add('cap2-radar.xhtml', 'Come leggere il radar', '''<section><h1>Come leggere il radar</h1>
 <p>I dieci assi sono quattro di gusto, sentiti dalla lingua (<strong>dolce, amaro, acido, salino</strong>), e sei di aroma, sentiti dal naso (<strong>agrumato, floreale, erbaceo, speziato, resinoso, fruttato</strong>). Ogni valore va da 0 a 5. Sul disegno ogni nota sta di fronte a una nota di carattere opposto: dolce e amaro, fruttato e resinoso, floreale ed erbaceo, agrumato e speziato, acido e salino. È una disposizione scelta per comodità di lettura, non una misura. Il <strong>resinoso</strong> raccoglie le note di conifera e di balsamo (pino, ginepro, lentisco), il <strong>fruttato</strong> la frutta che non è agrume (bacche, frutta matura, frutta tropicale). Il radar mostra la <em>forma</em> del profilo, cioè quali note prevalgono, non la quantità: una botanica potente e una delicata possono avere la stessa forma.</p>
-<p><strong>Si leggono i raggi, non l'area.</strong> Gli unici dati del radar sono i valori sui dieci raggi. La forma e l'area dipendono dall'ordine in cui gli assi sono disposti: due note forti vicine fanno una vela larga, le stesse due note messe una di fronte all'altra fanno una linea sottile, ma la botanica è la stessa. Per questo forma e area vanno prese solo come un colpo d'occhio, e ogni confronto si fa nota per nota. Così sono calcolate la somiglianza fra due profili (la parte che hanno in comune, nota per nota) e il <em>carattere</em> (quanto il profilo si concentra su poche note: equilibrato, sfumato, marcato, netto).</p>
+<p><strong>Si leggono i raggi, non l'area.</strong> Gli unici dati del radar sono i valori sui dieci raggi. La forma e l'area dipendono dall'ordine in cui gli assi sono disposti: due note forti vicine fanno una vela larga, le stesse due note messe una di fronte all'altra fanno una linea sottile, ma la botanica è la stessa. Per questo l'area va presa come un'<em>impronta</em>, fatta per riconoscere e non per misurare, e ogni confronto si fa nota per nota. Così sono calcolate la somiglianza fra due profili (la parte che hanno in comune, nota per nota) e il <em>carattere</em> (quanto il profilo si concentra su poche note: equilibrato, sfumato, marcato, netto).</p>
 <p><strong>La firma e il gin nel bicchiere.</strong> Il radar di una botanica, e quello della <em>firma</em> di un gin, mostrano il profilo <em>senza</em> ginepro, coriandolo e angelica: servono a vedere che cosa la botanica aggiunge e a confrontarla con le altre. Non dicono però quali note prevalgono nel gin finito. Una fragola da sola è tutta fruttato e dolce; nel bicchiere c'è sempre il ginepro, e il gin con la fragola resta un gin, con un accento fruttato. Per questo, nell'app, le note che prevalgono nel bicchiere si giudicano sempre con le base dentro.</p>
+<h2>Perché un radar e non una tabella</h2>
+<p>Gli stessi numeri si potrebbero scrivere in una tabella: le botaniche sulle righe, i dieci sentori sulle colonne, un valore da 0 a 5 in ogni casella. I dati sarebbero identici e la tabella darebbe gli stessi risultati in ogni calcolo. Ecco cinque botaniche così:</p>
+@@TAB@@
+<p>Cinquanta numeri. Per dire quale botanica somiglia a quale bisogna confrontarli riga per riga, tenendone a mente parecchi insieme. La memoria di lavoro però ne regge circa quattro alla volta: dopo pochi confronti si torna indietro a rileggere.</p>
+<p>Ecco gli stessi cinquanta numeri come impronte:</p>
+<div class="impronte">@@IMP@@</div>
+<p>Qui il confronto è immediato: il ginepro e il lentisco hanno impronte vicine, e così il limone e il bergamotto; la rosa non somiglia a nessuna delle altre. Nella tabella la stessa cosa c'era, ma andava cercata. Non è un abbellimento: è il modo in cui funziona la vista.</p>
+<ul>
+<li><strong>Le forme si leggono in parallelo.</strong> La corteccia visiva riconosce una figura tutta insieme, in una frazione di secondo, mentre i numeri si leggono uno alla volta.</li>
+<li><strong>L'occhio chiude i contorni.</strong> Uniti da una linea e colorati, dieci punti diventano un'unica figura (la «chiusura» della psicologia della Gestalt). Dieci segmenti sparsi restano dieci cose da guardare.</li>
+<li><strong>Le immagini si ricordano meglio delle parole e dei numeri.</strong> Negli esperimenti di riconoscimento le persone riconoscono migliaia di immagini viste una volta sola. Dopo qualche settimana di uso, l'impronta del ginepro si riconosce come un volto.</li>
+<li><strong>L'idea non è nuova.</strong> Nel 1973 lo statistico Herman Chernoff propose di tradurre dati a molte dimensioni in disegni di volti, proprio perché l'occhio coglie a colpo d'occhio differenze che in una tabella sfuggono.</li>
+</ul>
+<p>Per funzionare, l'impronta ha una condizione: gli assi devono stare sempre nello stesso ordine. Un volto si riconosce perché occhi, naso e bocca stanno sempre al loro posto. Per questo in tutto il libro, e nell'app, la disposizione non cambia mai.</p>
+<p class="nota">La tabella resta lo strumento per i calcoli, l'impronta per l'occhio e la memoria. Le fonti sono nell'appendice C, sotto «Percezione visiva e memoria delle immagini».</p>
+
 <p>Per questo il <strong>colore dell'area</strong> indica la <strong>potenza</strong>, da 1 a 10, con una scala come quella delle previsioni del tempo: blu per le botaniche delicate, verde e giallo per quelle medie, arancio, rosso e porpora per le più potenti. Due radar con la stessa forma e colori diversi raccontano due botaniche che vanno dosate in modo molto diverso. Nelle ricette e nei gin il colore è la potenza media, pesata sulle dosi.</p>
 %s
 <p>La potenza è anche soggettiva: se una tua botanica rende più o meno del previsto, sotto il suo radar puoi spostare il cursore e fissare la tua potenza. Il lettore la ricorda; il valore di libreria si ripristina con un tocco.</p>
