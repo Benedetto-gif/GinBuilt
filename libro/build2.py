@@ -1,11 +1,11 @@
-# Costruisce l'ePub completo del Trattato del gin compound dai dati esportati da GinBuilder (dati.json)
+# Costruisce l'ePub completo di «Gin in provetta» (quaderno di laboratorio sul gin compound) dai dati esportati da GinBuilder (dati.json)
 import json, math, re, os, html, zipfile, unicodedata, datetime, sys, random
 QUI = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, QUI)
 from testi import INTRO, USO, FONTI, RIDONDANZE
 D = json.load(open(os.path.join(QUI, 'dati.json')))
 P, ASSI, ORD, MOL, MASTER, DOSE, MAT, PAN = D['P'], D['ASSI'], D['ORD'], D['MOL'], D['MASTER'], D['DOSE'], D['MAT'], D['PAN']
-OUT = sys.argv[1] if len(sys.argv) > 1 else 'Trattato-del-gin-compound.epub'
+OUT = sys.argv[1] if len(sys.argv) > 1 else 'Gin-in-provetta.epub'
 CSS = open(os.path.join(QUI, 'libro.css')).read()
 JS = open(os.path.join(QUI, 'libro.js')).read()
 e = lambda t: html.escape(str(t), quote=True)
@@ -155,14 +155,7 @@ def sez(pan, titolo):
 cr = radar([1,1,0,0,2,0,2,5], 300)
 cr = re.sub(r'<svg[^>]*>', '<g transform="translate(150,400)">', cr, count=1).replace('</svg>', '</g>')
 cr = re.sub(r'<polygon points="" class="ro"[^>]*/>', '', cr).replace('stroke="#d8d2c6"', 'stroke="#E9D8A6" stroke-opacity="0.5"').replace('fill="#555555"', 'fill="#E9D8A6"').replace('font-size="10"', 'font-size="12"').replace('fill="#2F7259" fill-opacity="0.25" stroke="#2F7259"', 'fill="#E9D8A6" fill-opacity="0.35" stroke="#FBF8F1"')
-cover_svg = '''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 900">
-<rect width="600" height="900" fill="#1F4D3D"/><rect x="30" y="30" width="540" height="840" rx="18" fill="none" stroke="#E9D8A6" stroke-width="3"/>
-<text x="300" y="190" text-anchor="middle" font-family="Georgia,serif" font-size="30" letter-spacing="8" fill="#E9D8A6">TRATTATO DEL</text>
-<text x="300" y="290" text-anchor="middle" font-family="Georgia,serif" font-size="82" font-weight="bold" fill="#FBF8F1">Gin</text>
-<text x="300" y="350" text-anchor="middle" font-family="Georgia,serif" font-size="34" font-style="italic" fill="#FBF8F1">compound</text>
-%s
-<text x="300" y="770" text-anchor="middle" font-family="Georgia,serif" font-size="26" fill="#E9D8A6">Benedetto Sgroi</text>
-<text x="300" y="810" text-anchor="middle" font-family="Georgia,serif" font-size="18" fill="#C9D8CF">dalle pagine di GinBuilder</text></svg>''' % cr
+cover_svg = open(os.path.join(QUI, 'copertina.svg')).read()
 add('intro.xhtml', 'Introduzione', INTRO, 1)
 add('uso.xhtml', 'Come usare questo libro', USO, 1)
 
@@ -362,7 +355,7 @@ nav = page('Indice', '<nav epub:type="toc" id="toc"><h1>Indice</h1>%s</nav>' % t
 oggi = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
 man = ['<item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>',
        '<item id="css" href="libro.css" media-type="text/css"/>', '<item id="js" href="libro.js" media-type="application/javascript"/>',
-       '<item id="cover" href="copertina.svg" media-type="image/svg+xml" properties="cover-image"/>',
+       '<item id="cover" href="copertina.png" media-type="image/png" properties="cover-image"/>',
        '<item id="coverp" href="copertina.xhtml" media-type="application/xhtml+xml" properties="svg"/>']
 spine = ['<itemref idref="coverp"/>', '<itemref idref="nav"/>']
 ids = set()
@@ -374,7 +367,7 @@ for fid, href, title, xh, scr, lvl in files:
 opf = '''<?xml version="1.0" encoding="UTF-8"?>
 <package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="uid" xml:lang="it">
 <metadata xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:identifier id="uid">urn:uuid:3e8b6f0a-2c4d-4f71-9a5e-0b7c1d2e3f40</dc:identifier>
-<dc:title>Trattato del gin compound</dc:title><dc:creator>Benedetto Sgroi</dc:creator><dc:language>it</dc:language>
+<dc:title id="t">Gin in provetta</dc:title><meta refines="#t" property="title-type">main</meta><dc:title id="st">Quaderno di laboratorio sul gin compound</dc:title><meta refines="#st" property="title-type">subtitle</meta><dc:creator>Benedetto Sgroi</dc:creator><dc:language>it</dc:language>
 <meta property="dcterms:modified">%s</meta><meta name="cover" content="cover"/></metadata>
 <manifest>%s</manifest><spine>%s</spine></package>''' % (oggi, ''.join(man), ''.join(spine))
 with zipfile.ZipFile(OUT, 'w') as z:
@@ -382,7 +375,8 @@ with zipfile.ZipFile(OUT, 'w') as z:
     def w(name, data): z.writestr(name, data, compress_type=zipfile.ZIP_DEFLATED)
     w('META-INF/container.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container"><rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/></rootfiles></container>')
     w('OEBPS/content.opf', opf); w('OEBPS/nav.xhtml', nav); w('OEBPS/libro.css', CSS); w('OEBPS/libro.js', JS)
-    w('OEBPS/copertina.svg', '<?xml version="1.0" encoding="UTF-8"?>\n' + cover_svg)
+    import cairosvg
+    z.writestr('OEBPS/copertina.png', cairosvg.svg2png(bytestring=cover_svg.encode(), output_width=1200), compress_type=zipfile.ZIP_STORED)
     w('OEBPS/copertina.xhtml', page('Copertina', '<div class="copertina">%s</div>' % cover_svg))
     for fid, href, title, xh, scr, lvl in files: w('OEBPS/' + href, xh)
 print('ok', OUT, len(files), 'pagine')
