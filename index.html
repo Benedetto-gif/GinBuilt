@@ -3460,7 +3460,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 8 ottobre 2026, ore 23:50 · Radar: nuova disposizione degli assi (agrumato/salino, speziato/acido)</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 9 ottobre 2026, ore 00:05 · Radar: torna la disposizione degli assi precedente</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -3765,13 +3765,10 @@ function sensRicettaBox(el){
     '<div class="radar-nota">Tutte le botaniche, base comprese, pesate sulle quantità con una media quadratica: una sensazione forte resta percepibile anche in piccola dose. Intensità vera (non riscalata), stima da tarare all\'assaggio.</div></div>';
 }
 // Ordine degli assi sul disegno (i dati restano nell'ordine di ASSI8): ogni nota sta di fronte alla sua "opposta"
-// Dolce / Amaro, Fruttato / Resinoso (morbido / secco), Floreale / Erbaceo, Agrumato / Salino (leggero / sapido),
-// Speziato / Acido (caldo / aspro). Disposizione scelta l'8 ottobre 2026 confrontando tutte le disposizioni possibili
-// sui profili dell'erbario: le note opposte tendono a escludersi, le vicine ad andare insieme.
-// Vicine fra loro le note affini: fruttato fra acido e dolce, agrumato accanto a floreale e amaro,
-// salino accanto a erbaceo (piante di mare), speziato accanto a resinoso.
-// Senso orario dall'alto: Dolce, Salino, Erbaceo, Speziato, Resinoso, Amaro, Agrumato, Floreale, Acido, Fruttato.
-const ORDINE_RADAR = [0, 3, 6, 7, 8, 1, 4, 5, 2, 9];
+// Dolce / Amaro, Fruttato / Resinoso (morbido / secco), Floreale / Erbaceo, Agrumato / Speziato (fresco / caldo),
+// Acido / Salino (la coppia piu' debole). Vicine fra loro le note affini: fruttato fra dolce e floreale,
+// agrumato accanto all'acido, resinoso fra amaro ed erbaceo.
+const ORDINE_RADAR = [0, 9, 5, 4, 2, 1, 8, 6, 7, 3];
 // Baricentro di un profilo sul radar: dove pende e quanto (0 % = tutte le note si compensano, 100 % = una sola nota).
 function _posRadar(){ const P = []; ORDINE_RADAR.forEach((d, k) => { P[d] = k; }); return P; }
 function baricentro(vals){
@@ -3991,15 +3988,15 @@ function eqConBase(el, fase){
   const tot = tutte.reduce((a,x) => a + x.w, 0) || 1;
   return ASSI8.map((_,i) => tutte.reduce((a,x) => a + (valFase(x.n, fase || window.radarFase)[i] || 0) * x.w, 0) / tot);
 }
-// Coppie opposte (indici di ASSI8): Dolce/Amaro, Acido/Speziato, Salino/Agrumato, Floreale/Erbaceo, Resinoso/Fruttato
-const OPPOSTA_RADAR = [1, 0, 7, 4, 3, 6, 5, 2, 9, 8];
+// Coppie opposte (indici di ASSI8): Dolce/Amaro, Acido/Salino, Agrumato/Speziato, Floreale/Erbaceo, Resinoso/Fruttato
+const OPPOSTA_RADAR = [1, 0, 3, 2, 7, 6, 5, 4, 9, 8];
 // Il tasto vale per tutti i radar dell'app: cambia solo cosa si vede, senza ricalcolare le pagine.
 function toggleSottrazione(){
   const on = !document.documentElement.classList.contains('radar-sottr');
   document.documentElement.classList.toggle('radar-sottr', on);
   try { localStorage.setItem('gb-radar-sottr', on ? '1' : ''); } catch(e){}
   if (on && typeof mostraAvviso === 'function') mostraAvviso('\u2296 Vista in sottrazione',
-    '<p>Ogni nota toglie la sua opposta (dolce/amaro, fruttato/resinoso, floreale/erbaceo, agrumato/salino, speziato/acido): al centro il profilo \u00e8 neutro, un braccio lungo indica un carattere netto.</p><p>L\u2019equilibrio si giudica sempre <strong>con le botaniche base dentro</strong> (ginepro, coriandolo, angelica), perch\u00e9 nel bicchiere ci sono sempre: una botanica fruttata da sola pende tutta sul fruttato, ma il ginepro la bilancia con il resinoso. La freccia tratteggiata mostra dove pende la sola firma.</p><p>Lo squilibrio non \u00e8 un difetto: \u00e8 lo stile. Vale per tutti i radar dell\u2019app; si torna al profilo intero con lo stesso pulsante.</p>', '', null);
+    '<p>Ogni nota toglie la sua opposta (dolce/amaro, acido/salino, agrumato/speziato, floreale/erbaceo, resinoso/fruttato): al centro il profilo \u00e8 neutro, un braccio lungo indica un carattere netto.</p><p>L\u2019equilibrio si giudica sempre <strong>con le botaniche base dentro</strong> (ginepro, coriandolo, angelica), perch\u00e9 nel bicchiere ci sono sempre: una botanica fruttata da sola pende tutta sul fruttato, ma il ginepro la bilancia con il resinoso. La freccia tratteggiata mostra dove pende la sola firma.</p><p>Lo squilibrio non \u00e8 un difetto: \u00e8 lo stile. Vale per tutti i radar dell\u2019app; si torna al profilo intero con lo stesso pulsante.</p>', '', null);
 }
 try { if (localStorage.getItem('gb-radar-sottr')) document.documentElement.classList.add('radar-sottr'); } catch(e){}
 
