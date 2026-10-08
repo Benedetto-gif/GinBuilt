@@ -166,21 +166,26 @@ add('cap1.xhtml', 'Capitolo 1 · Storia del gin', '<section epub:type="chapter">
     ''.join('<section id="st-%s"><h2>%s</h2>%s</section>' % (slug(t), e(t), sez('storia', t)) for t in stor) + '</section>', 1)
 
 # ---------- 2. Le botaniche ----------
-c2 = '''<section epub:type="chapter"><h1>Capitolo 2<br/>Le botaniche</h1>
+add('cap2.xhtml', 'Capitolo 2 · Le botaniche', '''<section epub:type="chapter"><h1>Capitolo 2<br/>Le botaniche</h1>
 <p>Le %d botaniche della libreria di GinBuilder, divise in %d famiglie. Ogni scheda riporta il nome botanico, la parte usata, il profilo aromatico, il carattere, la potenza, la dose di riferimento, le molecole da estrarre, il periodo di raccolta e le zone italiane, con il suo radar.</p>
-<h2>Come leggere il radar</h2>
+<ol class="indice"><li><a href="cap2-radar.xhtml">Come leggere il radar</a></li><li><a href="cap2-famiglie.xhtml">Le famiglie delle botaniche</a></li></ol></section>''' % (len(seen), len(cat_list)), 1)
+add('cap2-radar.xhtml', 'Come leggere il radar', '''<section><h1>Come leggere il radar</h1>
 <p>Gli otto assi sono quattro di gusto, sentiti dalla lingua (<strong>dolce, amaro, acido, salino</strong>), e quattro di aroma, sentiti dal naso (<strong>agrumato, floreale, erbaceo, speziato</strong>). Ogni valore va da 0 a 5. Il radar mostra la <em>forma</em> del profilo, cioè quali note prevalgono, non la quantità: una botanica potente e una delicata possono avere la stessa forma.</p>
-<p>La potenza è anche soggettiva: se una tua botanica rende più o meno del previsto, sotto il suo radar puoi spostare il cursore e fissare la tua potenza. Il lettore la ricorda; il valore di libreria si ripristina con un tocco.</p>
 <p>Per questo il <strong>colore dell'area</strong> indica la <strong>potenza</strong>, da 1 a 10, con una scala come quella delle previsioni del tempo: blu per le botaniche delicate, verde e giallo per quelle medie, arancio, rosso e porpora per le più potenti. Due radar con la stessa forma e colori diversi raccontano due botaniche che vanno dosate in modo molto diverso. Nelle ricette e nei gin il colore è la potenza media, pesata sulle dosi.</p>
-%s%s
+%s
+<p>La potenza è anche soggettiva: se una tua botanica rende più o meno del previsto, sotto il suo radar puoi spostare il cursore e fissare la tua potenza. Il lettore la ricorda; il valore di libreria si ripristina con un tocco.</p>
 <p>Sotto ogni radar ci sono le botaniche dal profilo più vicino, con la somiglianza in percentuale: toccandone una, il suo profilo si sovrappone in arancio.</p>
-<h2>Le famiglie</h2><p class="nota">Tocca una famiglia: si apre la sua pagina con tutte le botaniche da scegliere.</p><ol class="indice">%s</ol></section>''' % (
-    len(seen), len(cat_list), radar([1,0.5,1,0,4,2,2,3], 240, '', pot_colore(3)) + radar([1,0.5,1,0,4,2,2,3], 240, '', pot_colore(9)), '<p class="nota" style="text-align:center">Stessa forma: a sinistra potenza 3, a destra potenza 9.</p>' + pot_legenda(5.5).replace('Potenza 5,5/10', 'Scala della potenza'),
-    ''.join('<li><a href="cap2-%s.xhtml">%s</a> <span class="nota">(%d)</span></li>' % (slug(c), e(c), len(per_cat[c])) for c in cat_list))
-add('cap2.xhtml', 'Capitolo 2 · Le botaniche', c2, 1)
+<p class="naviga"><a href="cap2.xhtml">Capitolo 2</a> · <a href="cap2-famiglie.xhtml">Le famiglie delle botaniche →</a></p></section>''' % (
+    radar([1,0.5,1,0,4,2,2,3], 240, '', pot_colore(3)) + '<p class="nota" style="text-align:center">Potenza 3: una botanica delicata.</p>' +
+    radar([1,0.5,1,0,4,2,2,3], 240, '', pot_colore(9)) + '<p class="nota" style="text-align:center">Stessa forma, potenza 9: una botanica potente.</p>' +
+    pot_legenda(5.5).replace('Potenza 5,5/10', 'Scala della potenza')), 2)
+add('cap2-famiglie.xhtml', 'Le famiglie delle botaniche', '''<section><h1>Le famiglie delle botaniche</h1>
+<p class="nota">Tocca una famiglia: si apre la sua pagina con tutte le botaniche da scegliere.</p><ol class="indice">%s</ol>
+<p class="naviga"><a href="cap2.xhtml">Capitolo 2</a> · <a href="cap2-radar.xhtml">Come leggere il radar</a></p></section>''' % ''.join(
+    '<li><a href="cap2-%s.xhtml">%s <span class="nota">(%d)</span></a></li>' % (slug(c), e(c), len(per_cat[c])) for c in cat_list), 2)
 for c in cat_list:
     fam = per_cat[c]
-    add('cap2-%s.xhtml' % slug(c), c, '<section epub:type="chapter"><h1>%s</h1><p class="nota">%d botaniche · <a href="cap2.xhtml">torna al capitolo</a></p><p class="nota">Tocca una botanica per aprirne la scheda. Il pallino colorato è la potenza.</p><ul class="fam-lista">%s</ul></section>' % (
+    add('cap2-%s.xhtml' % slug(c), c, '<section epub:type="chapter"><h1>%s</h1><p class="nota">%d botaniche · <a href="cap2-famiglie.xhtml">tutte le famiglie</a></p><p class="nota">Tocca una botanica per aprirne la scheda. Il pallino colorato è la potenza.</p><ul class="fam-lista">%s</ul></section>' % (
         e(c), len(fam), ''.join('<li><a href="b-%s.xhtml"><span class="pall" style="background:%s"></span>%s %s</a></li>' % (
             slug(m['botanica']), pot_colore(potenza(m['botanica'])) if potenza(m['botanica']) else '#cccccc', e(m.get('icona') or ''), e(m['botanica'])) for m in fam)), 2)
     for k, m in enumerate(fam):
