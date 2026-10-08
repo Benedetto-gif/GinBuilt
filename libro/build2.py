@@ -398,6 +398,10 @@ with zipfile.ZipFile(OUT, 'w') as z:
     w('OEBPS/content.opf', opf); w('OEBPS/nav.xhtml', nav); w('OEBPS/indice.xhtml', page('Indice', tendine())); w('OEBPS/libro.css', CSS); w('OEBPS/libro.js', JS)
     import cairosvg
     z.writestr('OEBPS/copertina.png', cairosvg.svg2png(bytestring=cover_svg.encode(), output_width=1200), compress_type=zipfile.ZIP_STORED)
-    w('OEBPS/copertina.xhtml', page('Copertina', '<section epub:type="cover" class="copertina"><img src="copertina.png" alt="Gin in provetta. Appunti sul gin compound. Benedetto Sgroi" width="1200" height="1800"/></section>'))
+    w('OEBPS/copertina.xhtml', '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="it" lang="it">'
+      '<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, height=device-height"/><title>Copertina</title>'
+      '<style>html,body{margin:0;padding:0;height:100%;background:#FDFDF8;} .cop{height:100vh;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;} .cop img{max-width:100%;max-height:100vh;width:auto;height:auto;object-fit:contain;display:block;}</style></head>'
+      '<body style="margin:0;padding:0;"><section epub:type="cover" class="cop" style="height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;">'
+      '<img src="copertina.png" alt="Gin in provetta. Appunti sul gin compound. Benedetto Sgroi" style="max-width:100%;max-height:100vh;width:auto;height:auto;object-fit:contain;display:block;"/></section></body></html>')
     for fid, href, title, xh, scr, lvl in files: w('OEBPS/' + href, xh)
 print('ok', OUT, len(files), 'pagine')
