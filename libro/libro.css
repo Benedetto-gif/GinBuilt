@@ -7,7 +7,7 @@ a{color:#2F7259;}
 .nota{font-size:.88em;color:#666;}
 .indice li{margin:.3em 0;}
 .copertina{text-align:center;margin:0;padding:0;}
-.copertina svg{width:100%;height:auto;max-height:96vh;}
+.copertina img{width:100%;height:auto;max-height:98vh;object-fit:contain;display:block;margin:0 auto;}
 /* radar */
 svg.radar{width:85%;max-width:320px;height:auto;display:block;margin:.6em auto;}
 .rg{fill:none;stroke:#d8d2c6;stroke-width:1;}

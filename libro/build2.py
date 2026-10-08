@@ -385,7 +385,7 @@ oggi = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ
 man = ['<item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>',
        '<item id="css" href="libro.css" media-type="text/css"/>', '<item id="js" href="libro.js" media-type="application/javascript"/>',
        '<item id="cover" href="copertina.png" media-type="image/png" properties="cover-image"/>',
-       '<item id="coverp" href="copertina.xhtml" media-type="application/xhtml+xml" properties="svg"/>']
+       '<item id="coverp" href="copertina.xhtml" media-type="application/xhtml+xml"/>']
 spine = ['<itemref idref="coverp"/>', '<itemref idref="indice"/>']
 man.append('<item id="indice" href="indice.xhtml" media-type="application/xhtml+xml"/>')
 ids = set()
@@ -407,6 +407,6 @@ with zipfile.ZipFile(OUT, 'w') as z:
     w('OEBPS/content.opf', opf); w('OEBPS/nav.xhtml', nav); w('OEBPS/indice.xhtml', page('Indice', tendine())); w('OEBPS/libro.css', CSS); w('OEBPS/libro.js', JS)
     import cairosvg
     z.writestr('OEBPS/copertina.png', cairosvg.svg2png(bytestring=cover_svg.encode(), output_width=1200), compress_type=zipfile.ZIP_STORED)
-    w('OEBPS/copertina.xhtml', page('Copertina', '<div class="copertina">%s</div>' % cover_svg))
+    w('OEBPS/copertina.xhtml', page('Copertina', '<section epub:type="cover" class="copertina"><img src="copertina.png" alt="Gin in provetta. Appunti sul gin compound. Benedetto Sgroi" width="1200" height="1800"/></section>'))
     for fid, href, title, xh, scr, lvl in files: w('OEBPS/' + href, xh)
 print('ok', OUT, len(files), 'pagine')
