@@ -1910,6 +1910,32 @@ html details.howto a{color:#5A3E1C;}
 .mat-mol td:first-child{width:46%;font-weight:600;}
 .mat-mol tr.hit td{background:color-mix(in srgb,var(--c) 14%,transparent);}
 .mat-bot{color:inherit;text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--c) 60%,transparent);text-underline-offset:2px;}
+
+/* ---------------- Canali: schema ---------------- */
+.can-fig{margin:12px 0 16px;}
+.can-svg{width:100%;max-width:520px;height:auto;display:block;margin:0 auto;}
+.can-h{font-size:13px;font-weight:700;fill:var(--ink);}
+.can-l{font-size:11.5px;fill:var(--ink);}
+.can-s{font-size:10.5px;fill:var(--ink-soft);}
+.can-lingua{fill:color-mix(in srgb,#C0583E 22%,var(--surface));stroke:#C0583E;stroke-width:1.2;}
+.can-solco{stroke:color-mix(in srgb,#C0583E 55%,transparent);stroke-width:1;fill:none;}
+.can-circ circle{fill:#C0583E;}
+.can-fol path{stroke:#C0583E;stroke-width:2;stroke-linecap:round;}
+.can-fung circle{fill:color-mix(in srgb,#C0583E 75%,var(--surface));}
+.can-lead{stroke:var(--ink-faint);stroke-width:.8;stroke-dasharray:3 2;fill:none;}
+.can-epi{fill:color-mix(in srgb,#C0583E 10%,var(--surface));stroke:var(--line);}
+.can-lam{fill:color-mix(in srgb,var(--ink) 4%,var(--surface));}
+.can-bott{fill:color-mix(in srgb,#C0583E 28%,var(--surface));stroke:#C0583E;stroke-width:1.2;}
+.can-poro{stroke:var(--surface);stroke-width:3;}
+.can-cell{stroke:#C0583E;stroke-width:1;fill:none;opacity:.7;}
+.can-nervo{fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+.can-gusto{stroke:#C0583E;}.can-trig{stroke:#B8921F;}.can-tatto{stroke:#5D6F8C;}
+.can-dot{stroke:none;}
+.can-gusto-f{fill:#C0583E;}.can-trig-f{fill:#B8921F;}.can-tatto-f{fill:#5D6F8C;}.can-ker-f{fill:#2F8F8F;}
+.can-ker rect{fill:color-mix(in srgb,#2F8F8F 30%,var(--surface));stroke:#2F8F8F;stroke-width:1;}
+.can-corp{fill:color-mix(in srgb,#5D6F8C 30%,var(--surface));stroke:#5D6F8C;stroke-width:1.2;}
+.can-tit{margin:14px 0 4px;font-size:14px;}
+.mat-dove{font-size:12px;white-space:nowrap;}
 </style>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0C110E" id="meta-theme-color">
@@ -3277,6 +3303,75 @@ html details.howto a{color:#5A3E1C;}
         <p>Il cervello fonde i quattro canali in un unico <em>sapore</em>: per questo la vaniglia "sembra" dolce anche se non tocca i recettori del dolce.</p>
       </div>
     </details>
+    <details class="howto" id="mat-canali">
+      <summary>I canali e dove si trovano</summary>
+      <div class="howto-body">
+        <p>I canali ionici sono proteine a forma di poro infilate nella membrana delle cellule. Quando la molecola giusta, o la temperatura giusta, li fa aprire, gli ioni (sodio, calcio, potassio, protoni) entrano o escono, la carica elettrica della cellula cambia e parte un segnale nervoso verso il cervello. Sono diversi dai recettori del dolce, dell'amaro e dell'umami (T1R e TAS2R): quelli non sono pori, ma "antenne" che avviano una catena di segnali dentro la cellula.</p>
+        <figure class="can-fig">
+          <svg viewBox="0 0 360 430" role="img" aria-labelledby="can-t can-d" class="can-svg">
+            <title id="can-t">Dove si trovano recettori e canali</title>
+            <desc id="can-d">In alto la lingua vista dall'alto con i tre tipi di papille; in basso una sezione della mucosa con il bottone gustativo, le terminazioni del trigemino, le cellule dell'epitelio e una fibra del tatto.</desc>
+            <text x="10" y="16" class="can-h">La lingua vista dall'alto</text>
+            <path d="M52,32 Q90,20 128,32 Q150,80 126,132 Q90,160 54,132 Q30,80 52,32Z" class="can-lingua"/>
+            <path d="M90,36 L90,120" class="can-solco"/>
+            <g class="can-circ"><circle cx="68" cy="46" r="4"/><circle cx="79" cy="54" r="4"/><circle cx="90" cy="59" r="4"/><circle cx="101" cy="54" r="4"/><circle cx="112" cy="46" r="4"/></g>
+            <g class="can-fol"><path d="M44,62 l4,0 M43,68 l4,0 M43,74 l4,0"/><path d="M132,62 l4,0 M133,68 l4,0 M133,74 l4,0"/></g>
+            <g class="can-fung"><circle cx="80" cy="120" r="2"/><circle cx="90" cy="128" r="2"/><circle cx="100" cy="120" r="2"/><circle cx="72" cy="108" r="2"/><circle cx="108" cy="108" r="2"/><circle cx="62" cy="94" r="2"/><circle cx="118" cy="94" r="2"/><circle cx="90" cy="112" r="2"/></g>
+            <path d="M116,46 L170,40" class="can-lead"/><text x="174" y="44" class="can-l">Circumvallate: in fondo, a V</text>
+            <path d="M138,70 L170,70" class="can-lead"/><text x="174" y="74" class="can-l">Foliate: ai bordi posteriori</text>
+            <path d="M120,108 L170,108" class="can-lead"/><text x="174" y="112" class="can-l">Fungiformi: punta e lati</text>
+            <text x="174" y="132" class="can-s">Ogni papilla sente tutti i gusti:</text>
+            <text x="174" y="146" class="can-s">la "mappa della lingua" è un mito.</text>
+
+            <text x="10" y="186" class="can-h">Sezione della mucosa</text>
+            <rect x="8" y="198" width="344" height="62" rx="6" class="can-epi"/>
+            <text x="14" y="212" class="can-s">epitelio</text>
+            <rect x="8" y="260" width="344" height="40" class="can-lam"/>
+            <text x="14" y="294" class="can-s">sottomucosa</text>
+            <!-- bottone gustativo -->
+            <ellipse cx="96" cy="232" rx="30" ry="26" class="can-bott"/>
+            <path d="M92,206 L100,206" class="can-poro"/>
+            <path d="M84,214 L84,250 M96,210 L96,254 M108,214 L108,250" class="can-cell"/>
+            <path d="M96,258 L96,300 L84,330" class="can-nervo can-gusto"/>
+            <!-- terminazioni trigemino -->
+            <path d="M178,330 L178,268 M178,268 L164,214 M178,268 L178,210 M178,268 L192,214" class="can-nervo can-trig"/>
+            <circle cx="164" cy="214" r="3" class="can-dot can-trig-f"/><circle cx="178" cy="210" r="3" class="can-dot can-trig-f"/><circle cx="192" cy="214" r="3" class="can-dot can-trig-f"/>
+            <!-- cellule epiteliali TRPV3 -->
+            <g class="can-ker"><rect x="232" y="214" width="18" height="16" rx="3"/><rect x="252" y="214" width="18" height="16" rx="3"/><rect x="272" y="214" width="18" height="16" rx="3"/><rect x="242" y="232" width="18" height="16" rx="3"/><rect x="262" y="232" width="18" height="16" rx="3"/></g>
+            <!-- fibra del tatto -->
+            <ellipse cx="324" cy="270" rx="9" ry="13" class="can-corp"/>
+            <path d="M324,283 L324,330" class="can-nervo can-tatto"/>
+            <!-- etichette -->
+            <rect x="8" y="344" width="10" height="10" rx="2" class="can-gusto-f"/><text x="24" y="353" class="can-l">Bottone gustativo: OTOP1 (acido), ENaC (salato)</text>
+            <text x="24" y="367" class="can-s">e i recettori T1R e TAS2R (dolce, umami, amaro)</text>
+            <rect x="8" y="376" width="10" height="10" rx="2" class="can-trig-f"/><text x="24" y="385" class="can-l">Terminazioni del trigemino: TRPV1, TRPA1, TRPM8</text>
+            <rect x="8" y="394" width="10" height="10" rx="2" class="can-ker-f"/><text x="24" y="403" class="can-l">Cellule dell'epitelio: TRPV3</text>
+            <rect x="8" y="412" width="10" height="10" rx="2" class="can-tatto-f"/><text x="24" y="421" class="can-l">Fibre del tatto: canali KCNK (sanshool)</text>
+          </svg>
+        </figure>
+        <h4 class="can-tit">Sulla lingua, nei bottoni gustativi</h4>
+        <ul>
+          <li><strong>OTOP1</strong>, nelle cellule gustative di tipo III. È un canale per i protoni (H⁺): più un liquido è acido, più protoni entrano, e si sente l'acido.</li>
+          <li><strong>ENaC</strong>, nelle cellule che sentono il sale, soprattutto nella parte anteriore della lingua. Lascia entrare il sodio: è il salato gradevole delle basse concentrazioni.</li>
+        </ul>
+        <h4 class="can-tit">Nelle terminazioni libere del nervo trigemino</h4>
+        <p>Il trigemino porta la sensibilità di bocca, naso, occhi e viso; in fondo alla gola lavora anche il glossofaringeo. Le sue terminazioni non stanno nei bottoni gustativi ma sono sparse in tutta la mucosa: per questo il pungente si sente ovunque, anche nel naso e negli occhi.</p>
+        <ul>
+          <li><strong>TRPV1, il canale del caldo.</strong> Si apre sopra circa 43 °C, ma anche con piperina, gingeroli e paradoli (e con la capsaicina del peperoncino). L'etanolo ne abbassa la soglia fino a circa la temperatura del corpo: per questo l'alcol "brucia" senza essere caldo.</li>
+          <li><strong>TRPA1, il canale dell'irritazione.</strong> Risponde a cinnamaldeide, isotiocianati della senape e in parte all'eugenolo: la sensazione pungente e lacrimosa, come il wasabi che sale al naso.</li>
+          <li><strong>TRPM8, il canale del freddo.</strong> Si apre sotto circa 25 °C e con mentolo e 1,8-cineolo: per questo la menta sembra fresca anche a temperatura ambiente.</li>
+        </ul>
+        <h4 class="can-tit">Nelle cellule della mucosa</h4>
+        <ul>
+          <li><strong>TRPV3, il canale del tiepido</strong> (fra circa 33 e 39 °C). Sta soprattutto nelle cellule dell'epitelio di bocca, naso e pelle, più che nei nervi. Risponde a timolo, carvacrolo, eugenolo e canfora: il calore morbido di timo e origano.</li>
+        </ul>
+        <h4 class="can-tit">Nelle fibre del tatto</h4>
+        <ul>
+          <li><strong>KCNK3, KCNK9, KCNK18.</strong> Canali del potassio "a due pori" che tengono a riposo i nervi del tatto leggero. Il sanshool del pepe sansho li blocca: le fibre si eccitano da sole e la lingua formicola come se vibrasse a circa 50 Hz.</li>
+        </ul>
+        <p class="cond-hint">Le soglie di temperatura sono valori indicativi misurati in laboratorio: nella bocca cambiano con la concentrazione delle molecole e con la persona.</p>
+      </div>
+    </details>
     <div class="mat-wrap"><table class="mat-griglia" id="mat-griglia"></table></div>
     <div class="mat-filtri">
       <div class="inv-ctrl" id="mat-sensi"></div>
@@ -3289,7 +3384,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 8 ottobre 2026, ore 08:15 · Nuova pagina Matrice dei sentori</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 8 ottobre 2026, ore 08:30 · Matrice: i canali sensoriali e dove si trovano</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -9118,9 +9213,12 @@ if ("serviceWorker" in navigator) {
         '<p class="ck-origin">Asse del radar: ' + x.a + ' · ' + se[1] + '</p>' +
         '<table class="mat-mol"><thead><tr><th>Molecole</th><th>Botaniche</th></tr></thead><tbody>' +
         x.m.map(([mol, bot]) => '<tr' + (q && (mol + ' ' + bot).toLowerCase().includes(q) ? ' class="hit"' : '') + '><td>' + esc(mol) + '</td><td>' + bot.split(',').map(botLink).join(', ') + '</td></tr>').join('') + '</tbody></table>' +
-        '<div class="ck-meta"><strong>Recettori</strong> ' + esc(x.r) + '</div>' +
+        '<div class="ck-meta"><strong>Recettori</strong> ' + esc(x.r) + (/TRP|OTOP1|ENaC|KCNK/.test(x.r) ? ' <a href="#" class="mat-dove">dove si trovano ↑</a>' : '') + '</div>' +
         '<p class="ck-desc" style="margin:10px 0 0;">' + esc(x.n) + '</p></div>'; }).join('') ||
       '<div class="radar-nota">Nessun sentore con questi filtri. La botanica potrebbe non avere molecole elencate qui: la sua scheda in libreria riporta le molecole da estrarre.</div>';
+    box.querySelectorAll('.mat-dove').forEach(a => a.onclick = e => { e.preventDefault();
+      const d = document.getElementById('mat-canali'); if (!d) return; d.open = true;
+      const sm = d.querySelector('summary'); if (sm){ sm.style.scrollMarginTop = '84px'; sm.scrollIntoView({behavior:'smooth', block:'start'}); } });
     box.querySelectorAll('.mat-bot').forEach(a => a.onclick = e => { e.preventDefault();
       showTab('libreria'); try { if (typeof showDetail === 'function') showDetail(a.dataset.n, true); } catch(err){} });
   }
