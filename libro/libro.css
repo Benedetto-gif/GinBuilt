@@ -17,6 +17,8 @@ svg.radar{width:85%;max-width:320px;height:auto;display:block;margin:.6em auto;}
 /* schede botaniche */
 article.bot{border-top:2px solid #2F7259;padding-top:.4em;margin-top:1.6em;}
 .bot-radar{text-align:center;}
+.bot-sens{text-align:center;margin:.8em 0 1em;border-top:1px solid #e6e0d4;padding-top:.6em;}
+.bot-sens .sens-tit{margin:.2em 0 0;}
 .sim{font-size:.85em;text-align:center;line-height:2.1;}
 .chip{font:inherit;font-size:.92em;border:1px solid #c9c2b6;background:#fff;color:#222;border-radius:999px;padding:.15em .7em;margin:0 .15em;cursor:pointer;}
 .chip.on{background:#C0733A;border-color:#C0733A;color:#fff;}

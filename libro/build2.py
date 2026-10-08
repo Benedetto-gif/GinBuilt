@@ -5,6 +5,7 @@ sys.path.insert(0, QUI)
 from testi import INTRO, USO, FONTI, RIDONDANZE
 D = json.load(open(os.path.join(QUI, 'dati.json')))
 P, ASSI, ORD, MOL, MASTER, DOSE, MAT, PAN = D['P'], D['ASSI'], D['ORD'], D['MOL'], D['MASTER'], D['DOSE'], D['MAT'], D['PAN']
+SENS, UMAMI, ASSI_SENS = D.get('SENS', {}), D.get('UMAMI', {}), D.get('ASSI_SENS', [])
 OUT = sys.argv[1] if len(sys.argv) > 1 else 'Gin-in-provetta.epub'
 CSS = open(os.path.join(QUI, 'libro.css')).read()
 JS = open(os.path.join(QUI, 'libro.js')).read()
@@ -30,6 +31,31 @@ def radar(vals, size=220, rid='', colore='#2F7259'):
             '<polygon points="%s" class="rp" fill="%s" fill-opacity="0.5" stroke="%s" stroke-width="2"/>'
             '<polygon points="" class="ro" fill="#C0733A" fill-opacity="0.22" stroke="#C0733A" stroke-width="2" stroke-dasharray="4 3"/></svg>') % (
             size + 68, size, (' id="%s" data-s="%d"' % (rid, size)) if rid else '', g, pts, colore, colore)
+SENS_COL = '#B8921F'
+def radar_sens(vals, size=200):
+    n = len(ASSI_SENS); c = size/2; R = size/2 - 34
+    def q(i, v):
+        a = -math.pi/2 + i*2*math.pi/n
+        return (c + R*v/5*math.cos(a), c + R*v/5*math.sin(a))
+    g = ''.join('<polygon points="%s" fill="none" stroke="#d8d2c6" stroke-width="1"/>' % ' '.join('%.1f,%.1f' % q(i, l) for i in range(n)) for l in range(1, 6))
+    for i, a in enumerate(ASSI_SENS):
+        x, y = q(i, 5); lx, ly = q(i, 5 + 14/R*5)
+        anc = 'middle' if abs(lx-c) < 6 else ('start' if lx > c else 'end')
+        g += '<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#d8d2c6" stroke-width="1"/>' % (c, c, x, y)
+        g += '<text x="%.1f" y="%.1f" text-anchor="%s" font-size="10" font-family="sans-serif" fill="#555555">%s</text>' % (lx, ly + 3.5, anc, e(a))
+    pts = ' '.join('%.1f,%.1f' % q(i, vals[i]) for i in range(n))
+    g += '<polygon points="%s" fill="%s" fill-opacity="0.25" stroke="%s" stroke-width="2"/>' % (pts, SENS_COL, SENS_COL)
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-48 0 %d %d" class="radar" role="img" aria-label="Sensazioni in bocca: %s">%s</svg>' % (
+        size + 96, size, e(', '.join('%s %s' % (a, v) for a, v in zip(ASSI_SENS, vals))), g)
+UMAMI_NOTA = 'È un gusto, non una sensazione, e resta fuori dal radar: in un gin per macerazione passa poco, perché glutammato e nucleotidi non sono volatili e si sciolgono male nell\'alcol forte.'
+def sens_blocco(n):
+    v = SENS.get(n)
+    if not v: return ''
+    forti = sorted([(a, x) for a, x in zip(ASSI_SENS, v) if x >= 3], key=lambda t: -t[1])
+    h = '<div class="bot-sens"><p class="sens-tit"><strong>Sensazioni in bocca</strong></p>' + radar_sens(v)
+    h += '<p class="nota">%s</p>' % (('Marcate: ' + ', '.join('%s %d/5' % (a.lower(), x) for a, x in forti) + '.') if forti else 'Nessuna sensazione marcata: lavora soprattutto su gusto e aroma.')
+    if UMAMI.get(n): h += '<p class="nota"><strong>Umami %d/5.</strong> %s</p>' % (UMAMI[n], UMAMI_NOTA)
+    return h + '</div>'
 POT_SCALA = ['#3B4CC0','#3E7FD9','#3FB0D6','#4CC79A','#8CD15A','#D9D93E','#F5B83A','#F28A2E','#E0492B','#A3195B']
 def pot_colore(p):
     p = max(1, min(10, p or 1)); i = int(p) - 1; f = p - int(p)
@@ -167,7 +193,7 @@ add('cap1.xhtml', 'Capitolo 1 · Storia del gin', '<section epub:type="chapter">
 
 # ---------- 2. Le botaniche ----------
 add('cap2.xhtml', 'Capitolo 2 · Le botaniche', '''<section epub:type="chapter"><h1>Capitolo 2<br/>Le botaniche</h1>
-<p>Le %d botaniche della libreria di GinBuilder, divise in %d famiglie. Ogni scheda riporta il nome botanico, la parte usata, il profilo aromatico, il carattere, la potenza, la dose di riferimento, le molecole da estrarre, il periodo di raccolta e le zone italiane, con il suo radar.</p>
+<p>Le %d botaniche della libreria di GinBuilder, divise in %d famiglie. Ogni scheda riporta il nome botanico, la parte usata, il profilo aromatico, il carattere, la potenza, la dose di riferimento, le molecole da estrarre, il periodo di raccolta e le zone italiane, con i suoi due radar: il profilo sensoriale e le sensazioni in bocca.</p>
 <ol class="indice"><li><a href="cap2-radar.xhtml">Come leggere il radar</a></li><li><a href="cap2-famiglie.xhtml">Le famiglie delle botaniche</a></li></ol></section>''' % (len(seen), len(cat_list)), 1)
 add('cap2-radar.xhtml', 'Come leggere il radar', '''<section><h1>Come leggere il radar</h1>
 <p>I dieci assi sono quattro di gusto, sentiti dalla lingua (<strong>dolce, amaro, acido, salino</strong>), e sei di aroma, sentiti dal naso (<strong>agrumato, floreale, erbaceo, speziato, resinoso, fruttato</strong>). Ogni valore va da 0 a 5. Ogni nota sta di fronte alla sua opposta: dolce e amaro, fruttato e resinoso, floreale ed erbaceo, agrumato e speziato, acido e salino. Il <strong>resinoso</strong> raccoglie le note di conifera e di balsamo (pino, ginepro, lentisco), il <strong>fruttato</strong> la frutta che non è agrume (bacche, frutta matura, frutta tropicale). Il radar mostra la <em>forma</em> del profilo, cioè quali note prevalgono, non la quantità: una botanica potente e una delicata possono avere la stessa forma.</p>
@@ -176,10 +202,22 @@ add('cap2-radar.xhtml', 'Come leggere il radar', '''<section><h1>Come leggere il
 %s
 <p>La potenza è anche soggettiva: se una tua botanica rende più o meno del previsto, sotto il suo radar puoi spostare il cursore e fissare la tua potenza. Il lettore la ricorda; il valore di libreria si ripristina con un tocco.</p>
 <p>Sotto ogni radar ci sono le botaniche dal profilo più vicino, con la somiglianza in percentuale: toccandone una, il suo profilo si sovrappone in arancio.</p>
+<h2>Il secondo radar: sensazioni in bocca</h2>
+<p>Sotto il profilo, ogni scheda ha un secondo radar, giallo ocra. Il primo dice <em>che sapore ha</em> una botanica; il secondo dice <em>che effetto fa in bocca</em>. Sono due cose di natura diversa: i gusti passano dalle papille, gli aromi dal naso, le sensazioni dal nervo trigemino e dal tatto. Metterle sullo stesso disegno porterebbe a confronti senza senso, per questo stanno su due radar separati.</p>
+<p>I cinque assi, da 0 a 5:</p>
+<ul><li><strong>Pungente</strong>: calore e pizzicore, da piperina, gingeroli, isotiocianati, eugenolo (recettori TRPV1 e TRPA1). Pepe, zenzero, grani del paradiso.</li>
+<li><strong>Rinfrescante</strong>: freddo e balsamico, da mentolo, cineolo, canfora (recettore TRPM8). Menta, cardamomo, rosmarino, aghi di pino.</li>
+<li><strong>Astringente</strong>: secchezza e ruvidità, da tannini e polifenoli che legano le proteine della saliva. Prugnolo, tè, melograno, rabarbaro.</li>
+<li><strong>Corpo</strong>: pienezza e rotondità, da zuccheri, glicirrizina, mucillagini, oli densi. Liquirizia, vaniglia, fico, iris.</li>
+<li><strong>Persistenza</strong>: durata del finale, da fissativi, resine, sesquiterpeni, amaricanti. Angelica, iris, genziana, china.</li></ul>
+<p>%s</p>
+<p><strong>L'umami.</strong> È il quinto gusto, dato da glutammato e nucleotidi (inosinato, guanilato). Non ha un opposto: i gusti non sono coppie di contrari, ognuno ha i suoi recettori (per l'umami T1R1 + T1R3). Le botaniche che ne portano sono poche: alghe (nori, kombu), funghi secchi, pomodoro secco, tè verde (gyokuro), in misura minore oliva, asparago, salicornia. Nelle schede compare come riga a parte. %s Conta di più negli amari e nel vermouth, macerati a gradazione più bassa e su base di vino.</p>
+<p class="nota">Anche questi valori sono stime, ricavate dalle molecole presenti: vanno tarati all'assaggio.</p>
 <p class="naviga"><a href="cap2.xhtml">Capitolo 2</a> · <a href="cap2-famiglie.xhtml">Le famiglie delle botaniche →</a></p></section>''' % (
     radar([1,0.5,1,0,4,2,2,3,2,1], 240, '', pot_colore(3)) + '<p class="nota" style="text-align:center">Potenza 3: una botanica delicata.</p>' +
     radar([1,0.5,1,0,4,2,2,3,2,1], 240, '', pot_colore(9)) + '<p class="nota" style="text-align:center">Stessa forma, potenza 9: una botanica potente.</p>' +
-    pot_legenda(5.5).replace('Potenza 5,5/10', 'Scala della potenza')), 2)
+    pot_legenda(5.5).replace('Potenza 5,5/10', 'Scala della potenza'),
+    radar_sens(SENS['Cardamomo verde'], 220) + '<p class="nota" style="text-align:center">Cardamomo verde: quasi neutro sul gusto, in bocca spicca per la freschezza.</p>', UMAMI_NOTA), 2)
 add('cap2-famiglie.xhtml', 'Le famiglie delle botaniche', '''<section><h1>Le famiglie delle botaniche</h1>
 <p class="nota">Tocca una famiglia: si apre la sua pagina con tutte le botaniche da scegliere.</p><ol class="indice">%s</ol>
 <p class="naviga"><a href="cap2.xhtml">Capitolo 2</a> · <a href="cap2-radar.xhtml">Come leggere il radar</a></p></section>''' % ''.join(
@@ -210,6 +248,7 @@ for c in cat_list:
                     '<input type="range" class="pot-range" min="1" max="10" step="0.5" value="%s" aria-label="Potenza"/><br/>'
                     '<button type="button" class="chip pfix">📌 Fissa</button> <button type="button" class="chip prip">↺ Valore di libreria</button></p>') % (fmt1(pz), pz) if pz else ''
             body += '<div class="bot-radar" data-n="%s" data-p="%s">' % (e(n), pz or '') + radar(v, 220, rid, pot_colore(pz) if pz else '#2F7259') + pot_legenda(pz) + ctrl + chips(rid, vic) + '</div>'
+        body += sens_blocco(n)
         body += '<dl class="campi">' + ''.join('<dt>%s</dt><dd>%s</dd>' % (k, val) for k, val in campi) + '</dl>'
         if mol: body += '<p class="mol"><strong>Molecole da estrarre.</strong> %s</p>' % e(mol)
         if m.get('effetto_sovra'): body += '<p class="nota">Se si esagera: %s.</p>' % e(m['effetto_sovra'])
