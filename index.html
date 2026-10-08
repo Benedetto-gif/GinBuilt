@@ -1892,6 +1892,24 @@ html details.howto a{color:#5A3E1C;}
 .eti-piede{display:flex;justify-content:space-between;font-size:11px;border-top:1px solid #999;padding-top:6px;}
 .tav-c{margin:10px 0;}
 .tav-c p{margin:2px 0;}
+
+/* ---------------- Matrice dei sentori ---------------- */
+.mat-wrap{overflow-x:auto;margin:0 0 18px;}
+.mat-griglia{border-collapse:separate;border-spacing:4px;width:100%;font-size:13px;}
+.mat-griglia th{font-weight:700;color:var(--ink-soft);text-align:left;padding:2px 4px;}
+.mat-griglia thead th{text-align:center;color:var(--c);font-size:12px;}
+.mat-griglia td{text-align:center;}
+.mat-cella{font:inherit;font-weight:700;width:100%;min-width:42px;padding:7px 0;border-radius:10px;cursor:pointer;border:1px solid color-mix(in srgb,var(--c) 45%,transparent);background:color-mix(in srgb,var(--c) 16%,transparent);color:var(--ink);}
+.mat-cella.on{background:var(--c);color:#fff;}
+.mat-vuota{color:var(--ink-faint);}
+.mat-filtri{margin-bottom:16px;}
+.mat-filtri input[type=search]{width:100%;font:inherit;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);margin:4px 0 6px;}
+.mat-mol{width:100%;border-collapse:collapse;font-size:13px;margin:6px 0 10px;}
+.mat-mol th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);padding:4px 6px 4px 0;border-bottom:1px solid var(--line);}
+.mat-mol td{vertical-align:top;padding:6px 6px 6px 0;border-bottom:1px solid var(--line);line-height:1.45;}
+.mat-mol td:first-child{width:46%;font-weight:600;}
+.mat-mol tr.hit td{background:color-mix(in srgb,var(--c) 14%,transparent);}
+.mat-bot{color:inherit;text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--c) 60%,transparent);text-underline-offset:2px;}
 </style>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0C110E" id="meta-theme-color">
@@ -1998,6 +2016,7 @@ html details.howto a{color:#5A3E1C;}
     <button data-tab="nozioni">🔬 Nozioni e vocabolario</button>
     <button data-tab="analisi">👃 Analisi sensoriale</button>
     <button data-tab="ruota">🎡 Ruota degli aromi</button>
+    <button data-tab="matrice">🧬 Matrice dei sentori</button>
     <button data-tab="altrigin">🥃 Gli altri gin</button>
     <button data-tab="cocktail">🍸 Cocktail</button>
     <button data-tab="garnish">🍋 Garnish</button>
@@ -3235,8 +3254,42 @@ html details.howto a{color:#5A3E1C;}
     <details class="howto sp-item" id="sp-tavola"><summary>🍽️ Gin a tavola</summary><div class="howto-body"><p>Gli abbinamenti con il cibo, a partire dalle note che prevalgono nel radar.</p><div id="sp-tav"></div></div></details>
   </section>
 
+  <!-- ============ MATRICE DEI SENTORI ============ -->
+  <section class="panel" id="panel-matrice">
+    <details class="howto">
+      <summary>Come si usa</summary>
+      <div class="howto-body">
+        <p>Per ogni sentore la matrice indica le molecole responsabili, le botaniche dell'app che le portano e i recettori sensoriali che le leggono.</p>
+        <ul>
+          <li>La griglia in alto incrocia gli otto assi del radar con i quattro sistemi sensoriali: tocca una casella per vedere solo quei sentori.</li>
+          <li>Puoi anche filtrare per sistema sensoriale o cercare una botanica: compaiono i sentori a cui contribuisce.</li>
+          <li>Il nome della botanica nelle schede apre la sua pagina nella libreria.</li>
+        </ul>
+      </div>
+    </details>
+    <details class="howto">
+      <summary>Quattro sistemi, un solo sapore</summary>
+      <div class="howto-body">
+        <p><strong>Gusto.</strong> Sulla lingua ci sono solo cinque qualità: dolce, amaro, acido, salato e umami. Le leggono recettori dedicati nelle cellule dei bottoni gustativi: T1R per dolce e umami, i 25 TAS2R per l'amaro, il canale OTOP1 per l'acido, ENaC per il salato.</p>
+        <p><strong>Olfatto.</strong> Tutto il resto, cioè agrumato, floreale, erbaceo, resinoso, fruttato, arriva al naso: davanti, annusando (ortonasale), e da dietro, mentre si deglutisce (retronasale). Circa 400 tipi di recettori olfattivi lavorano con un codice combinatorio: ogni molecola ne attiva un gruppo, ogni recettore riconosce più molecole. Solo per poche molecole si conosce un recettore specifico.</p>
+        <p><strong>Trigemino (chemestesi).</strong> Caldo, freddo, pungente e bruciore non sono gusti né odori: sono canali ionici dei nervi della bocca e del naso, i TRP, che rispondono a molecole come mentolo, cinnamaldeide, piperina e allo stesso etanolo.</p>
+        <p><strong>Tatto.</strong> Astringenza e formicolio sono sensazioni meccaniche: le leggono i meccanorecettori della mucosa.</p>
+        <p>Il cervello fonde i quattro canali in un unico <em>sapore</em>: per questo la vaniglia "sembra" dolce anche se non tocca i recettori del dolce.</p>
+      </div>
+    </details>
+    <div class="mat-wrap"><table class="mat-griglia" id="mat-griglia"></table></div>
+    <div class="mat-filtri">
+      <div class="inv-ctrl" id="mat-sensi"></div>
+      <label class="inf-q-label" for="mat-q">Cerca una botanica o una molecola</label>
+      <input type="search" id="mat-q" placeholder="es. ginepro, linalolo" autocomplete="off">
+      <div class="cond-hint" id="mat-conta"></div>
+    </div>
+    <div class="ck-grid" id="mat-schede"></div>
+    <p class="home-note">Fonti: fisiologia del gusto e dell'olfatto e studi sui recettori TRP e TAS2R. Le corrispondenze molecola–recettore indicate sono quelle accertate; la quantità di una molecola in una botanica varia con varietà, raccolta ed estrazione.</p>
+  </section>
+
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 8 ottobre 2026, ore 07:30 · Nuova pagina Special: sette strumenti</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 8 ottobre 2026, ore 08:15 · Nuova pagina Matrice dei sentori</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -4075,7 +4128,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
     { label: 'Prima di costruire', tabs: ['ridondanza'] },
     { label: 'Il servizio', tabs: ['garnish', 'toniche'] },
     { label: 'Special', tabs: ['special'] },
-    { label: 'Per approfondire', tabs: ['nozioni', 'analisi', 'ruota', 'altrigin'] }
+    { label: 'Per approfondire', tabs: ['nozioni', 'analisi', 'matrice', 'ruota', 'altrigin'] }
   ];
   const fuoriHome = btns.filter(b => IN_HOME.indexOf(b.dataset.tab) < 0 && b.dataset.tab !== 'home');
   const homeBtn = btns.find(b => b.dataset.tab === 'home');
@@ -8945,6 +8998,139 @@ if ("serviceWorker" in navigator) {
 })();
 </script>
 <script>
+// ---------- Matrice dei sentori: sentore → molecole → botaniche → recettori ----------
+(function(){
+  const box = document.getElementById('mat-schede'); if (!box) return;
+  const SENSI = { gusto:['Gusto','lingua','#C0583E'], olfatto:['Olfatto','naso','#4C7BB5'], trigemino:['Trigemino','caldo, freddo, pungente','#B8921F'], tatto:['Tatto','meccanico','#5D6F8C'] };
+  const ASSI = ['Dolce','Amaro','Acido','Salino','Agrumato','Floreale','Erbaceo','Speziato','Struttura'];
+  // m: [molecola, botaniche dell'app separate da virgola]
+  const S = [
+    { s:'Dolce', a:'Dolce', k:'gusto',
+      m:[['Zuccheri (saccarosio, glucosio, fruttosio)','Uva passa, Fico, Carruba polpa, Manna, Castagna'],['Glicirrizina','Liquirizia']],
+      r:'Recettore del dolce T1R2 + T1R3 (geni TAS1R2/TAS1R3), sulle cellule gustative di tipo II.',
+      n:'La glicirrizina è decine di volte più dolce del saccarosio e la sua dolcezza arriva tardi e dura a lungo: per questo la liquirizia allunga il finale.' },
+    { s:'Dolce olfattivo (vanigliato, mielato)', a:'Dolce', k:'olfatto',
+      m:[['Vanillina','Vaniglia, Vaniglia bourbon'],['Cumarina','Fave di tonka'],['Anetolo','Anice verde, Stella di anice, Finocchio'],['Lattoni (γ-nonalattone, γ-decalattone)','Cocco, Mango']],
+      r:'Recettori olfattivi, soprattutto per via retronasale. Non attivano T1R2/T1R3: la dolcezza nasce nel cervello, per associazione.',
+      n:'Un gin con vaniglia o tonka sembra più dolce senza un grammo di zucchero. La cumarina ha limiti di legge negli alimenti: tonka sempre in tracce.' },
+    { s:'Amaro', a:'Amaro', k:'gusto',
+      m:[['Amarogentina, genziopicroside','Genziana'],['Absintina, artabsina','Artemisia, Achillea'],['Naringina, limonina','Pompelmo, Arancia amara'],['Caffeina','Caffè, Tè verde'],['Chinino (nella tonica)','—']],
+      r:'Famiglia dei recettori dell’amaro TAS2R (25 nell’uomo). L’absintina attiva TAS2R46; amarogentina, caffeina e chinino ne attivano diversi insieme.',
+      n:'Ogni persona ha varianti diverse dei TAS2R: la stessa genziana può risultare gradevole a uno e aggressiva a un altro. La limonina degli agrumi dà un amaro ritardato se la scorza macera troppo.' },
+    { s:'Acido', a:'Acido', k:'gusto',
+      m:[['Acido citrico','Limone, Lime, Finger lime'],['Acido malico','Mela, Sommacco, Sorbo'],['Acido ibiscico, citrico','Ibisco'],['Acido tartarico','Uva Cataratto']],
+      r:'Canale protonico OTOP1 delle cellule gustative di tipo III: lascia entrare gli ioni H⁺.',
+      n:'In un distillato o in un infuso a 40% gli acidi delle scorze passano poco: l’acidità arriva soprattutto da succhi, frutti e dalla tonica.' },
+    { s:'Salato e sapido', a:'Salino', k:'gusto',
+      m:[['Cloruro di sodio','Salicornia, Finocchio di mare, Cappero, Oliva'],['Glutammato (umami)','Alga nori, Alga verde alimentare, Poseidonia']],
+      r:'Canale del sodio ENaC per il salato; T1R1 + T1R3 per l’umami del glutammato.',
+      n:'Poco sale esalta gli aromi e attenua l’amaro: è il principio della soluzione salina nei cocktail.' },
+    { s:'Marino, iodato', a:'Salino', k:'olfatto',
+      m:[['Dimetilsolfuro','Alga nori, Alga verde alimentare'],['Bromofenoli','Poseidonia, Alga nori'],['Dictiopteneni (odore di spiaggia)','Alga verde alimentare']],
+      r:'Recettori olfattivi; il dimetilsolfuro ha una soglia di percezione bassissima.',
+      n:'Il "profumo di mare" è in gran parte olfattivo: per questo un gin marino sembra salato anche quando di sale ne ha pochissimo.' },
+    { s:'Agrumato', a:'Agrumato', k:'olfatto',
+      m:[['Limonene','Limone, Arancia dolce, Mandarino, Pompelmo, Cedro, Bergamotto'],['Citrale (geraniale e nerale)','Limone, Verbena odorosa, Melissa, Timo limonato'],['Linalolo e acetato di linalile','Bergamotto, Coriandolo'],['Nootkatone','Pompelmo'],['Aldeidi C8–C10 (ottanale, decanale)','Arancia dolce, Mandarino, Coriandolo']],
+      r:'Recettori olfattivi, codice combinatorio. Il limonene da solo ha un odore debole: il "limone" vero viene soprattutto dal citrale e dalle aldeidi.',
+      n:'Il citrale si degrada con luce e calore: gli infusi di agrumi vanno conservati al buio e consumati presto.' },
+    { s:'Floreale', a:'Floreale', k:'olfatto',
+      m:[['β-ionone, ironi','Iris, Fiordaliso'],['Geraniolo, 2-feniletanolo, β-damascenone','Rosa'],['Linalolo, acetato di linalile','Lavanda, Coriandolo, Bergamotto'],['Antranilato di metile','Fiori d’arancio, Mandarino'],['Acetato di benzile, jasmone','Gelsomino']],
+      r:'Recettori olfattivi. Il β-ionone ha un recettore noto, OR5A1: chi ne ha una variante poco funzionante lo sente appena, chi ne ha quella attiva lo trova intenso e fiorito.',
+      n:'La sensibilità al β-ionone (iris, viola) cambia molto da persona a persona: tienine conto nel panel di assaggio.' },
+    { s:'Verde, foglia tagliata', a:'Erbaceo', k:'olfatto',
+      m:[['cis-3-esenolo, esanale, (E)-2-esenale','Foglie di cappero, Tè verde, Foglie di loto, Foglie di lampone'],['2,6-nonadienale','Cetriolo'],['Estragolo (metilcavicolo)','Dragoncello, Basilico']],
+      r:'Recettori olfattivi. Il recettore OR6A2 legge alcune aldeidi del coriandolo fresco: una sua variante spiega perché alcune persone ne sentono il sapore di sapone.',
+      n:'Le note verdi sono molto volatili: si perdono con le macerazioni lunghe e con il calore.' },
+    { s:'Erbe aromatiche', a:'Erbaceo', k:'olfatto',
+      m:[['1,8-cineolo (eucaliptolo)','Rosmarino, Alloro, Salvia, Cardamomo verde, Mirto foglie'],['Timolo, carvacrolo','Timo, Origano, Santoreggia'],['Canfora','Rosmarino, Salvia'],['α-tujone','Salvia, Artemisia, Achillea']],
+      r:'Recettori olfattivi; cineolo e timolo agiscono anche sul trigemino (vedi Fresco e Caldo aromatico).',
+      n:'Il tujone ha limiti di legge nelle bevande: con salvia, artemisia e achillea l’app mostra un avviso.' },
+    { s:'Resinoso, balsamico', a:'Speziato', k:'olfatto',
+      m:[['α-pinene, β-pinene','Bacche di ginepro, Lentisco, Mirto bacche, Coriandolo'],['Mircene, sabinene','Bacche di ginepro'],['Germacrene D, β-cariofillene','Bacche di ginepro, Pepe nero, Elicriso']],
+      r:'Recettori olfattivi, codice combinatorio. Il pinene è il cuore dell’odore di ginepro e di pino.',
+      n:'Nel radar il resinoso cade sull’asse speziato: è la nota portante del ginepro.' },
+    { s:'Speziato caldo', a:'Speziato', k:'olfatto',
+      m:[['Cinnamaldeide','Cannella Ceylon, Cassia'],['Eugenolo','Chiodo di garofano, Alloro, Basilico'],['Miristicina','Noce moscata, Macis'],['Cuminaldeide','Cumino'],['(+)-carvone','Carvi, Aneto']],
+      r:'Recettori olfattivi; cinnamaldeide ed eugenolo attivano anche il trigemino (TRPA1, TRPV3).',
+      n:'Il carvone esiste in due forme speculari: (+)-carvone sa di carvi, (−)-carvone di menta. Recettori diversi distinguono le due forme.' },
+    { s:'Fruttato', a:'Dolce', k:'olfatto',
+      m:[['Esteri (butirrato di etile, acetato di isoamile)','Mela, Pera, Ananas'],['Furaneolo','Fragola, Ananas'],['Chetone del lampone','Lamponi'],['β-damascenone','Mela, Uva passa, Rosa']],
+      r:'Recettori olfattivi. Il β-damascenone si sente già a pochi nanogrammi per litro.',
+      n:'Molti esteri si formano o si perdono con il tempo: un infuso di frutta cambia profumo nei giorni.' },
+    { s:'Terroso, muschiato, radice', a:'Speziato', k:'olfatto',
+      m:[['Pentadecanolide (muschio macrociclico)','Angelica'],['Ironi','Iris'],['Composti della radice (cumarine)','Angelica, Levistico']],
+      r:'Recettori olfattivi. I muschi macrociclici sono letti dal recettore OR5AN1.',
+      n:'L’angelica è un "fissativo": le molecole muschiate e pesanti evaporano piano e trattengono le altre, allungando la persistenza.' },
+    { s:'Fresco, rinfrescante', a:'Erbaceo', k:'trigemino',
+      m:[['Mentolo','Menta, Menta d’acqua'],['1,8-cineolo','Rosmarino, Alloro, Cardamomo verde']],
+      r:'Canale del freddo TRPM8 sulle terminazioni del trigemino: lo stesso che si attiva con il freddo vero.',
+      n:'Il mentolo inganna il TRPM8: la bocca sente fresco anche a temperatura ambiente.' },
+    { s:'Caldo aromatico', a:'Speziato', k:'trigemino',
+      m:[['Timolo, carvacrolo','Timo, Origano, Santoreggia'],['Eugenolo','Chiodo di garofano, Alloro'],['Canfora','Rosmarino, Salvia']],
+      r:'Canale TRPV3 (calore tiepido); l’eugenolo attiva anche TRPA1 e dà un leggero intorpidimento.',
+      n:'Il chiodo di garofano addormenta un po’ la lingua: in dosi alte appiattisce il resto del profilo.' },
+    { s:'Pungente, piccante', a:'Speziato', k:'trigemino',
+      m:[['Piperina','Pepe nero, Cubebe, Pepe di giava'],['Gingeroli, shogaoli','Zenzero, Galanga'],['6-paradolo','Grani del paradiso'],['Cinnamaldeide','Cannella Ceylon, Cassia'],['Isotiocianato di allile','Senape gialla']],
+      r:'Canale del caldo TRPV1 (piperina, gingeroli, paradoli) e canale dell’irritazione TRPA1 (cinnamaldeide, isotiocianati, in parte piperina).',
+      n:'La pungenza si somma al bruciore dell’alcol, che usa gli stessi canali: un gin molto speziato ad alta gradazione può risultare aggressivo.' },
+    { s:'Formicolio, intorpidimento', a:'Speziato', k:'tatto',
+      m:[['Idrossi-α-sanshool','Pepe sansho, Pepe di Sichuan']],
+      r:'Blocca i canali del potassio a due pori (KCNK3, KCNK9, KCNK18) nelle fibre del tatto: i meccanorecettori della lingua vibrano come a circa 50 Hz. Attiva in parte anche TRPV1 e TRPA1.',
+      n:'Il formicolio del sansho è una sensazione tattile, non un gusto: dura minuti e cambia la percezione dei sorsi successivi.' },
+    { s:'Astringente', a:'Struttura', k:'tatto',
+      m:[['Tannini e catechine','Tè verde, Corbezzolo, Melograno, Sorbo, Ribes nero'],['Tannini della corteccia','Betulla corteccia']],
+      r:'Nessun recettore del gusto: i tannini legano e fanno precipitare le proteine salivari ricche di prolina, e la perdita di lubrificazione viene letta dai meccanorecettori della mucosa.',
+      n:'L’astringenza si confonde spesso con l’amaro. Cresce con macerazioni lunghe e gradazioni alte: è uno dei segnali di sovraestrazione.' },
+    { s:'Bruciore alcolico', a:'Struttura', k:'trigemino',
+      m:[['Etanolo','tutte (è il solvente)']],
+      r:'L’etanolo abbassa la soglia di attivazione di TRPV1: il canale del caldo scatta già a temperatura corporea, da qui la sensazione di calore.',
+      n:'È la ragione per cui il gin si giudica anche diluito: a 20–25% il bruciore cala e gli aromi emergono.' }
+  ];
+  let filtro = { senso: null, asse: null, q: '' };
+  const esc = t => String(t).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const NOMI_LIB = new Set((typeof MASTER !== 'undefined' ? MASTER : []).map(x => x.botanica));
+  const botLink = n => { const t = n.trim(); const lib = t === 'Mirto foglie' || t === 'Mirto bacche' ? 'Mirto' : t;
+    return NOMI_LIB.has(lib) ? '<a href="#" class="mat-bot" data-n="' + esc(lib) + '">' + esc(t) + '</a>' : esc(t); };
+  const testo = x => (x.s + ' ' + x.m.map(m => m.join(' ')).join(' ') + ' ' + x.r).toLowerCase();
+  function griglia(){
+    const t = document.getElementById('mat-griglia');
+    const conta = (a, k) => S.filter(x => x.a === a && x.k === k).length;
+    t.innerHTML = '<thead><tr><th></th>' + Object.keys(SENSI).map(k => '<th style="--c:' + SENSI[k][2] + '">' + SENSI[k][0] + '</th>').join('') + '</tr></thead><tbody>' +
+      ASSI.map(a => '<tr><th>' + a + '</th>' + Object.keys(SENSI).map(k => { const n = conta(a, k), on = filtro.asse === a && filtro.senso === k;
+        return '<td>' + (n ? '<button type="button" class="mat-cella' + (on ? ' on' : '') + '" data-a="' + a + '" data-k="' + k + '" style="--c:' + SENSI[k][2] + '">' + n + '</button>' : '<span class="mat-vuota">·</span>') + '</td>'; }).join('') + '</tr>').join('') + '</tbody>';
+    t.querySelectorAll('.mat-cella').forEach(b => b.onclick = () => {
+      const on = filtro.asse === b.dataset.a && filtro.senso === b.dataset.k;
+      filtro.asse = on ? null : b.dataset.a; filtro.senso = on ? null : b.dataset.k; disegna(); });
+  }
+  function chips(){
+    const c = document.getElementById('mat-sensi');
+    c.innerHTML = '<button type="button" class="conf-chip' + (!filtro.senso && !filtro.asse ? ' on' : '') + '" data-k="">Tutti</button>' +
+      Object.keys(SENSI).map(k => '<button type="button" class="conf-chip' + (filtro.senso === k && !filtro.asse ? ' on' : '') + '" data-k="' + k + '">' + SENSI[k][0] + '</button>').join('');
+    c.querySelectorAll('[data-k]').forEach(b => b.onclick = () => { filtro.senso = b.dataset.k || null; filtro.asse = null; disegna(); });
+  }
+  function disegna(){
+    griglia(); chips();
+    const q = filtro.q.trim().toLowerCase();
+    const el = S.filter(x => (!filtro.senso || x.k === filtro.senso) && (!filtro.asse || x.a === filtro.asse) && (!q || testo(x).includes(q)));
+    document.getElementById('mat-conta').textContent = el.length + ' sentori su ' + S.length + (filtro.asse ? ' · ' + filtro.asse + ' × ' + SENSI[filtro.senso][0] : '');
+    box.innerHTML = el.map(x => { const se = SENSI[x.k];
+      return '<div class="ck-card mat-card" style="--c:' + se[2] + '"><div class="gar-head"><h3>' + esc(x.s) + '</h3><span class="gar-tipo ton-fam" style="--c:' + se[2] + '">' + se[0] + '</span></div>' +
+        '<p class="ck-origin">Asse del radar: ' + x.a + ' · ' + se[1] + '</p>' +
+        '<table class="mat-mol"><thead><tr><th>Molecole</th><th>Botaniche</th></tr></thead><tbody>' +
+        x.m.map(([mol, bot]) => '<tr' + (q && (mol + ' ' + bot).toLowerCase().includes(q) ? ' class="hit"' : '') + '><td>' + esc(mol) + '</td><td>' + bot.split(',').map(botLink).join(', ') + '</td></tr>').join('') + '</tbody></table>' +
+        '<div class="ck-meta"><strong>Recettori</strong> ' + esc(x.r) + '</div>' +
+        '<p class="ck-desc" style="margin:10px 0 0;">' + esc(x.n) + '</p></div>'; }).join('') ||
+      '<div class="radar-nota">Nessun sentore con questi filtri. La botanica potrebbe non avere molecole elencate qui: la sua scheda in libreria riporta le molecole da estrarre.</div>';
+    box.querySelectorAll('.mat-bot').forEach(a => a.onclick = e => { e.preventDefault();
+      showTab('libreria'); try { if (typeof showDetail === 'function') showDetail(a.dataset.n, true); } catch(err){} });
+  }
+  const qIn = document.getElementById('mat-q');
+  if (qIn) qIn.addEventListener('input', () => { filtro.q = qIn.value; disegna(); });
+  disegna();
+  window.MATRICE_SENTORI = S;
+})();
+</script>
+<script>
 // ---------- Pagine interne in stile bento ----------
 // Ogni pagina riceve una tessera d'apertura colorata (come quella della prima pagina)
 // e i suoi riquadri prendono tinte diverse, a giro, partendo dal colore della pagina.
@@ -8973,6 +9159,8 @@ if ("serviceWorker" in navigator) {
                    s:'Quale guarnizione mettere in base allo stile del gin, e perché: rinforzo di una nota o contrasto a un eccesso.' },
     toniche:     { c:'--c-marino',       k:'Il servizio',
                    s:'Le acque toniche in commercio, le loro caratteristiche e con quali gin abbinarle, e perché.' },
+    matrice:     { c:'--c-marino',       k:'Per approfondire',
+                   s:'Per ogni sentore, le molecole responsabili, le botaniche che le portano e i recettori sensoriali che le leggono.' },
     special:     { c:'--c-viola',        k:'Special',
                    s:'Ricetta inversa, gemello commerciale, gin alla cieca, gin di un paesaggio, calendario delle raccolte, etichetta e gin a tavola.' }
   };
