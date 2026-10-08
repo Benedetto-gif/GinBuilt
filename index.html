@@ -1850,6 +1850,14 @@ html details.howto a{color:#5A3E1C;}
 .gar-web{display:inline-flex;align-items:center;gap:6px;margin-top:12px;text-decoration:none;font-size:13px;}
 .gar-azioni{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
 .gar-azioni .gar-web{margin-top:0;}
+
+/* ---------------- Mescola due gin ---------------- */
+.mix-ctrl{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.mix-ctrl label{display:flex;flex-direction:column;gap:4px;font-size:12.5px;font-weight:700;color:var(--ink-soft);}
+.mix-ctrl select{font:inherit;font-size:14px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);}
+.mix-ctrl .mix-prop{grid-column:1 / -1;font-weight:500;}
+.mix-ctrl .mix-prop input{width:100%;accent-color:#8A63B0;}
+.mix-presets{grid-column:1 / -1;display:flex;gap:8px;flex-wrap:wrap;}
 </style>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0C110E" id="meta-theme-color">
@@ -2648,6 +2656,10 @@ html details.howto a{color:#5A3E1C;}
       <p class="storia-sub">Le botaniche e la gradazione di alcuni gin commerciali fra i più diffusi, come riferimento e confronto con le tue ricette. Le fonti sono le schede tecniche e i siti ufficiali dei produttori: le liste di botaniche sono pubbliche, le <strong>proporzioni esatte restano quasi sempre un segreto industriale non dichiarato</strong>.</p>
       <p class="storia-sub">Aprendo un gin trovi il suo <strong>diagramma a ragnatela</strong> sugli otto assi dell'app, stimato dalle botaniche dichiarate, e puoi sovrapporlo a un altro gin.</p>
 
+      <h3>Mescola due gin</h3>
+      <p>Scegli due gin e la proporzione: il diagramma mostra i due profili e quello della miscela, cosa cambia rispetto al primo gin, le botaniche in comune, la gradazione risultante e come servirla.</p>
+      <div class="gin-radar" id="gin-mix"></div>
+
       <h3>London Dry classici</h3>
       <details class="howto">
         <summary>Tanqueray London Dry Gin — 43,1% vol.</summary>
@@ -3166,7 +3178,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 8 ottobre 2026, ore 06:30 · Garnish: tasto per vedere presentazioni sul web</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 8 ottobre 2026, ore 06:45 · Gli altri gin: mescola due gin e guarda il radar della miscela</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -6776,6 +6788,79 @@ function radarGinHtml(nome, conf, aperto){
     if (det.open){ fatto = true; disegna(''); }
   });
 })();
+// ---------- Mescola due gin: radar della miscela in proporzione ----------
+(function(){
+  const box = document.getElementById('gin-mix'); if (!box) return;
+  const nomi = Object.keys(GIN_LISTE).filter(n => profiloGin(n, true));
+  const breve = n => n.startsWith('Gin ') ? n : n.replace(/ (London Dry|Japanese Craft|Japanese|Premium|Islay Dry|Extra Dry|Dry)? ?Gin$/, '');
+  // gradazione dalla scheda del gin (primo numero "xx,x% vol.")
+  const ABV = {};
+  document.querySelectorAll('#panel-altrigin details.howto > summary').forEach(s => {
+    const t = s.textContent, n = nomi.find(x => t.startsWith(x)), m = t.match(/(\d+(?:,\d+)?)\s*%/);
+    if (n && m) ABV[n] = parseFloat(m[1].replace(',', '.'));
+  });
+  const stato = { a: nomi.includes('Tanqueray London Dry Gin') ? 'Tanqueray London Dry Gin' : nomi[0],
+                  b: nomi.includes('Roku Japanese Craft Gin') ? 'Roku Japanese Craft Gin' : nomi[1], pa: 50, base: false };
+  const opt = sel => nomi.map(n => '<option value="' + n.replace(/"/g,'&quot;') + '"' + (n === sel ? ' selected' : '') + '>' + breve(n) + '</option>').join('');
+  const r1 = x => Math.round(x * 10) / 10;
+
+  function disegna(){
+    const { a, b, pa, base } = stato, fa = pa / 100, fb = 1 - fa;
+    const A = profiloGin(a, base), B = profiloGin(b, base);
+    let h = '<div class="mix-ctrl">' +
+      '<label>Gin A<select class="mix-a">' + opt(a) + '</select></label>' +
+      '<label>Gin B<select class="mix-b">' + opt(b) + '</select></label>' +
+      '<label class="mix-prop">Proporzione: <strong>' + pa + '% ' + breve(a) + '</strong> · <strong>' + (100 - pa) + '% ' + breve(b) + '</strong>' +
+      '<input type="range" class="mix-pa" min="0" max="100" step="5" value="' + pa + '"></label>' +
+      '<div class="mix-presets">' + [75, 50, 25].map(v => '<button type="button" class="conf-chip' + (v === pa ? ' on' : '') + '" data-pa="' + v + '">' + (v / 25) + ':' + ((100 - v) / 25) + '</button>').join('') + '</div></div>';
+    if (!A || !B){ box.innerHTML = h + '<div class="radar-nota">Uno dei due gin non ha botaniche in libreria' + (base ? '' : ' fuori dalle base') + ': prova ad aggiungere le botaniche base.</div>'; aggancia(); return; }
+    const M = ASSI8.map((_, i) => r1(A.vals[i] * fa + B.vals[i] * fb));
+    const serie = [
+      {vals: A.vals, color: 'var(--juniper)', label: a, dash: true},
+      {vals: B.vals, color: '#C0733A', label: b, dash: true},
+      {vals: M, color: '#8A63B0', label: 'Miscela'}
+    ];
+    h += '<div class="radar-title">' + (base ? 'Profilo completo stimato' : 'La firma della miscela, senza le base') + '</div>' + radarSVG(serie, 300) +
+      '<div class="gin-leg"><span><i style="background:transparent;border:1.5px dashed var(--juniper)"></i>' + breve(a) + '</span><span><i style="background:transparent;border:1.5px dashed #C0733A"></i>' + breve(b) + '</span><span><i style="background:#8A63B0"></i>Miscela</span></div>' +
+      '<div style="text-align:center;margin:6px 0 2px"><button type="button" class="ghost-btn mix-base" aria-pressed="' + base + '">' + (base ? '− Togli le botaniche base' : '+ Aggiungi le botaniche base') + '</button></div>';
+    // cosa cambia rispetto al gin A
+    const dif = ASSI8.map((x, i) => [x.toLowerCase(), r1(M[i] - A.vals[i])]);
+    const su = dif.filter(x => x[1] >= 0.3).sort((p, q) => q[1] - p[1]).map(x => '<strong>' + x[0] + '</strong> +' + String(x[1]).replace('.', ','));
+    const giu = dif.filter(x => x[1] <= -0.3).sort((p, q) => p[1] - q[1]).map(x => x[0] + ' ' + String(x[1]).replace('.', ','));
+    h += '<div class="radar-nota">Rispetto a ' + breve(a) + ' da solo: ' + (su.length ? 'sale ' + su.join(', ') : 'nessuna nota sale in modo netto') + (giu.length ? '; scende ' + giu.join(', ') : '') + '.</div>';
+    // botaniche condivise e portate da uno solo
+    const la = GIN_LISTE[a].b.filter(n => PROFILO8[n] && (base || !GIN_BASE.includes(n))), lb = GIN_LISTE[b].b.filter(n => PROFILO8[n] && (base || !GIN_BASE.includes(n)));
+    const comuni = la.filter(n => lb.includes(n)), soloB = lb.filter(n => !la.includes(n)), soloA = la.filter(n => !lb.includes(n));
+    h += '<div class="radar-nota">' + (comuni.length ? 'In comune (si rinforzano): ' + comuni.join(', ') + '. ' : 'Nessuna botanica in comune' + (base ? '' : ' fuori dalle base') + ': i due profili si affiancano senza sommarsi. ') +
+      (soloB.length ? 'Porta ' + breve(b) + ': ' + soloB.join(', ') + '. ' : '') + (soloA.length ? 'Porta ' + breve(a) + ': ' + soloA.join(', ') + '.' : '') + '</div>';
+    // gradazione della miscela
+    if (ABV[a] && ABV[b]) h += '<div class="radar-nota">Gradazione della miscela: circa <strong>' + String(r1(ABV[a] * fa + ABV[b] * fb)).replace('.', ',') + '% vol.</strong> (' + String(ABV[a]).replace('.', ',') + '% e ' + String(ABV[b]).replace('.', ',') + '%; i volumi di alcol si sommano quasi esattamente, la contrazione è trascurabile).</div>';
+    // garnish e tonica per la miscela: botaniche di entrambi pesate sulla proporzione
+    const pesi = {};
+    [[profiloGin(a, true), fa], [profiloGin(b, true), fb]].forEach(([p, f]) => { if (p) p.el.forEach(x => { pesi[x.n] = (pesi[x.n] || 0) + f * x.w / p.tot; }); });
+    const nn = Object.keys(pesi), ww = nn.map(n => pesi[n]);
+    if (window.garnishSuggerita && nn.length){
+      const g = window.garnishSuggerita(nn, ww, null), t = window.tonicaSuggerita ? window.tonicaSuggerita(nn, ww) : null;
+      h += '<div class="radar-nota">Per servirla: garnish <strong>' + g.g.charAt(0).toLowerCase() + g.g.slice(1) + '</strong> (' + g.tipo + ')' +
+        (t ? ', tonica <strong>' + ({classica:'classica',neutra:'premium neutra',amara:'amara e strutturata',aromatica:'aromatica',italiana:'italiana agrumata'}[t.k] || t.k) + '</strong>' : '') + '. ' +
+        '<a href="#" class="mix-go" data-t="garnish">Garnish</a> · <a href="#" class="mix-go" data-t="toniche">Acque toniche</a></div>';
+    }
+    h += '<div class="radar-nota" style="margin-top:10px">Il radar della miscela è la media dei due profili pesata sulla proporzione: suppone che i due gin abbiano un\'intensità aromatica simile, ma le dosi reali non sono dichiarate e un gin ricco di botaniche può dominare anche in quota minore. Prova la miscela in piccolo (per esempio 30 ml in tutto) e confronta all\'assaggio.' +
+      ((GIN_LISTE[a].parziale || GIN_LISTE[b].parziale) ? ' <strong>Lista incompleta</strong> per ' + [a, b].filter(n => GIN_LISTE[n].parziale).map(breve).join(' e ') + '.' : '') + '</div>';
+    box.innerHTML = h; aggancia();
+  }
+  function aggancia(){
+    const sa = box.querySelector('.mix-a'), sb = box.querySelector('.mix-b'), r = box.querySelector('.mix-pa');
+    if (sa) sa.onchange = () => { stato.a = sa.value; disegna(); };
+    if (sb) sb.onchange = () => { stato.b = sb.value; disegna(); };
+    if (r) r.oninput = () => { stato.pa = parseInt(r.value, 10) || 0; disegna(); const n = box.querySelector('.mix-pa'); if (n) n.focus(); };
+    box.querySelectorAll('.mix-presets [data-pa]').forEach(x => { x.onclick = () => { stato.pa = parseInt(x.dataset.pa, 10); disegna(); }; });
+    const bb = box.querySelector('.mix-base'); if (bb) bb.onclick = () => { stato.base = !stato.base; disegna(); };
+    box.querySelectorAll('.mix-go').forEach(x => { x.onclick = e => { e.preventDefault(); showTab(x.dataset.t); }; });
+  }
+  disegna();
+  window.ginMixRidisegna = disegna;
+})();
 // Il Builder usa EST per i suoi avvisi di gradazione: va avviato solo da qui in avanti,
 // quando EST (definita sopra) esiste già.
 renderBuilder(0);
@@ -8462,6 +8547,7 @@ if ("serviceWorker" in navigator) {
   window.tonicaSuggerita = suggerisci;
   render();
   try { if (typeof renderSummary === 'function') renderSummary(); } catch(e){}
+  try { if (window.ginMixRidisegna) window.ginMixRidisegna(); } catch(e){}
 })();
 </script>
 <script>
