@@ -103,9 +103,45 @@ def page(title, body, scripted=False):
     return ('<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="it" lang="it">'
             '<head><meta charset="utf-8"/><title>%s</title><link rel="stylesheet" href="libro.css"/>%s</head><body>%s</body></html>') % (
             e(title), '<script src="libro.js" defer="defer"></script>' if scripted else '', body)
+
+# ---------- sigle cliccabili: ogni sigla rimanda alla sua voce in "Che cosa vogliono dire le sigle" ----------
+SIGLE_ID = {'TRP': 'trp', 'TRPV1': 'trpv1', 'TRPV3': 'trpv3', 'TRPA1': 'trpa1', 'TRPM8': 'trpm8', 'TRPM5': 'trpm5',
+            'T1R e TAS1R': 't1r', 'TAS2R': 'tas2r', 'OR': 'or', 'GPCR': 'gpcr', 'OTOP1': 'otop1', 'ENaC': 'enac', 'KCNK': 'kcnk',
+            'Trigemino': 'trigemino', 'Chemestesi': 'chemestesi', 'Ortonasale e retronasale': 'ortonasale'}
+# parola nel testo -> voce (le piu' lunghe prima). OR da solo e' troppo ambiguo: non si collega.
+SIGLE_TESTO = [('KCNK18', 'kcnk'), ('KCNK3', 'kcnk'), ('KCNK9', 'kcnk'), ('KCNK', 'kcnk'),
+               ('TRPV1', 'trpv1'), ('TRPV3', 'trpv3'), ('TRPA1', 'trpa1'), ('TRPM8', 'trpm8'), ('TRPM5', 'trpm5'),
+               ('TAS1R2', 't1r'), ('TAS1R3', 't1r'), ('TAS1R', 't1r'), ('T1R1', 't1r'), ('T1R2', 't1r'), ('T1R3', 't1r'), ('T1R', 't1r'),
+               ('TAS2R', 'tas2r'), ('OTOP1', 'otop1'), ('ENaC', 'enac'), ('GPCR', 'gpcr'), ('TRP', 'trp'),
+               ('trigemino', 'trigemino'), ('Trigemino', 'trigemino'), ('chemestesi', 'chemestesi'), ('Chemestesi', 'chemestesi'),
+               ('retronasale', 'ortonasale'), ('ortonasale', 'ortonasale')]
+_SIG_RE = re.compile(r'(?<![\w-])(' + '|'.join(re.escape(t) for t, _ in SIGLE_TESTO) + r')(?![\w-])')
+_SIG_MAP = dict(SIGLE_TESTO)
+def collega_sigle(body, href):
+    if href in ('cap5-sigle.xhtml', 'app-fonti.xhtml'): return body
+    out, fatte, salta = [], set(), 0
+    # si lavora solo sul testo fuori dai tag; si salta dentro <a>, <svg>, titoli, <script>, <style>
+    for pezzo in re.split(r'(<[^>]+>)', body):
+        if pezzo.startswith('<'):
+            m = re.match(r'<(/?)(a|svg|h1|h2|h3|h4|script|style|title|button|summary)\b', pezzo)
+            if m and not pezzo.endswith('/>'): salta += -1 if m.group(1) else 1
+            out.append(pezzo); continue
+        if salta > 0 or not pezzo.strip(): out.append(pezzo); continue
+        def sost(mm):
+            ida = _SIG_MAP[mm.group(1)]
+            if ida in fatte: return mm.group(1)
+            fatte.add(ida)
+            return '<a class="sigla" href="cap5-sigle.xhtml#sig-%s">%s</a>' % (ida, mm.group(1))
+        out.append(_SIG_RE.sub(sost, pezzo))
+    return ''.join(out)
+def ancore_sigle(h):
+    for nome, ida in SIGLE_ID.items():
+        h = h.replace('<li><strong>%s</strong>' % nome, '<li id="sig-%s"><strong>%s</strong>' % (ida, nome), 1)
+    return h
 files = []
 def add(href, title, body, lvl, scripted=False):
     if '@@TAB@@' in body: body = body.replace('@@TAB@@', TAB_ES).replace('@@IMP@@', IMP_ES)
+    body = collega_sigle(body, href)
     files.append((slug(href.replace('.xhtml', '')), href, title, page(title, body, scripted), scripted, lvl))
 
 # ---------- botaniche: indice e collegamenti ----------
@@ -337,7 +373,7 @@ add('cap5.xhtml', 'Capitolo 5 · La percezione', '''<section epub:type="chapter"
 <ol class="indice"><li><a href="cap5-sistemi.xhtml">Quattro sistemi, un solo sapore</a></li><li><a href="cap5-canali.xhtml">I canali e dove si trovano</a></li><li><a href="cap5-sigle.xhtml">Che cosa vogliono dire le sigle</a></li><li><a href="cap5-curioso.xhtml">Le domande del curioso</a></li><li><a href="cap5-matrice.xhtml">La matrice dei sentori</a></li><li><a href="cap5-ruota.xhtml">La ruota degli aromi</a></li><li><a href="cap5-assaggio.xhtml">L'analisi sensoriale</a></li><li><a href="cap5-taratura.xhtml">La taratura del palato</a></li><li><a href="cap5-schede.xhtml">Le schede di assaggio</a></li></ol></section>''', 1)
 add('cap5-sistemi.xhtml', 'Quattro sistemi, un solo sapore', '<section><h1>Quattro sistemi, un solo sapore</h1>%s</section>' % pulisci(D['QUATTRO']), 2)
 add('cap5-canali.xhtml', 'I canali e dove si trovano', '<section><h1>I canali e dove si trovano</h1>%s<p class="nota">Le fonti di questa pagina sono in <a href="app-fonti.xhtml">Fonti e bibliografia</a>.</p></section>' % pulisci(D['CANALI']), 2)
-add('cap5-sigle.xhtml', 'Che cosa vogliono dire le sigle', '<section><h1>Che cosa vogliono dire le sigle</h1>%s</section>' % pulisci(D['SIGLE']), 2)
+add('cap5-sigle.xhtml', 'Che cosa vogliono dire le sigle', '<section><h1>Che cosa vogliono dire le sigle</h1>%s</section>' % ancore_sigle(pulisci(D['SIGLE'])), 2)
 add('cap5-curioso.xhtml', 'Le domande del curioso', '<section><h1>Le domande del curioso</h1>%s<p class="nota">Le fonti di questa pagina sono in <a href="app-fonti.xhtml">Fonti e bibliografia</a>.</p></section>' % pulisci(D['CURIOSO']), 2)
 ASSI_M = ASSI + ['Struttura']
 grid = '<table class="mgrid"><thead><tr><th></th>%s</tr></thead><tbody>%s</tbody></table>' % (
