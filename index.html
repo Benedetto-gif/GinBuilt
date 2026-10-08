@@ -3460,7 +3460,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 8 ottobre 2026, ore 12:30 · Equilibrio giudicato con le botaniche base</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 8 ottobre 2026, ore 14:00 · Secondo radar: sensazioni in bocca e umami</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -3685,6 +3685,85 @@ MASTER.forEach(d => byName[d.botanica] = d);
 // per questo stanno in fondo all'elenco (le schede salvate con otto voti restano valide).
 const ASSI8 = ['Dolce','Amaro','Acido','Salino','Agrumato','Floreale','Erbaceo','Speziato','Resinoso','Fruttato'];
 const PROFILO8 = {"Tè siciliano":[1,1,0,0,0,0,4,1,0,0],"Tè verde":[1,3,0,0,0,2,4,0,0,0],"Limone":[0,1,4,0,5,0,0,0,0,0],"Bergamotto":[0,2,1,0,5,3,0,0,0,0],"Arancia dolce":[4,0,2,0,4,1,0,0,0,0],"Arancia amara":[0,4,1,0,4,2,0,1,2,0],"Cedro":[2,1,1,0,4,1,0,0,0,0],"Mandarino":[4,0,1,0,4,0,1,0,0,0],"Mandarino verde":[1,1,2,0,4,0,2,0,0,0],"Pompelmo":[1,4,2,0,4,0,0,1,2,0],"Lime":[0,1,4,0,4,0,2,0,0,0],"Yuzu":[0,1,3,0,5,2,0,1,0,0],"Kumquat":[2,1,3,0,4,1,0,0,0,1],"Lime nero":[0,2,3,0,2,0,0,3,1,1],"Coriandolo":[0,0,0,0,3,2,1,4,1,0],"Cardamomo verde":[0,0,0,0,1,2,3,4,1,0],"Cardamomo nero":[0,0,0,0,0,0,2,5,2,0],"Cubebe":[0,0,0,0,1,0,2,5,2,0],"Pepe nero":[0,0,0,0,0,0,1,5,1,0],"Pepe rosa":[1,0,0,0,0,2,1,2,4,1],"Grani del paradiso":[0,0,0,0,1,0,0,5,0,0],"Cumino":[0,0,0,0,0,0,1,5,0,0],"Carvi":[0,0,0,0,0,0,2,5,0,0],"Finocchio":[2,0,0,0,0,0,2,4,0,0],"Anice verde":[2,0,0,0,0,0,1,5,0,0],"Stella di anice":[3,0,0,0,0,0,0,5,0,0],"Macis":[0,0,0,0,0,1,0,5,0,0],"Noce moscata":[1,0,0,0,0,0,0,5,1,0],"Chiodo di garofano":[0,1,0,0,0,0,0,5,0,0],"Cannella Ceylon":[2,0,0,0,0,0,0,5,0,0],"Cassia":[1,0,0,0,0,0,0,5,0,0],"Fave di tonka":[4,0,0,0,0,0,1,3,0,1],"Senape gialla":[0,1,0,0,0,0,0,4,0,0],"Angelica":[0,2,0,0,0,0,3,3,3,0],"Liquirizia":[4,1,0,0,0,0,1,3,1,0],"Genziana":[0,5,0,0,0,0,1,1,0,0],"Iris":[0,0,0,0,0,4,0,2,1,0],"Zenzero":[0,0,0,0,2,0,0,5,0,0],"Galanga":[0,0,0,0,1,0,1,5,1,0],"Curcuma":[0,2,0,0,0,0,0,4,0,0],"Mirto foglie":[0,1,0,0,1,0,4,2,3,1],"Mirto bacche":[2,1,2,0,0,0,2,2,2,3],"Elicriso":[1,1,0,0,0,2,3,4,1,0],"Rosmarino":[0,1,0,0,0,0,4,3,3,0],"Timo":[0,1,0,0,0,0,4,4,1,0],"Timo limonato":[0,0,0,0,3,0,4,2,0,0],"Santoreggia":[0,1,0,0,0,0,4,4,0,0],"Origano":[0,1,0,0,0,0,4,4,0,0],"Maggiorana":[1,0,0,0,0,0,4,3,1,0],"Salvia":[0,2,0,0,0,0,4,3,2,0],"Melissa":[0,0,1,0,3,0,4,0,0,0],"Verbena odorosa":[0,0,1,0,4,2,2,0,0,0],"Alloro":[0,1,0,0,0,0,4,3,2,0],"Lentisco":[0,1,0,0,0,0,3,2,5,0],"Finocchio di mare":[0,0,0,4,0,0,3,2,0,0],"Levistico":[0,1,0,2,0,0,4,3,0,0],"Dragoncello":[1,0,0,0,0,0,4,3,0,0],"Cappero":[0,1,1,4,0,0,2,2,0,0],"Foglie di cappero":[0,1,0,3,0,0,4,1,0,0],"Salicornia":[0,0,0,5,0,0,3,0,0,0],"Alga verde alimentare":[0,0,0,4,0,0,3,0,0,0],"Spirulina alimentare":[0,1,0,3,0,0,3,0,0,0],"Lavanda":[0,1,0,0,0,5,3,0,1,0],"Rosa":[1,0,0,0,0,5,0,0,0,1],"Camomilla":[2,1,0,0,0,4,1,0,0,2],"Sambuco":[1,0,0,0,0,5,0,0,0,2],"Ibisco":[0,0,4,0,0,3,0,0,0,3],"Fiordaliso":[0,0,0,0,0,3,0,0,0,0],"Gelsomino":[1,0,0,0,0,5,0,0,0,0],"Bacche di ginepro":[1,1,0,0,2,0,1,3,5,1],"Bacche della passione":[2,0,4,0,0,2,0,0,0,5],"Melograno":[2,1,4,0,0,0,0,0,0,4],"Fico":[5,0,0,0,0,0,0,1,0,3],"Uva passa":[5,0,1,0,0,0,0,0,0,4],"Mela":[3,0,2,0,0,1,0,0,0,5],"Pera":[4,0,1,0,0,2,0,0,0,5],"Ciliegia":[3,1,2,0,0,1,0,0,0,4],"Prugna":[4,0,2,0,0,0,0,0,0,4],"Ribes nero":[2,1,4,0,0,0,2,1,1,4],"Caffè":[1,4,0,0,0,0,0,3,0,0],"Cacao":[2,4,0,0,0,0,0,3,0,0],"Vaniglia bourbon":[5,0,0,0,0,1,0,2,1,0],"Mandorla dolce":[4,1,0,0,0,0,0,1,0,0],"Sesamo":[2,1,0,0,0,0,0,2,0,0],"Sommacco":[0,1,4,0,1,0,0,2,0,0],"Vaniglia":[5,0,0,0,0,1,0,2,1,0],"Alloro bacca":[0,2,0,0,0,0,2,3,3,0],"Portulaca":[0,0,2,2,0,0,3,0,0,0],"Spina santa":[0,1,2,0,0,0,3,3,0,1],"Carruba polpa":[5,1,0,0,0,0,0,1,0,1],"Corbezzolo":[2,1,3,0,0,1,0,0,0,3],"Uva Cataratto":[4,0,2,0,0,2,0,0,0,4],"Sorbo":[1,3,3,0,0,0,0,0,0,2],"Castagna":[4,0,0,0,0,0,0,1,0,0],"Tarassaco":[0,4,0,0,0,0,2,1,0,0],"Betulla corteccia":[1,0,0,0,0,0,3,2,3,0],"Pepe di giava":[0,0,0,0,2,0,0,5,2,0],"Pepe di Sichuan":[0,0,0,0,4,2,0,4,1,0],"Zafferano":[0,2,0,0,0,2,0,4,0,0],"Aneto":[0,0,0,0,0,0,4,3,0,0],"Basilico":[0,0,0,0,0,2,4,3,0,0],"Gelso":[3,0,1,0,0,1,2,0,0,1],"Moringa":[0,2,0,0,0,0,4,1,0,0],"Artemisia":[0,5,0,0,0,0,4,2,1,0],"Elicriso delle scogliere":[1,1,0,2,0,0,2,4,1,0],"Malva":[0,0,0,0,0,2,1,0,0,0],"Ginestra":[1,1,0,0,0,4,1,0,0,0],"Alga nori":[0,0,0,5,0,0,1,0,0,0],"Poseidonia":[0,0,0,4,0,0,3,0,0,0],"Asparago":[0,2,0,0,0,0,4,0,0,0],"Cardo":[0,4,0,0,0,0,3,0,0,0],"Carciofo":[0,4,0,0,0,0,3,0,0,0],"Cetriolo":[0,0,0,0,0,0,4,0,0,0],"Mandorla amara":[1,4,0,0,0,0,0,2,0,0],"Manna":[4,1,0,0,0,0,0,0,0,0],"Mirtillo":[3,0,3,0,0,1,0,0,0,4],"Ribes rosso":[1,1,5,0,0,0,0,0,0,3],"Mora":[3,0,3,0,0,0,0,0,0,4],"Fragola":[4,0,2,0,0,2,0,0,0,5],"Lamponi":[3,0,3,0,0,3,0,0,0,5],"Menta":[0,0,0,0,0,0,5,2,0,0],"Achillea":[0,4,0,0,0,1,4,2,1,0],"Rosa canina":[2,1,4,0,0,2,0,0,0,3],"Scorza di bergamotto disidratata":[1,2,0,0,5,3,0,0,0,0],"Scorza di arancia disidratata":[3,2,0,0,5,0,0,1,1,0],"Finger lime":[0,0,5,0,4,0,0,0,2,0],"Ananas":[4,0,4,0,0,0,0,0,0,5],"Mango":[4,0,2,0,0,1,0,1,2,5],"Papaya":[4,0,1,0,0,1,0,1,0,4],"Litchi":[4,0,1,0,0,4,0,0,0,4],"Rambutan":[4,0,1,0,0,3,0,0,0,4],"Alchechengi":[2,1,4,0,0,0,2,0,0,3],"Pitaya (dragon fruit)":[2,0,1,0,0,0,2,0,0,3],"Guava":[3,0,3,0,0,3,0,1,0,5],"Feijoa":[2,0,3,0,1,1,2,2,2,4],"Kiwano":[1,0,4,0,0,0,3,0,0,3],"Cocco":[4,0,0,0,0,0,0,0,0,2],"Durian":[3,0,0,0,0,0,0,3,0,4],"Abrotano":[0,3,0,0,3,0,3,1,1,0],"Longan":[4,0,1,0,0,1,0,1,0,4],"Foglie di loto":[1,1,0,0,0,1,4,0,0,0],"Papavero":[2,1,0,0,0,0,0,2,0,0],"Sandalo bianco":[2,1,0,0,0,1,0,2,4,0],"Oliva":[1,2,0,3,0,0,3,0,0,1],"Clementina":[3,0,1,0,4,1,0,0,0,0],"Fiori d'arancio":[2,1,0,0,2,5,0,0,0,0],"Fiori di ciliegio":[2,0,0,1,0,4,1,1,0,1],"Erica":[2,2,0,0,0,3,2,0,1,0],"Trifoglio":[2,1,0,0,0,3,3,0,0,0],"Menta d'acqua":[0,1,0,0,1,2,4,1,0,0],"Mirtillo rosso":[1,2,4,0,0,1,0,0,0,4],"Foglie di lampone":[1,2,0,0,0,1,3,0,0,1],"Pepe sansho":[0,0,0,0,4,2,1,4,1,0],"Gyokuro":[2,2,0,1,0,1,4,0,0,0],"Foglie di ciliegio":[2,1,0,2,0,1,3,1,0,0],"Semi di angelica":[0,1,0,0,2,1,2,3,2,0],"Shiso rosso":[0,1,1,0,2,2,4,3,0,1],"Foglie di bambù":[1,1,0,0,0,0,4,0,0,0],"Kinome":[0,1,0,0,3,2,4,2,0,0],"Kabosu":[0,1,4,0,4,0,2,0,0,0],"Amanatsu":[2,3,2,0,4,0,0,0,1,0],"Shikuwasa":[1,1,4,0,4,1,2,0,0,0],"Citronella":[0,0,1,0,5,2,3,1,0,0],"Foglie di combava":[0,1,1,0,5,2,3,0,0,0],"Aghi di pino":[0,1,0,0,2,0,2,1,5,0],"Aghi di abete":[0,1,0,0,3,0,2,0,4,0],"Cipresso":[0,2,0,0,0,0,1,1,5,0],"Olmaria":[3,1,0,0,0,4,2,0,0,1],"Luppolo":[0,4,0,0,2,2,3,2,3,0],"Rabarbaro":[1,1,4,0,0,0,3,0,0,3],"Prugnolo":[1,2,4,0,0,0,0,1,0,4],"China":[0,5,0,0,0,0,1,1,1,0],"Tè nero":[2,3,0,0,0,2,1,1,0,2],"Chinotto":[0,4,1,0,4,2,0,1,2,0],"Finocchietto selvatico":[2,0,0,0,2,0,4,3,2,0]};
+const SENS5 = {"Tè siciliano":[0,1,2,1,2],"Tè verde":[0,1,4,1,2],"Limone":[1,3,1,0,1],"Bergamotto":[0,2,1,1,2],"Arancia dolce":[0,1,0,2,1],"Arancia amara":[1,1,2,1,3],"Cedro":[0,2,1,1,1],"Mandarino":[0,1,0,2,1],"Mandarino verde":[0,2,1,1,1],"Pompelmo":[1,2,2,0,2],"Lime":[1,3,1,0,1],"Yuzu":[1,2,1,1,2],"Kumquat":[0,1,2,1,1],"Lime nero":[1,1,3,1,3],"Coriandolo":[1,2,0,1,2],"Cardamomo verde":[1,4,0,1,3],"Cardamomo nero":[2,3,1,2,4],"Cubebe":[3,2,1,1,3],"Pepe nero":[5,1,1,1,3],"Pepe rosa":[1,1,1,1,2],"Grani del paradiso":[4,1,0,1,2],"Cumino":[2,0,1,2,4],"Carvi":[2,1,0,1,3],"Finocchio":[1,2,0,2,3],"Anice verde":[1,2,0,2,4],"Stella di anice":[1,2,1,3,4],"Macis":[2,1,1,2,3],"Noce moscata":[2,1,1,2,4],"Chiodo di garofano":[4,1,3,2,5],"Cannella Ceylon":[2,0,2,2,3],"Cassia":[3,0,3,2,4],"Fave di tonka":[0,0,0,4,5],"Senape gialla":[4,0,0,1,2],"Angelica":[1,1,1,2,5],"Liquirizia":[0,1,0,5,5],"Genziana":[0,0,2,1,5],"Iris":[0,0,0,3,5],"Zenzero":[5,2,0,1,3],"Galanga":[4,3,1,1,3],"Curcuma":[2,0,2,2,3],"Mirto foglie":[1,3,3,1,3],"Mirto bacche":[0,1,4,2,3],"Elicriso":[0,1,1,2,4],"Rosmarino":[1,4,2,1,3],"Timo":[2,2,2,1,3],"Timo limonato":[1,2,1,1,2],"Santoreggia":[3,1,2,1,3],"Origano":[2,1,2,1,3],"Maggiorana":[1,1,1,1,2],"Salvia":[1,3,3,1,4],"Melissa":[0,2,1,0,1],"Verbena odorosa":[0,2,1,0,2],"Alloro":[1,3,2,1,3],"Lentisco":[1,3,3,1,4],"Finocchio di mare":[1,2,1,1,2],"Levistico":[1,1,1,2,4],"Dragoncello":[1,2,0,1,2],"Cappero":[1,0,1,1,3],"Foglie di cappero":[1,1,2,1,2],"Salicornia":[0,1,0,1,2],"Alga verde alimentare":[0,0,0,2,3],"Spirulina alimentare":[0,0,0,2,3],"Lavanda":[0,2,2,1,4],"Rosa":[0,0,1,2,3],"Camomilla":[0,1,1,2,3],"Sambuco":[0,1,1,1,2],"Ibisco":[0,0,3,1,2],"Fiordaliso":[0,0,1,0,1],"Gelsomino":[0,0,1,2,4],"Bacche di ginepro":[1,3,2,2,4],"Bacche della passione":[0,1,1,2,2],"Melograno":[0,0,4,1,2],"Fico":[0,0,0,4,3],"Uva passa":[0,0,1,4,3],"Mela":[0,1,1,1,1],"Pera":[0,0,1,2,1],"Ciliegia":[0,0,1,2,2],"Prugna":[0,0,2,3,2],"Ribes nero":[0,0,3,2,3],"Caffè":[0,0,3,3,5],"Cacao":[0,0,4,3,4],"Vaniglia bourbon":[0,0,0,4,5],"Mandorla dolce":[0,0,0,4,3],"Sesamo":[0,0,0,4,3],"Sommacco":[0,0,4,0,2],"Vaniglia":[0,0,0,4,5],"Alloro bacca":[1,2,2,2,4],"Portulaca":[0,1,0,2,1],"Spina santa":[0,0,2,1,2],"Carruba polpa":[0,0,2,4,3],"Corbezzolo":[0,0,4,2,2],"Uva Cataratto":[0,1,1,2,1],"Sorbo":[0,0,4,1,2],"Castagna":[0,0,2,4,3],"Tarassaco":[0,0,2,1,4],"Betulla corteccia":[0,3,3,1,3],"Pepe di giava":[4,1,1,1,3],"Pepe di Sichuan":[3,3,0,0,4],"Zafferano":[0,0,1,2,4],"Aneto":[0,2,0,1,2],"Basilico":[1,2,1,1,2],"Gelso":[0,0,2,2,2],"Moringa":[1,0,2,1,2],"Artemisia":[1,3,2,1,5],"Elicriso delle scogliere":[0,1,1,2,4],"Malva":[0,0,0,4,1],"Ginestra":[0,0,1,1,2],"Alga nori":[0,0,0,2,4],"Poseidonia":[0,0,2,1,3],"Asparago":[0,1,1,1,2],"Cardo":[0,0,3,1,3],"Carciofo":[0,0,3,1,4],"Cetriolo":[0,3,0,1,1],"Mandorla amara":[0,0,1,3,4],"Manna":[0,0,0,4,2],"Mirtillo":[0,0,3,2,2],"Ribes rosso":[0,1,3,1,1],"Mora":[0,0,2,2,2],"Fragola":[0,0,1,2,1],"Lamponi":[0,1,2,1,2],"Menta":[0,5,1,0,3],"Achillea":[1,2,3,1,4],"Rosa canina":[0,0,3,1,2],"Scorza di bergamotto disidratata":[0,1,2,1,3],"Scorza di arancia disidratata":[0,0,2,1,3],"Finger lime":[0,3,1,0,1],"Ananas":[1,1,1,2,2],"Mango":[0,0,1,3,2],"Papaya":[0,0,0,3,1],"Litchi":[0,0,0,2,2],"Rambutan":[0,0,0,2,1],"Alchechengi":[0,1,2,1,2],"Pitaya (dragon fruit)":[0,1,0,1,0],"Guava":[0,0,2,2,2],"Feijoa":[0,1,2,2,2],"Kiwano":[0,2,1,1,1],"Cocco":[0,0,0,4,3],"Durian":[0,0,0,4,4],"Abrotano":[1,2,2,1,4],"Longan":[0,0,0,3,2],"Foglie di loto":[0,0,3,1,2],"Papavero":[0,0,0,3,2],"Sandalo bianco":[0,0,1,3,5],"Oliva":[0,0,2,3,3],"Clementina":[0,1,0,2,1],"Fiori d'arancio":[0,1,0,1,3],"Fiori di ciliegio":[0,0,1,2,3],"Erica":[0,0,3,1,2],"Trifoglio":[0,0,1,2,2],"Menta d'acqua":[0,4,1,0,2],"Mirtillo rosso":[0,1,4,1,2],"Foglie di lampone":[0,0,4,1,2],"Pepe sansho":[3,4,0,0,3],"Gyokuro":[0,1,2,2,3],"Foglie di ciliegio":[0,0,2,2,4],"Semi di angelica":[1,2,1,1,3],"Shiso rosso":[1,2,2,1,2],"Foglie di bambù":[0,1,2,1,1],"Kinome":[2,3,0,0,2],"Kabosu":[0,3,1,0,1],"Amanatsu":[0,1,2,1,2],"Shikuwasa":[0,2,1,0,1],"Citronella":[0,3,1,0,2],"Foglie di combava":[1,4,2,0,3],"Aghi di pino":[1,4,2,1,3],"Aghi di abete":[1,4,2,1,3],"Cipresso":[0,3,3,1,4],"Olmaria":[0,2,2,1,2],"Luppolo":[0,1,2,1,4],"Rabarbaro":[0,0,4,1,3],"Prugnolo":[0,0,5,1,2],"China":[0,0,3,1,5],"Tè nero":[0,0,4,2,3],"Chinotto":[0,1,2,1,3],"Finocchietto selvatico":[1,2,0,1,3]};
+const UMAMI = {"Tè verde":2,"Lime nero":1,"Finocchio di mare":2,"Levistico":2,"Cappero":2,"Foglie di cappero":1,"Salicornia":2,"Alga verde alimentare":3,"Spirulina alimentare":4,"Caffè":1,"Sesamo":1,"Portulaca":1,"Castagna":1,"Zafferano":1,"Moringa":2,"Elicriso delle scogliere":1,"Alga nori":5,"Poseidonia":2,"Asparago":3,"Carciofo":1,"Durian":2,"Foglie di loto":1,"Oliva":2,"Gyokuro":5,"Tè nero":1};
+// ---------- Sensazioni in bocca (secondo radar) ----------
+// Non sono gusti (papille) ne' aromi (naso): sono sensazioni del trigemino e del tatto, piu' la durata del finale.
+// Stime 0-5 per botanica, da tarare all'assaggio. L'umami e' a parte: e' un gusto, e nei gin per macerazione
+// passa poco (glutammato e nucleotidi non sono volatili e si sciolgono male in alcol forte).
+const ASSI_SENS = ['Pungente','Rinfrescante','Astringente','Corpo','Persistenza'];
+const SENS_COL = '#B8921F';
+const SENS_DEF = {
+  Pungente: 'calore e pizzicore, da piperina, gingeroli, isotiocianati, eugenolo (recettori TRPV1 e TRPA1)',
+  Rinfrescante: 'freddo e balsamico, da mentolo, cineolo, canfora (recettore TRPM8)',
+  Astringente: 'secchezza e ruvidità, da tannini e polifenoli che legano le proteine della saliva',
+  Corpo: 'pienezza e rotondità, da zuccheri, glicirrizina, mucillagini, oli densi',
+  Persistenza: 'durata del finale, da fissativi, resine, sesquiterpeni, amaricanti'
+};
+function radarSensSVG(serie, size){
+  size = size || 260;
+  const n = ASSI_SENS.length, c = size/2, R = size/2 - 58;
+  const pt = (i, v) => { const a = -Math.PI/2 + i*2*Math.PI/n; return [c + R*v/5*Math.cos(a), c + R*v/5*Math.sin(a)]; };
+  let g = '';
+  for (let l = 1; l <= 5; l++) g += '<polygon points="' + ASSI_SENS.map((_,i) => pt(i,l).join(',')).join(' ') + '" fill="none" stroke="var(--line)" stroke-width="1"/>';
+  ASSI_SENS.forEach((nm,i) => {
+    const [x,y] = pt(i,5), [lx,ly] = pt(i, 5 + 14/R*5);
+    g += '<line x1="'+c+'" y1="'+c+'" x2="'+x+'" y2="'+y+'" stroke="var(--line)" stroke-width="1"/>';
+    const anc = Math.abs(lx-c) < 6 ? 'middle' : (lx > c ? 'start' : 'end');
+    g += '<text x="'+lx+'" y="'+(ly+4)+'" text-anchor="'+anc+'" font-size="12" fill="var(--ink-soft)">'+nm+'</text>';
+  });
+  serie.forEach(se => {
+    const pts = se.vals.map((v,i) => pt(i,v).join(',')).join(' ');
+    if (se.dash){ g += '<polygon points="'+pts+'" fill="none" stroke="'+se.color+'" stroke-width="1.5" stroke-dasharray="4 3"/>'; return; }
+    g += '<polygon points="'+pts+'" fill="'+se.color+'" fill-opacity=".22" stroke="'+se.color+'" stroke-width="2" stroke-linejoin="round"/>';
+    se.vals.forEach((v,i) => { if (v > 0){ const [x,y] = pt(i,v); g += '<circle cx="'+x+'" cy="'+y+'" r="2.8" fill="'+se.color+'"/>'; } });
+  });
+  const desc = serie.map(se => (se.label||'') + ': ' + se.vals.map((v,i) => ASSI_SENS[i]+' '+v).join(', ')).join('. ');
+  return '<svg class="radar8" viewBox="-22 0 '+(size+44)+' '+size+'" role="img" aria-label="Sensazioni in bocca. '+desc.replace(/"/g,'')+'">'+g+'</svg>';
+}
+// Miscela: media quadratica pesata sulle quantita'. Una sensazione forte si sente anche in poca dose
+// (il pepe non sparisce in mezzo al ginepro), cosa che la media semplice nasconderebbe.
+function sensMiscela(el){
+  const ok = el.filter(x => SENS5[x.n]); const tot = ok.reduce((a,x) => a + x.w, 0);
+  if (!tot) return null;
+  return ASSI_SENS.map((_,i) => Math.round(Math.sqrt(ok.reduce((a,x) => a + x.w * SENS5[x.n][i] * SENS5[x.n][i], 0) / tot) * 10) / 10);
+}
+function umamiMiscela(el){
+  const ok = el.filter(x => SENS5[x.n]); const tot = ok.reduce((a,x) => a + x.w, 0);
+  if (!tot) return 0;
+  return Math.round(Math.sqrt(ok.reduce((a,x) => a + x.w * Math.pow(UMAMI[x.n] || 0, 2), 0) / tot) * 10) / 10;
+}
+function umamiNota(v, nomi){
+  if (!v) return '';
+  return '<div class="radar-nota"><strong>Umami ' + String(v).replace('.', ',') + '/5</strong>' + (nomi ? ' (da ' + nomi + ')' : '') +
+    '. È un gusto, non una sensazione, e resta fuori dal radar. In un gin per macerazione passa poco: glutammato e nucleotidi non sono volatili e si sciolgono male nell\'alcol forte. Conta di più in amari e vermouth.</div>';
+}
+function sensBox(nome){
+  const v = SENS5[nome]; if (!v) return '';
+  const forti = ASSI_SENS.map((a,i) => [a, v[i]]).filter(x => x[1] >= 3).sort((a,b) => b[1]-a[1]);
+  const nota = forti.length ? 'Sensazioni marcate: ' + forti.map(x => '<strong>' + x[0].toLowerCase() + '</strong>, ' + SENS_DEF[x[0]]).join('; ') + '.'
+    : 'Nessuna sensazione marcata: in bocca è discreta, lavora soprattutto sul gusto e sull\'aroma.';
+  return '<div class="radar-box sens-box"><div class="radar-title">Sensazioni in bocca</div>' +
+    radarSensSVG([{vals: v, color: SENS_COL, label: nome}], 260) +
+    '<div class="radar-nota">' + nota + '</div>' + umamiNota(UMAMI[nome] || 0, '') +
+    '<div class="radar-nota">Diagramma separato dal profilo sensoriale: qui non c\'è che sapore ha, ma che effetto fa in bocca. Stima orientativa da tarare all\'assaggio.</div></div>';
+}
+function sensRicettaBox(el){
+  const v = sensMiscela(el); if (!v) return '';
+  const um = umamiMiscela(el);
+  const daU = el.filter(x => UMAMI[x.n] >= 2).map(x => x.n).join(', ');
+  // chi porta ciascuna sensazione forte
+  const chi = ASSI_SENS.map((a,i) => {
+    if (v[i] < 2) return null;
+    const top = el.filter(x => SENS5[x.n] && SENS5[x.n][i] >= 3).sort((p,q) => q.w*SENS5[q.n][i]**2 - p.w*SENS5[p.n][i]**2).slice(0,2).map(x => x.n);
+    return top.length ? '<strong>' + a.toLowerCase() + '</strong> ' + String(v[i]).replace('.', ',') + ' (' + top.join(', ') + ')' : null;
+  }).filter(Boolean);
+  return '<div class="radar-box sens-box"><div class="radar-title">Sensazioni in bocca della ricetta</div>' +
+    radarSensSVG([{vals: v, color: SENS_COL, label: 'Ricetta'}], 260) +
+    '<div class="radar-nota">' + (chi.length ? 'Sensazioni principali: ' + chi.join('; ') + '.' : 'Nessuna sensazione marcata.') + '</div>' +
+    umamiNota(um, daU) +
+    '<div class="radar-nota">Tutte le botaniche, base comprese, pesate sulle quantità con una media quadratica: una sensazione forte resta percepibile anche in piccola dose. Intensità vera (non riscalata), stima da tarare all\'assaggio.</div></div>';
+}
 // Ordine degli assi sul disegno (i dati restano nell'ordine di ASSI8): ogni nota sta di fronte alla sua "opposta"
 // Dolce / Amaro, Fruttato / Resinoso (morbido / secco), Floreale / Erbaceo, Agrumato / Speziato (fresco / caldo),
 // Acido / Salino (la coppia piu' debole). Vicine fra loro le note affini: fruttato fra dolce e floreale,
@@ -4888,6 +4967,7 @@ function showDetail(name, nuovaScelta){
     <h3>${d.botanica}</h3>
     <div class="sub">${d.nome_botanico ? d.nome_botanico + ' · ' : ''}${d.categoria} — ${d.sottofamiglia || ''}</div>
     ${radarBox(d.botanica)}
+    ${sensBox(d.botanica)}
     <div class="inf-in-scheda" id="inf-body"></div>
     <div class="detail-grid">
       <div class="field"><div class="k">Profilo aromatico</div><div class="v">${d.profilo || '—'}</div></div>
@@ -5527,7 +5607,7 @@ function renderSummary(){
       if (on && ore){ on.onchange = () => { window.radarInsieme = on.checked ? (parseFloat(ore.value) || 24) : 0; renderSummary(); };
         ore.onchange = () => { const v = parseFloat(ore.value); if (v > 0){ window.radarInsieme = v; renderSummary(); } }; } };
     const fasiBtn = faseHtml('').replace(/onclick="[^"]*"/g, '');
-    if (!elenco.length){ box.innerHTML = '<div class="radar-box"><div class="radar-title">Profilo della ricetta</div>' + btnBase + '<div class="radar-nota">Senza le botaniche base non resta nessuna botanica da mostrare.</div></div>'; aggancia(); return; }
+    if (!elenco.length){ box.innerHTML = '<div class="radar-box"><div class="radar-title">Profilo della ricetta</div>' + btnBase + '<div class="radar-nota">Senza le botaniche base non resta nessuna botanica da mostrare.</div></div>' + sensRicettaBox(elTutto); aggancia(); return; }
     const mediaDi = f => { const tot = elenco.reduce((a,x) => a + x.w, 0); return ASSI8.map((_,i) => elenco.reduce((a,x) => a + valFase(x.n, f)[i] * x.w, 0) / tot); };
     const mx = Math.max.apply(null, mediaDi('tutto')) || 1;      // stessa scala per tutti i tempi, cosi' si confrontano
     const vals = mediaDi(window.radarFase).map(x => Math.min(5, Math.round(x / mx * 50) / 10));
@@ -5535,7 +5615,7 @@ function renderSummary(){
       radarSVG([{vals:vals,color:'var(--juniper)',label:'Ricetta', potenza: potenzaMedia(elenco)}], 280, {stile: elRif.length ? currentStyleName : null, rifVals: elRif.length ? ASSI8.map((_,i) => elRif.reduce((a,x) => a + valFase(x.n, window.radarFase)[i] * x.w, 0)) : null, eq: eqRicetta ? [eqRicetta] : null}) + insNota +
       ordineNoteHtml(elenco) +
       (FASE_NOTA[window.radarFase] ? '<div class="radar-nota">' + FASE_NOTA[window.radarFase] + '</div>' : '') +
-      '<div class="radar-nota">Mostra la forma del profilo (quali note prevalgono), non l\'intensità. Pesato sulle quantità reali; stima orientativa da validare all\'assaggio.</div></div>';
+      '<div class="radar-nota">Mostra la forma del profilo (quali note prevalgono), non l\'intensità. Pesato sulle quantità reali; stima orientativa da validare all\'assaggio.</div></div>' + sensRicettaBox(elTutto);
     aggancia();
   })();
 
