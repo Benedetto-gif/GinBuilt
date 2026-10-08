@@ -1841,6 +1841,11 @@ html details.howto a{color:#5A3E1C;}
 .gar-box{text-align:left;}
 .gar-box .radar-title{text-align:center;}
 :root[data-theme="dark"] .gar-tipo{color:#fff;}
+
+/* ---------------- Acque toniche ---------------- */
+.ton-fam{background:color-mix(in srgb, var(--c) 18%, transparent);color:var(--c);border:1px solid color-mix(in srgb, var(--c) 40%, transparent);white-space:normal;}
+.ton-livelli{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--ink-soft);margin:0 0 10px;}
+:root[data-theme="dark"] .ton-fam{color:#fff;}
 </style>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0C110E" id="meta-theme-color">
@@ -1950,6 +1955,7 @@ html details.howto a{color:#5A3E1C;}
     <button data-tab="altrigin">🥃 Gli altri gin</button>
     <button data-tab="cocktail">🍸 Cocktail</button>
     <button data-tab="garnish">🍋 Garnish</button>
+    <button data-tab="toniche">🫧 Acque toniche</button>
     <button data-tab="laboratorio">🧪 Laboratorio cocktail</button>
   </nav>
   </div>
@@ -2869,6 +2875,7 @@ html details.howto a{color:#5A3E1C;}
       <div class="count" id="build-count">0 botaniche selezionate</div>
       <div id="build-radar"></div>
       <div id="build-garnish"></div>
+      <div id="build-tonica"></div>
       <div id="build-semafori"></div>
       <div class="build-warnings" id="build-warnings"></div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;">
@@ -3029,7 +3036,7 @@ html details.howto a{color:#5A3E1C;}
 
     <div class="ck-filters" id="ck-filters"></div>
     <div class="ck-grid" id="ck-grid"></div>
-    <p style="margin:18px 0 0;display:flex;gap:10px;flex-wrap:wrap;"><button type="button" class="ghost-btn" onclick="showTab('laboratorio')">🧪 Vai al Laboratorio: cocktail sperimentali →</button> <button type="button" class="ghost-btn" onclick="showTab('garnish')">🍋 Quale garnish per il tuo gin →</button></p>
+    <p style="margin:18px 0 0;display:flex;gap:10px;flex-wrap:wrap;"><button type="button" class="ghost-btn" onclick="showTab('laboratorio')">🧪 Vai al Laboratorio: cocktail sperimentali →</button> <button type="button" class="ghost-btn" onclick="showTab('garnish')">🍋 Quale garnish per il tuo gin →</button> <button type="button" class="ghost-btn" onclick="showTab('toniche')">🫧 Quale tonica per il tuo gin →</button></p>
     <p class="home-note">Le dosi sono quelle consolidate nella letteratura di bar: sono un punto di partenza, non un dogma.
       Il rapporto fra gin e vermouth nel Martini, per dire, è cambiato di dieci volte in un secolo.</p>
   </section>
@@ -3116,8 +3123,46 @@ html details.howto a{color:#5A3E1C;}
     <p class="home-note">Le garnish sono punti di partenza, non regole: la prova vera è annusare il bicchiere prima e dopo averla messa.</p>
   </section>
 
+  <!-- ============ ACQUE TONICHE ============ -->
+  <section class="panel" id="panel-toniche">
+    <details class="howto">
+      <summary>Come si usa</summary>
+      <div class="howto-body">
+        <p>Le acque toniche in commercio raccolte in cinque famiglie, con le caratteristiche e i gin con cui stanno meglio, e il perché. Sotto trovi gli abbinamenti per gli stili dell'app e per i gin commerciali più diffusi.</p>
+        <ul>
+          <li>Nel <strong>Gin Builder</strong>, sotto la garnish, trovi la tonica consigliata per la tua ricetta, calcolata dal profilo delle botaniche scelte.</li>
+          <li>Dolcezza, amaro e bollicina sono indicati a livelli (bassa, media, alta): sono stime orientative, la ricetta di una tonica può cambiare da un paese all'altro e nel tempo.</li>
+        </ul>
+      </div>
+    </details>
+    <details class="howto" open>
+      <summary>Come si sceglie una tonica</summary>
+      <div class="howto-body">
+        <p>La tonica lavora su tre leve: l'<strong>amaro del chinino</strong>, lo <strong>zucchero</strong> e la <strong>bollicina</strong>. Le toniche aromatiche ne aggiungono una quarta, le loro botaniche.</p>
+        <ul>
+          <li><strong>Gin complesso, tonica discreta.</strong> Con molte botaniche serve una tonica secca e neutra che faccia da cornice.</li>
+          <li><strong>Gin semplice o robusto, tonica che aggiunge.</strong> Un London Dry regge il chinino deciso; un gin di una sola famiglia aromatica si arricchisce con una tonica della stessa famiglia.</li>
+          <li><strong>Gin dolce, tonica secca.</strong> Lo zucchero si somma: con un Old Tom o un gin alla vaniglia la tonica deve essere poco dolce.</li>
+          <li><strong>Gradazione alta, tonica decisa.</strong> Sopra i 50 % l'alcol copre: chinino e bollicina devono farsi sentire.</li>
+        </ul>
+        <p><strong>Nel bicchiere.</strong> Rapporto di partenza 1:2 o 1:3. Tonica fredda e aperta al momento: la bollicina porta gli aromi verso il naso. Molto ghiaccio, non poco: si scioglie più lentamente e diluisce meno. Versa la tonica lungo il cucchiaio e non mescolare con forza.</p>
+      </div>
+    </details>
+    <h3 class="gar-sez">Le famiglie di tonica</h3>
+    <div class="ck-grid" id="ton-grid"></div>
+    <h3 class="gar-sez">Per gli stili dell'app</h3>
+    <div class="ck-grid" id="ton-stili"></div>
+    <h3 class="gar-sez">Per i gin commerciali</h3>
+    <div class="ck-grid" id="ton-gin"></div>
+    <p style="margin:18px 0 0;display:flex;gap:10px;flex-wrap:wrap;">
+      <button type="button" class="ghost-btn" onclick="showTab('builder')">🎯 Tonica della tua ricetta, nel Gin Builder →</button>
+      <button type="button" class="ghost-btn" onclick="showTab('garnish')">🍋 Le garnish</button>
+    </p>
+    <p class="home-note">Gli abbinamenti sono punti di partenza: la prova vera è lo stesso gin con due toniche diverse, assaggiate una accanto all'altra.</p>
+  </section>
+
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 8 ottobre 2026, ore 06:00 · Nuova pagina Garnish e garnish consigliata nel Builder</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 8 ottobre 2026, ore 06:15 · Nuova pagina Acque toniche e tonica consigliata nel Builder</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -3954,7 +3999,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   // una ricetta alle pagine di approfondimento/riferimento, invece che nell'ordine dei tab.
   const GROUPS = [
     { label: 'Prima di costruire', tabs: ['ridondanza'] },
-    { label: 'Il servizio', tabs: ['garnish'] },
+    { label: 'Il servizio', tabs: ['garnish', 'toniche'] },
     { label: 'Per approfondire', tabs: ['nozioni', 'analisi', 'ruota', 'altrigin'] }
   ];
   const fuoriHome = btns.filter(b => IN_HOME.indexOf(b.dataset.tab) < 0 && b.dataset.tab !== 'home');
@@ -5061,6 +5106,8 @@ function renderSummary(){
     const rif = window._rifStile && window._rifStile.nome === currentStyleName ? window._rifStile.elenco.map(x => x.n) : null;
     const invariata = !!rif && rif.length === nomi.filter(n => PROFILO8[n]).length && rif.every(n => nomi.indexOf(n) >= 0);
     try { box.innerHTML = nomi.length ? window.garnishBoxRicetta(nomi, pesi, currentStyleName, invariata) : ''; } catch(e){ box.innerHTML = ''; }
+    const tb = document.getElementById('build-tonica');
+    if (tb && window.tonicaBoxRicetta){ try { tb.innerHTML = nomi.length ? window.tonicaBoxRicetta(nomi, pesi, currentStyleName, invariata) : ''; } catch(e){ tb.innerHTML = ''; } }
   })();
 
   // quota reale del ginepro sul totale (tracce già ridotte alla quantità effettiva)
@@ -8299,6 +8346,114 @@ if ("serviceWorker" in navigator) {
 })();
 </script>
 <script>
+// ---------- Acque toniche: famiglie, abbinamenti e suggerimento per la ricetta del Builder ----------
+(function(){
+  const FAM = {
+    classica: { t:'Classica (Indian tradizionale)', c:'--c-secco', marchi:'Schweppes Indian Tonic e le toniche di grande distribuzione',
+      dolce:'alta', amaro:'medio-alto', bolla:'vivace, grossa',
+      descr:'La tonica storica: zucchero, chinino e acqua gassata. Dolce e amara insieme, copre le sfumature.',
+      gin:'London Dry robusti, con ginepro pieno (Gordon’s, Beefeater, Tanqueray).',
+      perche:'Il ginepro deciso regge il chinino e la dolcezza non lo appiattisce; un gin delicato ne uscirebbe coperto.' },
+    neutra: { t:'Premium neutra', c:'--c-marino', marchi:'Fever-Tree Premium Indian, 1724, Q Tonic',
+      dolce:'bassa o media', amaro:'pulito, medio', bolla:'fine',
+      descr:'Meno zucchero, chinino più pulito, bollicina fine. 1724 e Q sono fra le più secche.',
+      gin:'Gin complessi e con molte botaniche (The Botanist, Monkey 47), gin morbidi come il Plymouth, gin dolci.',
+      perche:'Non aggiunge aromi propri: fa da cornice e lascia parlare le botaniche del gin.' },
+    amara: { t:'Amara e strutturata', c:'--c-speziato', marchi:'Thomas Henry Tonic, Franklin & Sons Indian',
+      dolce:'media', amaro:'alto', bolla:'decisa',
+      descr:'Più chinino e più carbonazione: una tonica che si fa sentire.',
+      gin:'Gin speziati, resinosi, ad alta gradazione e Navy Strength (Bulldog).',
+      perche:'L’alcol alto e le spezie coprono le toniche delicate; il chinino deciso tiene il passo e la bollicina porta gli aromi in alto.' },
+    aromatica: { t:'Aromatica', c:'--c-floreale', marchi:'Fever-Tree Mediterranean ed Elderflower, Fentimans, Franklin & Sons aromatiche',
+      dolce:'media', amaro:'basso', bolla:'media',
+      descr:'Aggiunge botaniche proprie: erbe mediterranee, sambuco, agrumi, oliva e rosmarino, ibisco.',
+      gin:'Gin di una sola famiglia aromatica, la stessa della tonica: Mediterranean con Gin Mare, Elderflower con Hendrick’s.',
+      perche:'Funziona come una garnish liquida di rinforzo; con un gin già complesso invece le note si sommano e confondono.' },
+    italiana: { t:'Italiana agrumata', c:'--c-agrumato', marchi:'Cortese (anche la Scortese), Tassoni al limone e cedro, J.Gasco, Sanpellegrino Tonica',
+      dolce:'media', amaro:'medio', bolla:'media',
+      descr:'Toniche spesso più agrumate, alcune artigianali e pensate per il bancone.',
+      gin:'Gin mediterranei, agrumati e siciliani.',
+      perche:'L’agrume della tonica ripete la freschezza del gin, come una scorza espressa.' }
+  };
+  const STILI = {
+    'Mediterraneo': ['aromatica', 'Una Mediterranean ripete le erbe del cuore; in alternativa un’italiana agrumata per il bergamotto.'],
+    'Agrumato': ['italiana', 'L’agrume della tonica allunga la testa; una premium neutra se vuoi sentire solo il gin.'],
+    'Marino': ['aromatica', 'Mediterranean, o una tonica con oliva e rosmarino: rinforzano la sapidità senza zucchero in più.'],
+    'Secco (London Dry)': ['classica', 'Ginepro e chinino sono la coppia storica; per un drink più asciutto, una premium neutra.'],
+    'Erbaceo': ['aromatica', 'Le erbe della tonica fanno da eco a timo e santoreggia.'],
+    'Floreale': ['neutra', 'Una tonica secca non si somma ai fiori; l’Elderflower solo se il gin è delicato.'],
+    'Speziato': ['amara', 'Le spezie reggono il chinino deciso, e la bollicina vivace porta su le note calde.'],
+    'Resinoso': ['amara', 'Il pino e il chinino si sostengono a vicenda; con una tonica dolce il resinoso diventa pesante.'],
+    'Siciliano': ['italiana', 'L’agrume italiano richiama bergamotto e mandarino verde della ricetta.'],
+    'Dolce aromatico': ['neutra', 'Scegli la più secca (1724 o Q): lo zucchero della tonica si sommerebbe a vaniglia e tonka.']
+  };
+  const GIN = [
+    ['Gordon’s, Beefeater, Tanqueray', 'classica', 'Il ginepro pieno regge chinino e dolcezza.'],
+    ['Bombay Sapphire', 'neutra', 'Profilo leggero e speziato: una tonica troppo amara lo copre. Va bene anche una Mediterranean.'],
+    ['Hendrick’s', 'aromatica', 'Elderflower: il sambuco rinforza rosa e cetriolo. In alternativa una premium neutra.'],
+    ['Gin Mare', 'aromatica', 'Mediterranean o un’italiana agrumata: rosmarino, basilico e oliva ritrovano le stesse erbe.'],
+    ['The Botanist, Monkey 47', 'neutra', 'Decine di botaniche: serve una tonica che non aggiunga nulla, come 1724 o Q.'],
+    ['Plymouth', 'neutra', 'Morbido e terroso: lo zucchero in più lo appesantirebbe.'],
+    ['Bulldog e i Navy Strength', 'amara', 'L’alcol alto chiede chinino e bollicina decisi.']
+  ];
+  const esc = t => String(t).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const etich = k => '<span class="gar-tipo ton-fam" style="--c:var(' + FAM[k].c + ')">' + esc(FAM[k].t) + '</span>';
+
+  function render(){
+    const g = document.getElementById('ton-grid'), s = document.getElementById('ton-stili'), c = document.getElementById('ton-gin');
+    if (g) g.innerHTML = Object.keys(FAM).map(k => { const f = FAM[k];
+      return '<div class="ck-card gar-card" style="--c:var(' + f.c + ')"><h3>' + esc(f.t) + '</h3>' +
+        '<p class="ck-origin">' + esc(f.marchi) + '</p>' +
+        '<div class="ton-livelli"><span>Dolcezza <strong>' + f.dolce + '</strong></span><span>Amaro <strong>' + f.amaro + '</strong></span><span>Bollicina <strong>' + f.bolla + '</strong></span></div>' +
+        '<p class="ck-desc">' + esc(f.descr) + '</p>' +
+        '<div class="ck-meta"><strong>Con</strong> ' + esc(f.gin) + '<br><strong>Perché</strong> ' + esc(f.perche) + '</div></div>'; }).join('');
+    if (s) s.innerHTML = Object.keys(STILI).map(n => { const [k, p] = STILI[n];
+      return '<div class="ck-card gar-card" style="--c:var(' + FAM[k].c + ')"><div class="gar-head"><h3>' + esc(n) + '</h3></div>' + etich(k) +
+        '<p class="ck-desc" style="margin-top:10px;">' + esc(p) + '</p></div>'; }).join('');
+    if (c) c.innerHTML = GIN.map(([n, k, p]) => '<div class="ck-card gar-card" style="--c:var(' + FAM[k].c + ')"><div class="gar-head"><h3>' + esc(n) + '</h3></div>' + etich(k) +
+      '<p class="ck-desc" style="margin-top:10px;">' + esc(p) + '</p></div>').join('');
+  }
+
+  // Suggerimento per la ricetta: stesse botaniche e pesi usati per la garnish
+  function suggerisci(nomi, pesi){
+    const P = (typeof PROFILO8 !== 'undefined') ? PROFILO8 : {}, F = (typeof FONDAMENTALI !== 'undefined') ? FONDAMENTALI : {};
+    const car = []; nomi.forEach((n, i) => { if (P[n] && !F[n]) car.push({n, w: Math.max(0.0001, pesi[i] || 0)}); });
+    if (!car.length) return { k:'classica', perche:'Con le sole botaniche base il gin è un secco classico: ginepro e chinino sono la coppia storica.' };
+    const tot = car.reduce((a, x) => a + x.w, 0);
+    const v = [0,1,2,3,4,5,6,7].map(i => car.reduce((a, x) => a + P[x.n][i] * x.w, 0) / tot);
+    const mx = Math.max.apply(null, v) || 1;
+    // complessità: quante botaniche di carattere pesano almeno il 10 % della quota non di base
+    const pesanti = car.filter(x => x.w / tot >= 0.10).length;
+    if (v[0] >= 0.85 * mx) return { k:'neutra', perche:'Il profilo è dolce: serve una tonica secca (1724 o Q), altrimenti lo zucchero si somma.' };
+    if (pesanti >= 5) return { k:'neutra', perche:'La ricetta ha ' + pesanti + ' botaniche di carattere: una tonica neutra fa da cornice senza aggiungere note che si confondano con le loro.' };
+    let dom = 4; [3,5,6,7].forEach(i => { if (v[i] > v[dom]) dom = i; });
+    if (dom === 5) return { k:'neutra', perche:'Prevale la nota floreale: una tonica secca non si somma ai fiori. Se il gin è delicato prova anche un’Elderflower.' };
+    if (dom === 6 || dom === 3) return { k:'aromatica', perche:'Prevale la nota ' + (dom === 3 ? 'salina' : 'erbacea') + ': una tonica alle erbe mediterranee la rinforza come una garnish liquida.' };
+    if (dom === 4) return { k:'italiana', perche:'Prevale la nota agrumata: una tonica agrumata ne allunga la testa; con una premium neutra senti solo il gin.' };
+    return { k:'amara', perche:'Prevale la nota speziata: le spezie reggono un chinino deciso e la bollicina vivace porta su le note calde.' };
+  }
+  function boxRicetta(nomi, pesi, stile, invariata){
+    let k, perche, extra = '';
+    const st = STILI[stile];
+    if (st && invariata){ k = st[0]; perche = 'Ricetta dello stile <strong>' + esc(stile) + '</strong>: ' + esc(st[1]); }
+    else {
+      const r = suggerisci(nomi, pesi); k = r.k; perche = esc(r.perche);
+      if (st && st[0] !== k) extra = '<div class="radar-nota">Hai cambiato la ricetta proposta: per lo stile <strong>' + esc(stile) + '</strong> la mappa indicava la famiglia <strong>' + esc(FAM[st[0]].t) + '</strong>.</div>';
+    }
+    const f = FAM[k];
+    return '<div class="radar-box gar-box"><div class="radar-title">🫧 Tonica consigliata</div>' +
+      '<p class="gar-g">' + esc(f.t) + '</p><div class="radar-nota">' + esc(f.marchi) + '.</div>' +
+      '<div class="radar-nota">' + perche + '</div>' + extra +
+      '<div class="radar-nota">Rapporto di partenza 1:2 o 1:3, tonica fredda e aperta al momento.</div>' +
+      '<button type="button" class="ghost-btn" style="margin-top:8px;" onclick="showTab(\'toniche\')">Apri le acque toniche →</button></div>';
+  }
+  window.tonicaBoxRicetta = boxRicetta;
+  window.tonicaSuggerita = suggerisci;
+  render();
+  try { if (typeof renderSummary === 'function') renderSummary(); } catch(e){}
+})();
+</script>
+<script>
 // ---------- Pagine interne in stile bento ----------
 // Ogni pagina riceve una tessera d'apertura colorata (come quella della prima pagina)
 // e i suoi riquadri prendono tinte diverse, a giro, partendo dal colore della pagina.
@@ -8324,7 +8479,9 @@ if ("serviceWorker" in navigator) {
     laboratorio: { c:'--ochre',          k:'Il banco di prova',
                    s:'Cocktail sperimentali con un’ipotesi da verificare, il radar previsto e gli assaggi annotati versione dopo versione.' },
     garnish:     { c:'--c-agrumato',     k:'Il servizio',
-                   s:'Quale guarnizione mettere in base allo stile del gin, e perché: rinforzo di una nota o contrasto a un eccesso.' }
+                   s:'Quale guarnizione mettere in base allo stile del gin, e perché: rinforzo di una nota o contrasto a un eccesso.' },
+    toniche:     { c:'--c-marino',       k:'Il servizio',
+                   s:'Le acque toniche in commercio, le loro caratteristiche e con quali gin abbinarle, e perché.' }
   };
   // Tinte a giro per i riquadri: dopo il colore della pagina, le caratteristiche aromatiche.
   const GIRO = ['--c-agrumato','--c-marino','--c-floreale','--c-erbaceo','--c-viola','--c-mediterraneo','--c-speziato','--c-secco','--c-siciliano'];
