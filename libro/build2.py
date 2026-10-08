@@ -351,20 +351,45 @@ add('app-calendario.xhtml', 'Appendice B · Calendario delle raccolte', cal, 1, 
 add('app-fonti.xhtml', 'Appendice C · Fonti e bibliografia', FONTI, 1)
 
 # ---------- indice, opf, zip ----------
+# indice del lettore: solo capitoli e sezioni (le botaniche sono nell'indice a tendina del libro)
+voci = [x for x in files if x[5] <= 2]
 toc = '<ol>'; liv = 1
-for i, (fid, href, title, _, _, lvl) in enumerate(files):
+for i, (fid, href, title, _, _, lvl) in enumerate(voci):
     while liv > lvl: toc += '</li></ol>'; liv -= 1
     if i and lvl == liv: toc += '</li>'
     while liv < lvl: toc += '<ol>'; liv += 1
     toc += '<li><a href="%s">%s</a>' % (href, e(title))
 toc += '</li>' + '</ol></li>' * (liv - 1) + '</ol>'
 nav = page('Indice', '<nav epub:type="toc" id="toc"><h1>Indice</h1>%s</nav>' % toc)
+# indice del libro con le tendine: capitoli > sezioni > (famiglie) > botaniche, tutto chiuso finché non si tocca
+def tendine():
+    out = ''; i = 0
+    while i < len(files):
+        fid, href, title, _, _, lvl = files[i]
+        figli = []; j = i + 1
+        while j < len(files) and files[j][5] > 1: figli.append(files[j]); j += 1
+        if not figli: out += '<li class="foglia"><a href="%s">%s</a></li>' % (href, e(title))
+        else:
+            sub = '<li class="foglia"><a href="%s">Apri: %s</a></li>' % (href, e(title))
+            k = 0
+            while k < len(figli):
+                f = figli[k]; nip = []; m = k + 1
+                while m < len(figli) and figli[m][5] > 2: nip.append(figli[m]); m += 1
+                if nip:
+                    sub += '<li><details class="tendina"><summary>%s <span class="nota">(%d)</span></summary><ul><li class="foglia"><a href="%s">Apri: %s</a></li>%s</ul></details></li>' % (
+                        e(f[2]), len(nip), f[1], e(f[2]), ''.join('<li class="foglia"><a href="%s">%s</a></li>' % (x[1], e(x[2])) for x in nip))
+                else: sub += '<li class="foglia"><a href="%s">%s</a></li>' % (f[1], e(f[2]))
+                k = m
+            out += '<li><details class="tendina cap"><summary>%s</summary><ul>%s</ul></details></li>' % (e(title), sub)
+        i = j
+    return '<section><h1>Indice</h1><p class="nota">Tocca un capitolo per aprirlo; nel capitolo delle botaniche tocca una famiglia per vedere le sue botaniche.</p><ul class="indice-t">%s</ul></section>' % out
 oggi = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
 man = ['<item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>',
        '<item id="css" href="libro.css" media-type="text/css"/>', '<item id="js" href="libro.js" media-type="application/javascript"/>',
        '<item id="cover" href="copertina.png" media-type="image/png" properties="cover-image"/>',
        '<item id="coverp" href="copertina.xhtml" media-type="application/xhtml+xml" properties="svg"/>']
-spine = ['<itemref idref="coverp"/>', '<itemref idref="nav"/>']
+spine = ['<itemref idref="coverp"/>', '<itemref idref="indice"/>']
+man.append('<item id="indice" href="indice.xhtml" media-type="application/xhtml+xml"/>')
 ids = set()
 for fid, href, title, xh, scr, lvl in files:
     assert fid not in ids, fid; ids.add(fid)
@@ -381,7 +406,7 @@ with zipfile.ZipFile(OUT, 'w') as z:
     z.writestr(zipfile.ZipInfo('mimetype'), 'application/epub+zip', compress_type=zipfile.ZIP_STORED)
     def w(name, data): z.writestr(name, data, compress_type=zipfile.ZIP_DEFLATED)
     w('META-INF/container.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container"><rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/></rootfiles></container>')
-    w('OEBPS/content.opf', opf); w('OEBPS/nav.xhtml', nav); w('OEBPS/libro.css', CSS); w('OEBPS/libro.js', JS)
+    w('OEBPS/content.opf', opf); w('OEBPS/nav.xhtml', nav); w('OEBPS/indice.xhtml', page('Indice', tendine())); w('OEBPS/libro.css', CSS); w('OEBPS/libro.js', JS)
     import cairosvg
     z.writestr('OEBPS/copertina.png', cairosvg.svg2png(bytestring=cover_svg.encode(), output_width=1200), compress_type=zipfile.ZIP_STORED)
     w('OEBPS/copertina.xhtml', page('Copertina', '<div class="copertina">%s</div>' % cover_svg))

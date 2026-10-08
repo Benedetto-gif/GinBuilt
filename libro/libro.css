@@ -113,3 +113,8 @@ details.tendina{margin:.2em 0;}
 details.tendina > summary{cursor:pointer;font-weight:bold;color:#1F4D3D;padding:.35em 0;}
 details.tendina ul{list-style:none;padding-left:1em;margin:.2em 0 .6em;column-count:2;column-gap:1.2em;}
 details.tendina li{margin:.15em 0;break-inside:avoid;}
+
+ul.indice-t{list-style:none;padding:0;}
+ul.indice-t ul{list-style:none;padding-left:1em;}
+details.tendina.cap > summary{font-size:1.05em;border-bottom:1px solid #ddd5c8;}
+li.foglia{margin:.3em 0;}
