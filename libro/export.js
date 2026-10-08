@@ -2,7 +2,7 @@ const {JSDOM,VirtualConsole}=require('jsdom');const fs=require('fs');
 const SRC=process.argv[2]||'../index.html', OUT=process.argv[3]||'dati.json';
 const dom=new JSDOM(fs.readFileSync(SRC,'utf8'),{runScripts:'dangerously',pretendToBeVisual:true,virtualConsole:new VirtualConsole(),url:'https://x.test/'});
 setTimeout(()=>{const w=dom.window,d=w.document,ser=new w.XMLSerializer();
- const data=JSON.parse(w.eval(`JSON.stringify({SENS:SENS5,UMAMI:UMAMI,ASSI_SENS:ASSI_SENS,P:PROFILO8,ASSI:ASSI8,ORD:ORDINE_RADAR,MOL:MOLECOLE,MASTER:MASTER,DOSE:DATA.dose,MAT:window.MATRICE_SENTORI,
+ const data=JSON.parse(w.eval(`JSON.stringify({GLOSS_FORME:GLOSS_FORME,SIGLE_FORME:SIGLE_FORME,SENS:SENS5,UMAMI:UMAMI,ASSI_SENS:ASSI_SENS,P:PROFILO8,ASSI:ASSI8,ORD:ORDINE_RADAR,MOL:MOLECOLE,MASTER:MASTER,DOSE:DATA.dose,MAT:window.MATRICE_SENTORI,
    STYLES:DATA.styles, GIN:GIN_LISTE, GIN_BASE:GIN_BASE, GARN:window.GARNISH_STILI,
    CAL:MASTER.map(x=>{const m=window.spCalMesi?window.spCalMesi(x.periodo_raccolta):null;return [x.botanica,m?[...m]:null];})})`));
  function clean(el,keepSvg){
@@ -10,6 +10,7 @@ setTimeout(()=>{const w=dom.window,d=w.document,ser=new w.XMLSerializer();
   const NOMI=new Set(w.eval('MASTER.map(x=>x.botanica)'));
   c.querySelectorAll('button').forEach(b=>{const t=b.textContent.trim();if(NOMI.has(t)||NOMI.has(t.replace(/^\S+\s/,''))){const s=d.createElement('span');s.setAttribute('class','bot-nome');s.textContent=t;b.replaceWith(s);}});
   c.querySelectorAll('a[href*="google.com"]').forEach(a=>a.remove());
+  c.querySelectorAll('.gl-term').forEach(x=>x.replaceWith(d.createTextNode(x.textContent)));
   c.querySelectorAll('script,style,button,input,select,textarea,canvas,datalist,'+(keepSvg?'':'svg,')+'.page-hero,.howto-chiudi,[hidden],.noz-rimando,.radar-box,.gin-radar').forEach(x=>x.remove());
   c.querySelectorAll('label').forEach(x=>{ if(!x.textContent.trim()) x.remove(); });
   c.querySelectorAll('details').forEach(det=>{const s=det.querySelector(':scope > summary');const t=s?s.textContent.trim():'';

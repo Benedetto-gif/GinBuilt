@@ -108,32 +108,44 @@ def page(title, body, scripted=False):
 SIGLE_ID = {'TRP': 'trp', 'TRPV1': 'trpv1', 'TRPV3': 'trpv3', 'TRPA1': 'trpa1', 'TRPM8': 'trpm8', 'TRPM5': 'trpm5',
             'T1R e TAS1R': 't1r', 'TAS2R': 'tas2r', 'OR': 'or', 'GPCR': 'gpcr', 'OTOP1': 'otop1', 'ENaC': 'enac', 'KCNK': 'kcnk',
             'Trigemino': 'trigemino', 'Chemestesi': 'chemestesi', 'Ortonasale e retronasale': 'ortonasale'}
-# parola nel testo -> voce (le piu' lunghe prima). OR da solo e' troppo ambiguo: non si collega.
-SIGLE_TESTO = [('KCNK18', 'kcnk'), ('KCNK3', 'kcnk'), ('KCNK9', 'kcnk'), ('KCNK', 'kcnk'),
-               ('TRPV1', 'trpv1'), ('TRPV3', 'trpv3'), ('TRPA1', 'trpa1'), ('TRPM8', 'trpm8'), ('TRPM5', 'trpm5'),
-               ('TAS1R2', 't1r'), ('TAS1R3', 't1r'), ('TAS1R', 't1r'), ('T1R1', 't1r'), ('T1R2', 't1r'), ('T1R3', 't1r'), ('T1R', 't1r'),
-               ('TAS2R', 'tas2r'), ('OTOP1', 'otop1'), ('ENaC', 'enac'), ('GPCR', 'gpcr'), ('TRP', 'trp'),
-               ('trigemino', 'trigemino'), ('Trigemino', 'trigemino'), ('chemestesi', 'chemestesi'), ('Chemestesi', 'chemestesi'),
-               ('retronasale', 'ortonasale'), ('ortonasale', 'ortonasale')]
-_SIG_RE = re.compile(r'(?<![\w-])(' + '|'.join(re.escape(t) for t, _ in SIGLE_TESTO) + r')(?![\w-])')
-_SIG_MAP = dict(SIGLE_TESTO)
+# parola nel testo -> voce, dai dati dell'app (SIGLE_FORME e GLOSS_FORME); le piu' lunghe prima.
+# Le sigle rimandano a "Che cosa vogliono dire le sigle", le parole difficili al Glossario (appendice A).
+VOCI_T = [(f, 'cap5-sigle.xhtml#sig-' + k, True) for k, fs in D['SIGLE_FORME'].items() for f in fs] + \
+         [(f, 'app-glossario.xhtml#g-' + k, f == 'pH') for k, fs in D['GLOSS_FORME'].items() for f in fs]
+VOCI_T.sort(key=lambda v: -len(v[0]))
+_MAP_S = {f: h for f, h, cs in VOCI_T if cs}
+_MAP_G = {}
+for f, h, cs in VOCI_T:
+    if not cs: _MAP_G.setdefault(f.lower(), h)
+_B = r'(?<![\wÀ-ÿ-])(%s)(?![\wÀ-ÿ-])'
+_RE_S = re.compile(_B % '|'.join(re.escape(f) for f, h, cs in VOCI_T if cs))
+_RE_G = re.compile(_B % '|'.join(re.escape(f) for f, h, cs in VOCI_T if not cs), re.I)
 def collega_sigle(body, href):
-    if href in ('cap5-sigle.xhtml', 'app-fonti.xhtml'): return body
+    if href in ('cap5-sigle.xhtml', 'app-fonti.xhtml', 'app-glossario.xhtml'): return body
     out, fatte, salta = [], set(), 0
-    # si lavora solo sul testo fuori dai tag; si salta dentro <a>, <svg>, titoli, <script>, <style>
+    # si lavora solo sul testo fuori dai tag; si salta dentro <a>, <svg>, titoli, <script>, <style>, <dt>
     for pezzo in re.split(r'(<[^>]+>)', body):
         if pezzo.startswith('<'):
-            m = re.match(r'<(/?)(a|svg|h1|h2|h3|h4|script|style|title|button|summary)\b', pezzo)
+            m = re.match(r'<(/?)(a|svg|h1|h2|h3|h4|script|style|title|button|summary|dt)\b', pezzo)
             if m and not pezzo.endswith('/>'): salta += -1 if m.group(1) else 1
             out.append(pezzo); continue
         if salta > 0 or not pezzo.strip(): out.append(pezzo); continue
-        def sost(mm):
-            ida = _SIG_MAP[mm.group(1)]
-            if ida in fatte: return mm.group(1)
-            fatte.add(ida)
-            return '<a class="sigla" href="cap5-sigle.xhtml#sig-%s">%s</a>' % (ida, mm.group(1))
-        out.append(_SIG_RE.sub(sost, pezzo))
+        res, pos = [], 0
+        while True:
+            m1, m2 = _RE_S.search(pezzo, pos), _RE_G.search(pezzo, pos)
+            m = min([x for x in (m1, m2) if x], key=lambda x: x.start(), default=None)
+            if not m: break
+            w = m.group(1); dest = _MAP_S.get(w) if m is m1 else _MAP_G.get(w.lower())
+            res.append(pezzo[pos:m.start()])
+            if dest and dest not in fatte:
+                fatte.add(dest); cl = 'sigla' if dest.startswith('cap5-sigle') else 'termine'
+                res.append('<a class="%s" href="%s">%s</a>' % (cl, dest, w))
+            else: res.append(w)
+            pos = m.end()
+        res.append(pezzo[pos:]); out.append(''.join(res))
     return ''.join(out)
+def ancore_glossario(h):
+    return re.sub(r'<dt>(.*?)</dt>', lambda m: '<dt id="g-%s">%s</dt>' % (slug(html.unescape(re.sub('<[^>]+>', '', m.group(1)))), m.group(1)), h)
 def ancore_sigle(h):
     for nome, ida in SIGLE_ID.items():
         h = h.replace('<li><strong>%s</strong>' % nome, '<li id="sig-%s"><strong>%s</strong>' % (ida, nome), 1)
@@ -311,15 +323,15 @@ for c in cat_list:
                 '<input type="range" class="pot-range" min="1" max="10" step="0.5" value="%s" aria-label="Potenza"/><br/>'
                 '<button type="button" class="chip pfix">📌 Fissa</button> <button type="button" class="chip prip">↺ Valore di libreria</button></p>') % (fmt1(pz), pz)
         vicini_html = ('<div class="vicini"><p class="vic-tit">Sovrapponi un profilo vicino (anche alle sensazioni):</p>' + chips(rid, vic).replace('Profilo vicino: ', '') + '</div>') if vic else ''
-        sez = lambda t, h, cl='': '<section class="bsez%s"><h3>%s</h3>%s</section>' % (cl, t, h)
+        bsez = lambda t, h, cl='': '<section class="bsez%s"><h3>%s</h3>%s</section>' % (cl, t, h)
         body = '<article class="bot" id="b-%s">' % slug(n)
         body += naviga
         body += '<h2>%s %s</h2><p class="bsub"><em>%s</em> · %s · %s</p>' % (e(m.get('icona') or '🌿'), e(n), e(m.get('nome_botanico') or '—'), e(c), e(m.get('parte') or '—'))
-        body += sez('1 · Profilo sensoriale', '<div class="bot-radar" data-n="%s" data-p="%s">' % (e(n), pz) + radar(v or [0]*len(ASSI), 220, rid, pot_colore(pz)) + vicini_html + pot_legenda(pz) + ctrl + '</div>')
-        body += sez('2 · Sensazioni in bocca', '<div class="bot-sens">' + sens_blocco(n) + '</div>')
-        body += sez('3 · Scheda', '<dl class="campi">' + ''.join('<dt>%s</dt><dd>%s</dd>' % (kk, val) for kk, val in campi if kk not in ('Nome botanico', 'Parte usata')) + '</dl>')
-        body += sez('4 · Molecole da estrarre', '<p class="mol">%s</p>' % (e(mol) if mol else '—'))
-        body += sez('5 · Se si esagera', '<p>%s.</p>' % e((m.get('effetto_sovra') or '—').rstrip('.')))
+        body += bsez('1 · Profilo sensoriale', '<div class="bot-radar" data-n="%s" data-p="%s">' % (e(n), pz) + radar(v or [0]*len(ASSI), 220, rid, pot_colore(pz)) + vicini_html + pot_legenda(pz) + ctrl + '</div>')
+        body += bsez('2 · Sensazioni in bocca', '<div class="bot-sens">' + sens_blocco(n) + '</div>')
+        body += bsez('3 · Scheda', '<dl class="campi">' + ''.join('<dt>%s</dt><dd>%s</dd>' % (kk, val) for kk, val in campi if kk not in ('Nome botanico', 'Parte usata')) + '</dl>')
+        body += bsez('4 · Molecole da estrarre', '<p class="mol">%s</p>' % (e(mol) if mol else '—'))
+        body += bsez('5 · Se si esagera', '<p>%s.</p>' % e((m.get('effetto_sovra') or '—').rstrip('.')))
         body += '</article>' + naviga
         add('b-%s.xhtml' % slug(n), n, '<section>' + body + '</section>', 3, True)
 
@@ -447,7 +459,7 @@ add('cap7-cocktail.xhtml', 'I cocktail classici', '<section><h1>I cocktail class
 add('cap7-laboratorio.xhtml', 'Il laboratorio', '<section><h1>Il laboratorio: cocktail sperimentali</h1>%s</section>' % sez('laboratorio', ''), 2)
 
 # ---------- Appendici ----------
-add('app-glossario.xhtml', 'Appendice A · Glossario', '<section epub:type="glossary"><h1>Appendice A<br/>Glossario A–Z</h1>%s</section>' % sez('nozioni', 'Glossario A–Z'), 1)
+add('app-glossario.xhtml', 'Appendice A · Glossario', '<section epub:type="glossary"><h1>Appendice A<br/>Glossario A–Z</h1><p class="nota">Le parole sottolineate a puntini nel libro rimandano qui; le sigle rimandano a «Che cosa vogliono dire le sigle», nel capitolo 5.</p>%s</section>' % ancore_glossario(sez('nozioni', 'Glossario A–Z')), 1)
 MESI = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre']
 CALm = {}
 for n, ms in D['CAL']:
