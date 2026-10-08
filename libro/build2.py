@@ -386,11 +386,11 @@ MESI = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto
 CALm = {}
 for n, ms in D['CAL']:
     if ms and n not in CALm: CALm[n] = set(ms)
-cal = '<section><h1>Appendice B<br/>Calendario delle raccolte</h1><p>Le botaniche che si raccolgono in Italia mese per mese, dal periodo di raccolta della libreria; le botaniche solo importate sono escluse. Con JavaScript, tocca un mese per vedere solo quello.</p><p class="mesi">%s</p>' % ' '.join(
-    '<button type="button" class="chip cal-b" data-m="%d">%s %d</button>' % (k, MESI[k][:3], sum(1 for s in CALm.values() if k in s)) for k in range(12))
+cal = '<section><h1>Appendice B<br/>Calendario delle raccolte</h1><p>Le botaniche che si raccolgono in Italia mese per mese, dal periodo di raccolta della libreria; le botaniche solo importate sono escluse. Tocca un mese per andare alla sua lista.</p><p class="mesi" id="cal-top">%s</p>' % ' '.join(
+    '<a class="chip cal-b" href="#mese-%d" data-m="%d">%s %d</a>' % (k, k, MESI[k][:3], sum(1 for s in CALm.values() if k in s)) for k in range(12))
 for k in range(12):
     qui = [m for c in cat_list for m in per_cat[c] if k in CALm.get(m['botanica'], ())]
-    cal += '<section class="cal-mese" data-m="%d"><h2>%s</h2><ul>%s</ul></section>' % (k, MESI[k], ''.join(
+    cal += '<section class="cal-mese" id="mese-%d" data-m="%d"><h2>%s</h2><ul>%s</ul><p class="nota"><a href="#cal-top">↑ Torna ai mesi</a></p></section>' % (k, k, MESI[k], ''.join(
         '<li>%s · <span class="nota">%s (%s)</span></li>' % (link_bot(m['botanica']), e(m.get('parte') or ''), e(m.get('periodo_raccolta') or '')) for m in qui))
 cal += '<p class="nota">Periodi indicativi: altitudine e annata li spostano anche di settimane. Raccogli solo dove è consentito e lontano da strade e coltivi trattati.</p></section>'
 add('app-calendario.xhtml', 'Appendice B · Calendario delle raccolte', cal, 1, True)

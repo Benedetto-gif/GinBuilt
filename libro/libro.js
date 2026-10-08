@@ -68,7 +68,13 @@
       for (var a = 0; a < ms.length; a++) ms[a].className = 'cal-mese' + (ms[a].getAttribute('data-m') === String(m) ? '' : ' nascosto');
       for (var b = 0; b < mb.length; b++) mb[b].className = 'chip cal-b' + (mb[b].getAttribute('data-m') === String(m) ? ' on' : '');
     };
-    for (var c = 0; c < mb.length; c++) mb[c].addEventListener('click', function(){ mostra(this.getAttribute('data-m')); });
+    // I tasti sono link alla sezione del mese: funzionano anche senza JavaScript.
+    // Con JavaScript, in piu', resta visibile solo il mese scelto e la pagina ci arriva.
+    for (var c = 0; c < mb.length; c++) mb[c].addEventListener('click', function(ev){
+      mostra(this.getAttribute('data-m'));
+      var t = document.getElementById('mese-' + this.getAttribute('data-m'));
+      if (t && t.scrollIntoView){ if (ev && ev.preventDefault) ev.preventDefault(); try { t.scrollIntoView(true); } catch(e){ location.hash = 'mese-' + this.getAttribute('data-m'); } }
+    });
     mostra(new Date().getMonth());
   }
 })();
