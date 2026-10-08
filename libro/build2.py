@@ -94,7 +94,7 @@ def href_bot(n):
     n = re.sub(r'^\W+\s*', '', n.strip())
     if n in ('Mirto foglie', 'Mirto bacche'): n = 'Mirto'
     c = CAT_DI.get(n)
-    return 'cap2-%s.xhtml#b-%s' % (slug(c), slug(n)) if c else None
+    return 'b-%s.xhtml' % slug(n) if c else None
 def link_bot(n):
     h = href_bot(n)
     return '<a href="%s">%s</a>' % (h, e(n.strip())) if h else e(n.strip())
@@ -173,13 +173,17 @@ c2 = '''<section epub:type="chapter"><h1>Capitolo 2<br/>Le botaniche</h1>
 <p>Per questo il <strong>colore dell'area</strong> indica la <strong>potenza</strong>, da 1 a 10, con una scala come quella delle previsioni del tempo: blu per le botaniche delicate, verde e giallo per quelle medie, arancio, rosso e porpora per le più potenti. Due radar con la stessa forma e colori diversi raccontano due botaniche che vanno dosate in modo molto diverso. Nelle ricette e nei gin il colore è la potenza media, pesata sulle dosi.</p>
 %s%s
 <p>Sotto ogni radar ci sono le botaniche dal profilo più vicino, con la somiglianza in percentuale: toccandone una, il suo profilo si sovrappone in arancio.</p>
-<h2>Le famiglie</h2><ol class="indice">%s</ol></section>''' % (
+<h2>Le famiglie</h2><p class="nota">Tocca una famiglia per aprirne l'elenco e scegli la botanica.</p><ol class="indice">%s</ol></section>''' % (
     len(seen), len(cat_list), radar([1,0.5,1,0,4,2,2,3], 240, '', pot_colore(3)) + radar([1,0.5,1,0,4,2,2,3], 240, '', pot_colore(9)), '<p class="nota" style="text-align:center">Stessa forma: a sinistra potenza 3, a destra potenza 9.</p>' + pot_legenda(5.5).replace('Potenza 5,5/10', 'Scala della potenza'),
-    ''.join('<li><a href="cap2-%s.xhtml">%s</a> <span class="nota">(%d)</span></li>' % (slug(c), e(c), len(per_cat[c])) for c in cat_list))
+    ''.join('<li><details class="tendina"><summary>%s <span class="nota">(%d)</span></summary><ul>%s</ul></details></li>' % (
+        e(c), len(per_cat[c]), ''.join('<li><a href="b-%s.xhtml">%s %s</a></li>' % (slug(m['botanica']), e(m.get('icona') or ''), e(m['botanica'])) for m in per_cat[c])) for c in cat_list))
 add('cap2.xhtml', 'Capitolo 2 · Le botaniche', c2, 1)
 for c in cat_list:
-    body = '<section epub:type="chapter"><h1>%s</h1><p class="nota">%d botaniche · <a href="cap2.xhtml">torna al capitolo</a></p>' % (e(c), len(per_cat[c]))
-    for m in per_cat[c]:
+    fam = per_cat[c]
+    add('cap2-%s.xhtml' % slug(c), c, '<section epub:type="chapter"><h1>%s</h1><p class="nota">%d botaniche · <a href="cap2.xhtml">torna al capitolo</a></p><ol class="indice">%s</ol></section>' % (
+        e(c), len(fam), ''.join('<li><a href="b-%s.xhtml">%s %s</a></li>' % (slug(m['botanica']), e(m.get('icona') or ''), e(m['botanica'])) for m in fam)), 2)
+    for k, m in enumerate(fam):
+        body = ''
         n = m['botanica']; v = prof(n)
         dose = DOSE.get(n) or {}
         campi = [('Nome botanico', '<em>%s</em>' % e(m.get('nome_botanico') or '—')), ('Parte usata', e(m.get('parte') or '—')),
@@ -203,7 +207,11 @@ for c in cat_list:
         if mol: body += '<p class="mol"><strong>Molecole da estrarre.</strong> %s</p>' % e(mol)
         if m.get('effetto_sovra'): body += '<p class="nota">Se si esagera: %s.</p>' % e(m['effetto_sovra'])
         body += '</article>'
-    add('cap2-%s.xhtml' % slug(c), c, body + '</section>', 2, True)
+        prev = fam[k-1]['botanica'] if k > 0 else None; nxt = fam[k+1]['botanica'] if k + 1 < len(fam) else None
+        naviga = '<p class="naviga">%s<a href="cap2-%s.xhtml">%s</a>%s</p>' % (
+            ('<a href="b-%s.xhtml">← %s</a> · ' % (slug(prev), e(prev))) if prev else '', slug(c), e(c),
+            (' · <a href="b-%s.xhtml">%s →</a>' % (slug(nxt), e(nxt))) if nxt else '')
+        add('b-%s.xhtml' % slug(n), n, '<section>' + body + naviga + '</section>', 3, True)
 
 # ---------- 3. L'estrazione ----------
 ESTR = ["Gradazione e solubilità dell'alcol", 'Le molecole estratte e cosa rovina il gusto', 'Dopo la diluizione: torbidità, corpo e colore', 'Filtrazione e apparecchiature']
@@ -343,14 +351,13 @@ add('app-calendario.xhtml', 'Appendice B · Calendario delle raccolte', cal, 1, 
 add('app-fonti.xhtml', 'Appendice C · Fonti e bibliografia', FONTI, 1)
 
 # ---------- indice, opf, zip ----------
-toc = '<ol>'
+toc = '<ol>'; liv = 1
 for i, (fid, href, title, _, _, lvl) in enumerate(files):
-    nxt = files[i+1][5] if i+1 < len(files) else 1
-    if lvl == 1:
-        toc += '<li><a href="%s">%s</a>' % (href, e(title)) + ('<ol>' if nxt == 2 else '</li>')
-    else:
-        toc += '<li><a href="%s">%s</a></li>' % (href, e(title)) + ('</ol></li>' if nxt == 1 else '')
-toc += '</ol>'
+    while liv > lvl: toc += '</li></ol>'; liv -= 1
+    if i and lvl == liv: toc += '</li>'
+    while liv < lvl: toc += '<ol>'; liv += 1
+    toc += '<li><a href="%s">%s</a>' % (href, e(title))
+toc += '</li>' + '</ol></li>' * (liv - 1) + '</ol>'
 nav = page('Indice', '<nav epub:type="toc" id="toc"><h1>Indice</h1>%s</nav>' % toc)
 oggi = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
 man = ['<item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>',

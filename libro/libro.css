@@ -106,3 +106,10 @@ svg.potleg{display:block;width:80%;max-width:280px;height:auto;margin:0 auto .4e
 .pot-range{-webkit-appearance:none;appearance:none;height:12px;border-radius:6px;background:linear-gradient(90deg,#3B4CC0,#3E7FD9,#3FB0D6,#4CC79A,#8CD15A,#D9D93E,#F5B83A,#F28A2E,#E0492B,#A3195B);outline:none;margin:.6em 0;}
 .pot-range::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:26px;height:26px;border-radius:50%;background:var(--pc,#F28A2E);border:3px solid #fff;box-shadow:0 0 0 1.5px rgba(0,0,0,.45),0 2px 4px rgba(0,0,0,.3);}
 .pot-range::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--pc,#F28A2E);border:3px solid #fff;box-shadow:0 0 0 1.5px rgba(0,0,0,.45);}
+
+.naviga{font-family:sans-serif;font-size:.85em;text-align:center;border-top:1px solid #ddd5c8;margin-top:1.5em;padding-top:.6em;line-height:2;}
+
+details.tendina{margin:.2em 0;}
+details.tendina > summary{cursor:pointer;font-weight:bold;color:#1F4D3D;padding:.35em 0;}
+details.tendina ul{list-style:none;padding-left:1em;margin:.2em 0 .6em;column-count:2;column-gap:1.2em;}
+details.tendina li{margin:.15em 0;break-inside:avoid;}
