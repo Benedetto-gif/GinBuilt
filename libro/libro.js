@@ -72,3 +72,39 @@
     mostra(new Date().getMonth());
   }
 })();
+
+(function(){
+  // potenza personale per botanica, ricordata dal lettore
+  var SC = ['#3B4CC0','#3E7FD9','#3FB0D6','#4CC79A','#8CD15A','#D9D93E','#F5B83A','#F28A2E','#E0492B','#A3195B'];
+  function col(p){
+    p = Math.max(1, Math.min(10, p)); var i = Math.floor(p) - 1, f = p - Math.floor(p);
+    if (i >= 9 || f < 0.01) return SC[Math.min(9, Math.round(p) - 1)];
+    var h = function(x){ return [parseInt(x.substr(1,2),16), parseInt(x.substr(3,2),16), parseInt(x.substr(5,2),16)]; }, a = h(SC[i]), b = h(SC[i+1]), o = '#';
+    for (var k = 0; k < 3; k++){ var v = Math.round(a[k] + (b[k] - a[k]) * f).toString(16); o += v.length < 2 ? '0' + v : v; }
+    return o;
+  }
+  var KEY = 'gb-libro-potenza', mem = {};
+  try { mem = JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e){ mem = {}; }
+  function salva(){ try { localStorage.setItem(KEY, JSON.stringify(mem)); } catch(e){} }
+  var fmt = function(p){ return String(p).replace('.', ','); };
+  var box = document.querySelectorAll('.bot-radar[data-p]');
+  for (var b = 0; b < box.length; b++) (function(bx){
+    var lib = parseFloat(bx.getAttribute('data-p')); if (!lib) return;
+    var n = bx.getAttribute('data-n'), ctl = bx.querySelector('.pot-tua'); if (!ctl) return;
+    ctl.className = ctl.className.replace(' solo-js', '');
+    var inp = ctl.querySelector('input'), pv = ctl.querySelector('.pv'), pst = ctl.querySelector('.pst');
+    var pol = bx.querySelector('.rp'), mk = bx.querySelector('.pmk'), tx = bx.querySelector('.ptx');
+    function mostra(p, pers){
+      var c = col(p); if (pol){ pol.setAttribute('fill', c); pol.setAttribute('stroke', c); }
+      if (mk) mk.setAttribute('x', (20 + (p - 1) / 9 * 239 - 1.5).toFixed(1));
+      if (tx) tx.textContent = 'Potenza ' + fmt(p) + '/10' + (pers ? ' (tua)' : '');
+      pv.textContent = fmt(p); pst.textContent = pers ? 'personalizzata · libreria ' + fmt(lib) : 'valore di libreria';
+    }
+    var p0 = mem[n] ? mem[n] : lib; inp.value = p0; mostra(p0, !!mem[n]);
+    inp.addEventListener('input', function(){ mostra(parseFloat(inp.value), !!mem[n]); });
+    ctl.querySelector('.pfix').addEventListener('click', function(){
+      var p = parseFloat(inp.value); if (p === lib) delete mem[n]; else mem[n] = p; salva(); mostra(p, !!mem[n]);
+    });
+    ctl.querySelector('.prip').addEventListener('click', function(){ delete mem[n]; salva(); inp.value = lib; mostra(lib, false); });
+  })(box[b]);
+})();

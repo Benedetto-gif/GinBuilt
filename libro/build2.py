@@ -27,7 +27,7 @@ def radar(vals, size=220, rid='', colore='#2F7259'):
         g += '<text x="%.1f" y="%.1f" text-anchor="%s" font-size="10" font-family="sans-serif" fill="#555555">%s</text>' % (lx, ly + 3.5, anc, e(a))
     pts = ' '.join('%.1f,%.1f' % pt(i, vals[i], c, R) for i in ORD)
     return ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="-34 0 %d %d" class="radar"%s role="img" aria-label="Profilo radar">%s'
-            '<polygon points="%s" fill="%s" fill-opacity="0.5" stroke="%s" stroke-width="2"/>'
+            '<polygon points="%s" class="rp" fill="%s" fill-opacity="0.5" stroke="%s" stroke-width="2"/>'
             '<polygon points="" class="ro" fill="#C0733A" fill-opacity="0.22" stroke="#C0733A" stroke-width="2" stroke-dasharray="4 3"/></svg>') % (
             size + 68, size, (' id="%s" data-s="%d"' % (rid, size)) if rid else '', g, pts, colore, colore)
 POT_SCALA = ['#3B4CC0','#3E7FD9','#3FB0D6','#4CC79A','#8CD15A','#D9D93E','#F5B83A','#F28A2E','#E0492B','#A3195B']
@@ -52,9 +52,9 @@ def pot_legenda(p):
     w = 24; bar = ''.join('<rect x="%d" y="6" width="%d" height="10" fill="%s"/>' % (20 + k*w, w, c) for k, c in enumerate(POT_SCALA))
     x = 20 + (p - 1) / 9 * (w * 10 - 1)
     return ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 34" class="potleg" role="img" aria-label="Potenza %s su 10">%s'
-            '<rect x="%.1f" y="1" width="3" height="20" rx="1" fill="#222222" stroke="#ffffff" stroke-width="1"/>'
+            '<rect x="%.1f" y="1" width="3" height="20" rx="1" class="pmk" fill="#222222" stroke="#ffffff" stroke-width="1"/>'
             '<text x="20" y="31" font-size="10" font-family="sans-serif" fill="#555555">delicata</text>'
-            '<text x="140" y="31" text-anchor="middle" font-size="10.5" font-weight="bold" font-family="sans-serif" fill="#222222">Potenza %s/10</text>'
+            '<text x="140" y="31" text-anchor="middle" font-size="10.5" font-weight="bold" font-family="sans-serif" fill="#222222" class="ptx">Potenza %s/10</text>'
             '<text x="260" y="31" text-anchor="end" font-size="10" font-family="sans-serif" fill="#555555">potente</text></svg>') % (
             fmt1(p), bar, x - 1.5, fmt1(p))
 def cos(a, b):
@@ -176,6 +176,7 @@ c2 = '''<section epub:type="chapter"><h1>Capitolo 2<br/>Le botaniche</h1>
 <p>Le %d botaniche della libreria di GinBuilder, divise in %d famiglie. Ogni scheda riporta il nome botanico, la parte usata, il profilo aromatico, il carattere, la potenza, la dose di riferimento, le molecole da estrarre, il periodo di raccolta e le zone italiane, con il suo radar.</p>
 <h2>Come leggere il radar</h2>
 <p>Gli otto assi sono quattro di gusto, sentiti dalla lingua (<strong>dolce, amaro, acido, salino</strong>), e quattro di aroma, sentiti dal naso (<strong>agrumato, floreale, erbaceo, speziato</strong>). Ogni valore va da 0 a 5. Il radar mostra la <em>forma</em> del profilo, cioè quali note prevalgono, non la quantità: una botanica potente e una delicata possono avere la stessa forma.</p>
+<p>La potenza è anche soggettiva: se una tua botanica rende più o meno del previsto, sotto il suo radar puoi spostare il cursore e fissare la tua potenza. Il lettore la ricorda; il valore di libreria si ripristina con un tocco.</p>
 <p>Per questo il <strong>colore dell'area</strong> indica la <strong>potenza</strong>, da 1 a 10, con una scala come quella delle previsioni del tempo: blu per le botaniche delicate, verde e giallo per quelle medie, arancio, rosso e porpora per le più potenti. Due radar con la stessa forma e colori diversi raccontano due botaniche che vanno dosate in modo molto diverso. Nelle ricette e nei gin il colore è la potenza media, pesata sulle dosi.</p>
 %s%s
 <p>Sotto ogni radar ci sono le botaniche dal profilo più vicino, con la somiglianza in percentuale: toccandone una, il suo profilo si sovrappone in arancio.</p>
@@ -201,7 +202,10 @@ for c in cat_list:
             rid = 'r-' + slug(n)
             vic = sorted(((x, prof(x), cos(v, prof(x))) for x in nomi_prof if x != n), key=lambda t: -t[2])[:4]
             pz = potenza(n)
-            body += '<div class="bot-radar">' + radar(v, 220, rid, pot_colore(pz) if pz else '#2F7259') + pot_legenda(pz) + chips(rid, vic) + '</div>'
+            ctrl = ('<p class="pot-tua solo-js"><span>La tua potenza: <strong class="pv">%s</strong>/10 <span class="nota pst"></span></span><br/>'
+                    '<input type="range" min="1" max="10" step="0.5" value="%s" aria-label="Potenza"/><br/>'
+                    '<button type="button" class="chip pfix">📌 Fissa</button> <button type="button" class="chip prip">↺ Valore di libreria</button></p>') % (fmt1(pz), pz) if pz else ''
+            body += '<div class="bot-radar" data-n="%s" data-p="%s">' % (e(n), pz or '') + radar(v, 220, rid, pot_colore(pz) if pz else '#2F7259') + pot_legenda(pz) + ctrl + chips(rid, vic) + '</div>'
         body += '<dl class="campi">' + ''.join('<dt>%s</dt><dd>%s</dd>' % (k, val) for k, val in campi) + '</dl>'
         if mol: body += '<p class="mol"><strong>Molecole da estrarre.</strong> %s</p>' % e(mol)
         if m.get('effetto_sovra'): body += '<p class="nota">Se si esagera: %s.</p>' % e(m['effetto_sovra'])

@@ -1943,6 +1943,12 @@ html details.howto a{color:#5A3E1C;}
 .pot-mk{position:absolute;top:-4px;width:3px;height:17px;margin-left:-1.5px;background:var(--ink);border-radius:2px;box-shadow:0 0 0 1.5px var(--surface);}
 .pot-lab{display:flex;justify-content:space-between;gap:6px;margin-top:3px;}
 .pot-lab span:nth-child(2){font-weight:700;color:var(--ink);}
+
+.pot-tua{max-width:300px;margin:6px auto 10px;padding:8px 10px;border:1px dashed var(--line);border-radius:12px;text-align:left;}
+.pot-tua-t{font-size:13px;color:var(--ink);}
+.pot-pers{font-size:11.5px;color:var(--ink-soft);}
+.pot-tua input[type=range]{width:100%;margin:6px 0;accent-color:#F28A2E;}
+.pot-tua-b{display:flex;gap:8px;flex-wrap:wrap;}
 </style>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0C110E" id="meta-theme-color">
@@ -3436,7 +3442,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 8 ottobre 2026, ore 09:30 · Radar: la potenza diventa colore</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 8 ottobre 2026, ore 09:45 · Potenza personale per ogni botanica</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -3677,10 +3683,52 @@ function potColore(p){
   const h = x => [1,3,5].map(k => parseInt(x.substr(k, 2), 16)), a = h(POT_SCALA[i]), b = h(POT_SCALA[i + 1]);
   return '#' + a.map((v, k) => Math.round(v + (b[k] - v) * f).toString(16).padStart(2, '0')).join('');
 }
-function potenzaDi(nome){
+// La potenza è anche soggettiva: chi usa l'app può fissarne una sua per ogni botanica (gb-potenza).
+function potUtente(){ try { return JSON.parse(localStorage.getItem('gb-potenza')) || {}; } catch(e){ return {}; } }
+function potenzaLibreria(nome){
   const n = nome === 'Mirto foglie' || nome === 'Mirto bacche' ? 'Mirto' : nome;
   const m = MASTER.find(x => x.botanica === n); return m && m.potenza10 ? +m.potenza10 : null;
 }
+function potenzaDi(nome){
+  const u = potUtente(), n = nome === 'Mirto foglie' || nome === 'Mirto bacche' ? 'Mirto' : nome;
+  return u[n] ? +u[n] : potenzaLibreria(nome);
+}
+function potControllo(nome){
+  const n = nome === 'Mirto foglie' || nome === 'Mirto bacche' ? 'Mirto' : nome;
+  const lib = potenzaLibreria(n); if (!lib) return '';
+  const u = potUtente()[n], p = u ? +u : lib, f = x => String(x).replace('.', ',');
+  return '<div class="pot-tua" data-n="' + n.replace(/"/g, '&quot;') + '">' +
+    '<div class="pot-tua-t">La tua potenza: <strong class="pot-v">' + f(p) + '</strong>/10 ' +
+    (u ? '<span class="pot-pers">personalizzata · libreria ' + f(lib) + '</span>' : '<span class="pot-pers">valore di libreria</span>') + '</div>' +
+    '<input type="range" min="1" max="10" step="0.5" value="' + p + '" oninput="potAnteprima(this)" aria-label="Potenza di ' + n.replace(/"/g, '&quot;') + '">' +
+    '<div class="pot-tua-b"><button type="button" class="ghost-btn" onclick="potFissa(this)">📌 Fissa</button>' +
+    (u ? '<button type="button" class="ghost-btn" onclick="potRipristina(this)">↺ Valore di libreria</button>' : '') + '</div>' +
+    '<div class="radar-nota">Se la tua botanica è più debole o più forte del previsto (raccolta, varietà, freschezza), sposta il cursore e fissala: il colore, la potenza media del Builder e quella dei confronti useranno il tuo valore. Resta salvato su questo telefono ed entra nel backup completo.</div></div>';
+}
+// anteprima mentre si trascina: ricolora l'area del radar e sposta la tacca, senza salvare
+window.potAnteprima = function(inp){
+  const box = inp.closest('.radar-box'), p = parseFloat(inp.value), col = potColore(p);
+  const v = inp.closest('.pot-tua').querySelector('.pot-v'); if (v) v.textContent = String(p).replace('.', ',');
+  if (!box) return;
+  const g = box.querySelector('svg.radar8 g.r-norm'); if (g){
+    const pol = g.querySelector('polygon'); if (pol){ pol.setAttribute('fill', col); pol.setAttribute('stroke', col); }
+    let c = pol ? pol.nextElementSibling : null; while (c && c.tagName.toLowerCase() === 'circle'){ c.setAttribute('fill', col); c = c.nextElementSibling; }
+  }
+  const mk = box.querySelector('.pot-leg .pot-mk'); if (mk) mk.style.left = ((p - 1) / 9 * 100).toFixed(1) + '%';
+};
+window.potFissa = function(btn){
+  const w = btn.closest('.pot-tua'), n = w.dataset.n, p = parseFloat(w.querySelector('input').value);
+  const u = potUtente(); if (p === potenzaLibreria(n)) delete u[n]; else u[n] = p;
+  try { localStorage.setItem('gb-potenza', JSON.stringify(u)); } catch(e){ alert('Non riesco a salvare: memoria del browser non disponibile.'); return; }
+  if (typeof showDetail === 'function' && typeof currentDetailName !== 'undefined' && currentDetailName) showDetail(currentDetailName);
+  try { renderSummary(); } catch(e){}
+};
+window.potRipristina = function(btn){
+  const n = btn.closest('.pot-tua').dataset.n, u = potUtente(); delete u[n];
+  try { localStorage.setItem('gb-potenza', JSON.stringify(u)); } catch(e){}
+  if (typeof showDetail === 'function' && typeof currentDetailName !== 'undefined' && currentDetailName) showDetail(currentDetailName);
+  try { renderSummary(); } catch(e){}
+};
 // media della potenza pesata sulle quantità ({n, w})
 function potenzaMedia(el){
   let t = 0, a = 0; el.forEach(x => { const p = potenzaDi(x.n); if (p){ a += p * x.w; t += x.w; } }); return t ? a / t : null;
@@ -4089,7 +4137,7 @@ function radarBox(nome){
   const btn = BASE.length ? '<button type="button" class="ghost-btn radar-base-btn" aria-pressed="' + conBase + '" onclick="window.radarCardBase=!window.radarCardBase;showDetail(currentDetailName)">' + (conBase ? '− Togli le botaniche base' : '+ Aggiungi le botaniche base') + '</button>' : '';
   return '<div class="radar-box"><div class="radar-title">Profilo sensoriale</div>' + faseHtml('showDetail(currentDetailName)') + btn +
     radarSVG(serie, 280, accese.length ? {insieme: true, sottrSempre: true} : undefined) + (accese.length && !conBase ? '<div class="radar-legend"><span><i style="background:var(--juniper)"></i>' + nome + '</span>' + accese.map(x => '<button type="button" class="leg-off" title="Tocca per spegnerla" data-n="' + x.replace(/"/g,'&quot;') + '" onclick="radarConf(this.dataset.n)"><i style="background:' + confColore(x) + '"></i>' + x + ' \u2715</button>').join('') + '</div>' : '') + confrontoRadarHtml(nome, v) + '<div class="radar-nota">' + (FASE_NOTA[window.radarFase] ? FASE_NOTA[window.radarFase] + ' ' : '') + 'Si sente soprattutto in <strong>' + doveSi + '</strong>.</div>' + extra +
-    coerenzaHtml(nome) + '<div class="radar-nota">Il colore dell\'area indica la <strong>potenza</strong> della botanica, dal blu (delicata) al porpora (potentissima): due botaniche possono avere la stessa forma ma colori diversi. Stima orientativa (0 = assente, 5 = dominante) di quanto ogni nota pesa nel carattere della botanica. Da validare all\'assaggio. Le note opposte stanno una di fronte all\'altra: dolce e amaro, floreale ed erbaceo, agrumato e speziato, acido e salino.</div></div>';
+    potControllo(nome) + coerenzaHtml(nome) + '<div class="radar-nota">Il colore dell\'area indica la <strong>potenza</strong> della botanica, dal blu (delicata) al porpora (potentissima): due botaniche possono avere la stessa forma ma colori diversi. Stima orientativa (0 = assente, 5 = dominante) di quanto ogni nota pesa nel carattere della botanica. Da validare all\'assaggio. Le note opposte stanno una di fronte all\'altra: dolce e amaro, floreale ed erbaceo, agrumato e speziato, acido e salino.</div></div>';
 }
 
 // ---------- Botaniche fondamentali ----------

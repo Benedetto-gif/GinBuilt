@@ -98,3 +98,7 @@ ul.ck-ing li span + span{float:right;color:#666;}
 .mesi{line-height:2.4;}
 
 svg.potleg{display:block;width:80%;max-width:280px;height:auto;margin:0 auto .4em;}
+
+.solo-js{display:none;}
+.pot-tua{text-align:center;font-size:.9em;margin:.2em auto .6em;max-width:300px;}
+.pot-tua input{width:100%;}
