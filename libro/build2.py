@@ -173,15 +173,15 @@ c2 = '''<section epub:type="chapter"><h1>Capitolo 2<br/>Le botaniche</h1>
 <p>Per questo il <strong>colore dell'area</strong> indica la <strong>potenza</strong>, da 1 a 10, con una scala come quella delle previsioni del tempo: blu per le botaniche delicate, verde e giallo per quelle medie, arancio, rosso e porpora per le più potenti. Due radar con la stessa forma e colori diversi raccontano due botaniche che vanno dosate in modo molto diverso. Nelle ricette e nei gin il colore è la potenza media, pesata sulle dosi.</p>
 %s%s
 <p>Sotto ogni radar ci sono le botaniche dal profilo più vicino, con la somiglianza in percentuale: toccandone una, il suo profilo si sovrappone in arancio.</p>
-<h2>Le famiglie</h2><p class="nota">Tocca una famiglia per aprirne l'elenco e scegli la botanica.</p><ol class="indice">%s</ol></section>''' % (
+<h2>Le famiglie</h2><p class="nota">Tocca una famiglia: si apre la sua pagina con tutte le botaniche da scegliere.</p><ol class="indice">%s</ol></section>''' % (
     len(seen), len(cat_list), radar([1,0.5,1,0,4,2,2,3], 240, '', pot_colore(3)) + radar([1,0.5,1,0,4,2,2,3], 240, '', pot_colore(9)), '<p class="nota" style="text-align:center">Stessa forma: a sinistra potenza 3, a destra potenza 9.</p>' + pot_legenda(5.5).replace('Potenza 5,5/10', 'Scala della potenza'),
-    ''.join('<li><details class="tendina"><summary>%s <span class="nota">(%d)</span></summary><ul>%s</ul></details></li>' % (
-        e(c), len(per_cat[c]), ''.join('<li><a href="b-%s.xhtml">%s %s</a></li>' % (slug(m['botanica']), e(m.get('icona') or ''), e(m['botanica'])) for m in per_cat[c])) for c in cat_list))
+    ''.join('<li><a href="cap2-%s.xhtml">%s</a> <span class="nota">(%d)</span></li>' % (slug(c), e(c), len(per_cat[c])) for c in cat_list))
 add('cap2.xhtml', 'Capitolo 2 · Le botaniche', c2, 1)
 for c in cat_list:
     fam = per_cat[c]
-    add('cap2-%s.xhtml' % slug(c), c, '<section epub:type="chapter"><h1>%s</h1><p class="nota">%d botaniche · <a href="cap2.xhtml">torna al capitolo</a></p><ol class="indice">%s</ol></section>' % (
-        e(c), len(fam), ''.join('<li><a href="b-%s.xhtml">%s %s</a></li>' % (slug(m['botanica']), e(m.get('icona') or ''), e(m['botanica'])) for m in fam)), 2)
+    add('cap2-%s.xhtml' % slug(c), c, '<section epub:type="chapter"><h1>%s</h1><p class="nota">%d botaniche · <a href="cap2.xhtml">torna al capitolo</a></p><p class="nota">Tocca una botanica per aprirne la scheda. Il pallino colorato è la potenza.</p><ul class="fam-lista">%s</ul></section>' % (
+        e(c), len(fam), ''.join('<li><a href="b-%s.xhtml"><span class="pall" style="background:%s"></span>%s %s</a></li>' % (
+            slug(m['botanica']), pot_colore(potenza(m['botanica'])) if potenza(m['botanica']) else '#cccccc', e(m.get('icona') or ''), e(m['botanica'])) for m in fam)), 2)
     for k, m in enumerate(fam):
         body = ''
         n = m['botanica']; v = prof(n)
@@ -375,14 +375,12 @@ def tendine():
             while k < len(figli):
                 f = figli[k]; nip = []; m = k + 1
                 while m < len(figli) and figli[m][5] > 2: nip.append(figli[m]); m += 1
-                if nip:
-                    sub += '<li><details class="tendina"><summary>%s <span class="nota">(%d)</span></summary><ul><li class="foglia"><a href="%s">Apri: %s</a></li>%s</ul></details></li>' % (
-                        e(f[2]), len(nip), f[1], e(f[2]), ''.join('<li class="foglia"><a href="%s">%s</a></li>' % (x[1], e(x[2])) for x in nip))
-                else: sub += '<li class="foglia"><a href="%s">%s</a></li>' % (f[1], e(f[2]))
+                # le famiglie portano alla loro pagina, dove le botaniche sono già elencate
+                sub += '<li class="foglia"><a href="%s">%s</a>%s</li>' % (f[1], e(f[2]), (' <span class="nota">(%d)</span>' % len(nip)) if nip else '')
                 k = m
             out += '<li><details class="tendina cap"><summary>%s</summary><ul>%s</ul></details></li>' % (e(title), sub)
         i = j
-    return '<section><h1>Indice</h1><p class="nota">Tocca un capitolo per aprirlo; nel capitolo delle botaniche tocca una famiglia per vedere le sue botaniche.</p><ul class="indice-t">%s</ul></section>' % out
+    return '<section><h1>Indice</h1><p class="nota">Tocca un capitolo per aprirlo. Nelle botaniche, tocca una famiglia: si apre la sua pagina con tutte le botaniche da scegliere.</p><ul class="indice-t">%s</ul></section>' % out
 oggi = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
 man = ['<item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>',
        '<item id="css" href="libro.css" media-type="text/css"/>', '<item id="js" href="libro.js" media-type="application/javascript"/>',

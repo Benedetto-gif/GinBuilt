@@ -118,3 +118,8 @@ ul.indice-t{list-style:none;padding:0;}
 ul.indice-t ul{list-style:none;padding-left:1em;}
 details.tendina.cap > summary{font-size:1.05em;border-bottom:1px solid #ddd5c8;}
 li.foglia{margin:.3em 0;}
+
+ul.fam-lista{list-style:none;padding:0;margin:.8em 0;}
+ul.fam-lista li{border-bottom:1px solid #e3ddd1;}
+ul.fam-lista a{display:block;padding:.55em .2em;text-decoration:none;color:#222;font-size:1.05em;}
+.pall{display:inline-block;width:.75em;height:.75em;border-radius:50%;margin-right:.55em;vertical-align:.05em;border:1px solid rgba(0,0,0,.25);}
