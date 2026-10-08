@@ -9,7 +9,7 @@ a{color:#2F7259;}
 .copertina{text-align:center;margin:0;padding:0;}
 .copertina svg{width:100%;height:auto;max-height:96vh;}
 /* radar */
-svg.radar{width:70%;max-width:260px;height:auto;display:block;margin:.6em auto;}
+svg.radar{width:85%;max-width:320px;height:auto;display:block;margin:.6em auto;}
 .rg{fill:none;stroke:#d8d2c6;stroke-width:1;}
 .rl{font-size:10px;fill:#555;font-family:sans-serif;}
 .rp{fill:rgba(47,114,89,.25);stroke:#2F7259;stroke-width:2;}

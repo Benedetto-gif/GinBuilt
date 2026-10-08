@@ -13,7 +13,7 @@
   var gruppi = document.querySelectorAll('.sim');
   for (var g = 0; g < gruppi.length; g++) (function(p){
     var svg = document.getElementById(p.getAttribute('data-r')); if (!svg) return;
-    var poli = svg.querySelector('.ro'), size = parseFloat(svg.getAttribute('viewBox').split(' ')[2]);
+    var poli = svg.querySelector('.ro'), size = parseFloat(svg.getAttribute('data-s')) || 220;
     var chips = p.querySelectorAll('.chip');
     for (var j = 0; j < chips.length; j++) chips[j].addEventListener('click', function(){
       var on = this.className.indexOf(' on') >= 0;

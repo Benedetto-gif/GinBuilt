@@ -14,15 +14,15 @@ def pt(i, v, c, R):
     return (c + R*v/5*math.cos(a), c + R*v/5*math.sin(a))
 def radar(vals, size=220, extra_id=''):
     c = size/2; R = size/2 - 38
-    g = ''.join('<polygon points="%s" class="rg"/>' % ' '.join('%.1f,%.1f' % pt(i, l, c, R) for i in ORD) for l in range(1, 6))
+    g = ''.join('<polygon points="%s" fill="none" stroke="#d8d2c6" stroke-width="1"/>' % ' '.join('%.1f,%.1f' % pt(i, l, c, R) for i in ORD) for l in range(1, 6))
     for i, a in enumerate(ASSI):
         x, y = pt(i, 5, c, R); lx, ly = pt(i, 5 + 14/R*5, c, R)
         anc = 'middle' if abs(lx-c) < 6 else ('start' if lx > c else 'end')
-        g += '<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" class="rg"/>' % (c, c, x, y)
-        g += '<text x="%.1f" y="%.1f" text-anchor="%s" class="rl">%s</text>' % (lx, ly + 3.5, anc, e(a))
+        g += '<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#d8d2c6" stroke-width="1"/>' % (c, c, x, y)
+        g += '<text x="%.1f" y="%.1f" text-anchor="%s" font-size="10" font-family="sans-serif" fill="#555555">%s</text>' % (lx, ly + 3.5, anc, e(a))
     pts = ' '.join('%.1f,%.1f' % pt(i, v, c, R) for i, v in enumerate(vals))
-    return ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" class="radar"%s role="img" aria-label="Profilo radar">%s'
-            '<polygon points="%s" class="rp"/><polygon points="" class="ro"/></svg>') % (size, size, (' id="%s"' % extra_id) if extra_id else '', g, pts)
+    return ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="-34 0 %d %d" class="radar"%s role="img" aria-label="Profilo radar">%s'
+            '<polygon points="%s" fill="#2F7259" fill-opacity="0.25" stroke="#2F7259" stroke-width="2"/><polygon points="" class="ro" fill="#C0733A" fill-opacity="0.22" stroke="#C0733A" stroke-width="2" stroke-dasharray="4 3"/></svg>') % (size + 68, size, (' id="%s" data-s="%d"' % (extra_id, size)) if extra_id else '', g, pts)
 def cos(a, b):
     d = sum(x*y for x, y in zip(a, b)); n = math.hypot(*a)*math.hypot(*b)
     return d/n if n else 0
@@ -47,8 +47,8 @@ cover_svg = '''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 900" wid
 <text x="300" y="770" text-anchor="middle" font-family="Georgia,serif" font-size="26" fill="#E9D8A6">Benedetto Sgroi</text>
 <text x="300" y="810" text-anchor="middle" font-family="Georgia,serif" font-size="18" fill="#C9D8CF">dalle pagine di GinBuilder · prova</text></svg>'''
 cr = radar([1,1,0,0,2,0,2,5], 300)
-cr = cr.replace('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" class="radar" role="img" aria-label="Profilo radar">', '<g transform="translate(150,400)">').replace('</svg>', '</g>')
-cr = cr.replace('class="rg"', 'fill="none" stroke="#E9D8A6" stroke-opacity=".5"').replace('class="rl"', 'font-size="12" fill="#E9D8A6" font-family="Georgia,serif"').replace('class="rp"', 'fill="#E9D8A6" fill-opacity=".35" stroke="#FBF8F1" stroke-width="2"').replace('<polygon points="" class="ro"/>', '')
+cr = cr.replace('<svg xmlns="http://www.w3.org/2000/svg" viewBox="-34 0 368 300" class="radar" role="img" aria-label="Profilo radar">', '<g transform="translate(150,400)">').replace('</svg>', '</g>')
+cr = re.sub(r'<polygon points="" class="ro"[^>]*/>', '', cr).replace('stroke="#d8d2c6"', 'stroke="#E9D8A6" stroke-opacity="0.5"').replace('fill="#555555"', 'fill="#E9D8A6"').replace('font-size="10"', 'font-size="12"').replace('fill="#2F7259" fill-opacity="0.25" stroke="#2F7259"', 'fill="#E9D8A6" fill-opacity="0.35" stroke="#FBF8F1"')
 cover_svg = cover_svg % cr
 # ---- introduzione
 intro = '''<section epub:type="preface"><h1>Questo libro</h1>
@@ -111,6 +111,43 @@ for c in cat_list:
     body += '</section>'
     files.append(('c1-' + slug(c), 'cap1-%s.xhtml' % slug(c), c, page(c, body, True), True, 2))
 # ---- capitolo 2
+SVG_ATTR = ('fill','stroke','stroke-width','stroke-dasharray','stroke-linecap','stroke-linejoin','opacity','font-size','font-weight','font-family','fill-opacity','stroke-opacity')
+def regole_css(css):
+    out = []
+    for sel, body in re.findall(r'([^{}]+)\{([^}]*)\}', re.sub(r'/\*.*?\*/', '', css, flags=re.S)):
+        props = {}
+        for d in body.split(';'):
+            if ':' in d:
+                k, v = d.split(':', 1); k = k.strip(); v = v.strip()
+                if k in SVG_ATTR: props[k] = v.replace('px', '') if k in ('font-size', 'stroke-width') else v
+        if props:
+            for one in sel.split(','): out.append((one.strip().split(), props))
+    return out
+REGOLE = regole_css(CSS)
+def svg_attributi(xh):
+    # applica le regole CSS (.classe, .padre elemento) come attributi di presentazione dentro gli SVG
+    def fai(m):
+        svg = m.group(0); pila = []
+        def tag(mt):
+            t = mt.group(0)
+            if t.startswith('</'):
+                if pila: pila.pop()
+                return t
+            nome = re.match(r'<([\w:-]+)', t).group(1)
+            cls = set((re.search(r'class="([^"]*)"', t) or [None, ''])[1].split())
+            anc = set().union(*pila) if pila else set()
+            props = {}
+            for parti, pr in REGOLE:
+                last = parti[-1]
+                ok = all(c in cls for c in last[1:].split('.')) if last.startswith('.') else (nome == last)
+                if ok and len(parti) > 1: ok = parti[0].lstrip('.') in anc
+                if ok: props.update(pr)
+            agg = ''.join(' %s="%s"' % (k, v) for k, v in props.items() if (' %s=' % k) not in t)
+            if agg: t = re.sub(r'(/?>)$', agg + r'\1', t)
+            if not t.endswith('/>'): pila.append(cls)
+            return t
+        return re.sub(r'</?[\w:-]+[^>]*>', tag, svg)
+    return re.sub(r'<svg[\s\S]*?</svg>', fai, xh)
 def pulisci(xh):
     xh = re.sub(r'<button[^>]*howto-chiudi[^>]*>.*?</button>', '', xh, flags=re.S)
     xh = re.sub(r'\s(aria-labelledby)="[^"]*"', '', xh)
@@ -118,7 +155,7 @@ def pulisci(xh):
     xh = re.sub(r'<div class="howto-body">', '<div>', xh, count=1)
     xh = re.sub(r'<h4 class="can-tit">', '<h3>', xh).replace('</h4>', '</h3>')
     xh = xh.replace('<svg viewBox', '<svg xmlns="http://www.w3.org/2000/svg" viewBox')
-    return xh
+    return svg_attributi(xh)
 c2 = '''<section epub:type="chapter"><h1>Capitolo 2<br/>La percezione</h1>
 <p>Come un gin arriva al cervello: i quattro sistemi sensoriali, i recettori e i canali che leggono le molecole, e la matrice che collega ogni sentore alle sue molecole e alle botaniche che le portano.</p>
 <ol class="indice"><li><a href="cap2-sistemi.xhtml">Quattro sistemi, un solo sapore</a></li><li><a href="cap2-canali.xhtml">I canali e dove si trovano</a></li><li><a href="cap2-matrice.xhtml">La matrice dei sentori</a></li></ol></section>'''
