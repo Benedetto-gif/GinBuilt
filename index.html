@@ -1858,6 +1858,40 @@ html details.howto a{color:#5A3E1C;}
 .mix-ctrl .mix-prop{grid-column:1 / -1;font-weight:500;}
 .mix-ctrl .mix-prop input{width:100%;accent-color:#8A63B0;}
 .mix-presets{grid-column:1 / -1;display:flex;gap:8px;flex-wrap:wrap;}
+
+/* ---------------- Special ---------------- */
+.sp-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:0 0 22px;}
+.sp-tiles .menu-tile{min-height:74px;}
+.inv-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin-bottom:10px;}
+.inv-sl{display:flex;flex-direction:column;font-size:12.5px;color:var(--ink-soft);}
+.inv-sl input{width:100%;accent-color:#C0733A;}
+.inv-ctrl{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:4px 0 12px;font-size:13px;}
+.inv-lista{margin:8px 0;padding-left:20px;font-size:14px;line-height:1.6;}
+.cie-opz{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
+.cie-radar{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:8px;}
+.cie-r{font:inherit;background:transparent;border:1px solid var(--line);border-radius:12px;padding:6px;cursor:pointer;color:var(--ink);display:flex;flex-direction:column;align-items:center;}
+.cie-r svg{width:100%;height:auto;max-width:200px;}
+.cie-o.giusta,.cie-r.giusta{border-color:#2F7259;background:color-mix(in srgb,#2F7259 16%,transparent);}
+.cie-o.sbagliata,.cie-r.sbagliata{border-color:#C0583E;background:color-mix(in srgb,#C0583E 16%,transparent);}
+.cie-punti{margin-left:auto;}
+.cal-mesi{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:12px;}
+.cal-m{font:inherit;border:1px solid var(--line);background:transparent;border-radius:10px;padding:6px 2px;cursor:pointer;color:var(--ink);display:flex;flex-direction:column;align-items:center;font-size:13px;text-transform:capitalize;}
+.cal-m small{font-size:11px;color:var(--ink-soft);}
+.cal-m.on{background:#B8921F;border-color:#B8921F;color:#fff;}
+.cal-m.on small{color:#fff;}
+.cal-cat{margin-top:10px;}
+.mix-ctrl input{font:inherit;font-size:14px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);}
+.eti-lab{max-width:340px;margin:14px auto;padding:16px 18px;border:2px solid #2b2b2b;border-radius:10px;font-family:'Fraunces',Georgia,serif;text-align:center;color:#222;background:#fbf8f1;display:flex;flex-direction:column;gap:6px;}
+.eti-k{font-size:10px;letter-spacing:.24em;text-transform:uppercase;}
+.eti-n{font-size:26px;font-weight:700;line-height:1.1;}
+.eti-s{font-size:12px;font-style:italic;}
+.eti-r svg{width:160px;height:auto;}
+.eti-r svg text{fill:#333;}
+.eti-b{font-size:11px;line-height:1.45;}
+.eti-serv{font-size:11px;border-top:1px solid #999;padding-top:6px;}
+.eti-piede{display:flex;justify-content:space-between;font-size:11px;border-top:1px solid #999;padding-top:6px;}
+.tav-c{margin:10px 0;}
+.tav-c p{margin:2px 0;}
 </style>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0C110E" id="meta-theme-color">
@@ -1968,6 +2002,7 @@ html details.howto a{color:#5A3E1C;}
     <button data-tab="cocktail">🍸 Cocktail</button>
     <button data-tab="garnish">🍋 Garnish</button>
     <button data-tab="toniche">🫧 Acque toniche</button>
+    <button data-tab="special">✨ Special</button>
     <button data-tab="laboratorio">🧪 Laboratorio cocktail</button>
   </nav>
   </div>
@@ -3177,8 +3212,31 @@ html details.howto a{color:#5A3E1C;}
     <p class="home-note">Gli abbinamenti sono punti di partenza: la prova vera è lo stesso gin con due toniche diverse, assaggiate una accanto all'altra.</p>
   </section>
 
+  <!-- ============ SPECIAL ============ -->
+  <section class="panel" id="panel-special">
+    <details class="howto">
+      <summary>Come si usa</summary>
+      <div class="howto-body">
+        <p>Sette strumenti speciali che usano il radar e la libreria in modi diversi. Tocca un riquadro per aprire lo strumento; ognuno si richiude con ▲ Chiudi.</p>
+        <ul>
+          <li>Il <strong>gemello commerciale</strong>, l'<strong>etichetta</strong> e il <strong>gin a tavola</strong> lavorano sulla ricetta che hai in quel momento nel Gin Builder (o su una scheda di prova).</li>
+          <li>La <strong>ricetta inversa</strong> e il <strong>gin di un paesaggio</strong> possono portare la loro ricetta nel Gin Builder, nello stile Personalizzato.</li>
+          <li>Come in tutta l'app, i profili sono stime orientative da verificare all'assaggio.</li>
+        </ul>
+      </div>
+    </details>
+    <div class="sp-tiles" id="sp-tiles"></div>
+    <details class="howto sp-item" id="sp-inversa"><summary>🎯 Ricetta inversa</summary><div class="howto-body"><p>Disegna il profilo che vorresti con i cursori degli otto assi: l'app cerca nella libreria la combinazione di botaniche che ci si avvicina di più. È il Builder al contrario, dal gusto alla ricetta.</p><div id="sp-inv"></div></div></details>
+    <details class="howto sp-item" id="sp-gemello"><summary>👯 Il tuo gemello commerciale</summary><div class="howto-body"><p>Il gin in commercio di carattere più vicino alla ricetta del Gin Builder, e cosa ti distingue da lui.</p><div id="sp-gem"></div></div></details>
+    <details class="howto sp-item" id="sp-cieca"><summary>🙈 Gin alla cieca</summary><div class="howto-body"><p>Allena l'occhio al radar: riconosci un gin dal suo profilo, o il profilo giusto dal nome. Utile anche per preparare il panel di assaggio.</p><div id="sp-cie"></div></div></details>
+    <details class="howto sp-item" id="sp-paesaggio"><summary>🏞️ Il gin di un paesaggio</summary><div class="howto-body"><p>Scegli un luogo: l'app compone una ricetta con le sue botaniche, già assegnate ai sei ruoli.</p><div id="sp-pae"></div></div></details>
+    <details class="howto sp-item" id="sp-calendario"><summary>🗓️ Calendario delle raccolte</summary><div class="howto-body"><p>Le botaniche che si raccolgono in Italia mese per mese, dal periodo di raccolta della libreria. Le botaniche solo importate sono escluse.</p><div id="sp-cal"></div></div></details>
+    <details class="howto sp-item" id="sp-etichetta"><summary>🏷️ L'etichetta della bottiglia</summary><div class="howto-body"><p>Un'etichetta stampabile con nome, gradazione, botaniche, il radar in piccolo e come servirlo.</p><div id="sp-eti"></div></div></details>
+    <details class="howto sp-item" id="sp-tavola"><summary>🍽️ Gin a tavola</summary><div class="howto-body"><p>Gli abbinamenti con il cibo, a partire dalle note che prevalgono nel radar.</p><div id="sp-tav"></div></div></details>
+  </section>
+
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 8 ottobre 2026, ore 06:45 · Gli altri gin: mescola due gin e guarda il radar della miscela</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 8 ottobre 2026, ore 07:30 · Nuova pagina Special: sette strumenti</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -4016,6 +4074,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const GROUPS = [
     { label: 'Prima di costruire', tabs: ['ridondanza'] },
     { label: 'Il servizio', tabs: ['garnish', 'toniche'] },
+    { label: 'Special', tabs: ['special'] },
     { label: 'Per approfondire', tabs: ['nozioni', 'analisi', 'ruota', 'altrigin'] }
   ];
   const fuoriHome = btns.filter(b => IN_HOME.indexOf(b.dataset.tab) < 0 && b.dataset.tab !== 'home');
@@ -5119,6 +5178,7 @@ function renderSummary(){
       if (!sel.value || visti.has(sel.value)) return; visti.add(sel.value);
       nomi.push(sel.value); pesi.push(pesoRiga(sel, doseLibreria(sel.value) ?? 0));
     });
+    window._ricettaBuilder = { nomi: nomi.slice(), pesi: pesi.slice(), stile: currentStyleName };
     const rif = window._rifStile && window._rifStile.nome === currentStyleName ? window._rifStile.elenco.map(x => x.n) : null;
     const invariata = !!rif && rif.length === nomi.filter(n => PROFILO8[n]).length && rif.every(n => nomi.indexOf(n) >= 0);
     try { box.innerHTML = nomi.length ? window.garnishBoxRicetta(nomi, pesi, currentStyleName, invariata) : ''; } catch(e){ box.innerHTML = ''; }
@@ -8551,6 +8611,340 @@ if ("serviceWorker" in navigator) {
 })();
 </script>
 <script>
+// ---------- Special: sette strumenti sul radar e sulla libreria ----------
+(function(){
+  if (!document.getElementById('panel-special')) return;
+  const esc = t => String(t).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const r1 = x => Math.round(x * 10) / 10;
+  const virg = x => String(r1(x)).replace('.', ',');
+  const BASE3 = ['Bacche di ginepro','Coriandolo','Angelica'];
+  const isBase = n => BASE3.includes(n) || !!(typeof FONDAMENTALI !== 'undefined' && FONDAMENTALI[n]);
+  const dose = n => (DATA.dose[n] && DATA.dose[n].test) || 1;
+  const breveGin = n => n.startsWith('Gin ') ? n : n.replace(/ (London Dry|Japanese Craft|Japanese|Premium|Islay Dry|Extra Dry|Dry)? ?Gin$/, '');
+  const ASSI_F = {Dolce:'dolce',Amaro:'amara',Acido:'acida',Salino:'salina',Agrumato:'agrumata',Floreale:'floreale',Erbaceo:'erbacea',Speziato:'speziata'};
+  // profilo medio pesato (valori 0-5) di una lista {n, w}
+  function profilo(el){
+    const ok = el.filter(x => PROFILO8[x.n] && x.w > 0); if (!ok.length) return null;
+    const tot = ok.reduce((a, x) => a + x.w, 0);
+    return ASSI8.map((_, i) => ok.reduce((a, x) => a + PROFILO8[x.n][i] * x.w, 0) / tot);
+  }
+  const scala5 = v => { const m = Math.max.apply(null, v) || 1; return v.map(x => r1(x / m * 5)); };
+  const coseno = (a, b) => { const d = a.reduce((s, x, i) => s + x * b[i], 0), n = Math.hypot.apply(null, a) * Math.hypot.apply(null, b); return n ? d / n : 0; };
+  const soloSvg = h => { const m = h.match(/<svg[\s\S]*<\/svg>/); return m ? m[0] : h; };
+  // ricetta del Builder (aggiornata da renderSummary)
+  function ricettaBuilder(){
+    const r = window._ricettaBuilder; if (!r || !r.nomi || !r.nomi.length) return null;
+    return { nome: r.stile && r.stile !== 'Personalizzato' ? 'Ricetta ' + r.stile : 'Ricetta personalizzata', stile: r.stile,
+             el: r.nomi.map((n, i) => ({n, w: Math.max(0.0001, r.pesi[i] || 0)})) };
+  }
+  // porta una lista di [ruolo, botanica] nel Builder, stile Personalizzato
+  function portaNelBuilder(righe){
+    const idx = STYLES.findIndex(s => s[0] === 'Personalizzato'); if (idx < 0) return;
+    const btn = [...document.querySelectorAll('#style-picker button')].find(b => b.textContent.trim().includes('Personalizzato'));
+    if (btn) btn.click(); else renderBuilder(idx);
+    roleList.innerHTML = '';
+    addCustomRoleRow('Base', 'Bacche di ginepro', true);
+    righe.filter(([, b]) => b !== 'Bacche di ginepro').forEach(([r, b]) => addCustomRoleRow(r, b, false));
+    renderSummary(); showTab('builder');
+  }
+  window.spPortaNelBuilder = portaNelBuilder;
+
+  // ===== tessere d'ingresso =====
+  const TILES = [['sp-inversa','🎯','Ricetta inversa','#4C7BB5'],['sp-gemello','👯','Gemello commerciale','#2F7259'],['sp-cieca','🙈','Gin alla cieca','#8A63B0'],
+    ['sp-paesaggio','🏞️','Gin di un paesaggio','#6F8A2E'],['sp-calendario','🗓️','Calendario raccolte','#B8921F'],['sp-etichetta','🏷️','Etichetta','#C0583E'],['sp-tavola','🍽️','Gin a tavola','#B04A6B']];
+  const tiles = document.getElementById('sp-tiles');
+  tiles.innerHTML = TILES.map(([id, ic, t, c]) => '<button type="button" class="menu-tile" data-sp="' + id + '" style="--h:' + c + '"><span class="mt-ic">' + ic + '</span><span class="mt-l">' + t + '</span></button>').join('');
+  tiles.querySelectorAll('[data-sp]').forEach(b => b.onclick = () => {
+    const d = document.getElementById(b.dataset.sp); if (!d) return;
+    d.open = true; const sm = d.querySelector('summary'); if (sm){ sm.style.scrollMarginTop = '84px'; sm.scrollIntoView({behavior:'smooth', block:'start'}); }
+  });
+
+  // ===== 1. Ricetta inversa =====
+  (function(){
+    const box = document.getElementById('sp-inv'); if (!box) return;
+    const t = [1, 0.5, 1, 0, 4, 2, 2, 3];
+    const cand = Object.keys(PROFILO8).filter(n => !isBase(n));
+    // minimi quadrati non negativi a gradiente proiettato: P (8 x N) w ~ target
+    function nnls(nomi, target, iter){
+      const N = nomi.length, P = nomi.map(n => PROFILO8[n]);
+      let w = new Array(N).fill(1 / N);
+      let L = 0; P.forEach(p => { L += p.reduce((a, x) => a + x * x, 0); }); const step = 1 / (L || 1);
+      for (let k = 0; k < iter; k++){
+        const r = ASSI8.map((_, i) => P.reduce((a, p, j) => a + p[i] * w[j], 0) - target[i]);
+        for (let j = 0; j < N; j++){ let g = 0; for (let i = 0; i < 8; i++) g += P[j][i] * r[i]; w[j] = Math.max(0, w[j] - step * g); }
+      }
+      return w;
+    }
+    function cerca(target, k){
+      const w = nnls(cand, target, 1500);
+      let top = cand.map((n, j) => ({n, w: w[j]})).filter(x => x.w > 1e-4).sort((a, b) => b.w - a.w).slice(0, k);
+      if (!top.length) return [];
+      const w2 = nnls(top.map(x => x.n), target, 3000);
+      top = top.map((x, j) => ({n: x.n, w: w2[j]})).filter(x => x.w > 1e-4).sort((a, b) => b.w - a.w);
+      return top;
+    }
+    const RUOLI_RANGO = ['Identità', 'Cuore', 'Cuore', 'Firma', 'Rifinitura'];
+    let nBot = 4;
+    function disegna(){
+      const sl = ASSI8.map((a, i) => '<label class="inv-sl"><span>' + a + ' <strong>' + virg(t[i]) + '</strong></span><input type="range" min="0" max="5" step="0.5" value="' + t[i] + '" data-i="' + i + '"></label>').join('');
+      const found = t.some(x => x > 0) ? cerca(t, nBot) : [];
+      let h = '<div class="inv-grid">' + sl + '</div>' +
+        '<div class="inv-ctrl">Botaniche di carattere: ' + [3, 4, 5].map(k => '<button type="button" class="conf-chip' + (k === nBot ? ' on' : '') + '" data-k="' + k + '">' + k + '</button>').join(' ') +
+        ' <button type="button" class="conf-chip" data-pre="builder">Dal Builder</button> <button type="button" class="conf-chip" data-pre="zero">Azzera</button></div>';
+      if (!found.length){ box.innerHTML = h + '<div class="radar-nota">Alza almeno un asse per cominciare.</div>'; aggancia(); return; }
+      const v = profilo(found), sim = Math.round(coseno(v, t) * 100);
+      const tot = found.reduce((a, x) => a + x.w, 0);
+      h += radarSVG([{vals: scala5(t), color: '#C0733A', label: 'Desiderato', dash: true}, {vals: scala5(v), color: 'var(--juniper)', label: 'Ricetta trovata'}], 300) +
+        '<div class="gin-leg"><span><i style="background:transparent;border:1.5px dashed #C0733A"></i>Desiderato</span><span><i style="background:var(--juniper)"></i>Ricetta trovata</span></div>' +
+        '<div class="radar-nota">Somiglianza di forma con il profilo desiderato: <strong>' + sim + '%</strong>.</div>' +
+        '<ol class="inv-lista">' + found.map((x, j) => '<li><strong>' + esc(x.n) + '</strong> · ' + Math.round(x.w / tot * 100) + '% della parte di carattere · ruolo ' + RUOLI_RANGO[j] + '</li>').join('') + '</ol>' +
+        '<div class="radar-nota">A queste si aggiungono le botaniche base: ginepro e angelica (Base) e coriandolo (Freschezza). Le percentuali dicono quanto pesa ciascuna nel profilo, non i grammi: nel Builder il ruolo assegna la dose.</div>' +
+        '<button type="button" class="primary-btn inv-porta" style="margin-top:8px;">🎯 Porta nel Gin Builder</button>';
+      box.innerHTML = h; aggancia(found);
+    }
+    function aggancia(found){
+      box.querySelectorAll('input[type=range]').forEach(r => { r.onchange = () => { t[+r.dataset.i] = parseFloat(r.value); disegna(); };
+        r.oninput = () => { r.previousElementSibling.querySelector('strong').textContent = virg(parseFloat(r.value)); }; });
+      box.querySelectorAll('[data-k]').forEach(b => b.onclick = () => { nBot = +b.dataset.k; disegna(); });
+      box.querySelectorAll('[data-pre]').forEach(b => b.onclick = () => {
+        if (b.dataset.pre === 'zero') t.fill(0);
+        else { const r = ricettaBuilder(), v = r && profilo(r.el.filter(x => !isBase(x.n))); if (v) scala5(v).forEach((x, i) => t[i] = Math.round(x * 2) / 2); }
+        disegna(); });
+      const p = box.querySelector('.inv-porta');
+      if (p && found) p.onclick = () => portaNelBuilder([['Base','Angelica'],['Freschezza','Coriandolo']].concat(found.map((x, j) => [RUOLI_RANGO[j], x.n])));
+    }
+    disegna();
+  })();
+
+  // ===== 2. Gemello commerciale =====
+  function gemello(){
+    const box = document.getElementById('sp-gem'); if (!box) return;
+    const r = ricettaBuilder();
+    const firma = r ? r.el.filter(x => !isBase(x.n)) : [];
+    const v = firma.length ? profilo(firma) : null;
+    if (!v){ box.innerHTML = '<div class="radar-nota">Nel Gin Builder non ci sono ancora botaniche oltre alle base: scegli uno stile o componi una ricetta, poi torna qui.</div><button type="button" class="ghost-btn" onclick="showTab(\'builder\')">🎯 Vai al Gin Builder</button>'; return; }
+    const m = ginMedio(), x = v.map((a, i) => a - m[i]);
+    const lista = Object.keys(GIN_LISTE).map(n => { const p = profiloGin(n, false); if (!p) return null;
+      const y = p.vals.map((a, i) => a - m[i]); return {n, p, c: Math.round((coseno(x, y) + 1) / 2 * 100)}; }).filter(Boolean).sort((a, b) => b.c - a.c);
+    const best = lista[0];
+    const piu = ASSI8.filter((_, i) => v[i] - best.p.vals[i] >= 0.6).map(a => a.toLowerCase()), meno = ASSI8.filter((_, i) => best.p.vals[i] - v[i] >= 0.6).map(a => a.toLowerCase());
+    box.innerHTML = '<p class="gar-g">' + esc(r.nome) + ' → ' + esc(breveGin(best.n)) + ' <span class="gin-badge" style="--c:var(--juniper)">' + best.c + '%</span></p>' +
+      radarSVG([{vals: v.map(r1), color: 'var(--juniper)', label: r.nome}, {vals: best.p.vals, color: '#C0733A', label: best.n, dash: true}], 300) +
+      '<div class="gin-leg"><span><i style="background:var(--juniper)"></i>La tua ricetta</span><span><i style="background:transparent;border:1.5px dashed #C0733A"></i>' + esc(breveGin(best.n)) + '</span></div>' +
+      '<div class="radar-nota">Rispetto a ' + esc(breveGin(best.n)) + ' la tua ricetta è ' + (piu.length ? 'più ' + piu.join(', ') : '') + (piu.length && meno.length ? ' e ' : '') + (meno.length ? 'meno ' + meno.join(', ') : (piu.length ? '' : 'quasi identica sugli otto assi')) + '.</div>' +
+      '<div class="radar-nota">Seguono: ' + lista.slice(1, 4).map(g => esc(breveGin(g.n)) + ' ' + g.c + '%').join(', ') + '. Il più lontano: ' + esc(breveGin(lista[lista.length - 1].n)) + ' ' + lista[lista.length - 1].c + '%.</div>' +
+      '<div class="radar-nota">Confronto sulla sola firma (senza ginepro, coriandolo e angelica), con lo stesso metodo della pagina Gli altri gin: conta quanto i due profili si scostano dal gin medio nella stessa direzione.</div>' +
+      '<div class="gar-azioni"><button type="button" class="ghost-btn sp-gem-agg">↻ Aggiorna dal Builder</button><button type="button" class="ghost-btn" onclick="showTab(\'altrigin\')">🥃 Gli altri gin</button></div>';
+    box.querySelector('.sp-gem-agg').onclick = gemello;
+  }
+
+  // ===== 3. Gin alla cieca =====
+  (function(){
+    const box = document.getElementById('sp-cie'); if (!box) return;
+    const nomi = Object.keys(GIN_LISTE).filter(n => { const p = profiloGin(n, false); return p && p.el.length >= 2 && !GIN_LISTE[n].parziale; });
+    let punti = {ok: 0, tot: 0}; try { punti = JSON.parse(localStorage.getItem('gb-cieca')) || punti; } catch(e){}
+    const salva = () => { try { localStorage.setItem('gb-cieca', JSON.stringify(punti)); } catch(e){} };
+    const pesca = (k, escl) => { const l = nomi.filter(n => !escl.includes(n)).sort(() => Math.random() - 0.5); return l.slice(0, k); };
+    let modo = 'nome', giro = null;
+    function nuovo(){ const [g] = pesca(1, []); giro = {g, opz: pesca(modo === 'nome' ? 3 : 2, [g]).concat([g]).sort(() => Math.random() - 0.5), risp: null}; disegna(); }
+    function disegna(){
+      const testa = '<div class="inv-ctrl">' + [['nome','Dal radar al nome'],['radar','Dal nome al radar']].map(([k, t]) => '<button type="button" class="conf-chip' + (k === modo ? ' on' : '') + '" data-m="' + k + '">' + t + '</button>').join(' ') +
+        ' <span class="cie-punti">Punteggio: <strong>' + punti.ok + '/' + punti.tot + '</strong></span> <button type="button" class="conf-chip" data-azz="1">Azzera</button></div>';
+      let h = testa;
+      const fatto = giro.risp !== null, giusto = giro.risp === giro.g;
+      if (modo === 'nome'){
+        h += '<div class="radar-title">Di quale gin è questa firma?</div>' + radarSVG([{vals: profiloGin(giro.g, false).vals, color: 'var(--juniper)', label: '?'}], 280) +
+          '<div class="cie-opz">' + giro.opz.map(n => '<button type="button" class="ghost-btn cie-o' + (fatto ? (n === giro.g ? ' giusta' : n === giro.risp ? ' sbagliata' : '') : '') + '" data-n="' + esc(n) + '"' + (fatto ? ' disabled' : '') + '>' + esc(breveGin(n)) + '</button>').join('') + '</div>';
+      } else {
+        h += '<div class="radar-title">Quale radar è la firma di <strong>' + esc(breveGin(giro.g)) + '</strong>?</div><div class="cie-radar">' +
+          giro.opz.map((n, k) => '<button type="button" class="cie-r' + (fatto ? (n === giro.g ? ' giusta' : n === giro.risp ? ' sbagliata' : '') : '') + '" data-n="' + esc(n) + '"' + (fatto ? ' disabled' : '') + '>' + soloSvg(radarSVG([{vals: profiloGin(n, false).vals, color: 'var(--juniper)', label: ''}], 200)) + '<span>' + (fatto ? esc(breveGin(n)) : String.fromCharCode(65 + k)) + '</span></button>').join('') + '</div>';
+      }
+      if (fatto){
+        const lista = GIN_LISTE[giro.g].b.filter(n => !BASE3.includes(n));
+        h += '<div class="radar-nota">' + (giusto ? '✅ Esatto!' : '❌ Era <strong>' + esc(breveGin(giro.g)) + '</strong>.') + ' Le botaniche della sua firma: ' + esc(lista.join(', ')) + '.</div>' +
+          '<button type="button" class="primary-btn cie-next" style="margin-top:8px;">Un altro →</button>';
+      }
+      box.innerHTML = h;
+      box.querySelectorAll('[data-m]').forEach(b => b.onclick = () => { modo = b.dataset.m; nuovo(); });
+      const az = box.querySelector('[data-azz]'); if (az) az.onclick = () => { punti = {ok: 0, tot: 0}; salva(); disegna(); };
+      box.querySelectorAll('.cie-o, .cie-r').forEach(b => b.onclick = () => { if (giro.risp !== null) return; giro.risp = b.dataset.n; punti.tot++; if (giro.risp === giro.g) punti.ok++; salva(); disegna(); });
+      const nx = box.querySelector('.cie-next'); if (nx) nx.onclick = nuovo;
+    }
+    if (nomi.length >= 4) nuovo(); else box.innerHTML = '<div class="radar-nota">Servono almeno quattro gin con la lista completa.</div>';
+  })();
+
+  // ===== 4. Il gin di un paesaggio =====
+  (function(){
+    const box = document.getElementById('sp-pae'); if (!box) return;
+    const PAE = {
+      'Etna': { d:'Lava, ginestra e la betulla dell’Etna, con le arance della piana di Catania.',
+        r:[['Base','Angelica'],['Freschezza','Coriandolo'],['Freschezza','Arancia dolce'],['Identità','Ginestra'],['Cuore','Elicriso'],['Firma','Betulla corteccia'],['Rifinitura','Origano']],
+        p:'La ginestra è il primo fiore che colonizza le colate; la Betula aetnensis è una betulla che cresce solo sul vulcano. L’elicriso porta la nota calda e asciutta dei terreni lavici.' },
+      'Scogliera': { d:'Mare, sale e le piante che vivono sugli scogli.',
+        r:[['Base','Angelica'],['Freschezza','Coriandolo'],['Freschezza','Limone'],['Identità','Finocchio di mare'],['Cuore','Foglie di cappero'],['Firma','Elicriso delle scogliere'],['Rifinitura','Salicornia']],
+        p:'Finocchio di mare, cappero e salicornia sono piante alofite: assorbono il sale e lo restituiscono come sapidità. Il limone tiene alta la freschezza.' },
+      'Macchia mediterranea': { d:'Lentisco, mirto e corbezzolo sotto il sole d’agosto.',
+        r:[['Base','Angelica'],['Freschezza','Coriandolo'],['Freschezza','Timo limonato'],['Identità','Lentisco'],['Cuore','Mirto foglie'],['Firma','Corbezzolo'],['Rifinitura','Rosmarino']],
+        p:'Il lentisco dà la resina, il mirto il balsamico, il corbezzolo una nota fruttata e un po’ tannica. Il rosmarino chiude come il profumo della macchia calpestata.' },
+      'Agrumeto': { d:'La Conca d’Oro in fiore: agrumi e zagara.',
+        r:[['Base','Angelica'],['Freschezza','Coriandolo'],['Freschezza','Limone'],['Identità','Arancia amara'],['Cuore','Mandarino'],['Firma','Fiori d’arancio'],['Rifinitura','Alloro']],
+        p:'Tre agrumi diversi per tre momenti: limone in testa, arancia amara come identità, mandarino al cuore. La zagara è la firma floreale; l’alloro asciuga il finale.' },
+      'Bosco di montagna': { d:'Sottobosco alpino e appenninico, fra mirtilli e radici amare.',
+        r:[['Base','Angelica'],['Freschezza','Coriandolo'],['Freschezza','Menta d’acqua'],['Identità','Mirtillo'],['Cuore','Achillea'],['Firma','Genziana'],['Rifinitura','Carvi']],
+        p:'Mirtillo e achillea sono il sottobosco, la genziana l’amaro delle radici d’alta quota, il carvi la spezia dei pascoli alpini. Genziana in tracce: domina facilmente.' },
+      'Orto d’estate': { d:'Il giardino di casa a luglio, fra basilico, cetrioli e sambuco.',
+        r:[['Base','Angelica'],['Freschezza','Coriandolo'],['Freschezza','Limone'],['Identità','Basilico'],['Cuore','Cetriolo'],['Firma','Sambuco'],['Rifinitura','Melissa']],
+        p:'Un gin verde e fresco: il basilico dà identità, il cetriolo l’acqua, il sambuco un tocco floreale. Ottimo in gin tonic con una tonica neutra.' }
+    };
+    const fixNome = n => n.replace('’', "'");
+    let scelto = 'Etna';
+    function disegna(){
+      const P = PAE[scelto], righe = P.r.map(([r, n]) => [r, fixNome(n)]);
+      const firma = righe.filter(([, n]) => !isBase(n)).map(([, n]) => ({n, w: dose(n)}));
+      const v = profilo(firma);
+      const zona = n => { const m = MASTER.find(x => x.botanica === n || (n === 'Mirto foglie' && x.botanica === 'Mirto')); return m && m.zone_italia ? m.zone_italia : ''; };
+      box.innerHTML = '<div class="inv-ctrl">' + Object.keys(PAE).map(k => '<button type="button" class="conf-chip' + (k === scelto ? ' on' : '') + '" data-p="' + esc(k) + '">' + esc(k) + '</button>').join(' ') + '</div>' +
+        '<p class="gar-g">' + esc(scelto) + '</p><div class="radar-nota" style="margin-top:0">' + esc(P.d) + '</div>' +
+        (v ? radarSVG([{vals: v.map(r1), color: 'var(--juniper)', label: scelto}], 280) : '') +
+        '<ul class="inv-lista">' + righe.map(([r, n]) => '<li><strong>' + r + '</strong> · ' + esc(n) + (zona(n) ? ' <span class="cond-hint">(' + esc(zona(n)) + ')</span>' : '') + '</li>').join('') + '</ul>' +
+        '<div class="radar-nota">' + esc(P.p) + '</div>' +
+        '<button type="button" class="primary-btn pae-porta" style="margin-top:8px;">🏞️ Porta nel Gin Builder</button>';
+      box.querySelectorAll('[data-p]').forEach(b => b.onclick = () => { scelto = b.dataset.p; disegna(); });
+      box.querySelector('.pae-porta').onclick = () => portaNelBuilder(righe.filter(([r]) => r !== 'Base' || true));
+    }
+    disegna();
+  })();
+
+  // ===== 5. Calendario delle raccolte =====
+  (function(){
+    const box = document.getElementById('sp-cal'); if (!box) return;
+    const MESI = ['gen','feb','mar','apr','mag','giu','lug','ago','set','ott','nov','dic'];
+    const NOMI = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+    const STAG = {primavera:[2,3,4], estate:[5,6,7], autunno:[8,9,10], inverno:[11,0,1]};
+    const range = (a, b) => { const o = []; for (let k = a; ; k = (k + 1) % 12){ o.push(k); if (k === b) break; } return o; };
+    function mesi(txt){
+      const t = (txt || '').toLowerCase(); if (!t || t === '—' || t.startsWith('non coltivat') || t.startsWith('variabile')) return null;
+      const s = new Set();
+      const re = /(gen|feb|mar|apr|mag|giu|lug|ago|set|ott|nov|dic)\w*\s*-\s*(gen|feb|mar|apr|mag|giu|lug|ago|set|ott|nov|dic)/g; let m;
+      while ((m = re.exec(t))) range(MESI.indexOf(m[1]), MESI.indexOf(m[2])).forEach(k => s.add(k));
+      const tolti = t.replace(re, ' ');
+      (tolti.match(/\b(gen|feb|mar|apr|mag|giu|lug|ago|set|ott|nov|dic)\b/g) || []).forEach(x => s.add(MESI.indexOf(x)));
+      const rs = /(primavera|estate|autunno|inverno)\s*-\s*(primavera|estate|autunno|inverno)/g;
+      while ((m = rs.exec(t))){ const o = Object.keys(STAG), a = o.indexOf(m[1]), b = o.indexOf(m[2]); for (let k = a; ; k = (k + 1) % 4){ STAG[o[k]].forEach(x => s.add(x)); if (k === b) break; } }
+      Object.keys(STAG).forEach(k => { if (new RegExp('(^|[^-\\w])' + k + '(?!\\s*-)').test(t.replace(rs, ' '))) STAG[k].forEach(x => s.add(x)); });
+      if (!s.size && /tutto l.?anno/.test(t)) for (let k = 0; k < 12; k++) s.add(k);
+      return s.size ? s : null;
+    }
+    const visti = new Set(), voci = [];
+    MASTER.forEach(x => { if (visti.has(x.botanica)) return; visti.add(x.botanica); const ms = mesi(x.periodo_raccolta); if (ms) voci.push({x, ms}); });
+    let mese = new Date().getMonth();
+    function disegna(){
+      const conta = MESI.map((_, k) => voci.filter(v => v.ms.has(k)).length);
+      const qui = voci.filter(v => v.ms.has(mese)).sort((a, b) => a.x.categoria.localeCompare(b.x.categoria, 'it') || a.x.botanica.localeCompare(b.x.botanica, 'it'));
+      const perCat = {}; qui.forEach(v => (perCat[v.x.categoria] = perCat[v.x.categoria] || []).push(v));
+      box.innerHTML = '<div class="cal-mesi">' + MESI.map((m, k) => '<button type="button" class="cal-m' + (k === mese ? ' on' : '') + '" data-k="' + k + '"><span>' + m + '</span><small>' + conta[k] + '</small></button>').join('') + '</div>' +
+        '<p class="gar-g">' + NOMI[mese] + ': ' + qui.length + ' botaniche da raccogliere</p>' +
+        Object.keys(perCat).map(c => '<div class="cal-cat"><div class="cond-label">' + esc(c) + '</div><ul class="inv-lista">' + perCat[c].map(v => '<li><strong>' + esc(v.x.icona || '') + ' ' + esc(v.x.botanica) + '</strong> · ' + esc(v.x.parte || '') + ' <span class="cond-hint">(' + esc(v.x.periodo_raccolta) + ')</span></li>').join('') + '</ul></div>').join('') +
+        '<div class="radar-nota">Periodi dalla libreria, indicativi per l’Italia: altitudine e annata li spostano anche di settimane. Raccogli solo dove è consentito e lontano da strade e coltivi trattati.</div>';
+      box.querySelectorAll('.cal-m').forEach(b => b.onclick = () => { mese = +b.dataset.k; disegna(); });
+    }
+    disegna();
+    window.spCalMesi = mesi;
+  })();
+
+  // ===== 6. Etichetta =====
+  const eti = { src: null, nome: null, abv: null, lotto: null, cl: '70' };
+  function etichetta(){
+    const box = document.getElementById('sp-eti'); if (!box) return;
+    const tests = (typeof loadTests === 'function' ? loadTests() : []).filter(t => (t.botaniche || []).length);
+    if (eti.src === null || (eti.src !== 'b' && !tests[+eti.src.slice(1)])) eti.src = tests.length ? 't' + (tests.length - 1) : 'b';
+    const fonti = '<option value="b"' + (eti.src === 'b' ? ' selected' : '') + '>Ricetta del Gin Builder</option>' + tests.map((t, k) => '<option value="t' + k + '"' + (eti.src === 't' + k ? ' selected' : '') + '>Scheda: ' + esc(t.name || 'Senza nome') + (t.date ? ' · ' + esc(t.date) : '') + '</option>').join('');
+    let el = [], nome = '', abv = 43, stile = '';
+    if (eti.src !== 'b'){ const t = tests[+eti.src.slice(1)]; el = t.botaniche.filter(b => b.botanica).map(b => ({n: b.botanica, w: b.perc || 1})); nome = t.name || ''; abv = t.abv || 43; stile = t.style || ''; }
+    else { const r = ricettaBuilder(); if (r){ el = r.el; nome = r.nome; stile = r.stile || ''; } }
+    if (eti.nome !== null) nome = eti.nome;
+    if (eti.abv !== null) abv = eti.abv;
+    const lotto = eti.lotto !== null ? eti.lotto : new Date().toLocaleDateString('it-IT', {month:'long', year:'numeric'});
+    const cl = eti.cl;
+    let h = '<div class="mix-ctrl"><label style="grid-column:1/-1">Ricetta<select class="eti-src">' + fonti + '</select></label>' +
+      '<label>Nome<input class="eti-nome" value="' + esc(nome) + '"></label><label>Gradazione % vol.<input class="eti-abv" inputmode="decimal" value="' + virg(abv) + '"></label>' +
+      '<label>Lotto / data<input class="eti-lotto" value="' + esc(lotto) + '"></label><label>Bottiglia (cl)<select class="eti-cl">' + ['20','35','50','70','100'].map(x => '<option' + (x === cl ? ' selected' : '') + '>' + x + '</option>').join('') + '</select></label></div>';
+    let lab = '';
+    if (!el.length) h += '<div class="radar-nota">Nessuna ricetta: componi una ricetta nel Gin Builder o salva una scheda di prova.</div>';
+    else {
+      const firma = el.filter(x => !isBase(x.n)), v = profilo(firma.length ? firma : el);
+      const ordinate = el.slice().sort((a, b) => b.w - a.w).map(x => x.n);
+      const g = window.garnishSuggerita ? window.garnishSuggerita(el.map(x => x.n), el.map(x => x.w), stile) : null;
+      const t = window.tonicaSuggerita ? window.tonicaSuggerita(el.map(x => x.n), el.map(x => x.w)) : null;
+      const TN = {classica:'classica',neutra:'premium neutra',amara:'amara',aromatica:'aromatica',italiana:'italiana agrumata'};
+      const dom = v ? ASSI8.map((a, i) => [a, v[i]]).sort((a, b) => b[1] - a[1]).slice(0, 3).map(x => ASSI_F[x[0]]) : [];
+      lab = '<div class="eti-lab">' +
+        '<div class="eti-k">Compound gin</div><div class="eti-n">' + esc(nome || 'Il mio gin') + '</div>' +
+        (dom.length ? '<div class="eti-s">nota ' + dom.join(' · ') + '</div>' : '') +
+        (v ? '<div class="eti-r">' + soloSvg(radarSVG([{vals: v.map(r1), color: '#2F7259', label: ''}], 170)) + '</div>' : '') +
+        '<div class="eti-b">' + ordinate.map(esc).join(' · ') + '</div>' +
+        ((g || t) ? '<div class="eti-serv">' + (g ? 'Garnish: ' + esc(g.g.charAt(0).toLowerCase() + g.g.slice(1)) : '') + (g && t ? '<br>' : '') + (t ? 'Tonica ' + TN[t.k] : '') + '</div>' : '') +
+        '<div class="eti-piede"><span>' + virg(abv) + '% vol.</span><span>' + esc(lotto) + '</span><span>' + cl + ' cl</span></div></div>';
+      h += lab + '<div class="gar-azioni"><button type="button" class="primary-btn eti-print">🖨️ Stampa l’etichetta</button><button type="button" class="ghost-btn eti-agg">↻ Aggiorna dalla ricetta</button></div>' +
+        '<div class="radar-nota">Formato circa 9 × 12 cm. È un’etichetta per uso personale: per vendere un gin servono licenze e le diciture di legge.</div>';
+    }
+    box.innerHTML = h;
+    box.querySelector('.eti-src').onchange = e => { eti.src = e.target.value; eti.nome = null; eti.abv = null; etichetta(); };
+    box.querySelector('.eti-nome').onchange = e => { eti.nome = e.target.value; etichetta(); };
+    box.querySelector('.eti-abv').onchange = e => { const x = parseFloat(e.target.value.replace(',', '.')); eti.abv = x > 0 ? x : null; etichetta(); };
+    box.querySelector('.eti-lotto').onchange = e => { eti.lotto = e.target.value; etichetta(); };
+    box.querySelector('.eti-cl').onchange = e => { eti.cl = e.target.value; etichetta(); };
+    const a = box.querySelector('.eti-agg'); if (a) a.onclick = () => { eti.nome = null; eti.abv = null; etichetta(); };
+    const p = box.querySelector('.eti-print'); if (p) p.onclick = () => {
+      const fix = lab.replace(/var\(--line\)/g, '#c9c2b6').replace(/var\(--ink-soft\)/g, '#555').replace(/var\(--ink\)/g, '#222').replace(/var\(--[\w-]+\)/g, '#444');
+      stampaHtml('<style>' + ETI_CSS + '</style>' + fix, 'Etichetta ' + (nome || 'gin'));
+    };
+  }
+  const ETI_CSS = '.eti-lab{width:9cm;min-height:12cm;box-sizing:border-box;margin:0 auto;padding:16px 18px;border:2px solid #2b2b2b;border-radius:10px;font-family:Georgia,serif;text-align:center;color:#222;background:#fbf8f1;display:flex;flex-direction:column;gap:6px}' +
+    '.eti-k{font-size:10px;letter-spacing:.24em;text-transform:uppercase}.eti-n{font-size:26px;font-weight:700;line-height:1.1}.eti-s{font-size:12px;font-style:italic}' +
+    '.eti-r svg{width:150px;height:150px}.eti-r text{font-size:13px}.eti-b{font-size:10.5px;line-height:1.45}.eti-serv{font-size:10.5px;border-top:1px solid #999;padding-top:6px}' +
+    '.eti-piede{display:flex;justify-content:space-between;font-size:11px;border-top:1px solid #999;padding-top:6px;margin-top:auto}';
+
+  // ===== 7. Gin a tavola =====
+  function tavola(){
+    const box = document.getElementById('sp-tav'); if (!box) return;
+    const prec = box.querySelector('.tav-src'), src = prec ? prec.value : 'b';
+    const opz = '<option value="b">Ricetta del Gin Builder</option>' + Object.keys(GIN_LISTE).filter(n => profiloGin(n, false)).map(n => '<option value="' + esc(n) + '"' + (n === src ? ' selected' : '') + '>' + esc(breveGin(n)) + '</option>').join('');
+    let v = null, nome = '';
+    if (src === 'b'){ const r = ricettaBuilder(); const f = r ? r.el.filter(x => !isBase(x.n)) : []; v = f.length ? profilo(f) : null; nome = r ? r.nome : ''; }
+    else { const p = profiloGin(src, false); v = p ? p.vals : null; nome = breveGin(src); }
+    let h = '<div class="mix-ctrl"><label style="grid-column:1/-1">Gin<select class="tav-src">' + opz + '</select></label></div>';
+    if (!v){ box.innerHTML = h + '<div class="radar-nota">Nel Gin Builder non ci sono botaniche oltre alle base: componi una ricetta o scegli un gin commerciale.</div>'; box.querySelector('.tav-src').onchange = tavola; return; }
+    const CIBO = {
+      Salino: ['Crudi di mare, ostriche, ricci, tartare di tonno', 'La sapidità del gin incontra lo iodio; il ginepro pulisce il palato fra un boccone e l’altro.'],
+      Agrumato: ['Frittura di paranza, pesce alla griglia, sushi e sashimi', 'Gli oli agrumati e l’alcol sgrassano il fritto come una spruzzata di limone.'],
+      Erbaceo: ['Verdure grigliate, caprini freschi, carni bianche alle erbe', 'Le stesse erbe nel bicchiere e nel piatto si rinforzano a vicenda.'],
+      Floreale: ['Scampi e crostacei dolci, formaggi freschi, dolci al cucchiaio poco zuccherati', 'Il floreale accompagna la dolcezza naturale senza coprirla.'],
+      Speziato: ['Formaggi stagionati, salumi, curry e piatti speziati, cioccolato fondente', 'Le spezie del gin reggono i sapori intensi e allungano la persistenza.'],
+      Dolce: ['Pasticceria secca, frutta secca tostata, formaggi erborinati', 'Con i dolci per affinità; con l’erborinato per contrasto, come un passito.'],
+      Amaro: ['Aperitivo: olive, mandorle tostate, salumi grassi', 'L’amaro taglia il grasso e apre l’appetito.'],
+      Acido: ['Piatti grassi e fritti, tartare, formaggi a pasta molle', 'L’acidità ripulisce la bocca dal grasso.']
+    };
+    const ord = ASSI8.map((a, i) => [a, v[i]]).sort((a, b) => b[1] - a[1]);
+    const top = ord.slice(0, 2).map(x => x[0]);
+    h += '<p class="gar-g">' + esc(nome) + ': prevale la nota ' + ASSI_F[top[0]] + ', poi la ' + ASSI_F[top[1]] + '</p>' +
+      top.map(a => '<div class="tav-c"><div class="cond-label">' + a + '</div><p><strong>' + esc(CIBO[a][0]) + '</strong></p><div class="radar-nota" style="margin-top:2px">' + esc(CIBO[a][1]) + '</div></div>').join('');
+    const contr = v[0] >= v[1] ? 'Amaro' : 'Dolce';
+    h += '<div class="radar-nota"><strong>Per contrasto</strong>: ' + (contr === 'Amaro' ? 'un gin morbido sta bene anche con salumi e olive, che ne asciugano la dolcezza.' : 'un gin secco sta bene anche con pasticceria secca e frutta, che ne ammorbidiscono l’asprezza.') + '</div>' +
+      '<div class="radar-nota">A tavola il gin va servito lungo (gin tonic, o con ghiaccio e acqua frizzante) oppure in piccole dosi ben freddo: liscio a 40 % e oltre copre i sapori del piatto.</div>';
+    box.innerHTML = h; box.querySelector('.tav-src').onchange = tavola;
+  }
+
+  // aggiornamento quando si apre la pagina o lo strumento
+  const aggiorna = () => { try { gemello(); } catch(e){} try { etichetta(); } catch(e){} try { tavola(); } catch(e){} };
+  ['sp-gemello', 'sp-etichetta', 'sp-tavola'].forEach(id => { const d = document.getElementById(id); if (d) d.addEventListener('toggle', () => { if (d.open) aggiorna(); }); });
+  document.querySelectorAll('nav.tabs button[data-tab="special"]').forEach(b => b.addEventListener('click', aggiorna));
+  const st0 = window.showTab;
+  if (typeof st0 === 'function' && !st0._sp){ window.showTab = function(n){ const r = st0.apply(this, arguments); if (n === 'special') aggiorna(); return r; }; window.showTab._sp = true; }
+  aggiorna();
+})();
+</script>
+<script>
 // ---------- Pagine interne in stile bento ----------
 // Ogni pagina riceve una tessera d'apertura colorata (come quella della prima pagina)
 // e i suoi riquadri prendono tinte diverse, a giro, partendo dal colore della pagina.
@@ -8578,7 +8972,9 @@ if ("serviceWorker" in navigator) {
     garnish:     { c:'--c-agrumato',     k:'Il servizio',
                    s:'Quale guarnizione mettere in base allo stile del gin, e perché: rinforzo di una nota o contrasto a un eccesso.' },
     toniche:     { c:'--c-marino',       k:'Il servizio',
-                   s:'Le acque toniche in commercio, le loro caratteristiche e con quali gin abbinarle, e perché.' }
+                   s:'Le acque toniche in commercio, le loro caratteristiche e con quali gin abbinarle, e perché.' },
+    special:     { c:'--c-viola',        k:'Special',
+                   s:'Ricetta inversa, gemello commerciale, gin alla cieca, gin di un paesaggio, calendario delle raccolte, etichetta e gin a tavola.' }
   };
   // Tinte a giro per i riquadri: dopo il colore della pagina, le caratteristiche aromatiche.
   const GIRO = ['--c-agrumato','--c-marino','--c-floreale','--c-erbaceo','--c-viola','--c-mediterraneo','--c-speziato','--c-secco','--c-siciliano'];
