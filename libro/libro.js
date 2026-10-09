@@ -10,22 +10,22 @@
   var mk = document.querySelectorAll('.gp-pg');
   var pagina = mk.length ? mk[mk.length - 1].getAttribute('data-p') : ((location.pathname || '').split('/').pop() || '').split('?')[0];
   function cont(){ var w = [window]; try { if (window.parent && window.parent !== window) w.push(window.parent); } catch(e){} try { if (window.top && w.indexOf(window.top) < 0) w.push(window.top); } catch(e){} return w; }
-  function leggi(){
-    var best = null;
+  function leggi(K){
+    K = K || CH; var best = null;
     function prova(txt){ try { var v = JSON.parse(txt || 'null'); if (v && v.p instanceof Array && (!best || v.ts > best.ts)) best = v; } catch(e){} }
-    try { prova(localStorage.getItem(CH)); } catch(e){}
-    try { prova(sessionStorage.getItem(CH)); } catch(e){}
+    try { prova(localStorage.getItem(K)); } catch(e){}
+    try { prova(sessionStorage.getItem(K)); } catch(e){}
     var ws = cont();
-    for (var i = 0; i < ws.length; i++){ try { if (ws[i].__gpPila) prova(ws[i].__gpPila); } catch(e){} try { var n = ws[i].name || ''; if (n.indexOf(CH + '=') === 0) prova(n.slice(CH.length + 1)); } catch(e){} }
+    for (var i = 0; i < ws.length; i++){ try { if (ws[i]['__' + K]) prova(ws[i]['__' + K]); } catch(e){} try { var n = ws[i].name || ''; if (n.indexOf('gp:') === 0) prova(JSON.parse(n.slice(3))[K]); } catch(e){} }
     return best ? best.p : [];
   }
-  function scrivi(v){
-    var txt = JSON.stringify({ ts: Date.now() + Math.random(), p: v.slice(-20) });
-    try { localStorage.setItem(CH, txt); } catch(e){}
-    try { sessionStorage.setItem(CH, txt); } catch(e){}
+  function scrivi(v, K){
+    K = K || CH; var txt = JSON.stringify({ ts: Date.now() + Math.random(), p: v.slice(-20) });
+    try { localStorage.setItem(K, txt); } catch(e){}
+    try { sessionStorage.setItem(K, txt); } catch(e){}
     var ws = cont();
-    for (var i = 0; i < ws.length; i++){ try { ws[i].__gpPila = txt; } catch(e){} }
-    try { if (!window.name || window.name.indexOf(CH + '=') === 0) window.name = CH + '=' + txt; } catch(e){}
+    for (var i = 0; i < ws.length; i++){ try { ws[i]['__' + K] = txt; } catch(e){} }
+    try { var n = window.name || '', m = {}; if (n.indexOf('gp:') === 0) m = JSON.parse(n.slice(3)); if (!n || n.indexOf('gp:') === 0){ m[K] = txt; window.name = 'gp:' + JSON.stringify(m); } } catch(e){}
   }
   function fileDi(href){ return (href || '').split('#')[0].split('?')[0].split('/').pop(); }
   var ultimo = null;
@@ -42,7 +42,7 @@
     if (!a || !a.getAttribute || !a.getAttribute('href')) return;
     if (a.getAttribute('data-d') && document.getElementById(a.getAttribute('data-d'))) return;   // parola con finestrella
     if (/def-x|def-apri/.test(String(a.className || ''))) return;
-    if (String(a.className || '').indexOf('torna-link') >= 0){ if (ultimo === a) return; ultimo = a; var p = leggi(); p.pop(); scrivi(p); return; }
+    if (String(a.className || '').indexOf('torna-link') >= 0) return;
     spingi(a);
   }
   // in cattura, prima che il lettore intercetti il clic; anche il tocco, per i lettori che non generano il clic
@@ -83,13 +83,36 @@
     else return;
     aperta = box; daLink = a;
   });
+  // ritorno appena fatto: si scorre fino alla parola da cui si era partiti
+  var rit = leggi('gp-rit');
+  if (rit.length && rit[0].p === pagina && Date.now() - rit[0].ts < 120000){
+    scrivi([], 'gp-rit');
+    var el = rit[0].id ? document.getElementById(rit[0].id) : null;
+    if (el) setTimeout(function(){
+      try { el.scrollIntoView({ block: 'center' }); } catch(e){ try { el.scrollIntoView(); } catch(e2){} }
+      el.style.backgroundColor = '#FFF1B8'; setTimeout(function(){ el.style.backgroundColor = ''; }, 2500);
+    }, 350);
+  }
   // pagina d'arrivo: se l'ultimo salto portava qui, compare «↩ Torna a …»
   var pila = leggi(), t = pila.length ? pila[pila.length - 1] : null;
   if (!t || t.to !== pagina || Date.now() - (t.ts || 0) > 12 * 3600 * 1000) return;
   function torna(){
     var p = document.createElement('p'); p.className = 'torna';
     p.setAttribute('style', 'margin:.5em 0;');
-    var a = document.createElement('a'); a.href = t.h; a.className = 'torna-link';
+    var a = document.createElement('a'); a.href = '#'; a.className = 'torna-link';
+    a.addEventListener('click', function(ev){
+      ev.preventDefault(); if (ev.stopPropagation) ev.stopPropagation();
+      var pila = leggi(); pila.pop(); scrivi(pila);
+      var hh = (t.h || '').split('#');
+      scrivi([{ p: hh[0], id: hh[1] || '', ts: Date.now() }], 'gp-rit');
+      var partito = false;
+      try { window.addEventListener('pagehide', function(){ partito = true; }); window.addEventListener('hashchange', function(){ partito = true; }); } catch(e){}
+      try { history.back(); } catch(e){}
+      setTimeout(function(){
+        if (partito || !document.body.contains(a)) return;
+        a.textContent = 'Usa il tasto «indietro» del telefono per tornare a «' + (t.t || 'pagina precedente') + '»';
+      }, 1200);
+    }, false);
     a.textContent = '↩ Torna a «' + (t.t || 'pagina precedente') + '»';
     a.setAttribute('style', 'display:inline-block;padding:.3em .8em;border:1px solid #2F7259;border-radius:999px;text-decoration:none;color:#2F7259;font-weight:bold;background:#fff;');
     p.appendChild(a); return p;
