@@ -22,6 +22,7 @@ article.bot{border-top:2px solid #2F7259;padding-top:.4em;margin-top:1.6em;}
 .sim{font-size:.85em;text-align:center;line-height:2.1;}
 .chip{font:inherit;font-size:.92em;border:1px solid #c9c2b6;background:#fff;color:#222;border-radius:999px;padding:.15em .7em;margin:0 .15em;cursor:pointer;}
 .chip.on{background:#C0733A;border-color:#C0733A;color:#fff;}
+.sim .chip.on{background:rgba(192,115,58,.22);border:2px dashed #C0733A;color:#8A4A1E;font-weight:bold;}
 dl.campi{margin:.6em 0;}
 dl.campi dt{font-size:.78em;text-transform:uppercase;letter-spacing:.06em;color:#888;margin-top:.5em;font-family:sans-serif;}
 dl.campi dd{margin:0;}

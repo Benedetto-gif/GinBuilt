@@ -28,13 +28,14 @@
     function mostraNome(nome){
       [[svg, 'n-' + svg.id], [ss0, 'n-' + (ss0 ? ss0.id : '')]].forEach(function(c){
         if (!c[0]) return; var el = etichetta(c[0], c[1]); if (!el) return;
-        if (nome){ el.innerHTML = '<span style="display:inline-block;width:.9em;height:.9em;border-radius:2px;background:#C0733A;opacity:.6;vertical-align:-.1em;margin-right:.4em"></span>In arancio: <strong style="color:#A85F2C">' + nome + '</strong>'; el.style.display = ''; }
+        if (nome){ el.innerHTML = '<span style="display:inline-block;width:1.1em;height:.8em;border-radius:2px;background:rgba(192,115,58,0.22);border:2px dashed #C0733A;vertical-align:-.1em;margin-right:.4em"></span>In arancio: <strong style="color:#8A4A1E">' + nome + '</strong>'; el.style.display = ''; }
         else { el.innerHTML = ''; el.style.display = 'none'; }
       });
     }
     function stile(b, acceso){
       b.className = acceso ? 'chip on' : 'chip'; b.setAttribute('aria-pressed', acceso ? 'true' : 'false');
-      b.style.background = acceso ? '#C0733A' : ''; b.style.borderColor = acceso ? '#C0733A' : ''; b.style.color = acceso ? '#ffffff' : ''; b.style.fontWeight = acceso ? 'bold' : '';
+      // stesso colore e stesso tratteggio dell'area sovrapposta sul radar
+      b.style.background = acceso ? 'rgba(192,115,58,0.22)' : ''; b.style.border = acceso ? '2px dashed #C0733A' : ''; b.style.color = acceso ? '#8A4A1E' : ''; b.style.fontWeight = acceso ? 'bold' : '';
     }
     for (var j = 0; j < chips.length; j++) chips[j].addEventListener('click', function(){
       var on = this.className.indexOf(' on') >= 0;
