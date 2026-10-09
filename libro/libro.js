@@ -86,7 +86,8 @@ function gpId(id){ if (!id) return null; var el = null; try { el = document.getE
     if (!gpId(lz.getAttribute('data-d') || '')) continue;
     lz.setAttribute('data-href', lz.getAttribute('href') || ''); lz.removeAttribute('href');
     lz.setAttribute('role', 'button'); lz.setAttribute('tabindex', '0');
-    lz.style.cursor = 'pointer';
+    // senza href il lettore non lo colora piu' da collegamento: colore e puntini scritti sulla parola stessa
+    lz.setAttribute('style', 'cursor:pointer;color:#B5651D;text-decoration:none;border-bottom:1.5px dotted #B5651D;');
   }
   for (var i = 0; i < links.length; i++) links[i].addEventListener('click', function(ev){
     var def = gpId(this.getAttribute('data-d') || ''); if (!def) return;
