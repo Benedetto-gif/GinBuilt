@@ -154,3 +154,4 @@ table.matrice-es tbody th{text-align:left;font-weight:normal;white-space:nowrap;
 .impronta svg.radar{width:100%;margin:0 auto;}
 .impronta p{margin:0;font-size:.9em;}
 a.sigla,a.termine{color:inherit;text-decoration:underline dotted;text-underline-offset:2px;}
+.sovr-nome{text-align:center;font-size:.92em;margin:.1em 0 .5em;}

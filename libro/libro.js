@@ -15,12 +15,35 @@
     var svg = document.getElementById(p.getAttribute('data-r')); if (!svg) return;
     var poli = svg.querySelector('.ro'), size = parseFloat(svg.getAttribute('data-s')) || 220;
     var chips = p.querySelectorAll('.chip');
+    // Il tasto acceso resta evidenziato (stile scritto sul tasto, perche' alcuni lettori ignorano il CSS dei pulsanti)
+    // e sotto i radar compare il nome della botanica sovrapposta, cosi' si ritrova anche dopo una distrazione.
+    var testi = [];
+    for (var j0 = 0; j0 < chips.length; j0++) testi.push(chips[j0].textContent);
+    var ss0 = document.getElementById(p.getAttribute('data-r').replace(/^r-/, 's-'));
+    function etichetta(dopo, id){
+      var el = document.getElementById(id);
+      if (!el && dopo){ el = document.createElement('p'); el.id = id; el.className = 'sovr-nome'; dopo.parentNode.insertBefore(el, dopo.nextSibling); }
+      return el;
+    }
+    function mostraNome(nome){
+      [[svg, 'n-' + svg.id], [ss0, 'n-' + (ss0 ? ss0.id : '')]].forEach(function(c){
+        if (!c[0]) return; var el = etichetta(c[0], c[1]); if (!el) return;
+        if (nome){ el.innerHTML = '<span style="display:inline-block;width:.9em;height:.9em;border-radius:2px;background:#C0733A;opacity:.6;vertical-align:-.1em;margin-right:.4em"></span>In arancio: <strong style="color:#A85F2C">' + nome + '</strong>'; el.style.display = ''; }
+        else { el.innerHTML = ''; el.style.display = 'none'; }
+      });
+    }
+    function stile(b, acceso){
+      b.className = acceso ? 'chip on' : 'chip'; b.setAttribute('aria-pressed', acceso ? 'true' : 'false');
+      b.style.background = acceso ? '#C0733A' : ''; b.style.borderColor = acceso ? '#C0733A' : ''; b.style.color = acceso ? '#ffffff' : ''; b.style.fontWeight = acceso ? 'bold' : '';
+    }
     for (var j = 0; j < chips.length; j++) chips[j].addEventListener('click', function(){
       var on = this.className.indexOf(' on') >= 0;
-      for (var x = 0; x < chips.length; x++) chips[x].className = 'chip';
-      var ss = document.getElementById(p.getAttribute('data-r').replace(/^r-/, 's-')), so = ss ? ss.querySelector('.ro') : null;
-      if (on){ poli.setAttribute('points', ''); if (so) so.setAttribute('points', ''); return; }
-      this.className = 'chip on';
+      for (var x = 0; x < chips.length; x++){ stile(chips[x], false); chips[x].textContent = testi[x]; }
+      var ss = ss0, so = ss ? ss.querySelector('.ro') : null;
+      if (on){ poli.setAttribute('points', ''); if (so) so.setAttribute('points', ''); mostraNome(''); return; }
+      var k = Array.prototype.indexOf.call(chips, this);
+      stile(this, true); this.textContent = '\u2713 ' + testi[k];
+      mostraNome(testi[k].replace(/\s+\d+%$/, ''));
       poli.setAttribute('points', punti(this.getAttribute('data-v').split(',').map(parseFloat), size));
       var dv = this.getAttribute('data-s');
       if (so && dv){
