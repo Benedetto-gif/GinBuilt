@@ -116,9 +116,9 @@ function gpId(id){ if (!id) return null; var el = null; try { el = document.getE
   var pila = leggi(), t = pila.length ? pila[pila.length - 1] : null;
   try {
     var dg = document.createElement('p'); dg.className = 'gp-diagnosi';
-    dg.setAttribute('style', 'font:11px/1.3 monospace;color:#999;margin:2em 0 .5em;word-break:break-all;');
+    dg.setAttribute('style', 'font:11px/1.3 monospace;color:#999;margin:.3em 0 .6em;word-break:break-all;');
     dg.textContent = 'prova ritorno · pagina: ' + PAGINA + ' · contenitori: ' + mk.length + ' · salti: ' + pila.length + (t ? ' · ultimo: ' + t.h + ' → ' + t.to + '#' + t.dest + ' «' + (t.w || '') + '»' : '') + ' · indirizzo: ' + location.href.slice(0, 80) + ' · id prova: ' + (gpId(t && t.dest) ? 'trovato' : 'no');
-    (radiceDi(PAGINA) || document.body).appendChild(dg);
+    var rd = radiceDi(PAGINA) || document.body; rd.insertBefore(dg, rd.firstChild);
   } catch(e){}
   if (!t || !(t.to === PAGINA || radiceDi(t.to)) || Date.now() - (t.ts || 0) > 12 * 3600 * 1000) return;
   // La parola d'arrivo (voce del glossario, sigla, titolo della botanica o della sezione) si accende
