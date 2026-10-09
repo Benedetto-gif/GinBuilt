@@ -171,8 +171,15 @@ files = []
 def add(href, title, body, lvl, scripted=False):
     if '@@TAB@@' in body: body = body.replace('@@TAB@@', TAB_ES).replace('@@IMP@@', IMP_ES)
     body = collega_sigle(body, href)
-    if 'data-d="d-' in body: body = aggiungi_definizioni(body); scripted = True
-    if href in ('cap5-sigle.xhtml', 'app-glossario.xhtml'): scripted = True
+    if 'data-d="d-' in body: body = aggiungi_definizioni(body)
+    # ogni collegamento verso un'altra pagina ha un id, cosi' «↩ Torna» riporta esattamente li'
+    n = [0]
+    def _id(m):
+        tag = m.group(0)
+        if ' id="' in tag or re.search(r'href="(#|[a-z]+:)', tag): return tag
+        n[0] += 1; return tag[:-1] + ' id="ln-%d">' % n[0]
+    body = re.sub(r'<a\b[^>]*\bhref="[^"]*"[^>]*>', _id, body)
+    scripted = True   # libro.js su tutte le pagine: serve al ritorno
     files.append((slug(href.replace('.xhtml', '')), href, title, page(title, body, scripted), scripted, lvl))
 
 # ---------- botaniche: indice e collegamenti ----------
@@ -515,7 +522,7 @@ man = ['<item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" prope
        '<item id="cover" href="copertina.png" media-type="image/png" properties="cover-image"/>',
        '<item id="coverp" href="copertina.xhtml" media-type="application/xhtml+xml"/>']
 spine = ['<itemref idref="coverp"/>', '<itemref idref="indice"/>']
-man.append('<item id="indice" href="indice.xhtml" media-type="application/xhtml+xml"/>')
+man.append('<item id="indice" href="indice.xhtml" media-type="application/xhtml+xml" properties="scripted"/>')
 ids = set()
 for fid, href, title, xh, scr, lvl in files:
     assert fid not in ids, fid; ids.add(fid)
@@ -532,7 +539,7 @@ with zipfile.ZipFile(OUT, 'w') as z:
     z.writestr(zipfile.ZipInfo('mimetype'), 'application/epub+zip', compress_type=zipfile.ZIP_STORED)
     def w(name, data): z.writestr(name, data, compress_type=zipfile.ZIP_DEFLATED)
     w('META-INF/container.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container"><rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/></rootfiles></container>')
-    w('OEBPS/content.opf', opf); w('OEBPS/nav.xhtml', nav); w('OEBPS/indice.xhtml', page('Indice', tendine())); w('OEBPS/libro.css', CSS); w('OEBPS/libro.js', JS)
+    w('OEBPS/content.opf', opf); w('OEBPS/nav.xhtml', nav); w('OEBPS/indice.xhtml', page('Indice', tendine(), True)); w('OEBPS/libro.css', CSS); w('OEBPS/libro.js', JS)
     import cairosvg
     z.writestr('OEBPS/copertina.png', cairosvg.svg2png(bytestring=cover_svg.encode(), output_width=1200), compress_type=zipfile.ZIP_STORED)
     w('OEBPS/copertina.xhtml', '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="it" lang="it">'
