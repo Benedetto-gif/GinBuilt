@@ -81,6 +81,13 @@ function gpId(id){ if (!id) return null; var el = null; try { el = document.getE
     return el;
   }
   var links = document.querySelectorAll('a.termine, a.sigla');
+  for (var z = 0; z < links.length; z++){
+    var lz = links[z];
+    if (!gpId(lz.getAttribute('data-d') || '')) continue;
+    lz.setAttribute('data-href', lz.getAttribute('href') || ''); lz.removeAttribute('href');
+    lz.setAttribute('role', 'button'); lz.setAttribute('tabindex', '0');
+    lz.style.cursor = 'pointer';
+  }
   for (var i = 0; i < links.length; i++) links[i].addEventListener('click', function(ev){
     var def = gpId(this.getAttribute('data-d') || ''); if (!def) return;
     ev.preventDefault();
@@ -90,11 +97,7 @@ function gpId(id){ if (!id) return null; var el = null; try { el = document.getE
     var box = document.createElement('div');
     box.className = 'def-pop';
     box.setAttribute('style', 'margin:.4em 0 .8em;padding:.6em .8em;border-left:4px solid #2F7259;background:#EEF4EF;border-radius:6px;font-size:.95em;');
-    box.innerHTML = def.innerHTML + '<p style="margin:.4em 0 0;text-align:right"><a href="' + a.getAttribute('href') + '" class="def-apri" style="margin-right:1em">' +
-      (sigla ? 'Leggi tutto sulle sigle' : 'Apri nel glossario') + ' →</a><a href="#" class="def-x">Chiudi ✕</a></p>';
-    // il ritorno deve puntare alla parola, non al riquadro
-    box.querySelector('.def-apri').addEventListener('click', function(){ spingi(a); });
-    box.querySelector('.def-apri').addEventListener('touchend', function(){ if (!mosso) spingi(a); });
+    box.innerHTML = def.innerHTML + '<p style="margin:.4em 0 0;text-align:right"><a href="#" class="def-x">Chiudi ✕</a></p>';
     box.querySelector('.def-x').addEventListener('click', function(e){ e.preventDefault(); chiudi(); });
     var b = blocco(a);
     if (b && /^(TD|TH|LI|DD)$/.test(b.nodeName.toUpperCase())) b.appendChild(box);
@@ -114,17 +117,11 @@ function gpId(id){ if (!id) return null; var el = null; try { el = document.getE
   }
   // pagina d'arrivo: se l'ultimo salto portava qui, compare «↩ Torna a …»
   var pila = leggi(), t = pila.length ? pila[pila.length - 1] : null;
-  try {
-    var dg = document.createElement('p'); dg.className = 'gp-diagnosi';
-    dg.setAttribute('style', 'font:11px/1.3 monospace;color:#999;margin:.3em 0 .6em;word-break:break-all;');
-    dg.textContent = 'prova ritorno · pagina: ' + PAGINA + ' · contenitori: ' + mk.length + ' · salti: ' + pila.length + (t ? ' · ultimo: ' + t.h + ' → ' + t.to + '#' + t.dest + ' «' + (t.w || '') + '»' : '') + ' · indirizzo: ' + location.href.slice(0, 80) + ' · id prova: ' + (gpId(t && t.dest) ? 'trovato' : 'no');
-    var rd = radiceDi(PAGINA) || document.body; rd.insertBefore(dg, rd.firstChild);
-  } catch(e){}
-  if (!t || !(t.to === PAGINA || radiceDi(t.to)) || Date.now() - (t.ts || 0) > 12 * 3600 * 1000) return;
+  if (!t || !(t.to === PAGINA || radiceDi(t.to)) || Date.now() - (t.ts || 0) > 30 * 60 * 1000) return;
+  pila.pop(); scrivi(pila);
   // La parola d'arrivo (voce del glossario, sigla, titolo della botanica o della sezione) si accende
   // e diventa il tasto di ritorno, con una piccola freccia ↩: niente pulsanti grandi sopra i titoli.
   function indietro(el){
-    var pila = leggi(); pila.pop(); scrivi(pila);
     var hh = (t.h || '').split('#');
     scrivi([{ p: hh[0], id: hh[1] || '', ts: Date.now() }], 'gp-rit');
     var partito = false;
