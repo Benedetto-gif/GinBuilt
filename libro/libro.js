@@ -1,3 +1,5 @@
+// trova per id anche quando il lettore aggiunge un prefisso agli id
+function gpId(id){ if (!id) return null; var el = null; try { el = document.getElementById(id); } catch(e){} if (!el) try { el = document.querySelector('[id$="' + id + '"]'); } catch(e){} return el; }
 // Parole del glossario e sigle: la voce si apre sulla pagina stessa, sotto il paragrafo,
 // cosi' non si perde il punto di lettura. «Apri nel glossario» porta alla voce completa.
 // Ritorno: ogni collegamento verso un'altra pagina del libro ricorda da dove si e' partiti
@@ -7,8 +9,22 @@
   // puo' essere bloccata e i clic sui collegamenti intercettati. Per questo: nome della pagina scritto nel testo
   // (contenitore .gp-pagina), memoria tentata in piu' posti, clic ascoltati in fase di cattura e su ogni collegamento.
   var CH = 'gp-pila';
-  var mk = document.querySelectorAll('.gp-pagina');
-  var pagina = mk.length ? mk[mk.length - 1].getAttribute('data-p') : ((location.pathname || '').split('/').pop() || '').split('?')[0];
+  var mk = document.querySelectorAll('[data-p]');
+  function radiceDi(nome){ for (var r = mk.length - 1; r >= 0; r--) if (mk[r].getAttribute('data-p') === nome) return mk[r]; return null; }
+  // trova un elemento del libro anche se il lettore ha cambiato gli id (prefissi), e in ultimo per testo
+  function trova(id, testo, dove){
+    var el = null; dove = dove || document;
+    if (id){
+      try { el = document.getElementById(id); } catch(e){}
+      if (!el) try { el = dove.querySelector('[id$="' + id + '"]'); } catch(e){}
+    }
+    if (!el && testo){
+      var w = String(testo).replace(/^\s+|\s+$/g, '').toLowerCase(), c = dove.querySelectorAll('dt, li > strong, h1, h2, h3, h4');
+      for (var k = 0; k < c.length && !el; k++) if (c[k].textContent.replace(/^\s+/, '').toLowerCase().indexOf(w) === 0) el = c[k];
+    }
+    return el;
+  }
+  var PAGINA = mk.length ? mk[mk.length - 1].getAttribute('data-p') : ((location.pathname || '').split('/').pop() || '').split('?')[0];
   function cont(){ var w = [window]; try { if (window.parent && window.parent !== window) w.push(window.parent); } catch(e){} try { if (window.top && w.indexOf(window.top) < 0) w.push(window.top); } catch(e){} return w; }
   function leggi(K){
     K = K || CH; var best = null;
@@ -31,16 +47,19 @@
   var ultimo = null;
   function spingi(a){
     if (ultimo === a) return; ultimo = a; setTimeout(function(){ ultimo = null; }, 800);
+    var anc = a, da = null; while (anc && anc.getAttribute){ if (anc.getAttribute('data-p')){ da = anc.getAttribute('data-p'); break; } anc = anc.parentNode; }
+    var pagina = da || PAGINA;
     var href = a.getAttribute('href') || '', f = fileDi(href);
     if (!f || f === pagina || /^[a-z]+:/i.test(href)) return;
     var pila = leggi();
-    pila.push({ h: pagina + (a.id ? '#' + a.id : ''), t: document.title || (document.querySelector('h1') || {}).textContent, to: f, dest: href.split('#')[1] || '', ts: Date.now() });
+    var rq = radiceDi(pagina), tt = rq && rq.querySelector('h1, h2'); tt = tt ? tt.textContent.replace(/\s+/g, ' ').replace(/^\s|\s$/g, '') : '';
+    pila.push({ h: pagina + (a.id ? '#' + a.id : ''), w: a.textContent, t: tt || document.title, to: f, dest: href.split('#')[1] || '', ts: Date.now() });
     scrivi(pila);
   }
   function suClic(ev){
     var a = ev.target; while (a && a.nodeName && a.nodeName.toUpperCase() !== 'A') a = a.parentNode;
     if (!a || !a.getAttribute || !a.getAttribute('href')) return;
-    if (a.getAttribute('data-d') && document.getElementById(a.getAttribute('data-d'))) return;   // parola con finestrella
+    if (a.getAttribute('data-d') && gpId(a.getAttribute('data-d'))) return;   // parola con finestrella
     if (/def-x|def-apri/.test(String(a.className || ''))) return;
     if (String(a.className || '').indexOf('torna-link') >= 0) return;
     spingi(a);
@@ -63,7 +82,7 @@
   }
   var links = document.querySelectorAll('a.termine, a.sigla');
   for (var i = 0; i < links.length; i++) links[i].addEventListener('click', function(ev){
-    var def = document.getElementById(this.getAttribute('data-d') || ''); if (!def) return;
+    var def = gpId(this.getAttribute('data-d') || ''); if (!def) return;
     ev.preventDefault();
     if (daLink === this){ chiudi(); return; }
     chiudi();
@@ -85,17 +104,23 @@
   });
   // ritorno appena fatto: si scorre fino alla parola da cui si era partiti
   var rit = leggi('gp-rit');
-  if (rit.length && rit[0].p === pagina && Date.now() - rit[0].ts < 120000){
+  if (rit.length && (rit[0].p === PAGINA || radiceDi(rit[0].p)) && Date.now() - rit[0].ts < 120000){
     scrivi([], 'gp-rit');
-    var el = rit[0].id ? document.getElementById(rit[0].id) : null;
-    if (el) setTimeout(function(){
-      try { el.scrollIntoView({ block: 'center' }); } catch(e){ try { el.scrollIntoView(); } catch(e2){} }
-      el.style.backgroundColor = '#FFF1B8'; setTimeout(function(){ el.style.backgroundColor = ''; }, 2500);
-    }, 350);
+    var el = trova(rit[0].id, null, radiceDi(rit[0].p) || document);
+    if (el){
+      el.style.backgroundColor = '#FFF1B8'; setTimeout(function(){ el.style.backgroundColor = ''; }, 4000);
+      [350, 900, 1800].forEach(function(ms){ setTimeout(function(){ try { el.scrollIntoView({ block: 'center' }); } catch(e){ try { el.scrollIntoView(); } catch(e2){} } }, ms); });
+    }
   }
   // pagina d'arrivo: se l'ultimo salto portava qui, compare «↩ Torna a …»
   var pila = leggi(), t = pila.length ? pila[pila.length - 1] : null;
-  if (!t || t.to !== pagina || Date.now() - (t.ts || 0) > 12 * 3600 * 1000) return;
+  try {
+    var dg = document.createElement('p'); dg.className = 'gp-diagnosi';
+    dg.setAttribute('style', 'font:11px/1.3 monospace;color:#999;margin:2em 0 .5em;word-break:break-all;');
+    dg.textContent = 'prova ritorno · pagina: ' + PAGINA + ' · contenitori: ' + mk.length + ' · salti: ' + pila.length + (t ? ' · ultimo: ' + t.h + ' → ' + t.to + '#' + t.dest + ' «' + (t.w || '') + '»' : '') + ' · indirizzo: ' + location.href.slice(0, 80) + ' · id prova: ' + (gpId(t && t.dest) ? 'trovato' : 'no');
+    (radiceDi(PAGINA) || document.body).appendChild(dg);
+  } catch(e){}
+  if (!t || !(t.to === PAGINA || radiceDi(t.to)) || Date.now() - (t.ts || 0) > 12 * 3600 * 1000) return;
   // La parola d'arrivo (voce del glossario, sigla, titolo della botanica o della sezione) si accende
   // e diventa il tasto di ritorno, con una piccola freccia ↩: niente pulsanti grandi sopra i titoli.
   function indietro(el){
@@ -113,9 +138,9 @@
     }, 1200);
   }
   // Solo dentro la pagina del libro: Kotobee mette la pagina dentro la sua schermata, che ha titoli e menu suoi.
-  var radice = mk.length ? mk[mk.length - 1] : document.body;
+  var radice = radiceDi(t.to) || (mk.length ? mk[mk.length - 1] : document.body);
   var id = (location.hash || '').replace(/^#/, '') || t.dest;
-  var voce = id ? document.getElementById(id) : null, bersaglio = null;
+  var voce = trova(id, t.w, radice), bersaglio = null;
   if (voce && radice.contains && !radice.contains(voce)) voce = null;
   if (voce){
     var nn = voce.nodeName.toUpperCase();
@@ -136,8 +161,9 @@
     bersaglio.appendChild(b);
     var bg = bersaglio.style.backgroundColor;
     bersaglio.style.backgroundColor = '#FFF1B8';
-    setTimeout(function(){ bersaglio.style.backgroundColor = bg; }, 2000);
-    setTimeout(function(){ try { bersaglio.scrollIntoView({ block: 'center' }); } catch(e){} }, 300);
+    setTimeout(function(){ bersaglio.style.backgroundColor = bg; }, 4000);
+    // il lettore a volte riporta la pagina in cima dopo averla aperta: si mira piu' volte
+    [300, 900, 1800].forEach(function(ms){ setTimeout(function(){ try { bersaglio.scrollIntoView({ block: 'center' }); } catch(e){ try { bersaglio.scrollIntoView(); } catch(e2){} } }, ms); });
   } else {
     var riga = document.createElement('p'); riga.setAttribute('style', 'margin:.2em 0;');
     b.style.marginLeft = '0'; riga.appendChild(b);
@@ -158,14 +184,14 @@
   // confronto sotto i radar delle botaniche
   var gruppi = document.querySelectorAll('.sim');
   for (var g = 0; g < gruppi.length; g++) (function(p){
-    var svg = document.getElementById(p.getAttribute('data-r')); if (!svg) return;
+    var svg = gpId(p.getAttribute('data-r')); if (!svg) return;
     var poli = svg.querySelector('.ro'), size = parseFloat(svg.getAttribute('data-s')) || 220;
     var chips = p.querySelectorAll('.chip');
     // Il tasto acceso resta evidenziato (stile scritto sul tasto, perche' alcuni lettori ignorano il CSS dei pulsanti)
     // e sotto i radar compare il nome della botanica sovrapposta, cosi' si ritrova anche dopo una distrazione.
     var testi = [];
     for (var j0 = 0; j0 < chips.length; j0++) testi.push(chips[j0].textContent);
-    var ss0 = document.getElementById(p.getAttribute('data-r').replace(/^r-/, 's-'));
+    var ss0 = gpId(p.getAttribute('data-r').replace(/^r-/, 's-'));
     function etichetta(dopo, id){
       var el = document.getElementById(id);
       if (!el && dopo){ el = document.createElement('p'); el.id = id; el.className = 'sovr-nome'; dopo.parentNode.insertBefore(el, dopo.nextSibling); }
@@ -203,7 +229,7 @@
   // matrice dei sentori
   var celle = document.querySelectorAll('.cella'), schede = document.querySelectorAll('article.sent');
   if (!schede.length) return;
-  var filtro = { a: null, k: null }, q = document.getElementById('mq'), conta = document.getElementById('mconta');
+  var filtro = { a: null, k: null }, q = gpId('mq'), conta = gpId('mconta');
   function applica(){
     var t = q ? q.value.toLowerCase().replace(/^\s+|\s+$/g, '') : '', n = 0;
     for (var i = 0; i < schede.length; i++){
@@ -249,7 +275,7 @@
     // Con JavaScript, in piu', resta visibile solo il mese scelto e la pagina ci arriva.
     for (var c = 0; c < mb.length; c++) mb[c].addEventListener('click', function(ev){
       mostra(this.getAttribute('data-m'));
-      var t = document.getElementById('mese-' + this.getAttribute('data-m'));
+      var t = gpId('mese-' + this.getAttribute('data-m'));
       if (t && t.scrollIntoView){ if (ev && ev.preventDefault) ev.preventDefault(); try { t.scrollIntoView(true); } catch(e){ location.hash = 'mese-' + this.getAttribute('data-m'); } }
     });
     mostra(new Date().getMonth());
