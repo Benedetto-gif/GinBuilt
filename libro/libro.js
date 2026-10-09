@@ -5,9 +5,9 @@
 (function(){
   // Kotobee e altri lettori: la pagina puo' essere caricata dentro un contenitore, la memoria del browser
   // puo' essere bloccata e i clic sui collegamenti intercettati. Per questo: nome della pagina scritto nel testo
-  // (marcatore .gp-pg), memoria tentata in piu' posti, clic ascoltati in fase di cattura e su ogni collegamento.
+  // (contenitore .gp-pagina), memoria tentata in piu' posti, clic ascoltati in fase di cattura e su ogni collegamento.
   var CH = 'gp-pila';
-  var mk = document.querySelectorAll('.gp-pg');
+  var mk = document.querySelectorAll('.gp-pagina');
   var pagina = mk.length ? mk[mk.length - 1].getAttribute('data-p') : ((location.pathname || '').split('/').pop() || '').split('?')[0];
   function cont(){ var w = [window]; try { if (window.parent && window.parent !== window) w.push(window.parent); } catch(e){} try { if (window.top && w.indexOf(window.top) < 0) w.push(window.top); } catch(e){} return w; }
   function leggi(K){
@@ -108,12 +108,15 @@
     setTimeout(function(){
       if (partito || !document.body.contains(el)) return;
       var n = document.createElement('span');
-      n.setAttribute('style', 'display:block;font-size:.75em;font-weight:normal;color:#8A4A1E;');
-      n.textContent = 'usa il tasto «indietro» del telefono'; el.appendChild(n);
+      n.setAttribute('style', 'font-size:.7em;font-weight:normal;color:#8A4A1E;margin-left:.3em;');
+      n.textContent = 'usa «indietro» del telefono'; if (el.parentNode) el.parentNode.insertBefore(n, el.nextSibling);
     }, 1200);
   }
+  // Solo dentro la pagina del libro: Kotobee mette la pagina dentro la sua schermata, che ha titoli e menu suoi.
+  var radice = mk.length ? mk[mk.length - 1] : document.body;
   var id = (location.hash || '').replace(/^#/, '') || t.dest;
   var voce = id ? document.getElementById(id) : null, bersaglio = null;
+  if (voce && radice.contains && !radice.contains(voce)) voce = null;
   if (voce){
     var nn = voce.nodeName.toUpperCase();
     if (/^(DT|H1|H2|H3|H4)$/.test(nn)) bersaglio = voce;
@@ -121,19 +124,25 @@
     else if (/^(SECTION|ARTICLE|DIV)$/.test(nn)) bersaglio = voce.querySelector('h1,h2,h3,h4');
     else bersaglio = voce;
   }
-  if (!bersaglio) bersaglio = document.querySelector('h1, h2');
-  if (!bersaglio) return;
-  bersaglio.className = (bersaglio.className ? bersaglio.className + ' ' : '') + 'torna-qui';
-  bersaglio.setAttribute('role', 'link');
-  bersaglio.setAttribute('title', 'Torna a «' + (t.t || 'pagina precedente') + '»');
-  bersaglio.setAttribute('style', (bersaglio.getAttribute('style') || '') + ';background:#FFF1B8;border-radius:4px;box-shadow:0 0 0 3px #FFF1B8;cursor:pointer;');
-  var fr = document.createElement('span');
-  fr.className = 'torna-freccia'; fr.textContent = '↩';
-  fr.setAttribute('aria-hidden', 'true');
-  fr.setAttribute('style', 'display:inline-block;margin-left:.3em;font-size:.8em;line-height:1;padding:.1em .3em;border:1px solid #2F7259;border-radius:999px;color:#2F7259;font-weight:bold;vertical-align:.1em;');
-  bersaglio.appendChild(fr);
-  bersaglio.addEventListener('click', function(ev){ ev.preventDefault(); if (ev.stopPropagation) ev.stopPropagation(); indietro(bersaglio); }, false);
-  setTimeout(function(){ try { bersaglio.scrollIntoView({ block: 'center' }); } catch(e){} }, 300);
+  if (!bersaglio && radice.querySelector) bersaglio = radice.querySelector('h1, h2');
+  // piccolo tasto rotondo con la sola freccia di ritorno
+  var b = document.createElement('a');
+  b.href = '#'; b.className = 'torna-freccia'; b.textContent = '↩';
+  b.setAttribute('title', 'Torna a «' + (t.t || 'pagina precedente') + '»');
+  b.setAttribute('aria-label', 'Torna a «' + (t.t || 'pagina precedente') + '»');
+  b.setAttribute('style', 'display:inline-block;width:1.6em;height:1.6em;line-height:1.6em;text-align:center;margin-left:.35em;font-size:.85em;font-weight:bold;font-family:sans-serif;border:1.5px solid #2F7259;border-radius:50%;color:#2F7259;background:#fff;text-decoration:none;vertical-align:.15em;');
+  b.addEventListener('click', function(ev){ ev.preventDefault(); if (ev.stopPropagation) ev.stopPropagation(); indietro(b); }, false);
+  if (bersaglio){
+    bersaglio.appendChild(b);
+    var bg = bersaglio.style.backgroundColor;
+    bersaglio.style.backgroundColor = '#FFF1B8';
+    setTimeout(function(){ bersaglio.style.backgroundColor = bg; }, 2000);
+    setTimeout(function(){ try { bersaglio.scrollIntoView({ block: 'center' }); } catch(e){} }, 300);
+  } else {
+    var riga = document.createElement('p'); riga.setAttribute('style', 'margin:.2em 0;');
+    b.style.marginLeft = '0'; riga.appendChild(b);
+    radice.insertBefore(riga, radice.firstChild);
+  }
 })();
 (function(){
   var ORD = [0, 9, 5, 4, 2, 1, 8, 6, 7, 3], POS = [];
