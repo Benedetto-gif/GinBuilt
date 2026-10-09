@@ -146,3 +146,55 @@
     ctl.querySelector('.prip').addEventListener('click', function(){ delete mem[n]; salva(); inp.value = lib; mostra(lib, false); });
   })(box[b]);
 })();
+// Parole del glossario e sigle: la voce si apre sulla pagina stessa, sotto il paragrafo,
+// cosi' non si perde il punto di lettura. «Apri nel glossario» porta alla voce completa
+// e la pagina del glossario mostra «↩ Torna a …» per rientrare esattamente dove si era.
+(function(){
+  var CH = 'gp-torna', pagina = ((location.pathname || '').split('/').pop() || '').split('?')[0];
+  function salva(o){ try { localStorage.setItem(CH, JSON.stringify(o)); } catch(e){} }
+  function leggi(){ try { return JSON.parse(localStorage.getItem(CH) || 'null'); } catch(e){ return null; } }
+  var aperta = null, daLink = null;
+  function chiudi(){ if (aperta && aperta.parentNode) aperta.parentNode.removeChild(aperta); aperta = null; daLink = null; }
+  function blocco(el){
+    while (el && el.parentNode && !/^(P|LI|DD|TD|TH|BLOCKQUOTE|DIV|SECTION|ARTICLE|FIGCAPTION)$/.test(el.nodeName.toUpperCase())) el = el.parentNode;
+    return el;
+  }
+  var links = document.querySelectorAll('a.termine, a.sigla');
+  for (var i = 0; i < links.length; i++) links[i].addEventListener('click', function(ev){
+    var def = document.getElementById(this.getAttribute('data-d') || ''); if (!def) return;
+    ev.preventDefault();
+    if (daLink === this){ chiudi(); return; }
+    chiudi();
+    var a = this, sigla = a.className.indexOf('sigla') >= 0;
+    var box = document.createElement('div');
+    box.className = 'def-pop';
+    box.setAttribute('style', 'margin:.4em 0 .8em;padding:.6em .8em;border-left:4px solid #2F7259;background:#EEF4EF;border-radius:6px;font-size:.95em;');
+    box.innerHTML = def.innerHTML + '<p style="margin:.4em 0 0;text-align:right"><a href="' + a.getAttribute('href') + '" class="def-apri" style="margin-right:1em">' +
+      (sigla ? 'Leggi tutto sulle sigle' : 'Apri nel glossario') + ' →</a><a href="#" class="def-x">Chiudi ✕</a></p>';
+    box.querySelector('.def-apri').addEventListener('click', function(){ salva({ h: pagina + '#' + a.id, t: document.title, ts: Date.now(), dest: (a.getAttribute('href').split('#')[1] || '') }); });
+    box.querySelector('.def-x').addEventListener('click', function(e){ e.preventDefault(); chiudi(); });
+    var b = blocco(a);
+    if (b && /^(TD|TH|LI|DD)$/.test(b.nodeName.toUpperCase())) b.appendChild(box);
+    else if (b && b.parentNode) b.parentNode.insertBefore(box, b.nextSibling);
+    else return;
+    aperta = box; daLink = a;
+  });
+  // pagine di arrivo: glossario e sigle
+  if (pagina !== 'app-glossario.xhtml' && pagina !== 'cap5-sigle.xhtml') return;
+  var t = leggi();
+  if (!t || !t.h || t.h.split('#')[0] === pagina || Date.now() - (t.ts || 0) > 6 * 3600 * 1000) return;
+  function torna(){
+    var p = document.createElement('p'); p.className = 'torna';
+    p.setAttribute('style', 'margin:.5em 0;');
+    var a = document.createElement('a'); a.href = t.h; a.textContent = '↩ Torna a «' + (t.t || 'pagina precedente') + '»';
+    a.setAttribute('style', 'display:inline-block;padding:.3em .8em;border:1px solid #2F7259;border-radius:999px;text-decoration:none;color:#2F7259;font-weight:bold;');
+    p.appendChild(a); return p;
+  }
+  var h1 = document.querySelector('h1'); if (h1 && h1.parentNode) h1.parentNode.insertBefore(torna(), h1.nextSibling);
+  var id = (location.hash || '').replace(/^#/, '') || (t.dest || '');
+  var voce = id ? document.getElementById(id) : null;
+  if (voce){
+    var dove = voce.nodeName.toUpperCase() === 'DT' ? voce.nextElementSibling : voce;
+    if (dove) dove.appendChild(torna());
+  }
+})();

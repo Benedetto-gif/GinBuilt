@@ -139,7 +139,8 @@ def collega_sigle(body, href):
             res.append(pezzo[pos:m.start()])
             if dest and dest not in fatte:
                 fatte.add(dest); cl = 'sigla' if dest.startswith('cap5-sigle') else 'termine'
-                res.append('<a class="%s" href="%s">%s</a>' % (cl, dest, w))
+                ida = dest.split('#')[1]
+                res.append('<a class="%s" id="rt-%s" href="%s" data-d="d-%s">%s</a>' % (cl, ida, dest, ida, w))
             else: res.append(w)
             pos = m.end()
         res.append(pezzo[pos:]); out.append(''.join(res))
@@ -150,10 +151,28 @@ def ancore_sigle(h):
     for nome, ida in SIGLE_ID.items():
         h = h.replace('<li><strong>%s</strong>' % nome, '<li id="sig-%s"><strong>%s</strong>' % (ida, nome), 1)
     return h
+# Definizioni a comparsa: toccando una parola sottolineata la sua voce compare sulla pagina stessa
+# (finestrella con «Apri nel glossario»), cosi' non si perde il punto in cui si stava leggendo.
+_DEFS = {}
+def definizioni():
+    if not _DEFS:
+        for m in re.finditer(r'<dt id="(g-[^"]+)">(.*?)</dt>\s*<dd>(.*?)</dd>', ancore_glossario(sez('nozioni', 'Glossario A–Z')), re.S):
+            _DEFS[m.group(1)] = '<p><strong>%s</strong>: %s</p>' % (m.group(2), m.group(3))
+        for m in re.finditer(r'<li id="(sig-[^"]+)">(.*?)</li>', ancore_sigle(pulisci(D['SIGLE'])), re.S):
+            _DEFS[m.group(1)] = '<p>%s</p>' % m.group(2)
+    return _DEFS
+def aggiungi_definizioni(body):
+    usati = re.findall(r'data-d="d-([^"]+)"', body)
+    if not usati: return body
+    D_ = definizioni()
+    return body + '<div class="defs" hidden="hidden">%s</div>' % ''.join(
+        '<div class="def" id="d-%s">%s</div>' % (k, D_[k]) for k in dict.fromkeys(usati) if k in D_)
 files = []
 def add(href, title, body, lvl, scripted=False):
     if '@@TAB@@' in body: body = body.replace('@@TAB@@', TAB_ES).replace('@@IMP@@', IMP_ES)
     body = collega_sigle(body, href)
+    if 'data-d="d-' in body: body = aggiungi_definizioni(body); scripted = True
+    if href in ('cap5-sigle.xhtml', 'app-glossario.xhtml'): scripted = True
     files.append((slug(href.replace('.xhtml', '')), href, title, page(title, body, scripted), scripted, lvl))
 
 # ---------- botaniche: indice e collegamenti ----------
@@ -459,7 +478,7 @@ add('cap7-cocktail.xhtml', 'I cocktail classici', '<section><h1>I cocktail class
 add('cap7-laboratorio.xhtml', 'Il laboratorio', '<section><h1>Il laboratorio: cocktail sperimentali</h1>%s</section>' % sez('laboratorio', ''), 2)
 
 # ---------- Appendici ----------
-add('app-glossario.xhtml', 'Appendice A · Glossario', '<section epub:type="glossary"><h1>Appendice A<br/>Glossario A–Z</h1><p class="nota">Le parole sottolineate a puntini nel libro rimandano qui; le sigle rimandano a «Che cosa vogliono dire le sigle», nel capitolo 5.</p>%s</section>' % ancore_glossario(sez('nozioni', 'Glossario A–Z')), 1)
+add('app-glossario.xhtml', 'Appendice A · Glossario', '<section epub:type="glossary"><h1>Appendice A<br/>Glossario A–Z</h1><p class="nota">Le parole sottolineate a puntini nel libro aprono la loro voce in una finestrella sulla pagina stessa; da lì «Apri nel glossario» porta qui, e «↩ Torna» riporta al punto di partenza. Per le sigle la voce completa è in «Che cosa vogliono dire le sigle», nel capitolo 5.</p>%s</section>' % ancore_glossario(sez('nozioni', 'Glossario A–Z')), 1)
 MESI = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre']
 CALm = {}
 for n, ms in D['CAL']:
