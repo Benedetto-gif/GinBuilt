@@ -3,24 +3,58 @@
 // Ritorno: ogni collegamento verso un'altra pagina del libro ricorda da dove si e' partiti
 // (una pila, per piu' salti di fila); la pagina d'arrivo mostra «↩ Torna a …» in cima e accanto al punto raggiunto.
 (function(){
-  var CH = 'gp-pila', pagina = ((location.pathname || '').split('/').pop() || '').split('?')[0];
-  function leggi(){ try { var v = JSON.parse(localStorage.getItem(CH) || '[]'); return v instanceof Array ? v : []; } catch(e){ return []; } }
-  function scrivi(v){ try { localStorage.setItem(CH, JSON.stringify(v.slice(-20))); } catch(e){} }
+  // Kotobee e altri lettori: la pagina puo' essere caricata dentro un contenitore, la memoria del browser
+  // puo' essere bloccata e i clic sui collegamenti intercettati. Per questo: nome della pagina scritto nel testo
+  // (marcatore .gp-pg), memoria tentata in piu' posti, clic ascoltati in fase di cattura e su ogni collegamento.
+  var CH = 'gp-pila';
+  var mk = document.querySelectorAll('.gp-pg');
+  var pagina = mk.length ? mk[mk.length - 1].getAttribute('data-p') : ((location.pathname || '').split('/').pop() || '').split('?')[0];
+  function cont(){ var w = [window]; try { if (window.parent && window.parent !== window) w.push(window.parent); } catch(e){} try { if (window.top && w.indexOf(window.top) < 0) w.push(window.top); } catch(e){} return w; }
+  function leggi(){
+    var best = null;
+    function prova(txt){ try { var v = JSON.parse(txt || 'null'); if (v && v.p instanceof Array && (!best || v.ts > best.ts)) best = v; } catch(e){} }
+    try { prova(localStorage.getItem(CH)); } catch(e){}
+    try { prova(sessionStorage.getItem(CH)); } catch(e){}
+    var ws = cont();
+    for (var i = 0; i < ws.length; i++){ try { if (ws[i].__gpPila) prova(ws[i].__gpPila); } catch(e){} try { var n = ws[i].name || ''; if (n.indexOf(CH + '=') === 0) prova(n.slice(CH.length + 1)); } catch(e){} }
+    return best ? best.p : [];
+  }
+  function scrivi(v){
+    var txt = JSON.stringify({ ts: Date.now() + Math.random(), p: v.slice(-20) });
+    try { localStorage.setItem(CH, txt); } catch(e){}
+    try { sessionStorage.setItem(CH, txt); } catch(e){}
+    var ws = cont();
+    for (var i = 0; i < ws.length; i++){ try { ws[i].__gpPila = txt; } catch(e){} }
+    try { if (!window.name || window.name.indexOf(CH + '=') === 0) window.name = CH + '=' + txt; } catch(e){}
+  }
   function fileDi(href){ return (href || '').split('#')[0].split('?')[0].split('/').pop(); }
+  var ultimo = null;
   function spingi(a){
+    if (ultimo === a) return; ultimo = a; setTimeout(function(){ ultimo = null; }, 800);
     var href = a.getAttribute('href') || '', f = fileDi(href);
     if (!f || f === pagina || /^[a-z]+:/i.test(href)) return;
     var pila = leggi();
-    pila.push({ h: pagina + (a.id ? '#' + a.id : ''), t: document.title, to: f, dest: href.split('#')[1] || '', ts: Date.now() });
+    pila.push({ h: pagina + (a.id ? '#' + a.id : ''), t: document.title || (document.querySelector('h1') || {}).textContent, to: f, dest: href.split('#')[1] || '', ts: Date.now() });
     scrivi(pila);
   }
-  // tutti i collegamenti verso altre pagine (anche quelli creati dopo, come «Apri nel glossario»)
-  document.addEventListener('click', function(ev){
+  function suClic(ev){
     var a = ev.target; while (a && a.nodeName && a.nodeName.toUpperCase() !== 'A') a = a.parentNode;
-    if (!a || !a.getAttribute || ev.defaultPrevented) return;
-    if (a.className && String(a.className).indexOf('torna-link') >= 0){ var p = leggi(); p.pop(); scrivi(p); return; }
+    if (!a || !a.getAttribute || !a.getAttribute('href')) return;
+    if (a.getAttribute('data-d') && document.getElementById(a.getAttribute('data-d'))) return;   // parola con finestrella
+    if (/def-x|def-apri/.test(String(a.className || ''))) return;
+    if (String(a.className || '').indexOf('torna-link') >= 0){ if (ultimo === a) return; ultimo = a; var p = leggi(); p.pop(); scrivi(p); return; }
     spingi(a);
-  }, false);
+  }
+  // in cattura, prima che il lettore intercetti il clic; anche il tocco, per i lettori che non generano il clic
+  try { window.addEventListener('click', suClic, true); } catch(e){}
+  var mosso = false;
+  try {
+    document.addEventListener('touchstart', function(){ mosso = false; }, true);
+    document.addEventListener('touchmove', function(){ mosso = true; }, true);
+    document.addEventListener('touchend', function(ev){ if (!mosso) suClic(ev); }, true);
+  } catch(e){}
+  var tutti = document.querySelectorAll('a[href]');
+  for (var q = 0; q < tutti.length; q++) tutti[q].addEventListener('click', suClic, false);
   var aperta = null, daLink = null;
   function chiudi(){ if (aperta && aperta.parentNode) aperta.parentNode.removeChild(aperta); aperta = null; daLink = null; }
   function blocco(el){
@@ -40,7 +74,8 @@
     box.innerHTML = def.innerHTML + '<p style="margin:.4em 0 0;text-align:right"><a href="' + a.getAttribute('href') + '" class="def-apri" style="margin-right:1em">' +
       (sigla ? 'Leggi tutto sulle sigle' : 'Apri nel glossario') + ' →</a><a href="#" class="def-x">Chiudi ✕</a></p>';
     // il ritorno deve puntare alla parola, non al riquadro
-    box.querySelector('.def-apri').id = ''; box.querySelector('.def-apri').addEventListener('click', function(e){ e.preventDefault(); spingi(a); location.href = a.getAttribute('href'); });
+    box.querySelector('.def-apri').addEventListener('click', function(){ spingi(a); });
+    box.querySelector('.def-apri').addEventListener('touchend', function(){ if (!mosso) spingi(a); });
     box.querySelector('.def-x').addEventListener('click', function(e){ e.preventDefault(); chiudi(); });
     var b = blocco(a);
     if (b && /^(TD|TH|LI|DD)$/.test(b.nodeName.toUpperCase())) b.appendChild(box);
