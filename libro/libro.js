@@ -96,38 +96,44 @@
   // pagina d'arrivo: se l'ultimo salto portava qui, compare «↩ Torna a …»
   var pila = leggi(), t = pila.length ? pila[pila.length - 1] : null;
   if (!t || t.to !== pagina || Date.now() - (t.ts || 0) > 12 * 3600 * 1000) return;
-  function torna(){
-    var p = document.createElement('p'); p.className = 'torna';
-    p.setAttribute('style', 'margin:.5em 0;');
-    var a = document.createElement('a'); a.href = '#'; a.className = 'torna-link';
-    a.addEventListener('click', function(ev){
-      ev.preventDefault(); if (ev.stopPropagation) ev.stopPropagation();
-      var pila = leggi(); pila.pop(); scrivi(pila);
-      var hh = (t.h || '').split('#');
-      scrivi([{ p: hh[0], id: hh[1] || '', ts: Date.now() }], 'gp-rit');
-      var partito = false;
-      try { window.addEventListener('pagehide', function(){ partito = true; }); window.addEventListener('hashchange', function(){ partito = true; }); } catch(e){}
-      try { history.back(); } catch(e){}
-      setTimeout(function(){
-        if (partito || !document.body.contains(a)) return;
-        a.textContent = 'Usa il tasto «indietro» del telefono per tornare a «' + (t.t || 'pagina precedente') + '»';
-      }, 1200);
-    }, false);
-    a.textContent = '↩ Torna a «' + (t.t || 'pagina precedente') + '»';
-    a.setAttribute('style', 'display:inline-block;padding:.3em .8em;border:1px solid #2F7259;border-radius:999px;text-decoration:none;color:#2F7259;font-weight:bold;background:#fff;');
-    p.appendChild(a); return p;
+  // La parola d'arrivo (voce del glossario, sigla, titolo della botanica o della sezione) si accende
+  // e diventa il tasto di ritorno, con una piccola freccia ↩: niente pulsanti grandi sopra i titoli.
+  function indietro(el){
+    var pila = leggi(); pila.pop(); scrivi(pila);
+    var hh = (t.h || '').split('#');
+    scrivi([{ p: hh[0], id: hh[1] || '', ts: Date.now() }], 'gp-rit');
+    var partito = false;
+    try { window.addEventListener('pagehide', function(){ partito = true; }); window.addEventListener('hashchange', function(){ partito = true; }); } catch(e){}
+    try { history.back(); } catch(e){}
+    setTimeout(function(){
+      if (partito || !document.body.contains(el)) return;
+      var n = document.createElement('span');
+      n.setAttribute('style', 'display:block;font-size:.75em;font-weight:normal;color:#8A4A1E;');
+      n.textContent = 'usa il tasto «indietro» del telefono'; el.appendChild(n);
+    }, 1200);
   }
-  var primo = document.body.firstElementChild || document.body.firstChild;
-  var h1 = document.querySelector('h1');
-  if (h1 && h1.parentNode) h1.parentNode.insertBefore(torna(), h1.nextSibling);
-  else document.body.insertBefore(torna(), primo);
   var id = (location.hash || '').replace(/^#/, '') || t.dest;
-  var voce = id ? document.getElementById(id) : null;
-  if (voce && voce !== h1 && !/^(H1)$/i.test(voce.nodeName)){
-    var dove = voce.nodeName.toUpperCase() === 'DT' ? voce.nextElementSibling : voce;
-    if (dove && /^(SECTION|ARTICLE|DIV)$/i.test(dove.nodeName)){ var hh = dove.querySelector('h1,h2,h3'); if (hh && hh !== h1) hh.parentNode.insertBefore(torna(), hh.nextSibling); }
-    else if (dove) dove.appendChild(torna());
+  var voce = id ? document.getElementById(id) : null, bersaglio = null;
+  if (voce){
+    var nn = voce.nodeName.toUpperCase();
+    if (/^(DT|H1|H2|H3|H4)$/.test(nn)) bersaglio = voce;
+    else if (nn === 'LI') bersaglio = voce.querySelector('strong') || voce;
+    else if (/^(SECTION|ARTICLE|DIV)$/.test(nn)) bersaglio = voce.querySelector('h1,h2,h3,h4');
+    else bersaglio = voce;
   }
+  if (!bersaglio) bersaglio = document.querySelector('h1, h2');
+  if (!bersaglio) return;
+  bersaglio.className = (bersaglio.className ? bersaglio.className + ' ' : '') + 'torna-qui';
+  bersaglio.setAttribute('role', 'link');
+  bersaglio.setAttribute('title', 'Torna a «' + (t.t || 'pagina precedente') + '»');
+  bersaglio.setAttribute('style', (bersaglio.getAttribute('style') || '') + ';background:#FFF1B8;border-radius:4px;box-shadow:0 0 0 3px #FFF1B8;cursor:pointer;');
+  var fr = document.createElement('span');
+  fr.className = 'torna-freccia'; fr.textContent = '↩';
+  fr.setAttribute('aria-hidden', 'true');
+  fr.setAttribute('style', 'display:inline-block;margin-left:.3em;font-size:.8em;line-height:1;padding:.1em .3em;border:1px solid #2F7259;border-radius:999px;color:#2F7259;font-weight:bold;vertical-align:.1em;');
+  bersaglio.appendChild(fr);
+  bersaglio.addEventListener('click', function(ev){ ev.preventDefault(); if (ev.stopPropagation) ev.stopPropagation(); indietro(bersaglio); }, false);
+  setTimeout(function(){ try { bersaglio.scrollIntoView({ block: 'center' }); } catch(e){} }, 300);
 })();
 (function(){
   var ORD = [0, 9, 5, 4, 2, 1, 8, 6, 7, 3], POS = [];

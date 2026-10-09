@@ -486,7 +486,7 @@ add('cap7-cocktail.xhtml', 'I cocktail classici', '<section><h1>I cocktail class
 add('cap7-laboratorio.xhtml', 'Il laboratorio', '<section><h1>Il laboratorio: cocktail sperimentali</h1>%s</section>' % sez('laboratorio', ''), 2)
 
 # ---------- Appendici ----------
-add('app-glossario.xhtml', 'Appendice A · Glossario', '<section epub:type="glossary"><h1>Appendice A<br/>Glossario A–Z</h1><p class="nota">Le parole sottolineate a puntini nel libro aprono la loro voce in una finestrella sulla pagina stessa; da lì «Apri nel glossario» porta qui, e «↩ Torna» riporta al punto di partenza. Per le sigle la voce completa è in «Che cosa vogliono dire le sigle», nel capitolo 5.</p>%s</section>' % ancore_glossario(sez('nozioni', 'Glossario A–Z')), 1)
+add('app-glossario.xhtml', 'Appendice A · Glossario', '<section epub:type="glossary"><h1>Appendice A<br/>Glossario A–Z</h1><p class="nota">Le parole sottolineate a puntini nel libro aprono la loro voce in una finestrella sulla pagina stessa; da lì «Apri nel glossario» porta qui, e lì la parola, accesa in giallo con la freccia ↩, riporta al punto di partenza. Per le sigle la voce completa è in «Che cosa vogliono dire le sigle», nel capitolo 5.</p>%s</section>' % ancore_glossario(sez('nozioni', 'Glossario A–Z')), 1)
 MESI = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre']
 CALm = {}
 for n, ms in D['CAL']:
