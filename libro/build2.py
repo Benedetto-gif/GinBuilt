@@ -20,7 +20,8 @@ for k, d in enumerate(ORD): POS[d] = k
 def pt(i, v, c, R):
     a = -math.pi/2 + POS[i]*2*math.pi/len(ASSI)
     return (c + R*v/5*math.cos(a), c + R*v/5*math.sin(a))
-def radar(vals, size=220, rid='', colore='#2F7259'):
+BUCCIA_COL = '#7A5230'
+def radar(vals, size=220, rid='', colore='#2F7259', alt=None):
     c = size/2; R = size/2 - 38
     g = ''.join('<polygon points="%s" fill="none" stroke="#d8d2c6" stroke-width="1"/>' % ' '.join('%.1f,%.1f' % pt(i, l, c, R) for i in ORD) for l in range(1, 6))
     for i, a in enumerate(ASSI):
@@ -30,9 +31,10 @@ def radar(vals, size=220, rid='', colore='#2F7259'):
         g += '<text x="%.1f" y="%.1f" text-anchor="%s" font-size="10" font-family="sans-serif" fill="#555555">%s</text>' % (lx, ly + 3.5, anc, e(a))
     pts = ' '.join('%.1f,%.1f' % pt(i, vals[i], c, R) for i in ORD)
     return ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="-48 0 %d %d" class="radar"%s role="img" aria-label="Profilo radar">%s'
-            '<polygon points="%s" class="rp" fill="%s" fill-opacity="0.5" stroke="%s" stroke-width="2"/>'
+            '<polygon points="%s" class="rp" fill="%s" fill-opacity="0.5" stroke="%s" stroke-width="2"/>%s'
             '<polygon points="" class="ro" fill="#C0733A" fill-opacity="0.22" stroke="#C0733A" stroke-width="2" stroke-dasharray="4 3"/></svg>') % (
-            size + 96, size, (' id="%s" data-s="%d"' % (rid, size)) if rid else '', g, pts, colore, colore)
+            size + 96, size, (' id="%s" data-s="%d"' % (rid, size)) if rid else '', g, pts, colore, colore,
+            ('<polygon points="%s" class="rb" fill="%s" fill-opacity="0.15" stroke="%s" stroke-width="2" stroke-dasharray="6 3"/>' % (' '.join('%.1f,%.1f' % pt(i, alt[i], c, R) for i in ORD), BUCCIA_COL, BUCCIA_COL)) if alt else '')
 SENS_COL = '#B8921F'
 def radar_sens(vals, size=220, rid=''):
     n = len(ASSI_SENS); c = size/2; R = size/2 - 38
@@ -321,9 +323,9 @@ add('cap2-radar.xhtml', 'Come leggere il radar', '''<section><h1>Come leggere il
 %s
 <p>La potenza è anche soggettiva: se una tua botanica rende più o meno del previsto, sotto il suo radar puoi spostare il cursore e fissare la tua potenza. Il lettore la ricorda; il valore di libreria si ripristina con un tocco.</p>
 <p>Sotto ogni radar ci sono le botaniche dal profilo più vicino, con la somiglianza in percentuale: toccandone una, il suo profilo si sovrappone in arancio, sia sul profilo sensoriale sia sul radar delle sensazioni in bocca.</p>
-<p><strong>Agrumi: buccia fresca e disidratata.</strong> La scorza secca non ha lo stesso profilo della fresca. Seccando, si perde parte degli oli più volatili e delle note verdi e acidule, mentre restano i flavonoidi amari della parte bianca (albedo) e compaiono note calde di scorza candita. Per questo ogni agrume ha, sotto il suo radar, anche il profilo dell'altra buccia: il primo tasto fra i profili vicini lo sovrappone in arancio, e più sotto c'è il suo radar disegnato a parte. Il profilo da secca è una stima da verificare all'assaggio.</p>
-<h2>Il secondo radar: sensazioni in bocca</h2>
-<p>Sotto il profilo, ogni scheda ha un secondo radar, giallo ocra. Il primo dice <em>che sapore ha</em> una botanica; il secondo dice <em>che effetto fa in bocca</em>. Sono due cose di natura diversa: i gusti passano dalle papille, gli aromi dal naso, le sensazioni dal nervo trigemino e dal tatto. Metterle sullo stesso disegno porterebbe a confronti senza senso, per questo stanno su due radar separati.</p>
+<p><strong>Agrumi: buccia fresca e disidratata.</strong> La scorza secca non ha lo stesso profilo della fresca. Seccando, si perde parte degli oli più volatili e delle note verdi e acidule, mentre restano i flavonoidi amari della parte bianca (albedo) e compaiono note calde di scorza candita. Per questo sopra il radar di ogni agrume ci sono tre tasti: <strong>Buccia fresca</strong>, <strong>Disidratata</strong> ed <strong>Entrambe</strong>, che le sovrappone (la disidratata è tratteggiata in marrone). Il profilo da secca è una stima da verificare all'assaggio.</p>
+<h2>L'altro radar: sensazioni in bocca</h2>
+<p>Ogni scheda ha un secondo radar, giallo ocra, che si apre con il tasto <strong>Sensazioni in bocca</strong> sopra il profilo; <strong>Gusto e aroma</strong> riporta al primo. Il primo dice <em>che sapore ha</em> una botanica; il secondo dice <em>che effetto fa in bocca</em>. Sono due cose di natura diversa: i gusti passano dalle papille, gli aromi dal naso, le sensazioni dal nervo trigemino e dal tatto. Metterle sullo stesso disegno porterebbe a confronti senza senso, per questo stanno su due radar separati, che si guardano uno alla volta.</p>
 <p>I cinque assi, da 0 a 5:</p>
 <ul><li><strong>Pungente</strong>: calore e pizzicore, da piperina, gingeroli, isotiocianati, eugenolo (recettori TRPV1 e TRPA1). Pepe, zenzero, grani del paradiso.</li>
 <li><strong>Rinfrescante</strong>: freddo e balsamico, da mentolo, cineolo, canfora (recettore TRPM8). Menta, cardamomo, rosmarino, aghi di pino.</li>
@@ -364,7 +366,7 @@ for c in cat_list:
         naviga = '<p class="naviga">%s<a href="cap2-%s.xhtml">%s</a>%s</p>' % (
             ('<a href="b-%s.xhtml">← %s</a> · ' % (slug(prev), e(prev))) if prev else '<span class="nav-vuoto">inizio famiglia</span> · ', slug(c), e(c),
             (' · <a href="b-%s.xhtml">%s →</a>' % (slug(nxt), e(nxt))) if nxt else ' · <span class="nav-vuoto">fine famiglia</span>')
-        # Struttura fissa, uguale per ogni botanica: intestazione, due radar, scheda, molecole, eccessi, profili vicini.
+        # Struttura fissa, uguale per ogni botanica: intestazione, radar (gusto e aroma / sensazioni in bocca), scheda, molecole, eccessi, profili vicini.
         sic = m.get('sicurezza') or ''
         campi.append(('Sicurezza', e(sic) if sic and 'verificare' not in sic.lower() else 'nessuna avvertenza particolare'))
         rid = 'r-' + slug(n); pz = potenza(n) or 5
@@ -373,26 +375,29 @@ for c in cat_list:
                 '<input type="range" class="pot-range" min="1" max="10" step="0.5" value="%s" aria-label="Potenza"/><br/>'
                 '<button type="button" class="chip pfix">📌 Fissa</button> <button type="button" class="chip prip">↺ Valore di libreria</button></p>') % (fmt1(pz), pz)
         vicini_html = ('<div class="vicini"><p class="vic-tit">Sovrapponi un profilo vicino (anche alle sensazioni):</p>' + chips(rid, vic).replace('Profilo vicino: ', '') + '</div>') if vic else ''
-        bu = BUCCIA.get(n); buccia_html = ''
+        bu = BUCCIA.get(n); buccia_sel = buccia_nota = ''
         if bu:
-            # Agrumi: l'altra buccia si sovrappone in arancio come un profilo vicino; sotto, il suo radar fisso per chi legge senza JavaScript.
-            alt = 'Buccia disidratata' if bu['proprio'] == 'fresca' else 'Buccia fresca'
-            chip_b = '<button type="button" class="chip" data-v="%s" data-s="%s">%s</button> ' % (','.join(str(x) for x in bu['v']), ','.join(str(x) for x in (SENS.get(bu['rif']) or [])) if not bu['stima'] else '', alt)
-            if vic: vicini_html = vicini_html.replace('<p class="sim" data-r="%s">' % rid, '<p class="sim" data-r="%s">' % rid + chip_b, 1)
-            else: vicini_html = '<div class="vicini"><p class="sim" data-r="%s">%s</p></div>' % (rid, chip_b)
+            # Agrumi: un solo radar; i tasti mostrano la buccia fresca, la disidratata o entrambe (la disidratata e' tratteggiata in marrone).
+            # Senza JavaScript si vedono tutte e due, con la nota che spiega il tratteggio.
             spiega = ('stimato dalla fresca con la regola dell\'essiccazione: meno note volatili, verdi e acidule (agrumato −1, acido −2, erbaceo −1), più amaro dell\'albedo e note calde di scorza candita (amaro, speziato e fruttato +1). Da tarare all\'assaggio.'
                       if bu['stima'] else ('dalla scheda <a href="b-%s.xhtml">%s</a>.' if bu['proprio'] == 'secca' else 'dalla scheda <a href="b-%s.xhtml">%s</a>, stimato dalla fresca con la stessa regola dell\'essiccazione usata per gli altri agrumi.') % (slug(bu['rif']), e(bu['rif'])))
-            buccia_html = ('<div class="buccia"><h4>%s</h4>' % alt + radar(bu['v'], 180, '', '#C0733A') +
-                           '<p class="nota">Profilo della %s %s</p></div>' % (alt.lower(), spiega))
+            buccia_sel = '<p class="buccia-sel solo-js" data-p="%s">%s</p>' % (bu['proprio'], ' '.join(
+                '<button type="button" class="chip" data-k="%s">%s</button>' % (k, t) for k, t in (('fresca', 'Buccia fresca'), ('secca', 'Disidratata'), ('entrambe', 'Entrambe'))))
+            altra = 'buccia disidratata' if bu['proprio'] == 'fresca' else 'buccia fresca'
+            buccia_nota = '<p class="nota buccia-nota">Tratteggio marrone: profilo della %s, %s</p>' % (altra, spiega)
         bsez = lambda t, h, cl='': '<section class="bsez%s"><h3>%s</h3>%s</section>' % (cl, t, h)
         body = '<article class="bot" id="b-%s">' % slug(n)
         body += naviga
         body += '<h2>%s %s</h2><p class="bsub"><em>%s</em> · %s · %s</p>' % (e(m.get('icona') or '🌿'), e(n), e(m.get('nome_botanico') or '—'), e(c), e(m.get('parte') or '—'))
-        body += bsez('1 · Profilo sensoriale', '<div class="bot-radar" data-n="%s" data-p="%s">' % (e(n), pz) + radar(v or [0]*len(ASSI), 220, rid, pot_colore(pz)) + vicini_html + pot_legenda(pz) + ctrl + '</div>' + buccia_html)
-        body += bsez('2 · Sensazioni in bocca', '<div class="bot-sens">' + sens_blocco(n) + '</div>')
-        body += bsez('3 · Scheda', '<dl class="campi">' + ''.join('<dt>%s</dt><dd>%s</dd>' % (kk, val) for kk, val in campi if kk not in ('Nome botanico', 'Parte usata')) + '</dl>')
-        body += bsez('4 · Molecole da estrarre', '<p class="mol">%s</p>' % (e(mol) if mol else '—'))
-        body += bsez('5 · Se si esagera', '<p>%s.</p>' % e((m.get('effetto_sovra') or '—').rstrip('.')))
+        # Un radar alla volta: un tasto passa da gusto e aroma alle sensazioni in bocca (trigemino). Senza JavaScript restano tutti e due, uno sotto l'altro.
+        vista_sel = '<p class="vista-sel solo-js"><button type="button" class="chip" data-k="g">Gusto e aroma</button> <button type="button" class="chip" data-k="b">Sensazioni in bocca</button></p>'
+        body += bsez('1 · Profilo sensoriale', vista_sel +
+            '<div class="vista" data-k="g"><h4 class="vista-tit">Gusto e aroma</h4>' + buccia_sel +
+            '<div class="bot-radar" data-n="%s" data-p="%s">' % (e(n), pz) + radar(v or [0]*len(ASSI), 220, rid, pot_colore(pz), bu['v'] if bu else None) + buccia_nota + vicini_html + pot_legenda(pz) + ctrl + '</div></div>' +
+            '<div class="vista" data-k="b"><h4 class="vista-tit">Sensazioni in bocca</h4><div class="bot-sens">' + sens_blocco(n) + '</div></div>')
+        body += bsez('2 · Scheda', '<dl class="campi">' + ''.join('<dt>%s</dt><dd>%s</dd>' % (kk, val) for kk, val in campi if kk not in ('Nome botanico', 'Parte usata')) + '</dl>')
+        body += bsez('3 · Molecole da estrarre', '<p class="mol">%s</p>' % (e(mol) if mol else '—'))
+        body += bsez('4 · Se si esagera', '<p>%s.</p>' % e((m.get('effetto_sovra') or '—').rstrip('.')))
         body += '</article>' + naviga
         add('b-%s.xhtml' % slug(n), n, '<section>' + body + '</section>', 3, True)
 

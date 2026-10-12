@@ -357,3 +357,41 @@ function gpId(id){ if (!id) return null; var el = null; try { el = document.getE
     ctl.querySelector('.prip').addEventListener('click', function(){ delete mem[n]; salva(); inp.value = lib; mostra(lib, false); });
   })(box[b]);
 })();
+// Schede delle botaniche: un radar alla volta (gusto e aroma / sensazioni in bocca) e, negli agrumi,
+// buccia fresca, disidratata o entrambe sullo stesso radar. Lo stile del tasto acceso e' scritto sul tasto
+// e la visibilita' dei poligoni con l'attributo, perche' alcuni lettori ignorano il CSS di pulsanti e SVG.
+(function(){
+  function accendi(bts, k){
+    for (var i = 0; i < bts.length; i++){
+      var on = bts[i].getAttribute('data-k') === k;
+      bts[i].setAttribute('aria-pressed', on ? 'true' : 'false');
+      bts[i].style.background = on ? '#2F7259' : ''; bts[i].style.color = on ? '#ffffff' : ''; bts[i].style.fontWeight = on ? 'bold' : '';
+    }
+  }
+  var art = document.querySelectorAll('article.bot');
+  for (var a = 0; a < art.length; a++) (function(ar){
+    var vs = ar.querySelector('.vista-sel'), viste = ar.querySelectorAll('.vista');
+    if (vs && viste.length > 1){
+      vs.className = vs.className.replace(' solo-js', '');
+      var tit = ar.querySelectorAll('.vista-tit'); for (var t = 0; t < tit.length; t++) tit[t].style.display = 'none';
+      var vb = vs.querySelectorAll('button');
+      var mostra = function(k){ accendi(vb, k); for (var v = 0; v < viste.length; v++) viste[v].style.display = viste[v].getAttribute('data-k') === k ? '' : 'none'; };
+      for (var j = 0; j < vb.length; j++) vb[j].addEventListener('click', function(){ mostra(this.getAttribute('data-k')); });
+      mostra('g');
+    }
+    var bs = ar.querySelector('.buccia-sel'), rp = ar.querySelector('.bot-radar .rp'), rb = ar.querySelector('.bot-radar .rb'), nota = ar.querySelector('.buccia-nota');
+    if (bs && rp && rb){
+      bs.className = bs.className.replace(' solo-js', '');
+      var proprio = bs.getAttribute('data-p'), bb = bs.querySelectorAll('button');
+      var buccia = function(k){
+        accendi(bb, k);
+        var vedoP = k === 'entrambe' || k === proprio, vedoB = k === 'entrambe' || k !== proprio;
+        rp.setAttribute('visibility', vedoP ? 'visible' : 'hidden'); rb.setAttribute('visibility', vedoB ? 'visible' : 'hidden');
+        // l'altra buccia ha lo stesso stile tratteggiato anche quando e' sola: la nota la spiega
+        if (nota) nota.style.display = vedoB ? '' : 'none';
+      };
+      for (var q = 0; q < bb.length; q++) bb[q].addEventListener('click', function(){ buccia(this.getAttribute('data-k')); });
+      buccia(proprio);
+    }
+  })(art[a]);
+})();

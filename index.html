@@ -1048,6 +1048,7 @@ html:not(.avanzato) .radar-wrap .r-norm{display:revert !important;}
 .radar-base-btn[aria-pressed="true"]{background:var(--juniper);color:var(--surface);}
 .fase-sel{display:flex;gap:6px;justify-content:center;margin:6px 0 8px;}
 .fase-btn{flex:1;max-width:90px;padding:7px 4px;border-radius:999px;border:1.5px solid var(--line);background:transparent;color:var(--ink-soft);font:inherit;font-size:13px;font-weight:600;cursor:pointer;}
+.vista-sel .fase-btn{max-width:180px;}
 .fase-btn[aria-pressed="true"]{background:var(--juniper);border-color:var(--juniper);color:var(--surface);}
 .fasi-riga{margin-bottom:10px;}
 .fasi-tit{font-size:13px;font-weight:600;margin-bottom:4px;}
@@ -3622,7 +3623,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 12 ottobre 2026, ore 13:45 · Agrumi: buccia fresca e disidratata, profili secchi allineati</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 12 ottobre 2026, ore 14:15 · Scheda botanica: un radar alla volta (gusto e aroma o sensazioni in bocca)</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -3900,6 +3901,14 @@ function umamiNota(v, nomi){
   return '<div class="radar-nota"><strong>Umami ' + String(v).replace('.', ',') + '/5</strong>' + (nomi ? ' (da ' + nomi + ')' : '') +
     '. È un gusto, non una sensazione, e resta fuori dal radar. In un gin per macerazione passa poco: glutammato e nucleotidi non sono volatili e si sciolgono male quando il grado alcolico è alto. Conta di più in amari e vermouth.</div>';
 }
+// Scheda botanica: un radar alla volta, gusto e aroma oppure sensazioni in bocca (trigemino).
+function vistaRadarHtml(nome){
+  const sb = sensBox(nome); if (!sb) return radarBox(nome);
+  const k = window.radarVista === 'bocca' ? 'bocca' : 'gusto';
+  const sel = '<div class="fase-sel vista-sel" role="group" aria-label="Quale radar">' + [['gusto','Gusto e aroma'],['bocca','Sensazioni in bocca']].map(([q,nm]) =>
+    '<button type="button" class="fase-btn" aria-pressed="' + (k === q) + '" onclick="window.radarVista=\'' + q + '\';showDetail(currentDetailName)">' + nm + '</button>').join('') + '</div>';
+  return sel + (k === 'bocca' ? sb : radarBox(nome));
+}
 function sensBox(nome){
   const v = SENS5[nome]; if (!v) return '';
   const forti = ASSI_SENS.map((a,i) => [a, v[i]]).filter(x => x[1] >= 3).sort((a,b) => b[1]-a[1]);
@@ -3908,7 +3917,7 @@ function sensBox(nome){
   return '<div class="radar-box sens-box"><div class="radar-title">Sensazioni in bocca</div>' +
     radarSensSVG([{vals: v, color: SENS_COL, label: nome}], 260) +
     '<div class="radar-nota">' + nota + '</div>' + umamiNota(UMAMI[nome] || 0, '') +
-    '<div class="radar-nota">Diagramma separato dal profilo sensoriale: qui non c\'è che sapore ha, ma che effetto fa in bocca. Stima orientativa da tarare all\'assaggio.</div></div>';
+    '<div class="radar-nota">Radar separato dal profilo sensoriale (tasto Gusto e aroma), per sensazioni che passano dal nervo trigemino e dal tatto: qui non c\'è che sapore ha, ma che effetto fa in bocca. Stima orientativa da tarare all\'assaggio.</div></div>';
 }
 function sensRicettaBox(el){
   const v = sensMiscela(el); if (!v) return '';
@@ -5127,8 +5136,7 @@ function showDetail(name, nuovaScelta){
     <div class="detail-icon">${d.icona || '🌿'}</div>
     <h3>${d.botanica}</h3>
     <div class="sub">${d.nome_botanico ? d.nome_botanico + ' · ' : ''}${d.categoria} — ${d.sottofamiglia || ''}</div>
-    ${radarBox(d.botanica)}
-    ${sensBox(d.botanica)}
+    ${vistaRadarHtml(d.botanica)}
     <div class="inf-in-scheda" id="inf-body"></div>
     <div class="detail-grid">
       <div class="field"><div class="k">Profilo aromatico</div><div class="v">${d.profilo || '—'}</div></div>
