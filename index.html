@@ -3622,7 +3622,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 12 ottobre 2026, ore 13:00 · Radar di confronto: si può nascondere la botanica principale</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 12 ottobre 2026, ore 13:30 · Agrumi: radar della buccia fresca e disidratata</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -4108,10 +4108,10 @@ function unitaFirma(el){   // porta pesi qualsiasi a "parti": il totale vale qua
   return ok.map(x => ({n: x.n, w: (x.w === undefined ? 1 : x.w) / t * ok.length}));
 }
 function eqConBase(el, fase){
-  const tutte = el.filter(x => PROFILO8[x.n]).map(x => ({n: x.n, w: x.w === undefined ? 1 : x.w}));
+  const tutte = el.filter(x => x.v || PROFILO8[x.n]).map(x => ({n: x.n, v: x.v, w: x.w === undefined ? 1 : x.w}));
   BASE_EQ.forEach(n => { if (PROFILO8[n] && !tutte.some(x => x.n === n)) tutte.push({n, w: 1}); });
   const tot = tutte.reduce((a,x) => a + x.w, 0) || 1;
-  return ASSI8.map((_,i) => tutte.reduce((a,x) => a + (valFase(x.n, fase || window.radarFase)[i] || 0) * x.w, 0) / tot);
+  return ASSI8.map((_,i) => tutte.reduce((a,x) => a + ((x.v || valFase(x.n, fase || window.radarFase))[i] || 0) * x.w, 0) / tot);
 }
 try { localStorage.removeItem('gb-radar-sottr'); } catch(e){}
 
@@ -4145,6 +4145,45 @@ function valFase(nome, fase){
   return p.map(v => Math.round(v * w * 10) / 10);
 }
 window.radarFase = window.radarFase || 'tutto';
+
+// ---------- Agrumi: buccia fresca o disidratata ----------
+// Bergamotto e arancia hanno una scheda a parte per la scorza disidratata: il profilo secco e' quello.
+// Per gli altri agrumi il profilo da secca si stima dalla fresca con una regola generale, da tarare all'assaggio:
+// l'essiccazione disperde parte degli oli piu' volatili (agrumato -1) e le note verdi e acidule (acido -2, erbaceo -1);
+// i flavonoidi amari dell'albedo restano e si concentrano (amaro +1); l'ossidazione del limonene porta note calde
+// di scorza candita e marmellata (speziato +1, fruttato +1). Dolce, salino, floreale (linalolo, piu' stabile) e resinoso invariati.
+const BUCCIA_SECCA = {'Bergamotto':'Scorza di bergamotto disidratata', 'Arancia dolce':'Scorza di arancia disidratata'};
+const BUCCIA_FRESCA = {}; Object.keys(BUCCIA_SECCA).forEach(k => { BUCCIA_FRESCA[BUCCIA_SECCA[k]] = k; });
+const BUCCIA_DELTA = [0, 1, -2, 0, -1, 0, -1, 1, 0, 1];
+const BUCCIA_STATI = [['fresca','Buccia fresca'],['secca','Disidratata'],['entrambe','Entrambe']];
+function agrumeBuccia(nome){
+  if (BUCCIA_FRESCA[nome]) return {fresca: BUCCIA_FRESCA[nome], secca: nome, proprio: 'secca'};
+  const d = MASTER.find(x => x.botanica === nome);
+  if (!d || d.categoria !== 'Agrumi' || !PROFILO8[nome]) return null;
+  if (!/scorza|buccia/i.test(d.parte || '') || /essiccat|disidrat/i.test((d.parte || '') + ' ' + nome)) return null;
+  return {fresca: nome, secca: BUCCIA_SECCA[nome] || null, proprio: 'fresca'};
+}
+function profiloBucciaSecca(ag){
+  if (ag.secca) return PROFILO8[ag.secca];
+  return PROFILO8[ag.fresca].map((v,i) => Math.max(0, Math.min(5, v + BUCCIA_DELTA[i])));
+}
+function valBuccia(ag, stato, fase){
+  if (stato === 'fresca') return valFase(ag.fresca, fase);
+  if (ag.secca) return valFase(ag.secca, fase);
+  const p = profiloBucciaSecca(ag);
+  if (!fase || fase === 'tutto') return p;
+  const w = (STADI[ag.fresca] || [.3,1,.4])[FASE_IDX[fase]];
+  return p.map(v => Math.round(v * w * 10) / 10);
+}
+function bucciaHtml(ag){
+  const st = window.radarBuccia || ag.proprio;
+  const sel = '<div class="fase-sel" role="group" aria-label="Stato della buccia">' + BUCCIA_STATI.map(([k,nm]) =>
+    '<button type="button" class="fase-btn" aria-pressed="' + (st === k) + '" onclick="window.radarBuccia=\'' + k + '\';showDetail(currentDetailName)">' + nm + '</button>').join('') + '</div>';
+  const nota = st === ag.proprio ? '' : ag.secca
+    ? (ag.proprio === 'secca' ? 'Buccia fresca: profilo della scheda «' + ag.fresca + '».' : 'Buccia disidratata: profilo della scheda «' + ag.secca + '».')
+    : 'Buccia disidratata: profilo <strong>stimato</strong> dalla fresca (meno note volatili, verdi e acidule; più amaro dell\'albedo e note calde di scorza candita). Da tarare all\'assaggio.';
+  return sel + (nota ? '<div class="radar-nota">' + nota + '</div>' : '');
+}
 function faseHtml(js){
   return '<div class="fase-sel" role="group" aria-label="Quando si sente">' + FASI.map(([k,nm]) =>
     '<button type="button" class="fase-btn" aria-pressed="' + (window.radarFase === k) + '" onclick="window.radarFase=\'' + k + '\';' + js + '">' + nm + '</button>').join('') + '</div>';
@@ -4396,7 +4435,15 @@ function radarBox(nome){
   const BASE = ['Bacche di ginepro','Coriandolo','Angelica'].filter(n => n !== nome && PROFILO8[n]);
   const conBase = !!window.radarCardBase;
   const COLB = ['#6B7A72','#9A8F6B','#7B6B8F'];
-  const serie = [{vals:valFase(nome, window.radarFase), color:'var(--juniper)', label:nome, potenza: potenzaDi(nome)}];
+  const ag = agrumeBuccia(nome), bu = ag ? (window.radarBuccia || ag.proprio) : null;
+  const ALTRO = {fresca:'secca', secca:'fresca'}, COL_BUCCIA = '#C07A2C';
+  const stPrinc = bu === 'entrambe' ? ag.proprio : bu;
+  const serie = [{vals: ag ? valBuccia(ag, stPrinc, window.radarFase) : valFase(nome, window.radarFase), color:'var(--juniper)',
+    label: ag && stPrinc !== ag.proprio ? nome + (stPrinc === 'secca' ? ' (disidratata)' : ' (fresca)') : nome, potenza: potenzaDi(nome)}];
+  if (bu === 'entrambe') serie.push({vals: valBuccia(ag, ALTRO[ag.proprio], window.radarFase), color: COL_BUCCIA,
+    label: (ag.proprio === 'fresca' ? 'buccia disidratata' : 'buccia fresca'), dash: true});
+  const legBuccia = bu === 'entrambe' ? '<div class="radar-legend"><span><i style="background:var(--juniper)"></i>' + (ag.proprio === 'fresca' ? 'buccia fresca' : 'buccia disidratata') +
+    '</span><span><i style="background:' + COL_BUCCIA + '"></i>' + serie[1].label + ' (tratteggiata)</span></div>' : '';
   const accese = confAccese(nome);
   // Con botaniche sovrapposte, la principale si può spegnere: se i profili quasi coincidono il contorno
   // della sovrapposta si confonde con quello della principale e non si capisce se combaciano davvero.
@@ -4416,9 +4463,9 @@ function radarBox(nome){
       '<div class="radar-nota">' + (cond.length ? 'Note in comune con le base (rischio di sommarsi): ' + cond.join('; ') + '.' : 'Nessuna nota forte in comune con le base: ' + nome + ' occupa uno spazio diverso.') + '</div>';
   }
   const btn = BASE.length ? '<button type="button" class="ghost-btn radar-base-btn" aria-pressed="' + conBase + '" onclick="window.radarCardBase=!window.radarCardBase;showDetail(currentDetailName)">' + (conBase ? '− Togli le botaniche base' : '+ Aggiungi le botaniche base') + '</button>' : '';
-  return '<div class="radar-box"><div class="radar-title">Profilo sensoriale</div>' + faseHtml('showDetail(currentDetailName)') + btn +
-    radarSVG(serie, 280, conBase ? {insieme: true} : Object.assign(accese.length ? {insieme: true, eqInsieme: eqConBase(serie.map(se => ({n: se.label})))} : {},
-      {eq: serie.map(se => eqConBase([{n: se.label}]))})) + (accese.length && !conBase ? '<div class="radar-legend"><span' + (window.radarPrincipaleSpenta ? ' style="opacity:.45;text-decoration:line-through"' : '') + '><i style="background:var(--juniper)"></i>' + nome + '</span>' +
+  return '<div class="radar-box"><div class="radar-title">Profilo sensoriale</div>' + faseHtml('showDetail(currentDetailName)') + (ag ? bucciaHtml(ag) : '') + btn +
+    radarSVG(serie, 280, conBase ? {insieme: true} : Object.assign(accese.length ? {insieme: true, eqInsieme: eqConBase(serie.filter(se => !se.dash).map(se => ({n: se.label, v: se.vals})))} : {},
+      {eq: serie.map(se => eqConBase([{n: se.label, v: se.vals}]))})) + legBuccia + (accese.length && !conBase ? '<div class="radar-legend"><span' + (window.radarPrincipaleSpenta ? ' style="opacity:.45;text-decoration:line-through"' : '') + '><i style="background:var(--juniper)"></i>' + nome + '</span>' +
       '<button type="button" class="ghost-btn" style="padding:3px 10px;font-size:12.5px" aria-pressed="' + !!window.radarPrincipaleSpenta + '" onclick="window.radarPrincipaleSpenta=!window.radarPrincipaleSpenta;showDetail(currentDetailName)">' + (window.radarPrincipaleSpenta ? 'Mostra ' : 'Nascondi ') + nome + '</button>' + accese.map(x => '<button type="button" class="leg-off" title="Tocca per spegnerla" data-n="' + x.replace(/"/g,'&quot;') + '" onclick="radarConf(this.dataset.n)"><i style="background:' + confColore(x) + '"></i>' + x + ' \u2715</button>').join('') + '</div>' : '') + confrontoRadarHtml(nome, v) + '<div class="radar-nota">' + (FASE_NOTA[window.radarFase] ? FASE_NOTA[window.radarFase] + ' ' : '') + 'Si sente soprattutto in <strong>' + doveSi + '</strong>.</div>' + extra +
     potControllo(nome) + coerenzaHtml(nome) + '<div class="radar-nota">Il colore dell\'area indica la <strong>potenza</strong> della botanica, dal blu (delicata) al porpora (potentissima): due botaniche possono avere la stessa forma ma colori diversi. Stima orientativa (0 = assente, 5 = dominante) di quanto ogni nota pesa nel carattere della botanica. Da validare all\'assaggio. Si leggono i raggi, non l\'area: la forma e l\'area cambiano se si cambia l\'ordine degli assi, i valori no. La forma è quella della sola botanica; le note che prevalgono nel bicchiere si giudicano con le base dentro.</div></div>';
 }
@@ -5013,7 +5060,7 @@ function showDetail(name, nuovaScelta){
   if (!d) return;
   if (currentDetailName !== name) window.infSchedaAperta = false;
   currentDetailName = name;
-  if (window._confDi !== name){ window.radarConfronta = []; window._confDi = name; window.radarPrincipaleSpenta = false; }
+  if (window._confDi !== name){ window.radarConfronta = []; window._confDi = name; window.radarPrincipaleSpenta = false; window.radarBuccia = null; }
   if (nuovaScelta){
     // Scelta una nuova botanica: si riparte dal grado minimo consigliato in erbario per lei
     // (non dal riferimento generico 43°), cosi' i tasti su/giu mostrano da subito come
