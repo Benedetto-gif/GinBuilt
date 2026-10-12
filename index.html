@@ -3623,7 +3623,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 12 ottobre 2026, ore 14:20 · Tolte le schede della scorza disidratata di bergamotto e arancia: la buccia secca si vede con il tasto in ogni agrume</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 12 ottobre 2026, ore 14:30 · Buccia disidratata senza albedo: l'amaro non cresce</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -4155,13 +4155,15 @@ window.radarFase = window.radarFase || 'tutto';
 
 // ---------- Agrumi: buccia fresca o disidratata ----------
 // Nessun agrume ha una scheda a parte per la scorza secca: per tutti il profilo da secca si stima dalla fresca.
-// La regola generale, da tarare all'assaggio:
-// l'essiccazione disperde parte degli oli piu' volatili (agrumato -1) e le note verdi e acidule (acido -2, erbaceo -1);
-// i flavonoidi amari dell'albedo restano e si concentrano (amaro +1); l'ossidazione del limonene porta note calde
-// di scorza candita e marmellata (speziato +1, fruttato +1). Dolce, salino, floreale (linalolo, piu' stabile) e resinoso invariati.
+// La regola generale, da tarare all'assaggio, vale per la sola parte colorata (flavedo), senza la parte bianca (albedo),
+// come chiede la preparazione degli agrumi: l'essiccazione disperde parte degli oli piu' volatili (agrumato -1) e le note
+// verdi e acidule (acido -2, erbaceo -1); l'ossidazione del limonene porta note calde di scorza candita e marmellata
+// (speziato +1, fruttato +1). Amaro invariato: senza albedo mancano le sostanze amare (limonina, naringina); al massimo
+// l'amaro sembra piu' evidente perche' mancano le note di testa che lo coprivano. Dolce, salino, floreale (linalolo,
+// piu' stabile) e resinoso invariati.
 const BUCCIA_SECCA = {};   // nessuna scheda a parte per la scorza secca: per tutti gli agrumi la buccia disidratata si stima dalla fresca
 const BUCCIA_FRESCA = {}; Object.keys(BUCCIA_SECCA).forEach(k => { BUCCIA_FRESCA[BUCCIA_SECCA[k]] = k; });
-const BUCCIA_DELTA = [0, 1, -2, 0, -1, 0, -1, 1, 0, 1];
+const BUCCIA_DELTA = [0, 0, -2, 0, -1, 0, -1, 1, 0, 1];
 const BUCCIA_STATI = [['fresca','Buccia fresca'],['secca','Disidratata'],['entrambe','Entrambe']];
 function agrumeBuccia(nome){
   if (BUCCIA_FRESCA[nome]) return {fresca: BUCCIA_FRESCA[nome], secca: nome, proprio: 'secca'};
@@ -4188,7 +4190,7 @@ function bucciaHtml(ag){
     '<button type="button" class="fase-btn" aria-pressed="' + (st === k) + '" onclick="window.radarBuccia=\'' + k + '\';showDetail(currentDetailName)">' + nm + '</button>').join('') + '</div>';
   const nota = st === ag.proprio ? '' : ag.secca
     ? (ag.proprio === 'secca' ? 'Buccia fresca: profilo della scheda «' + ag.fresca + '».' : 'Buccia disidratata: profilo della scheda «' + ag.secca + '».')
-    : 'Buccia disidratata: profilo <strong>stimato</strong> dalla fresca (meno note volatili, verdi e acidule; più amaro dell\'albedo e note calde di scorza candita). Da tarare all\'assaggio.';
+    : 'Buccia disidratata, solo la parte colorata senza albedo: profilo <strong>stimato</strong> dalla fresca (meno note volatili, verdi e acidule; note calde di scorza candita). L\'amaro non cresce, perché le sostanze amare stanno nell\'albedo; può solo sembrare più evidente, senza le note di testa che lo coprivano. Da tarare all\'assaggio.';
   return sel + (nota ? '<div class="radar-nota">' + nota + '</div>' : '');
 }
 function faseHtml(js){
