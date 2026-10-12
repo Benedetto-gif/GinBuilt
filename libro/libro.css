@@ -158,3 +158,8 @@ a.sigla,a.termine{color:#B5651D;text-decoration:underline dotted;text-underline-
 .sovr-nome{text-align:center;font-size:.92em;margin:.1em 0 .5em;}
 .defs{display:none;}
 .def-pop p{margin:.2em 0;}
+
+table.tab-comb{font-size:.85em;}
+table.tab-comb td.tc-num{text-align:center;white-space:nowrap;}
+table.tab-comb .tc-nota{font-size:.88em;color:#666;}
+table.tab-comb tr.evitare td{background:#FBE9E5;color:#8A2F1C;}

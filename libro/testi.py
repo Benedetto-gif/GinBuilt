@@ -1,6 +1,5 @@
-# Testi originali del libro: introduzione (bozza) e fonti
+# Testi originali del libro: introduzione, uso, fonti, ridondanze, appendice sulla decolorazione
 INTRO = '''<section epub:type="foreword"><h1>Introduzione</h1>
-<p class="bozza">Bozza da rivedere dall'autore.</p>
 <p>Questo libro non è nato come libro. È nato come un quaderno di lavoro, poi come un'applicazione, GinBuilder, costruita una domanda alla volta: quanta scorza di limone per cento millilitri di alcol, a quale gradazione si estrae il ginepro senza tirare fuori l'amaro, perché un infuso limpido diventa torbido appena lo si allunga con l'acqua. Ogni risposta apriva una domanda nuova, e ogni domanda chiedeva una pagina in più.</p>
 <p>A un certo punto le pagine sono diventate abbastanza da raccontare qualcosa di più grande di una ricetta. Il gin compound, fatto per infusione e non per distillazione, ha la fama di essere il gin dei dilettanti. È vero il contrario: proprio perché non c'è l'alambicco a fare da filtro, ogni scelta si vede nel bicchiere. La gradazione dell'alcol decide quali molecole entrano e quali restano fuori; il tempo decide se una scorza dà profumo o amarezza; il rapporto fra le botaniche decide se il gin ha un carattere o solo un elenco di ingredienti.</p>
 <p>Ho cercato di tenere insieme due modi di guardare il gin. Il primo è quello del naso e della lingua: l'assaggio, che resta il giudice finale. Il secondo è quello della chimica e della fisiologia: le molecole che ogni botanica porta, i recettori che le leggono, i canali nervosi che trasformano un olio essenziale in una sensazione di fresco o di calore. Il radar a dieci assi che attraversa tutto il libro è il punto d'incontro fra i due: una stima, dichiaratamente imperfetta, che l'assaggio deve correggere.</p>
@@ -98,3 +97,77 @@ RIDONDANZE = '''<section><h1>Ridondanze e complementari</h1>
 <p>Una botanica molto potente può coprirne una delicata anche se le molecole sono diverse: non è una somma, è un mascheramento. Chiodo di garofano, genziana o lavanda in dose piena possono far sparire un fiore o un'erba leggera. Per questo, oltre alle molecole, conta la potenza di ciascuna botanica.</p>
 <h2>Come si misura la somiglianza</h2>
 <p>Due botaniche sono tanto più simili quanto più i loro radar hanno la stessa forma. La somiglianza si calcola come coseno fra i due profili sui dieci assi: 100% vuol dire forma identica, valori bassi profili che guardano in direzioni diverse. Sopra una soglia di lavoro (nell'app regolabile, di solito fra il 60 e il 70%) due botaniche si considerano simili per profilo e quindi a rischio di somma. Sotto la soglia possono essere vicine solo per famiglia o per funzione: liquirizia e angelica, per esempio, sono entrambe radici leganti ma con profili diversi, e si completano più che sommarsi.</p></section>'''
+
+# Appendice D: la decolorazione (testo originale del libro; le parole del glossario si collegano da sole)
+DECOLORAZIONE = '''<section epub:type="appendix"><h1>Appendice D<br/>La decolorazione</h1>
+
+<p>Chi prepara per la prima volta un gin compound di solito ha una sorpresa: il liquido non è trasparente come quello delle bottiglie in commercio. Può essere verdolino, giallo paglierino, ambrato, a volte rosato. Non è un errore. È la conseguenza diretta del metodo.</p>
+<p>Il gin distillato è incolore perché passa per l'alambicco: l'alcol e gli aromi evaporano e si ricondensano, mentre i pigmenti, che sono molecole pesanti, restano nella caldaia. Il gin compound invece nasce per macerazione: le botaniche restano immerse nell'alcol per ore o giorni, e insieme agli aromi cedono anche quello che le colora. Ciò che è entrato nel liquido ci resta, a meno di toglierlo.</p>
+<p>Decolorare significa ridurre o eliminare quel colore. Questa appendice spiega da dove viene, perché alcune scelte lo aumentano, come prevenirlo e come toglierlo quando c'è già. Ogni metodo ha un prezzo, quasi sempre pagato in aroma: per questo, prima di decidere come decolorare, conviene chiedersi se decolorare.</p>
+
+<section class="box"><h3>Una parola sul grado alcolico</h3><div class="howto-body">
+<p>In questa appendice, come nel resto del libro, il <strong>grado alcolico</strong> non è la quantità di alcol che si usa, ma la sua concentrazione: la percentuale di alcol nel volume del liquido, espressa in % vol. Cento millilitri a 70% vol contengono 70 ml di alcol e 30 di acqua; cento millilitri a 40% vol ne contengono 40 di alcol e 60 di acqua.</p>
+<p>Il grado alcolico conta perché alcol e acqua sciolgono cose diverse. L'acqua scioglie le molecole polari (zuccheri, acidi, tannini); l'alcol scioglie quelle apolari, cioè oli, cere e molti pigmenti. Un liquido a grado alcolico alto, quindi, tira fuori dalle botaniche soprattutto oli e pigmenti grassi; uno a grado alcolico basso, che contiene più acqua, tira fuori di più le sostanze che amano l'acqua. Per il colore questo è decisivo: <strong>non esiste un grado alcolico che non colora</strong>. Esiste il grado alcolico che colora meno con quella botanica.</p>
+</div></section>
+
+<section class="box"><h3>Da dove viene il colore</h3><div class="howto-body">
+<p>Il colore di un infuso viene da poche famiglie di pigmenti. Riconoscerle permette di prevedere il colore prima di cominciare e di scegliere il rimedio giusto, perché ogni famiglia si comporta in modo diverso.</p>
+<table>
+<thead><tr><th>Pigmento e colore</th><th>Da quali botaniche</th><th>Quando passa di più</th></tr></thead>
+<tbody>
+<tr><td><strong>Clorofilla</strong><br/>verde</td><td>foglie ed erbe fresche: basilico, menta, salvia, foglie di cappero, finocchio di mare</td><td>a grado alcolico alto e con tempi lunghi. Alla luce si degrada e vira al verde oliva, poi al giallo-bruno</td></tr>
+<tr><td><strong>Carotenoidi</strong><br/>giallo, arancio</td><td>scorze degli agrumi (il flavedo), rosa canina, alchechengi</td><td>a grado alcolico alto, perché sono grassi come gli oli delle scorze</td></tr>
+<tr><td><strong>Crocine</strong><br/>giallo oro</td><td>zafferano</td><td>anche a grado alcolico basso: sono carotenoidi insolitamente solubili in acqua. Ne basta pochissimo</td></tr>
+<tr><td><strong>Curcumina</strong><br/>giallo intenso</td><td>curcuma</td><td>a grado alcolico alto. Molto sensibile alla luce, che la sbiadisce</td></tr>
+<tr><td><strong>Antociani</strong><br/>rosso, viola, blu</td><td>ibisco, mirtillo, ribes, mora, lamponi, shiso rosso</td><td>anche a grado alcolico basso, perché amano l'acqua. Cambiano tinta con l'acidità: più rossi in ambiente acido</td></tr>
+<tr><td><strong>Tannini e flavonoidi</strong><br/>paglierino, ambra, bruno</td><td>radici, cortecce, tè, foglie secche, la parte bianca delle scorze (albedo)</td><td>a grado alcolico più basso e con tempi lunghi. Con il tempo e l'aria scuriscono</td></tr>
+<tr><td><strong>Bruni di tostatura e di cura</strong><br/>ambra, marrone</td><td>caffè, cacao, vaniglia, fave di tonka, liquirizia, cannella</td><td>a ogni grado alcolico: sono colori già formati nella botanica, che si sciolgono e basta</td></tr>
+</tbody>
+</table>
+<p>A questi si aggiunge un colore che non viene da nessuna botanica ma dal tempo: l'ossidazione. L'ossigeno dell'aria, aiutato da luce e calore, trasforma lentamente tannini e pigmenti e porta tutto verso il giallo e il bruno. Un infuso che il primo giorno era verde brillante e dopo un mese è color fieno ha subito proprio questo.</p>
+</div></section>
+
+<section class="box"><h3>Prevenire: meno colore all'origine</h3><div class="howto-body">
+<p>Il colore che non entra non bisogna toglierlo. Prevenire costa poco e non sottrae aroma, mentre ogni metodo di decolorazione ne porta via un po'. Le scelte che contano di più sono queste.</p>
+<ol>
+<li><strong>La parte giusta della pianta.</strong> Dalle scorze si prende solo il flavedo, la buccia colorata, senza la parte bianca sottostante, che dà amaro e tannini. Radici e cortecce a pezzetti, non in polvere: la polvere cede tutto e subito, colore compreso.</li>
+<li><strong>Il grado alcolico adatto al pigmento.</strong> Per le erbe verdi, un grado alcolico medio estrae gli aromi lasciando indietro buona parte della clorofilla. Per le botaniche ricche di tannini, invece, un grado alcolico più alto limita il passaggio dei tannini. Il grado alcolico consigliato per ogni botanica, nel capitolo 2, tiene già conto di questo equilibrio.</li>
+<li><strong>Il tempo.</strong> Gli aromi di erbe e fiori passano in fretta, il colore e le note vegetali continuano a passare dopo. Per le foglie bastano spesso poche ore: assaggiare e togliere la botanica appena l'aroma è giusto.</li>
+<li><strong>Infusi separati.</strong> Ogni botanica nel suo vasetto, poi si uniscono gli estratti. Così si scopre quale botanica colora, la si può trattare a parte o dosare di meno, senza decolorare tutto il gin.</li>
+<li><strong>Buio, fresco, vasi pieni.</strong> La luce degrada clorofilla e curcumina, il calore accelera l'ossidazione, l'aria nel vaso porta ossigeno. Vetro scuro, armadio, contenitori riempiti fino all'orlo.</li>
+</ol>
+</div></section>
+
+<section class="box"><h3>Togliere il colore: che cosa funziona e che cosa no</h3><div class="howto-body">
+<p><strong>La filtrazione non decolora.</strong> È l'equivoco più comune. Un filtro, anche finissimo, trattiene le particelle sospese: frammenti di pianta, polveri, goccioline d'olio. I pigmenti invece sono sciolti nel liquido come lo zucchero nel caffè, molecola per molecola, e attraversano qualsiasi carta. La filtrazione rende il gin limpido, cioè non torbido; non lo rende incolore. Limpido e incolore sono due cose diverse.</p>
+<p><strong>Il riposo al freddo aiuta poco.</strong> Tenere la miscela in frigorifero o in freezer e filtrarla ancora fredda (capitolo 3) separa gli oli in eccesso e con loro una piccola parte dei pigmenti grassi. Il colore si attenua appena; serve soprattutto contro la torbidità.</p>
+<p><strong>Il carbone attivo alimentare è il metodo principale.</strong> È carbone trattato in modo da diventare una spugna piena di pori microscopici: un solo grammo ha una superficie interna di centinaia di metri quadrati. Le molecole grandi e piatte, come i pigmenti, vi si attaccano e restano intrappolate. Questo fenomeno si chiama adsorbimento. Il limite è che il carbone non sa distinguere: trattiene anche una parte delle molecole aromatiche, soprattutto le più pesanti, e con le note vegetali indesiderate porta via anche un po' di profumo. Per questo si procede per prove:</p>
+<ol>
+<li>Si usa solo carbone attivo per uso alimentare o enologico, in polvere, quello che si trova nei negozi di articoli per enologia.</li>
+<li>Si preparano quattro campioni da 50 ml della miscela già diluita al grado alcolico finale. Il primo resta senza carbone e serve da confronto; agli altri tre si aggiungono 0,025 g, 0,05 g e 0,1 g di carbone, cioè 0,5, 1 e 2 grammi per litro. Serve una bilancia da 0,01 g.</li>
+<li>Si lasciano al buio da 2 a 24 ore, agitando ogni tanto.</li>
+<li>Si filtra ogni campione con carta fine da laboratorio o con un filtro a membrana. Le particelle di carbone sono finissime: se il liquido esce grigiastro, si ripassa.</li>
+<li>Si confrontano i campioni su un foglio bianco per il colore e al naso e in bocca per l'aroma, sempre a fianco del campione non trattato. Si sceglie la dose più bassa che dà un colore accettabile e si applica in proporzione a tutto il lotto.</li>
+</ol>
+<p>Il colore che resta dopo il carbone è spesso un giallo paglierino leggero, dovuto a tannini e flavonoidi, che il carbone toglie meno bene della clorofilla.</p>
+<p><strong>Il PVPP contro gialli e bruni.</strong> Il polivinilpolipirrolidone (PVPP) è una polvere insolubile usata in enologia per togliere ai vini bianchi i polifenoli che li fanno ingiallire e imbrunire. Si lega a tannini e flavonoidi, non alla clorofilla. Serve quindi quando il colore da togliere è ambrato o bruno, non quando è verde. Si usa come il carbone: prove su campioni, contatto di qualche ora, filtrazione fine. La dose si trova sulla confezione del prodotto enologico.</p>
+<p><strong>La luce del sole: sconsigliata.</strong> Esporre l'infuso al sole sbianca davvero la clorofilla, ma la stessa luce ossida gli oli delle scorze e altre molecole aromatiche. Il colore se ne va, l'aroma pure, e compaiono odori di vernice o di cartone.</p>
+<p><strong>La ridistillazione: la soluzione radicale.</strong> Ridistillare l'infuso elimina tutti i pigmenti, per la stessa ragione per cui il gin distillato è incolore. Ma il risultato non è più un gin compound, il profilo aromatico cambia, e in Italia distillare alcol in casa senza l'autorizzazione dell'Agenzia delle Dogane non è consentito.</p>
+</div></section>
+
+<section class="box"><h3>Quando il colore si può tenere</h3><div class="howto-body">
+<p>Un gin compound leggermente colorato non è un gin sbagliato. Il colore racconta che cosa c'è dentro: il paglierino delle scorze, il verde delle erbe, il rosa dell'ibisco. Molti produttori lo lasciano apposta, e alcuni lo cercano, come nei gin rosati ai frutti rossi.</p>
+<p>Il colore diventa un problema in tre casi: quando è torbido o sporco anziché limpido; quando cambia nel tempo, segno che il gin si sta ossidando; quando non corrisponde a ciò che si vuole far sentire, come un verde da sfalcio in un gin pensato agrumato. Negli altri casi vale la regola di tutto il libro: decide il bicchiere. Se il gin colorato è più buono di quello decolorato, il colore resta.</p>
+</div></section>
+
+<section class="box"><h3>In pratica</h3><div class="howto-body">
+<ul>
+<li>Prima di macerare, chiediti quali pigmenti porta ogni botanica (tabella sopra) e scegli grado alcolico e tempo di conseguenza.</li>
+<li>Macera ogni botanica a parte, al buio, in vasi pieni; togli le erbe appena l'aroma è giusto.</li>
+<li>Unisci, diluisci, riposa al freddo e filtra: avrai un gin limpido, non per forza incolore.</li>
+<li>Se il colore disturba, fai le prove di carbone attivo (per il verde) o di PVPP (per l'ambra e il bruno) su piccoli campioni, sempre confrontando con un campione non trattato.</li>
+<li>Annota nella scheda di prova colore, metodo, dose e tempo: la prossima volta saprai prevenire anziché correggere.</li>
+</ul>
+</div></section>
+
+</section>'''

@@ -2,10 +2,11 @@
 import json, math, re, os, html, zipfile, unicodedata, datetime, sys, random
 QUI = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, QUI)
-from testi import INTRO, USO, FONTI, RIDONDANZE
+from testi import INTRO, USO, FONTI, RIDONDANZE, DECOLORAZIONE
 D = json.load(open(os.path.join(QUI, 'dati.json')))
 P, ASSI, ORD, MOL, MASTER, DOSE, MAT, PAN = D['P'], D['ASSI'], D['ORD'], D['MOL'], D['MASTER'], D['DOSE'], D['MAT'], D['PAN']
 SENS, UMAMI, ASSI_SENS = D.get('SENS', {}), D.get('UMAMI', {}), D.get('ASSI_SENS', [])
+EXT = D.get('EXT', {})   # estrazione consigliata per botanica, come nell'app (grado alcolico, tempo, limiti)
 OUT = sys.argv[1] if len(sys.argv) > 1 else 'Gin-in-provetta.epub'
 CSS = open(os.path.join(QUI, 'libro.css')).read()
 JS = open(os.path.join(QUI, 'libro.js')).read()
@@ -48,7 +49,7 @@ def radar_sens(vals, size=220, rid=''):
     g += '<polygon points="" class="ro" fill="#C0733A" fill-opacity="0.22" stroke="#C0733A" stroke-width="2" stroke-dasharray="4 3"/>'
     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-48 0 %d %d" class="radar"%s role="img" aria-label="Sensazioni in bocca: %s">%s</svg>' % (
         size + 96, size, (' id="%s" data-s="%d"' % (rid, size)) if rid else '', e(', '.join('%s %s' % (a, v) for a, v in zip(ASSI_SENS, vals))), g)
-UMAMI_NOTA = 'È un gusto, non una sensazione, e resta fuori dal radar: in un gin per macerazione passa poco, perché glutammato e nucleotidi non sono volatili e si sciolgono male nell\'alcol forte.'
+UMAMI_NOTA = 'È un gusto, non una sensazione, e resta fuori dal radar: in un gin per macerazione passa poco, perché glutammato e nucleotidi non sono volatili e si sciolgono male quando il grado alcolico è alto.'
 def sens_blocco(n):
     v = SENS.get(n) or [0]*len(ASSI_SENS)
     forti = sorted([(a, x) for a, x in zip(ASSI_SENS, v) if x >= 3], key=lambda t: -t[1])
@@ -183,6 +184,24 @@ def add(href, title, body, lvl, scripted=False):
     body = '<div class="gp-pagina" data-p="%s">%s</div>' % (href, body)   # nome e confini della pagina, per il ritorno
     files.append((slug(href.replace('.xhtml', '')), href, title, page(title, body, scripted), scripted, lvl))
 
+
+# ---------- estrazione consigliata (stessi dati e stesse regole dell'app) ----------
+def _gr(a): return '%d%% vol' % a[0] if a[0] == a[1] else '%d–%d%% vol' % (a[0], a[1])
+def _tempo(t):
+    g = t[1] >= 72; k = 24 if g else 1; u = ' giorni' if g else ' h'
+    f = lambda v: ('%g' % (round(v / k * 10) / 10)).replace('.', ',')
+    return (f(t[0]) if round(t[0]) == round(t[1]) else f(t[0]) + '–' + f(t[1])) + u
+def estrazione(n, cat):
+    x = EXT.get(n)
+    if not x: return None, None
+    stato = ('scorza fresca' if cat == 'Agrumi' else 'botanica fresca') if x['rif'] == 'fresco' else 'botanica secca'
+    s = '%s per %s (%s)' % (_gr(x['a']), _tempo(x['t']), stato)
+    if x.get('f'): s += '; da fresca %s per %s' % (_gr(x['f']['a']), _tempo(x['f']['t']))
+    s = e(s) + '. ' + e(x.get('n') or '')
+    l = x.get('lim')
+    lim = ('<strong>Evita oltre %d%% vol:</strong> %s. <strong>Sotto %d%% vol:</strong> %s.' % (l['m'], e(l['altoTxt']), l['basso'], e(l['bassoTxt']))) if l else None
+    return s, lim
+
 # ---------- botaniche: indice e collegamenti ----------
 seen = set(); per_cat = {}
 for m in MASTER:
@@ -270,7 +289,7 @@ add('cap1.xhtml', 'Capitolo 1 · Storia del gin', '<section epub:type="chapter">
 
 # ---------- 2. Le botaniche ----------
 add('cap2.xhtml', 'Capitolo 2 · Le botaniche', '''<section epub:type="chapter"><h1>Capitolo 2<br/>Le botaniche</h1>
-<p>Le %d botaniche della libreria di GinBuilder, divise in %d famiglie. Ogni scheda riporta il nome botanico, la parte usata, il profilo aromatico, il carattere, la potenza, la dose di riferimento, le molecole da estrarre, il periodo di raccolta e le zone italiane, con i suoi due radar: il profilo sensoriale e le sensazioni in bocca.</p>
+<p>Le %d botaniche della libreria di GinBuilder, divise in %d famiglie. Ogni scheda riporta il nome botanico, la parte usata, il profilo aromatico, il carattere, la potenza, la dose, il grado alcolico consigliato con i suoi limiti, le molecole da estrarre, il periodo di raccolta e le zone italiane, con i suoi due radar: il profilo sensoriale e le sensazioni in bocca.</p>
 <ol class="indice"><li><a href="cap2-radar.xhtml">Come leggere il radar</a></li><li><a href="cap2-famiglie.xhtml">Le famiglie delle botaniche</a></li></ol></section>''' % (len(seen), len(cat_list)), 1)
 ES_BOT = ['Limone', 'Bacche di ginepro', 'Rosa', 'Bergamotto', 'Lentisco']
 TAB_ES = ('<table class="matrice-es"><thead><tr><th></th>' + ''.join('<th title="%s">%s</th>' % (e(a), e(a[:3])) for a in ASSI) + '</tr></thead><tbody>' +
@@ -334,7 +353,9 @@ for c in cat_list:
                  ('Profilo aromatico', e(m.get('profilo') or '—')), ('Carattere', e(m.get('carattere') or '—')),
                  ('Funzione', e(m.get('funzione_op') or '—')),
                  ('Potenza', '%s/10 (intensità %s/5, persistenza %s/5)' % (m.get('potenza10', '—'), m.get('intensita', '—'), m.get('persistenza', '—'))),
-                 ('Dose di riferimento', ('%s g per 100 ml a 43%%, tempo %s' % (str(dose.get('test')).replace('.', ','), e(dose.get('tempo') or m.get('tempo') or '—'))) if dose.get('test') else '—'),
+                 ('Dose', ('%s g per 100 ml di infuso' % str(dose.get('test')).replace('.', ',')) if dose.get('test') else '—'),
+                 ('Grado alcolico consigliato', estrazione(n, c)[0] or '—'),
+                 ('Limiti del grado alcolico', estrazione(n, c)[1] or '—'),
                  ('Raccolta', e(m.get('periodo_raccolta') or '—')), ('Zone in Italia', e(m.get('zone_italia') or '—'))]
         mol = MOL.get(n) or (MOL.get('Mirto foglie') if n == 'Mirto' else None)
         prev = fam[k-1]['botanica'] if k > 0 else None; nxt = fam[k+1]['botanica'] if k + 1 < len(fam) else None
@@ -368,7 +389,10 @@ add('cap3.xhtml', "Capitolo 3 · L'estrazione", '''<section epub:type="chapter">
 <p>Nel gin compound tutto passa per l'infusione: l'alcol e l'acqua scelgono quali molecole portare fuori dalla botanica e quali lasciare dentro. Questo capitolo spiega come la gradazione decide la solubilità, quali sostanze si vogliono estrarre e quali rovinano il gusto, che cosa succede quando si diluisce e come si chiarifica e si filtra.</p>
 <ol class="indice">%s</ol></section>''' % ''.join('<li><a href="cap3-%d.xhtml">%s</a></li>' % (i+1, e(t)) for i, t in enumerate(ESTR)), 1)
 for i, t in enumerate(ESTR):
-    add('cap3-%d.xhtml' % (i+1), t, '<section><h1>%s</h1>%s</section>' % (e(t), sez('nozioni', t)), 2)
+    corpo = sez('nozioni', t)
+    if i in (1, 2):   # rimando all'appendice sulla decolorazione dalle pagine che parlano di pigmenti e colore
+        corpo += '<p class="nota">Da dove viene ogni colore, come prevenirlo e come toglierlo è spiegato passo per passo nell\'<a href="app-decolorazione.xhtml">Appendice D · La decolorazione</a>.</p>'
+    add('cap3-%d.xhtml' % (i+1), t, '<section><h1>%s</h1>%s</section>' % (e(t), corpo), 2)
 
 # ---------- 4. Costruire un gin ----------
 add('cap4.xhtml', 'Capitolo 4 · Costruire un gin', '''<section epub:type="chapter"><h1>Capitolo 4<br/>Costruire un gin</h1>
@@ -500,6 +524,7 @@ for k in range(12):
 cal += '<p class="nota">Periodi indicativi: altitudine e annata li spostano anche di settimane. Raccogli solo dove è consentito e lontano da strade e coltivi trattati.</p></section>'
 add('app-calendario.xhtml', 'Appendice B · Calendario delle raccolte', cal, 1, True)
 add('app-fonti.xhtml', 'Appendice C · Fonti e bibliografia', FONTI, 1)
+add('app-decolorazione.xhtml', 'Appendice D · La decolorazione', DECOLORAZIONE, 1)
 
 # ---------- indice, opf, zip ----------
 # indice del lettore: solo capitoli e sezioni (le botaniche sono nell'indice a tendina del libro)

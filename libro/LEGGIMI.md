@@ -7,3 +7,5 @@ Strumenti per generare l'ePub del trattato a partire dai dati di GinBuilder.
 
 I colori degli SVG sono scritti come attributi, perché Kotobee Reader ignora il CSS applicato agli SVG.
 Le parti interattive richiedono un lettore che esegua JavaScript, come Kotobee Reader.
+
+Testi originali del libro in `testi.py`: introduzione, uso, fonti, ridondanze e Appendice D (la decolorazione). Le schede delle botaniche riportano dose, grado alcolico consigliato e limiti presi dagli stessi dati dell'app (`EXT` in `dati.json`, da `export.js`): nessun riferimento fisso a 43°.
