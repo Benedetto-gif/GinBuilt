@@ -237,6 +237,7 @@ function gpId(id){ if (!id) return null; var el = null; try { el = document.getE
         for (var i = 0; i < n; i++){ var a = -Math.PI / 2 + i * 2 * Math.PI / n; out.push((c + R * sv[i] / 5 * Math.cos(a)).toFixed(1) + ',' + (c + R * sv[i] / 5 * Math.sin(a)).toFixed(1)); }
         so.setAttribute('points', out.join(' '));
       }
+      else if (so) so.setAttribute('points', '');   // senza sensazioni (es. buccia disidratata stimata): niente profilo vecchio sovrapposto
     });
   })(gruppi[g]);
   // matrice dei sentori: la casella scelta resta evidenziata (stile scritto sul tasto, perche' alcuni lettori
