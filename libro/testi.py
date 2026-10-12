@@ -43,6 +43,9 @@ FONTI = '''<section epub:type="bibliography"><h1>Fonti e bibliografia</h1>
 <li>T. J. Leitereg et al., «Evidence for the difference between the odours of the optical isomers (+)- and (−)-carvone», <em>Nature</em> 230 (1971), 455–456.</li>
 <li>G. M. Shepherd, «Smell images and the flavour system in the human brain», <em>Nature</em> 444 (2006), 316–321. Olfatto retronasale e integrazione del sapore.</li>
 <li>H. L. Gibbins, G. H. Carpenter, «Alternative mechanisms of astringency – what is the role of saliva?», <em>Journal of Texture Studies</em> 44 (2013), 364–375. L'astringenza e le proteine salivari.</li>
+<li>N. Schöbel et al., «Astringency is a trigeminal sensation that involves the activation of G protein–coupled signaling by phenolic compounds», <em>Chemical Senses</em> 39 (2014), 471–487. L'astringenza passa dal trigemino, con un meccanismo a proteine G.</li>
+<li>M. Kurogi et al., «Auto-oxidation products of epigallocatechin gallate activate TRPA1 and TRPV1 in sensory neurons», <em>Chemical Senses</em> 40 (2015), 27–46. Le catechine ossidate del tè aprono TRPA1 e TRPV1.</li>
+<li>A. Kadková et al., «TRPV2 and TRPC5 are potential targets for astringent phytochemicals», <em>Current Research in Food Science</em> 12 (2026), 101306.</li>
 <li>Società Italiana di Scienze Sensoriali (a cura di), <em>Atlante sensoriale dei prodotti alimentari</em>, Tecniche Nuove, Milano (2013). Metodi e lessico dell'analisi sensoriale, in italiano.</li>
 </ul>
 <h2>I canali ionici: caldo, freddo, pungente, formicolio</h2>
@@ -58,6 +61,11 @@ FONTI = '''<section epub:type="bibliography"><h1>Fonti e bibliografia</h1>
 <li>A. M. Peier et al., «A heat-sensitive TRP channel expressed in keratinocytes», <em>Science</em> 296 (2002), 2046–2049; H. Xu et al., «Oregano, thyme and clove-derived flavors and skin sensitizers activate specific TRP channels», <em>Nature Neuroscience</em> 9 (2006), 628–635. TRPV3 nell'epitelio; timolo, carvacrolo ed eugenolo.</li>
 <li>D. M. Bautista et al., «Pungent agents from Szechuan peppers excite sensory neurons by inhibiting two-pore potassium channels», <em>Nature Neuroscience</em> 11 (2008), 772–779. Il sanshool e i canali KCNK.</li>
 <li>N. Hagura, H. Barber, P. Haggard, «Food vibrations: Asian spice sets lips trembling», <em>Proceedings of the Royal Society B</em> 280 (2013). Il formicolio del sansho percepito come una vibrazione di circa 50 Hz.</li>
+<li>A. Hinman, H.-H. Chuang, D. M. Bautista, D. Julius, «TRP channel activation by reversible covalent modification», <em>PNAS</em> 103 (2006), 19564–19568; L. J. Macpherson et al., «Noxious compounds activate TRPA1 ion channels through covalent modification of cysteines», <em>Nature</em> 445 (2007), 541–545. Il «grimaldello» di TRPA1.</li>
+<li>H. Xu, N. T. Blair, D. E. Clapham, «Camphor activates and strongly desensitizes the transient receptor potential vanilloid subtype 1 channel in a vanilloid-independent mechanism», <em>Journal of Neuroscience</em> 25 (2005), 8924–8937; T. Selescu et al., «Camphor activates and sensitizes transient receptor potential melastatin 8 (TRPM8) to cooling and icilin», <em>Chemical Senses</em> 38 (2013), 563–575.</li>
+<li>M. Takaishi et al., «1,8-cineole, a TRPM8 agonist, is a novel natural antagonist of human TRPA1», <em>Molecular Pain</em> 8 (2012), 86.</li>
+<li>C. Jansen et al., «Myrcene and terpene regulation of TRPV1», <em>Channels</em> 13 (2019), 344–366. Il mircene apre TRPV1; limonene, linalolo e pinene no.</li>
+<li>B. G. Green, «Rapid recovery from capsaicin desensitization during recurrent stimulation», <em>Pain</em> 68 (1996), 245–253. Il bruciore che cresce con gli assaggi ravvicinati e cala dopo una pausa.</li>
 </ul>
 <h2>L'origine dei nomi e le domande del curioso</h2>
 <ul>
