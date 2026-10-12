@@ -3623,7 +3623,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 12 ottobre 2026, ore 14:40 · Agrumi di sola scorza: acido a 0 (l'acido citrico sta nella polpa)</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 12 ottobre 2026, ore 16:35 · Agrumi di sola scorza: acido a 0</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -4191,9 +4191,7 @@ function bucciaHtml(ag){
   const nota = st === ag.proprio ? '' : ag.secca
     ? (ag.proprio === 'secca' ? 'Buccia fresca: profilo della scheda «' + ag.fresca + '».' : 'Buccia disidratata: profilo della scheda «' + ag.secca + '».')
     : 'Buccia disidratata, solo la parte colorata senza albedo: profilo <strong>stimato</strong> dalla fresca (meno note volatili e verdi; note calde di scorza candita). L\'amaro non cresce, perché le sostanze amare stanno nell\'albedo; può solo sembrare più evidente, senza le note di testa che lo coprivano. Da tarare all\'assaggio.';
-  // la nota vale solo per gli agrumi di sola scorza; kumquat e finger lime portano polpa e restano acidi
-  const acido = PROFILO8[ag.fresca][2] ? '' : '<div class="radar-nota">Acido 0: l\'acido citrico sta nella polpa, non nella scorza. Che la scorza "sappia di limone" è un\'impressione del naso, già contata nell\'agrumato.</div>';
-  return sel + (nota ? '<div class="radar-nota">' + nota + '</div>' : '') + acido;
+  return sel + (nota ? '<div class="radar-nota">' + nota + '</div>' : '');
 }
 function faseHtml(js){
   return '<div class="fase-sel" role="group" aria-label="Quando si sente">' + FASI.map(([k,nm]) =>
