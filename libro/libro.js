@@ -224,23 +224,48 @@ function gpId(id){ if (!id) return null; var el = null; try { el = document.getE
       }
     });
   })(gruppi[g]);
-  // matrice dei sentori
+  // matrice dei sentori: la casella scelta resta evidenziata (stile scritto sul tasto, perche' alcuni lettori
+  // ignorano il CSS dei pulsanti) e sotto la griglia compare l'elenco dei sentori di quell'incrocio, con i nomi
+  // che portano alla scheda. Prima si vedeva solo cambiare il conteggio, senza capire a che cosa si riferiva.
   var celle = document.querySelectorAll('.cella'), schede = document.querySelectorAll('article.sent');
   if (!schede.length) return;
-  var filtro = { a: null, k: null }, q = gpId('mq'), conta = gpId('mconta');
+  var filtro = { a: null, k: null }, q = gpId('mq'), conta = gpId('mconta'), sel = gpId('msel');
+  var NS = {gusto:'Gusto', olfatto:'Olfatto', trigemino:'Trigemino', tatto:'Tatto'};
+  var SPIEGA = {gusto:'sentite dalla lingua', olfatto:'sentite dal naso, anche da dietro mentre si deglutisce', trigemino:'sentite dai nervi della bocca come caldo, fresco o pizzicore', tatto:'sentite dalla bocca come attrito, secchezza o formicolio'};
+  var COL = {gusto:'#C0583E', olfatto:'#4C7BB5', trigemino:'#B8921F', tatto:'#5D6F8C'};
+  function vai(id){ var el = gpId(id); if (!el) return; try { el.scrollIntoView({ block: 'start', behavior: 'smooth' }); } catch(e){ try { el.scrollIntoView(); } catch(e2){} } }
+  function elenco(visibili, t){
+    if (!sel) return;
+    var h = '';
+    if (filtro.a) h += '<p><strong style="color:' + COL[filtro.k] + '">' + filtro.a + ' \u00d7 ' + NS[filtro.k] + '</strong>: note \u00ab' + filtro.a.toLowerCase() + '\u00bb ' + SPIEGA[filtro.k] + '. ' + (visibili.length === 1 ? 'Una scheda' : visibili.length + ' schede') + ':</p>';
+    else if (t) h += '<p><strong>\u00ab' + t + '\u00bb</strong> compare in ' + (visibili.length === 1 ? 'una scheda' : visibili.length + ' schede') + ':</p>';
+    else { sel.innerHTML = '<p class="nota">Nessuna casella scelta: sotto ci sono tutte le schede.</p>'; return; }
+    h += '<ul class="msel-lista">';
+    for (var i = 0; i < visibili.length; i++){
+      var s = visibili[i], b = s.getAttribute('data-b') || '';
+      h += '<li><button type="button" class="msel-vai" data-id="' + s.id + '" style="font:inherit;background:none;border:0;padding:0;color:#2F7259;text-decoration:underline;cursor:pointer;text-align:left">' + s.getAttribute('data-t') + '</button>' + (b ? ' <span class="nota">(' + b + (b.split(',').length >= 3 ? '\u2026' : '') + ')</span>' : '') + '</li>';
+    }
+    h += '</ul><p><button type="button" class="msel-tutti" style="font:inherit;font-size:.85em;padding:.3em .8em;border:1px solid #999;border-radius:6px;background:#f6f3ec;cursor:pointer">Mostra di nuovo tutte le schede</button></p>';
+    sel.innerHTML = h;
+    var bs = sel.querySelectorAll('.msel-vai');
+    for (var k = 0; k < bs.length; k++) bs[k].addEventListener('click', function(){ vai(this.getAttribute('data-id')); });
+    var tutti = sel.querySelector('.msel-tutti');
+    if (tutti) tutti.addEventListener('click', function(){ filtro.a = null; filtro.k = null; if (q) q.value = ''; applica(); });
+  }
   function applica(){
-    var t = q ? q.value.toLowerCase().replace(/^\s+|\s+$/g, '') : '', n = 0;
+    var t = q ? q.value.toLowerCase().replace(/^\s+|\s+$/g, '') : '', vis = [];
     for (var i = 0; i < schede.length; i++){
       var s = schede[i], ok = (!filtro.a || (s.getAttribute('data-a') === filtro.a && s.getAttribute('data-k') === filtro.k)) &&
         (!t || s.textContent.toLowerCase().indexOf(t) >= 0);
-      s.className = s.className.replace(' nascosto', '') + (ok ? '' : ' nascosto'); if (ok) n++;
+      s.className = s.className.replace(' nascosto', '') + (ok ? '' : ' nascosto'); if (ok) vis.push(s);
     }
     for (var c = 0; c < celle.length; c++){
-      var on = celle[c].getAttribute('data-a') === filtro.a && celle[c].getAttribute('data-k') === filtro.k;
+      var on = celle[c].getAttribute('data-a') === filtro.a && celle[c].getAttribute('data-k') === filtro.k, kk = celle[c].getAttribute('data-k');
       celle[c].className = celle[c].className.replace(' on', '') + (on ? ' on' : '');
+      celle[c].style.background = on ? COL[kk] : ''; celle[c].style.color = on ? '#fff' : ''; celle[c].style.boxShadow = on ? '0 0 0 3px #222' : '';
     }
-    var NS = {gusto:'Gusto', olfatto:'Olfatto', trigemino:'Trigemino', tatto:'Tatto'};
-    if (conta) conta.textContent = n + (n === 1 ? ' sentore' : ' sentori') + ' su ' + schede.length + (filtro.a ? ' · ' + filtro.a + ' × ' + NS[filtro.k] : '');
+    if (conta) conta.textContent = (filtro.a || t) ? 'Schede mostrate qui sotto: ' + vis.length + ' su ' + schede.length : 'Tutte le ' + schede.length + ' schede';
+    elenco(vis, t);
   }
   for (var c = 0; c < celle.length; c++) celle[c].addEventListener('click', function(){
     var a = this.getAttribute('data-a'), k = this.getAttribute('data-k');

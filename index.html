@@ -1887,6 +1887,9 @@ html details.howto a{color:#5A3E1C;}
 
 /* ---------------- Matrice dei sentori ---------------- */
 .mat-wrap{overflow-x:auto;margin:0 0 18px;}
+.mat-guida{font-size:14px;line-height:1.5;margin:6px 0 10px;}.mat-guida p{margin:0 0 8px;}
+.mat-sel{margin:8px 0;}.mat-sel:empty{display:none;}.mat-sel .msel-box{border:1px solid var(--line,#e5e0d3);border-radius:10px;padding:8px 12px;background:var(--surface,#fbf9f4);}.mat-sel ul{margin:6px 0;padding-left:18px;}.mat-sel li{margin:4px 0;}.mat-sel .msel-vai{font:inherit;background:none;border:0;padding:0;color:var(--juniper-deep);text-decoration:underline;cursor:pointer;text-align:left;}
+.mat-cella.on{outline:3px solid var(--ink,#222);outline-offset:1px;}
 .mat-griglia{border-collapse:separate;border-spacing:4px;width:100%;font-size:13px;}
 .mat-griglia th{font-weight:700;color:var(--ink-soft);text-align:left;padding:2px 4px;}
 .mat-griglia thead th{text-align:center;color:var(--c);font-size:12px;}
@@ -3602,7 +3605,12 @@ html details.howto a{color:#5A3E1C;}
 <p class="nota">Le soglie di temperatura dei canali (circa 43 °C per TRPV1, sotto circa 25 °C per TRPM8, fra circa 33 e 39 °C per TRPV3) sono valori misurati in laboratorio su cellule; nella bocca cambiano con la concentrazione delle molecole e con la persona.</p>
       </div>
     </details>
+    <div class="mat-guida">
+      <p><strong>Come si legge la griglia.</strong> Le <strong>righe</strong> sono gli assi del radar delle botaniche (Dolce, Amaro, Acido…); l'ultima, Struttura, riguarda le sensazioni in bocca. Le <strong>colonne</strong> sono i quattro sensi che percepiscono: <span style="color:#C0583E;font-weight:700">Gusto</span> (lingua), <span style="color:#4C7BB5;font-weight:700">Olfatto</span> (naso), <span style="color:#B8921F;font-weight:700">Trigemino</span> (caldo, fresco, pungente), <span style="color:#5D6F8C;font-weight:700">Tatto</span> (astringenza, formicolio). Il <strong>numero</strong> in una casella dice quante schede ci sono per quell'incrocio: per esempio Speziato × Trigemino = 2, lo speziato che si sente anche come calore e pizzicore.</p>
+      <p>Tocca una casella: sotto la griglia compare l'elenco di quei sentori, e toccando un nome si va alla sua scheda. Tocca di nuovo la stessa casella per vederli tutti.</p>
+    </div>
     <div class="mat-wrap"><table class="mat-griglia" id="mat-griglia"></table></div>
+    <div class="mat-sel" id="mat-sel"></div>
     <div class="mat-filtri">
       <div class="inv-ctrl" id="mat-sensi"></div>
       <label class="inf-q-label" for="mat-q">Cerca una botanica o una molecola</label>
@@ -3614,7 +3622,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 12 ottobre 2026, ore 12:15 · Nuovo riquadro «Chiavi, grimaldelli e regolatori di volume» sui recettori</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 12 ottobre 2026, ore 12:40 · Matrice dei sentori più chiara: guida alla griglia ed elenco dei sentori scelti</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -9640,10 +9648,22 @@ if ("serviceWorker" in navigator) {
     griglia(); chips();
     const q = filtro.q.trim().toLowerCase();
     const el = S.filter(x => (!filtro.senso || x.k === filtro.senso) && (!filtro.asse || x.a === filtro.asse) && (!q || testo(x).includes(q)));
-    document.getElementById('mat-conta').textContent = el.length + ' sentori su ' + S.length + (filtro.asse ? ' · ' + filtro.asse + ' × ' + SENSI[filtro.senso][0] : '');
+    document.getElementById('mat-conta').textContent = (filtro.asse || filtro.senso || q) ? 'Schede mostrate qui sotto: ' + el.length + ' su ' + S.length : 'Tutte le ' + S.length + ' schede';
+    const SPIEGA = {gusto:'sentite dalla lingua', olfatto:'sentite dal naso, anche da dietro mentre si deglutisce', trigemino:'sentite dai nervi della bocca come caldo, fresco o pizzicore', tatto:'sentite dalla bocca come attrito, secchezza o formicolio'};
+    const selEl = document.getElementById('mat-sel');
+    if (selEl){
+      if (filtro.asse || q){
+        const tre = x => { const v = []; x.m.forEach(m => m[1].split(',').forEach(b => { b = b.trim(); if (b && !v.includes(b)) v.push(b); })); return v.slice(0, 3).join(', ') + (v.length > 3 ? '…' : ''); };
+        const tit = filtro.asse ? '<strong style="color:' + SENSI[filtro.senso][2] + '">' + filtro.asse + ' × ' + SENSI[filtro.senso][0] + '</strong>: note «' + filtro.asse.toLowerCase() + '» ' + SPIEGA[filtro.senso] + '. ' + (el.length === 1 ? 'Una scheda' : el.length + ' schede') + ':'
+          : '<strong>«' + esc(filtro.q.trim()) + '»</strong> compare in ' + (el.length === 1 ? 'una scheda' : el.length + ' schede') + ':';
+        selEl.innerHTML = '<div class="msel-box"><div>' + tit + '</div><ul>' + el.map((x, i) => '<li><button type="button" class="msel-vai" data-i="' + i + '">' + esc(x.s) + '</button> <span class="cond-hint" style="display:inline">(' + esc(tre(x)) + ')</span></li>').join('') + '</ul><button type="button" class="ghost-btn" id="mat-tutti">Mostra di nuovo tutte le schede</button></div>';
+        selEl.querySelectorAll('.msel-vai').forEach(b => b.onclick = () => { const c = box.querySelectorAll('.mat-card')[+b.dataset.i]; if (c){ c.style.scrollMarginTop = '84px'; c.scrollIntoView({behavior:'smooth', block:'start'}); } });
+        const tutti = document.getElementById('mat-tutti'); if (tutti) tutti.onclick = () => { filtro.asse = null; filtro.senso = null; filtro.q = ''; if (qIn) qIn.value = ''; disegna(); };
+      } else selEl.innerHTML = '';
+    }
     box.innerHTML = el.map(x => { const se = SENSI[x.k];
       return '<div class="ck-card mat-card" style="--c:' + se[2] + '"><div class="gar-head"><h3>' + esc(x.s) + '</h3><span class="gar-tipo ton-fam" style="--c:' + se[2] + '">' + se[0] + '</span></div>' +
-        '<p class="ck-origin">Asse del radar: ' + x.a + ' · ' + se[1] + '</p>' +
+        '<p class="ck-origin">Senso: ' + se[0] + ' (' + se[1] + ') · riga della griglia: ' + x.a + '</p>' +
         '<table class="mat-mol"><thead><tr><th>Molecole</th><th>Botaniche</th></tr></thead><tbody>' +
         x.m.map(([mol, bot]) => '<tr' + (q && (mol + ' ' + bot).toLowerCase().includes(q) ? ' class="hit"' : '') + '><td>' + esc(mol) + '</td><td>' + bot.split(',').map(botLink).join(', ') + '</td></tr>').join('') + '</tbody></table>' +
         '<div class="ck-meta"><strong>Recettori</strong> ' + esc(x.r) + (/TRP|OTOP1|ENaC|KCNK/.test(x.r) ? ' <a href="#" class="mat-dove">dove si trovano ↑</a>' : '') + '</div>' +

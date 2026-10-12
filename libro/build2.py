@@ -445,16 +445,28 @@ grid = '<table class="mgrid"><thead><tr><th></th>%s</tr></thead><tbody>%s</tbody
     ''.join('<tr><th>%s</th>%s</tr>' % (a, ''.join(
         ('<td><button type="button" class="cella s-%s" data-a="%s" data-k="%s">%d</button></td>' % (k, a, k, n)) if n else '<td class="vuota">·</td>'
         for k in SENSI for n in [sum(1 for x in MAT if x['a'] == a and x['k'] == k)])) for a in ASSI_M))
+def tre_bot(x):
+    # le prime tre botaniche della scheda, senza ripetizioni: compaiono nell'elenco sotto la griglia
+    v = []
+    for mm in x['m']:
+        for b in mm[1].split(','):
+            b = b.strip()
+            if b and b not in v: v.append(b)
+    return ', '.join(v[:3])
 cards = ''.join(
-    '<article class="sent s-%s" data-a="%s" data-k="%s"><h2>%s</h2><p class="nota">%s (%s) · asse del radar: %s</p><table class="mol"><thead><tr><th>Molecole</th><th>Botaniche</th></tr></thead><tbody>%s</tbody></table><p><strong>Recettori.</strong> %s%s</p><p>%s</p></article>' % (
-        x['k'], e(x['a']), x['k'], e(x['s']), SENSI[x['k']][0], SENSI[x['k']][1], e(x['a']),
+    '<article class="sent s-%s" id="sent-%d" data-a="%s" data-k="%s" data-t="%s" data-b="%s"><h2>%s</h2><p class="nota">Senso: %s (%s) · riga della griglia: %s</p><table class="mol"><thead><tr><th>Molecole</th><th>Botaniche</th></tr></thead><tbody>%s</tbody></table><p><strong>Recettori.</strong> %s%s</p><p>%s</p></article>' % (
+        x['k'], i, e(x['a']), x['k'], e(x['s']), e(tre_bot(x)), e(x['s']), SENSI[x['k']][0], SENSI[x['k']][1], e(x['a']),
         ''.join('<tr><td>%s</td><td>%s</td></tr>' % (e(mm[0]), ', '.join(link_bot(b) for b in mm[1].split(','))) for mm in x['m']), e(x['r']),
-        (' <a href="cap5-canali.xhtml">Dove si trovano →</a>' if re.search(r'TRP|OTOP1|ENaC|KCNK', x['r']) else ''), e(x['n'])) for x in MAT)
+        (' <a href="cap5-canali.xhtml">Dove si trovano →</a>' if re.search(r'TRP|OTOP1|ENaC|KCNK', x['r']) else ''), e(x['n'])) for i, x in enumerate(MAT))
 add('cap5-matrice.xhtml', 'La matrice dei sentori', '''<section><h1>La matrice dei sentori</h1>
-<p>Per ogni sentore: le molecole responsabili, le botaniche che le portano e i recettori che le leggono. La griglia incrocia gli assi del radar con i quattro sistemi sensoriali: tocca una casella per vedere solo quei sentori, tocca di nuovo per vederli tutti.</p>
-%s<p class="cerca"><label for="mq">Cerca una botanica o una molecola</label><input type="search" id="mq" placeholder="es. ginepro, linalolo"/></p>
+<p>Questa pagina raccoglie %d <strong>sentori</strong>, cioè le cose che si percepiscono in un gin: dolce, amaro, agrumato, pungente e così via. Per ognuno, più in basso, c'è una scheda con le molecole che lo provocano, le botaniche che le contengono e i recettori che le leggono.</p>
+<p>La griglia serve a trovare le schede. <strong>Le righe</strong> sono gli assi del radar delle botaniche (Dolce, Amaro, Acido…); l'ultima, Struttura, riguarda le sensazioni in bocca del secondo radar. <strong>Le colonne</strong> sono i quattro sensi che percepiscono: il gusto con la lingua, l'olfatto con il naso, il trigemino per caldo, fresco e pungente, il tatto per astringenza e formicolio. <strong>Il numero</strong> in una casella dice quante schede ci sono per quell'incrocio. Per esempio Speziato × Trigemino = 2: lo speziato si sente anche come calore e pizzicore, e ci sono due schede che lo spiegano.</p>
+<p>Tocca una casella: sotto la griglia compare l'elenco di quei sentori, e toccando un nome si va alla sua scheda. Tocca di nuovo la stessa casella per tornare a vederli tutti.</p>
+%s<p class="nota mlegenda"><span class="ml s-gusto">Gusto</span> lingua · <span class="ml s-olfatto">Olfatto</span> naso · <span class="ml s-trigemino">Trigemino</span> caldo, fresco, pungente · <span class="ml s-tatto">Tatto</span> astringenza, formicolio</p>
+<div class="msel" id="msel"><p class="nota">Nessuna casella scelta: sotto ci sono tutte le schede.</p></div>
+<p class="cerca"><label for="mq">Cerca una botanica o una molecola</label><input type="search" id="mq" placeholder="es. ginepro, linalolo"/></p>
 <p class="nota" id="mconta">%d sentori</p>%s
-<p class="nota">Per la maggior parte delle molecole d'aroma non esiste un recettore unico: vale il codice combinatorio dei circa 400 recettori olfattivi. Un recettore specifico è indicato solo dove la corrispondenza è accertata. Fonti in <a href="app-fonti.xhtml">Fonti e bibliografia</a>.</p></section>''' % (grid, len(MAT), cards), 2, True)
+<p class="nota">Per la maggior parte delle molecole d'aroma non esiste un recettore unico: vale il codice combinatorio dei circa 400 recettori olfattivi. Un recettore specifico è indicato solo dove la corrispondenza è accertata. Fonti in <a href="app-fonti.xhtml">Fonti e bibliografia</a>.</p></section>''' % (len(MAT), grid, len(MAT), cards), 2, True)
 add('cap5-ruota.xhtml', 'La ruota degli aromi', '<section><h1>La ruota degli aromi</h1><p>Le famiglie aromatiche del gin e i loro descrittori, con le botaniche dell\'app che portano ciascuna nota. Si parte dalla famiglia e si scende al descrittore preciso.</p>%s<h2>Tutte le famiglie</h2>%s</section>' % (
     sez('ruota', ''), sez('ruota', 'Tutte le famiglie')), 2)
 add('cap5-assaggio.xhtml', "L'analisi sensoriale", '<section><h1>L\'analisi sensoriale</h1>%s</section>' % sez('analisi', ''), 2)
