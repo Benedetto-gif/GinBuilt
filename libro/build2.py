@@ -45,7 +45,7 @@ def radar_sens(vals, size=220, rid=''):
         g += '<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#d8d2c6" stroke-width="1"/>' % (c, c, x, y)
         g += '<text x="%.1f" y="%.1f" text-anchor="%s" font-size="10" font-family="sans-serif" fill="#555555">%s</text>' % (lx, ly + 3.5, anc, e(a))
     pts = ' '.join('%.1f,%.1f' % q(i, vals[i]) for i in range(n))
-    g += '<polygon points="%s" fill="%s" fill-opacity="0.25" stroke="%s" stroke-width="2"/>' % (pts, SENS_COL, SENS_COL)
+    g += '<polygon points="%s" class="rp" fill="%s" fill-opacity="0.25" stroke="%s" stroke-width="2"/>' % (pts, SENS_COL, SENS_COL)
     g += '<polygon points="" class="ro" fill="#C0733A" fill-opacity="0.22" stroke="#C0733A" stroke-width="2" stroke-dasharray="4 3"/>'
     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-48 0 %d %d" class="radar"%s role="img" aria-label="Sensazioni in bocca: %s">%s</svg>' % (
         size + 96, size, (' id="%s" data-s="%d"' % (rid, size)) if rid else '', e(', '.join('%s %s' % (a, v) for a, v in zip(ASSI_SENS, vals))), g)

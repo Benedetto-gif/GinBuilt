@@ -195,10 +195,25 @@ function gpId(id){ if (!id) return null; var el = null; try { el = document.getE
       if (!el && dopo){ el = document.createElement('p'); el.id = id; el.className = 'sovr-nome'; dopo.parentNode.insertBefore(el, dopo.nextSibling); }
       return el;
     }
+    // Profilo principale acceso o spento: quando le due botaniche quasi coincidono, il tratteggio arancio
+    // si confonde con il contorno della principale; spegnendola resta solo la botanica sovrapposta.
+    // Si usa l'attributo visibility (non il CSS), perche' alcuni lettori ignorano il CSS sugli SVG.
+    var principaleSpenta = false;
+    function principale(spenta){
+      principaleSpenta = spenta;
+      [svg, ss0].forEach(function(s){ if (!s) return; var rp = s.querySelector('.rp'); if (rp) rp.setAttribute('visibility', spenta ? 'hidden' : 'visible'); });
+      [svg, ss0].forEach(function(s){ if (!s) return; var el = document.getElementById('n-' + s.id), bt = el ? el.querySelector('.rp-tasto') : null;
+        if (bt) bt.textContent = spenta ? 'Mostra il profilo principale' : 'Nascondi il profilo principale'; });
+    }
     function mostraNome(nome){
       [[svg, 'n-' + svg.id], [ss0, 'n-' + (ss0 ? ss0.id : '')]].forEach(function(c){
         if (!c[0]) return; var el = etichetta(c[0], c[1]); if (!el) return;
-        if (nome){ el.innerHTML = '<span style="display:inline-block;width:1.1em;height:.8em;border-radius:2px;background:rgba(192,115,58,0.22);border:2px dashed #C0733A;vertical-align:-.1em;margin-right:.4em"></span>In arancio: <strong style="color:#8A4A1E">' + nome + '</strong>'; el.style.display = ''; }
+        if (nome){
+          el.innerHTML = '<span style="display:inline-block;width:1.1em;height:.8em;border-radius:2px;background:rgba(192,115,58,0.22);border:2px dashed #C0733A;vertical-align:-.1em;margin-right:.4em"></span>In arancio: <strong style="color:#8A4A1E">' + nome + '</strong> ' +
+            '<button type="button" class="rp-tasto" style="font:inherit;font-size:.85em;margin-left:.4em;padding:.15em .6em;border:1px solid #999;border-radius:6px;background:#f6f3ec;color:#222;cursor:pointer">' + (principaleSpenta ? 'Mostra il profilo principale' : 'Nascondi il profilo principale') + '</button>';
+          el.style.display = '';
+          var bt = el.querySelector('.rp-tasto'); if (bt) bt.addEventListener('click', function(){ principale(!principaleSpenta); });
+        }
         else { el.innerHTML = ''; el.style.display = 'none'; }
       });
     }
@@ -211,7 +226,7 @@ function gpId(id){ if (!id) return null; var el = null; try { el = document.getE
       var on = this.className.indexOf(' on') >= 0;
       for (var x = 0; x < chips.length; x++){ stile(chips[x], false); chips[x].textContent = testi[x]; }
       var ss = ss0, so = ss ? ss.querySelector('.ro') : null;
-      if (on){ poli.setAttribute('points', ''); if (so) so.setAttribute('points', ''); mostraNome(''); return; }
+      if (on){ poli.setAttribute('points', ''); if (so) so.setAttribute('points', ''); mostraNome(''); principale(false); return; }
       var k = Array.prototype.indexOf.call(chips, this);
       stile(this, true); this.textContent = '\u2713 ' + testi[k];
       mostraNome(testi[k].replace(/\s+\d+%$/, ''));
