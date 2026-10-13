@@ -594,6 +594,40 @@ section.panel.active{display:block;animation:panelIn .34s var(--ease) both;}
 }
 .avviso-azioni{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px;justify-content:flex-end;}
 select.sel-fissa{opacity:1;cursor:default;background-image:none;-webkit-appearance:none;appearance:none;}
+/* Proporzioni */
+.pp-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin:6px 0 10px;}
+.pp-tit{font-weight:700;font-size:16px;}
+.pp-azioni{display:flex;flex-wrap:wrap;gap:8px;}
+.pp-grafici{position:sticky;top:var(--pp-top,96px);z-index:5;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:8px 10px 6px;margin-bottom:12px;box-shadow:0 6px 16px rgba(0,0,0,.18);}
+.pp-scelta{display:flex;gap:6px;justify-content:center;margin-bottom:4px;}
+.pp-tab{flex:1;font:inherit;font-size:12.5px;font-weight:650;padding:5px 4px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink-soft);cursor:pointer;}
+.pp-tab[aria-pressed="true"]{background:var(--juniper);border-color:var(--juniper);color:#fff;}
+.pp-tre{display:block;}
+.pp-g{display:none;text-align:center;}
+.pp-g.on{display:block;}
+.pp-gt{display:none;font-size:12px;font-weight:650;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.05em;}
+.pp-g svg{width:100%;max-width:300px;height:auto;max-height:min(30vh,240px);display:block;margin:0 auto;}
+.pp-g .radar-wrap{margin:0;}
+@media (min-width:900px){ .pp-g svg{max-height:260px;} }
+.pp-g .radar-sottr-btn, .pp-g .radar-nota, .pp-g .pot-leg, .pp-g .pot-tua{display:none !important;}
+.pp-ginepro{font-size:12.5px;text-align:center;margin-top:2px;}
+@media (min-width:900px){
+  .pp-scelta{display:none;}
+  .pp-tre{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  .pp-g{display:block;} .pp-gt{display:block;}
+}
+.pp-riga{display:grid;grid-template-columns:14px minmax(0,1fr) auto auto;align-items:center;gap:4px 8px;padding:8px 0;border-bottom:1px solid var(--line);}
+.pp-dot{width:12px;height:12px;border-radius:50%;}
+.pp-nome{font-weight:600;font-size:14px;min-width:0;}
+.pp-nome small{display:block;font-weight:400;color:var(--ink-soft);font-size:11.5px;}
+.pp-val{font-weight:700;font-size:15px;text-align:right;white-space:nowrap;}
+.pp-val small{display:block;font-weight:400;color:var(--ink-soft);font-size:11.5px;}
+.pp-lock{background:none;border:1px solid var(--line);border-radius:10px;padding:4px 7px;font-size:15px;cursor:pointer;opacity:.55;}
+.pp-lock[aria-pressed="true"]{opacity:1;border-color:var(--juniper);}
+.pp-riga input[type=range]{grid-column:1/-1;width:100%;accent-color:var(--pc,var(--juniper));}
+.pp-riga.ferma input[type=range]{opacity:.45;}
+.pp-totali{margin-top:10px;font-size:13.5px;}
+.pp-totali .mix-line{display:flex;justify-content:space-between;gap:10px;padding:4px 0;}
 .dosi-box{text-align:left;}
 .dosi-box .radar-title{text-align:center;}
 .cond-box.dosi-cond{display:grid;grid-template-columns:1fr;gap:8px;margin:8px 0;}
@@ -2065,6 +2099,7 @@ html details.howto a{color:#5A3E1C;}
     <button data-tab="home" class="active">🏠 Pagina iniziale</button>
     <button data-tab="storia">📖 Storia del gin</button>
     <button data-tab="builder">🎯 Gin Builder</button>
+    <button data-tab="proporzioni">⚖️ Proporzioni della ricetta</button>
     <button data-tab="ridondanza">🧬 Ridondanze e complementari</button>
     <button data-tab="prove">🧪 Schede di prova</button>
     <button data-tab="libreria">🌿 Botaniche e infusi</button>
@@ -3053,6 +3088,7 @@ html details.howto a{color:#5A3E1C;}
           <label>Gradazione finale (% vol)<input type="number" id="dosi-abv" value="43" min="37.5" max="70" step="0.5" inputmode="decimal"></label>
         </div>
         <div id="dosi-out"></div>
+        <button type="button" class="primary-btn" style="margin-top:10px;width:100%;" onclick="showTab('proporzioni')">⚖️ Varia le proporzioni con i cursori</button>
       </div>
       <div id="build-radar"></div>
       <div id="build-garnish"></div>
@@ -3064,6 +3100,48 @@ html details.howto a{color:#5A3E1C;}
         <button class="ghost-btn" id="print-builder">🖨️ Stampa combinazione</button>
         <button class="ghost-btn" id="prepara-infusi" type="button" onclick="preparaInfusiRicetta()">📓 Prepara gli infusi della ricetta</button>
       </div>
+    </div>
+  </section>
+
+  <!-- PROPORZIONI -->
+  <section class="panel" id="panel-proporzioni">
+    <details class="howto">
+      <summary>Come si usa</summary>
+      <div class="howto-body">
+        <ul>
+          <li>La pagina parte dalla ricetta che hai nel <strong>Gin Builder</strong>, con le quote degli infusi della tabella <em>Dosi per il tuo gin</em>.</li>
+          <li>Sposta un cursore: quella botanica cambia e le altre si adeguano in proporzione, così il totale resta 100%. Il lucchetto 🔒 tiene ferma una botanica mentre muovi le altre.</li>
+          <li>In alto la <strong>torta</strong> mostra le quote; sotto, scegli il radar di <strong>gusto e aroma</strong> o quello delle <strong>sensazioni in bocca</strong>. La linea tratteggiata è la ricetta di partenza: vedi subito che cosa hai spostato. Su schermo largo i tre grafici stanno affiancati.</li>
+          <li>Accanto a ogni cursore trovi i millilitri di infuso per il volume di gin scelto; in fondo, il totale e l'acqua per arrivare alla gradazione finale.</li>
+        </ul>
+        <p>Il radar di gusto e aroma comprende qui anche le botaniche base (ginepro, coriandolo, angelica), perché sono proprio le quote che stai variando. Stime orientative, da verificare all'assaggio.</p>
+      </div>
+    </details>
+    <div class="pp-head">
+      <div class="pp-tit" id="pp-tit">—</div>
+      <div class="pp-azioni">
+        <button type="button" class="ghost-btn" id="pp-ricarica">↻ Ricarica dal Builder</button>
+        <button type="button" class="ghost-btn" id="pp-reset">↺ Quote di partenza</button>
+      </div>
+    </div>
+    <div class="pp-grafici" id="pp-grafici">
+      <div class="pp-scelta" role="group" aria-label="Grafico da vedere">
+        <button type="button" class="pp-tab" data-g="torta" aria-pressed="true">Torta</button>
+        <button type="button" class="pp-tab" data-g="gusto" aria-pressed="false">Gusto e aroma</button>
+        <button type="button" class="pp-tab" data-g="sens" aria-pressed="false">Sensazioni</button>
+      </div>
+      <div class="pp-tre">
+        <div class="pp-g" data-g="torta"><div class="pp-gt">Quote degli infusi</div><div id="pp-torta"></div></div>
+        <div class="pp-g" data-g="gusto"><div class="pp-gt">Gusto e aroma</div><div id="pp-gusto"></div></div>
+        <div class="pp-g" data-g="sens"><div class="pp-gt">Sensazioni in bocca</div><div id="pp-sens"></div></div>
+      </div>
+      <div class="pp-ginepro" id="pp-ginepro"></div>
+    </div>
+    <div class="pp-cursori" id="pp-cursori"></div>
+    <div class="pp-totali" id="pp-totali"></div>
+    <div class="pp-azioni" style="margin-top:12px;">
+      <button type="button" class="primary-btn" id="pp-banco">🧪 Invia al banco di prova con queste quote</button>
+      <button type="button" class="ghost-btn" onclick="showTab('builder')">← Torna al Gin Builder</button>
     </div>
   </section>
 
@@ -3648,7 +3726,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 13 ottobre 2026, ore 14:45 · Dosi per il volume di gin finale</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 13 ottobre 2026, ore 15:00 · Proporzioni con cursori, torta e radar</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -4707,6 +4785,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   // Le pagine restanti si presentano raggruppate, dalla più utile mentre si costruisce
   // una ricetta alle pagine di approfondimento/riferimento, invece che nell'ordine dei tab.
   const GROUPS = [
+    { label: 'La ricetta', tabs: ['proporzioni'] },
     { label: 'Prima di costruire', tabs: ['ridondanza'] },
     { label: 'Il servizio', tabs: ['garnish', 'toniche'] },
     { label: 'Special', tabs: ['special'] },
@@ -9057,6 +9136,147 @@ function renderDosiGin(selects){
     '<div class="radar-nota">Ogni botanica si infonde a parte alla sua gradazione consigliata; gli infusi si uniscono nelle quote della colonna <em>Nella miscela</em> (le stesse del banco di prova) e si porta al grado finale con l\'acqua. I volumi d\'acqua sono indicativi: alcol e acqua mescolati si contraggono un poco, quindi verifica il grado con l\'alcolometro e aggiungi l\'acqua per ultima, a poco a poco. Prepara un po\' più infuso del necessario. Dosi di partenza, da correggere all\'assaggio.</div>';
 }
 
+// ---------- Proporzioni: cursori, torta e radar che cambiano insieme ----------
+(function(){
+  const PAL = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C','#D9A441','#7A5A3A','#3FB0D6','#A3195B'];
+  const st = { righe: [], rif: [], q: [], fermo: new Set(), stile: '', firma: '', grafico: 'torta' };
+  const $ = id => document.getElementById(id);
+  // cursore non lineare: le quote piccole (tracce) restano regolabili con precisione
+  const aPos = q => Math.round(Math.sqrt(Math.max(0, q) / 100) * 1000);
+  const daPos = p => Math.pow(p / 1000, 2) * 100;
+  const fq = q => q >= 10 ? nf(q, 0) : nf(q, 1);
+  function carica(){
+    const sel = roleList.querySelectorAll('select:not(.role-label-input)');
+    const R = dosiRicetta(sel);
+    if (!R){ st.righe = []; return; }
+    st.righe = R.righe.map((r, k) => Object.assign({}, r, { col: r.n === 'Bacche di ginepro' ? '#2F7259' : PAL[(k + 1) % PAL.length] }));
+    st.rif = st.righe.map(r => r.quota * 100);
+    st.q = st.rif.slice(); st.fermo = new Set(); st.stile = currentStyleName;
+    st.firma = st.righe.map(r => r.n).join('|');
+    disegnaCursori(); aggiorna();
+  }
+  function imposta(i, q){
+    const n = st.q.length; q = Math.max(0, Math.min(100, q));
+    const fissi = [...st.fermo].filter(k => k !== i), sommaF = fissi.reduce((a, k) => a + st.q[k], 0);
+    q = Math.min(q, 100 - sommaF);
+    const liberi = st.q.map((_, k) => k).filter(k => k !== i && !st.fermo.has(k));
+    const resto = 100 - sommaF - q, sommaL = liberi.reduce((a, k) => a + st.q[k], 0);
+    if (!liberi.length){ q = 100 - sommaF; }
+    else liberi.forEach(k => { st.q[k] = sommaL > 0 ? st.q[k] * resto / sommaL : resto / liberi.length; });
+    st.q[i] = q;
+  }
+  function el(){ return st.righe.map((r, k) => ({ n: r.n, w: Math.max(0.00001, st.q[k]) })); }
+  function profilo(pesi){
+    const tot = pesi.reduce((a, x) => a + x.w, 0) || 1;
+    return ASSI8.map((_, i) => pesi.reduce((a, x) => a + ((PROFILO8[x.n] || [])[i] || 0) * x.w, 0) / tot);
+  }
+  function torta(){
+    const c = 110, R = 100, r0 = 52; let a0 = -Math.PI / 2, g = '';
+    st.q.forEach((q, k) => {
+      if (q <= 0.05) return;
+      const a1 = a0 + q / 100 * 2 * Math.PI, big = a1 - a0 > Math.PI ? 1 : 0;
+      const P = (a, rr) => (c + rr * Math.cos(a)).toFixed(2) + ' ' + (c + rr * Math.sin(a)).toFixed(2);
+      g += q >= 99.95 ? '<circle cx="' + c + '" cy="' + c + '" r="' + ((R + r0) / 2) + '" fill="none" stroke="' + st.righe[k].col + '" stroke-width="' + (R - r0) + '"/>'
+        : '<path d="M ' + P(a0, R) + ' A ' + R + ' ' + R + ' 0 ' + big + ' 1 ' + P(a1, R) + ' L ' + P(a1, r0) + ' A ' + r0 + ' ' + r0 + ' 0 ' + big + ' 0 ' + P(a0, r0) + ' Z" fill="' + st.righe[k].col + '" stroke="var(--surface)" stroke-width="1.5"><title>' + st.righe[k].n + ' ' + fq(q) + '%</title></path>';
+      if (q >= 6){ const am = (a0 + a1) / 2, rr = (R + r0) / 2;
+        g += '<text x="' + (c + rr * Math.cos(am)).toFixed(1) + '" y="' + (c + rr * Math.sin(am) + 4).toFixed(1) + '" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">' + Math.round(q) + '%</text>'; }
+      a0 = a1;
+    });
+    const gi = st.righe.findIndex(r => r.n === 'Bacche di ginepro');
+    g += '<text x="' + c + '" y="' + (c - 4) + '" text-anchor="middle" font-size="11" fill="var(--ink-soft)">ginepro</text>' +
+         '<text x="' + c + '" y="' + (c + 16) + '" text-anchor="middle" font-size="18" font-weight="700" fill="var(--ink)">' + (gi >= 0 ? Math.round(st.q[gi]) : 0) + '%</text>';
+    return '<svg viewBox="0 0 220 220" role="img" aria-label="Quote degli infusi">' + g + '</svg>';
+  }
+  function aggiorna(){
+    const box = $('pp-cursori'); if (!box) return;
+    if (!st.righe.length){ $('pp-torta').innerHTML = ''; $('pp-gusto').innerHTML = ''; $('pp-sens').innerHTML = ''; $('pp-totali').innerHTML = ''; $('pp-ginepro').textContent = ''; return; }
+    // valori e millilitri accanto ai cursori
+    const vol = Math.max(10, parseFloat($('dosi-vol').value) || 700);
+    const abvF = Math.min(70, Math.max(1, parseFloat(String($('dosi-abv').value).replace(',', '.')) || 43));
+    const abvMix = st.righe.reduce((a, r, k) => a + st.q[k] / 100 * r.abv, 0);
+    const volInf = abvMix > abvF ? vol * abvF / abvMix : vol;
+    let gTot = 0;
+    st.righe.forEach((r, k) => {
+      const ml = volInf * st.q[k] / 100, g = r.g100 * ml / 100; gTot += g;
+      const row = box.querySelector('.pp-riga[data-k="' + k + '"]'); if (!row) return;
+      row.querySelector('.pp-val').innerHTML = fq(st.q[k]) + '%<small>' + nf(ml, ml < 10 ? 1 : 0) + ' ml · ' + (g > 0 && g < 0.01 ? '< 0,01' : nf(g, g < 1 ? 2 : 1)) + ' g</small>';
+      const rg = row.querySelector('input[type=range]'); if (document.activeElement !== rg) rg.value = aPos(st.q[k]);
+    });
+    $('pp-totali').innerHTML = '<div class="mix-line"><span>Infusi (miscela a circa ' + nf(abvMix, 1) + '% vol)</span><strong>' + nf(volInf, 0) + ' ml</strong></div>' +
+      (vol - volInf > 0.5 ? '<div class="mix-line"><span>Acqua demineralizzata</span><strong>' + nf(vol - volInf, 0) + ' ml</strong></div>' : '') +
+      '<div class="mix-line"><span>Gin finito a ' + nf(abvF, 1) + '% vol</span><strong>' + nf(vol, 0) + ' ml · ' + nf(gTot / vol * 1000, 1) + ' g/l di botaniche</strong></div>' +
+      (abvMix < abvF ? '<div class="warn-box">La miscela di infusi è sotto la gradazione finale scelta: serve alcol neutro o infusi più forti.</div>' : '') +
+      '<div class="radar-nota">Volume e gradazione si cambiano nel Gin Builder, in <em>Dosi per il tuo gin</em>. Acqua indicativa: verifica con l\'alcolometro.</div>';
+    // quota di ginepro
+    const gi = st.righe.findIndex(r => r.n === 'Bacche di ginepro'), pg = gi >= 0 ? st.q[gi] : 0;
+    const col = pg >= 45 ? 'var(--green-sym, #2e7d32)' : (pg >= 30 ? 'var(--orange-sym, #b26a00)' : 'var(--red-sym, #c62828)');
+    $('pp-ginepro').innerHTML = '<span style="color:' + col + ';font-weight:650">Ginepro ' + fq(pg) + '%</span>' + (pg < 30 ? ' · troppo poco: il ginepro deve restare la nota prevalente' : pg < 45 ? ' · al limite: il ginepro rischia di non prevalere' : '');
+    // grafici
+    $('pp-torta').innerHTML = torta();
+    const ora = profilo(el()), prima = profilo(st.righe.map((r, k) => ({ n: r.n, w: Math.max(0.00001, st.rif[k]) })));
+    const mx = Math.max.apply(null, prima.concat(ora)) || 1, s5 = v => v.map(x => Math.round(x / mx * 50) / 10);
+    $('pp-gusto').innerHTML = radarSVG([{vals: s5(prima), color: 'var(--ink-soft)', label: 'Partenza', dash: true}, {vals: s5(ora), color: 'var(--juniper)', label: 'Ora'}], 280);
+    const sOra = sensMiscela(el()), sPrima = sensMiscela(st.righe.map((r, k) => ({ n: r.n, w: Math.max(0.00001, st.rif[k]) })));
+    $('pp-sens').innerHTML = sOra ? radarSensSVG([{vals: sPrima, color: 'var(--ink-soft)', label: 'Partenza', dash: true}, {vals: sOra, color: SENS_COL, label: 'Ora'}], 260) : '';
+  }
+  function disegnaCursori(){
+    const box = $('pp-cursori'); if (!box) return;
+    $('pp-tit').textContent = st.righe.length ? (st.stile || 'Ricetta') + ' · ' + st.righe.length + ' botaniche' : 'Nessuna ricetta';
+    if (!st.righe.length){ box.innerHTML = '<div class="radar-nota">Nel Gin Builder non c\'è ancora una ricetta: scegli uno stile e torna qui.</div>'; return; }
+    box.innerHTML = st.righe.map((r, k) =>
+      '<div class="pp-riga' + (st.fermo.has(k) ? ' ferma' : '') + '" data-k="' + k + '" style="--pc:' + r.col + '">' +
+      '<span class="pp-dot" style="background:' + r.col + '"></span>' +
+      '<span class="pp-nome">' + r.n + (r.tracce ? ' <em>(tracce)</em>' : '') + '<small>partenza ' + fq(st.rif[k]) + '% · infuso a ' + r.abv + '%</small></span>' +
+      '<span class="pp-val"></span>' +
+      '<button type="button" class="pp-lock" aria-pressed="' + st.fermo.has(k) + '" title="Tieni ferma questa botanica">' + (st.fermo.has(k) ? '🔒' : '🔓') + '</button>' +
+      '<input type="range" min="0" max="1000" step="1" value="' + aPos(st.q[k]) + '" aria-label="Quota di ' + r.n.replace(/"/g, '') + '"' + (st.fermo.has(k) ? ' disabled' : '') + '>' +
+      '</div>').join('');
+    box.querySelectorAll('.pp-riga').forEach(row => {
+      const k = +row.dataset.k;
+      row.querySelector('input[type=range]').addEventListener('input', e => { imposta(k, daPos(+e.target.value)); aggiorna(); });
+      row.querySelector('.pp-lock').addEventListener('click', () => { if (st.fermo.has(k)) st.fermo.delete(k); else st.fermo.add(k); disegnaCursori(); aggiorna(); });
+    });
+  }
+  function scegliGrafico(g){
+    st.grafico = g;
+    document.querySelectorAll('#pp-grafici .pp-scelta .pp-tab').forEach(b => b.setAttribute('aria-pressed', b.dataset.g === g));
+    document.querySelectorAll('#pp-grafici .pp-g').forEach(d => d.classList.toggle('on', d.dataset.g === g));
+  }
+  document.querySelectorAll('#pp-grafici .pp-scelta .pp-tab').forEach(b => b.addEventListener('click', () => scegliGrafico(b.dataset.g)));
+  scegliGrafico('torta');
+  $('pp-ricarica').addEventListener('click', carica);
+  $('pp-reset').addEventListener('click', () => { st.q = st.rif.slice(); st.fermo = new Set(); disegnaCursori(); aggiorna(); });
+  $('pp-banco').addEventListener('click', () => {
+    if (!st.righe.length) return;
+    showTab('prove'); openForm(null);
+    $('tf-name').value = (st.stile || 'Ricetta') + ' — proporzioni';
+    tfStyleSelect.value = st.stile || '';
+    tfBotaniche.innerHTML = '';
+    st.righe.forEach((r, k) => addBotRow({ botanica: r.n, perc: Math.round(st.q[k] * 10) / 10 }));
+    renderMixSummary();
+  });
+  // aprendo la pagina: se la ricetta del Builder e' cambiata si ricarica, altrimenti restano le quote scelte
+  const st0 = window.showTab;
+  window.showTab = function(n){
+    const r = st0.apply(this, arguments);
+    if (n === 'proporzioni'){
+      const sel = roleList.querySelectorAll('select:not(.role-label-input)');
+      const R = dosiRicetta(sel), firma = R ? R.righe.map(x => x.n).join('|') : '';
+      if (firma !== st.firma || currentStyleName !== st.stile) carica(); else aggiorna();
+      ppTop();
+    }
+    return r;
+  };
+  ['dosi-vol', 'dosi-abv'].forEach(id => $(id).addEventListener('input', () => { if (st.righe.length) aggiorna(); }));
+  // i grafici restano fermi appena sotto la barra del menu (che si accorcia scorrendo)
+  function ppTop(){
+    const h = document.querySelector('.menu-bar'); if (!h) return;
+    document.documentElement.style.setProperty('--pp-top', Math.max(0, Math.round(h.getBoundingClientRect().bottom)) + 6 + 'px');
+  }
+  document.addEventListener('scroll', () => { if (document.getElementById('panel-proporzioni').classList.contains('active')) ppTop(); }, {passive: true, capture: true});
+  window.addEventListener('resize', ppTop);
+})();
+
 document.getElementById('send-to-test').addEventListener('click', () => {
   const selects = roleList.querySelectorAll('select:not(.role-label-input)');
   const styleName = builderTitle.textContent;
@@ -9931,6 +10151,8 @@ if ("serviceWorker" in navigator) {
                    s:'Gli infusi in macerazione, con i promemoria per controllarli e filtrarli al momento giusto.' },
     libreria:    { c:'--c-erbaceo',      k:'Passo 1 di 3',
                    s:'Le schede delle botaniche, con profilo aromatico, radar e zone italiane, e per ognuna la preparazione dell’infuso: gradazione, diluizione, grammi e tempo.' },
+    proporzioni: { c:'--c-mediterraneo', k:'La ricetta',
+                   s:'Sposta i cursori delle botaniche: la torta, il radar di gusto e aroma e quello delle sensazioni cambiano insieme, con i millilitri per il tuo gin.' },
     builder:     { c:'--c-secco',        k:'Passo 2 di 3',
                    s:'Scegli uno stile e assegna le botaniche ai sei ruoli: base, freschezza, identità, cuore, firma, rifinitura.' },
     prove:       { c:'--c-siciliano',    k:'Passo 3 di 3',
