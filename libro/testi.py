@@ -179,3 +179,37 @@ DECOLORAZIONE = '''<section epub:type="appendix"><h1>Appendice D<br/>La decolora
 </div></section>
 
 </section>'''
+
+MISCELA = '''<section><h1>Dagli infusi al gin: diluire e miscelare</h1>
+<p>Quando gli infusi sono pronti e filtrati, restano due operazioni: portarli alla gradazione del gin e unirli nelle quote della ricetta. L'ordine conta. In questo quaderno <strong>ogni infuso si porta da solo alla gradazione finale, e solo dopo si miscela con gli altri</strong>.</p>
+<h2>Perché diluire prima</h2>
+<ul>
+<li><strong>Ogni infuso si giudica come starà nel gin.</strong> A 60 o 70% l'alcol brucia e copre; a 43% il profumo di ogni botanica si sente com'è davvero, e si può assaggiare e correggere prima di metterlo nella ricetta.</li>
+<li><strong>La torbidità si vede subito e si cura a parte.</strong> L'effetto louche compare proprio quando l'alcol scende: diluendo infuso per infuso si capisce quale botanica intorbida, e si filtra a freddo solo quella (capitolo 3).</li>
+<li><strong>La gradazione non si sposta più.</strong> Liquidi tutti allo stesso grado, mescolati in qualsiasi proporzione, danno lo stesso grado. Si possono cambiare le quote all'assaggio, o preparare piccole prove da 10–20 ml, senza ricalcolare l'acqua.</li>
+</ul>
+<h2>Come si fa</h2>
+<ol>
+<li>Si filtra ogni infuso e se ne misura il grado con l'alcolometro, a 20 °C. Il grado vero può essere un poco diverso da quello di partenza: la botanica, soprattutto se fresca, porta acqua.</li>
+<li>Si calcola l'acqua: <strong>infuso necessario = volume voluto × grado finale ÷ grado dell'infuso</strong>; l'acqua è la differenza fino al volume voluto. Per avere 323 ml a 43% partendo da un infuso a 60%: 323 × 43 ÷ 60 = 231 ml di infuso, più circa 91 ml d'acqua.</li>
+<li>Si aggiunge l'acqua demineralizzata poco alla volta, mescolando, e si ricontrolla il grado. Alcol e acqua insieme si contraggono di qualche millilitro ogni cento, quindi il conto è indicativo: decide l'alcolometro.</li>
+<li>Si lascia riposare l'infuso diluito qualche ora al fresco; se è torbido si filtra ancora a freddo.</li>
+<li>Si misurano gli infusi diluiti nelle quote della ricetta e si uniscono. Il gin è già alla gradazione finale: non serve altra acqua.</li>
+</ol>
+<p class="nota">Un infuso preparato sotto la gradazione finale (capita con alcuni fiori, infusi a 45–55%) non si può diluire: si porta su con un poco di alcol neutro, oppure la volta successiva lo si infonde più forte.</p>
+<h2>Un esempio: 700 ml di gin Mediterraneo a 43%</h2>
+<p>Le quote sono quelle che l'app propone per lo stile Mediterraneo; per ogni botanica, quanto infuso filtrato e quanta acqua servono per averne la parte già a 43%.</p>
+<table class="mol"><thead><tr><th>Infuso</th><th>Quota</th><th>A 43%</th><th>Infuso filtrato + acqua</th></tr></thead><tbody>
+<tr><td>Ginepro (60%)</td><td>46,1%</td><td>323 ml</td><td>231 + 91 ml</td></tr>
+<tr><td>Coriandolo (58%)</td><td>24,6%</td><td>172 ml</td><td>128 + 45 ml</td></tr>
+<tr><td>Angelica (58%)</td><td>15,4%</td><td>108 ml</td><td>80 + 28 ml</td></tr>
+<tr><td>Finocchio di mare (60%)</td><td>6,2%</td><td>43 ml</td><td>31 + 12 ml</td></tr>
+<tr><td>Bergamotto (70%)</td><td>4,9%</td><td>34 ml</td><td>21 + 13 ml</td></tr>
+<tr><td>Lentisco (65%)</td><td>1,8%</td><td>13 ml</td><td>8,5 + 4,4 ml</td></tr>
+<tr><td>Rosmarino, tracce (60%)</td><td>0,7%</td><td>4,7 ml</td><td>3,4 + 1,3 ml</td></tr>
+<tr><td>Elicriso, tracce (60%)</td><td>0,3%</td><td>2,2 ml</td><td>1,5 + 0,6 ml</td></tr>
+<tr><td><strong>Totale</strong></td><td>100%</td><td><strong>700 ml</strong></td><td>circa 504 + 195 ml</td></tr>
+</tbody></table>
+<p>Per le tracce conviene diluire una quantità più grande (per esempio 20 ml) e prelevarne la parte che serve con una siringa graduata: pochi millilitri si misurano male.</p>
+<p class="nota">Nell'app GinBuilder questi conti si fanno da soli: nel Gin Builder, in «Dosi per il tuo gin», si sceglie il volume e la gradazione finali; nella pagina «Proporzioni della ricetta» si spostano le quote con i cursori e si vede come cambiano il profilo e i millilitri.</p>
+</section>'''
