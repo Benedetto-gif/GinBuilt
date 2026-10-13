@@ -415,7 +415,7 @@ for i, t in enumerate(ESTR):
 # ---------- 4. Costruire un gin ----------
 add('cap4.xhtml', 'Capitolo 4 · Costruire un gin', '''<section epub:type="chapter"><h1>Capitolo 4<br/>Costruire un gin</h1>
 <p>Una ricetta non è un elenco di botaniche: ogni botanica ha un compito. Il capitolo presenta i sei ruoli, gli stili di partenza dell'app con il loro profilo, il criterio con cui due botaniche si sommano (ridondanza) o si completano, e come dagli infusi filtrati si arriva al gin: diluire ciascuno alla gradazione finale e poi miscelare.</p>
-<ol class="indice"><li><a href="cap4-ruoli.xhtml">I ruoli delle botaniche</a></li><li><a href="cap4-stili.xhtml">Gli stili</a></li><li><a href="cap4-ridondanze.xhtml">Ridondanze e complementari</a></li><li><a href="cap4-miscela.xhtml">Dagli infusi al gin: diluire e miscelare</a></li></ol></section>''', 1)
+<ol class="indice"><li><a href="cap4-ruoli.xhtml">I ruoli delle botaniche</a></li><li><a href="cap4-stili.xhtml">Gli stili</a></li><li><a href="cap4-ridondanze.xhtml">Ridondanze e complementari</a></li><li><a href="cap4-miscela.xhtml">Dagli infusi al gin: diluire e miscelare</a></li><li><a href="cap4-proporzioni.xhtml">Prova le proporzioni</a></li></ol></section>''', 1)
 add('cap4-ruoli.xhtml', 'I ruoli delle botaniche', '<section><h1>I ruoli delle botaniche nella ricetta</h1>%s</section>' % sez('nozioni', 'I ruoli delle botaniche nella ricetta'), 2)
 FRAZ = {'Base': 1, 'Freschezza': 1, 'Identità': .8, 'Cuore': .7, 'Botanica firma': .3, 'Firma': .3, 'Rifinitura': .15}
 BASE = set(D['GIN_BASE'])
@@ -447,6 +447,18 @@ for nome, inten, maxb, ruoli in D['STYLES']:
 add('cap4-stili.xhtml', 'Gli stili', stili + '</section>', 2)
 add('cap4-ridondanze.xhtml', 'Ridondanze e complementari', RIDONDANZE, 2)
 add('cap4-miscela.xhtml', 'Dagli infusi al gin: diluire e miscelare', MISCELA, 2)
+# ---------- pagina interattiva: proporzioni ----------
+PROP = D.get('PROP') or {}
+PP_COL = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C','#D9A441','#7A5A3A']
+pp_nomi = sorted({n for v in PROP.values() for n, _, _ in v})
+pp_dati = json.dumps({'stili': PROP, 'P': {n: P[n] for n in pp_nomi if n in P}, 'S': {n: D['SENS'][n] for n in pp_nomi if n in D.get('SENS', {})}, 'col': PP_COL}, ensure_ascii=False, separators=(',', ':'))
+pp_tab = ''.join('<section class="box"><h3>%s</h3><table class="mol"><tbody>%s</tbody></table></section>' % (e(st), ''.join(
+    '<tr><td>%s%s</td><td>%s%%</td></tr>' % (e(n), ' <em>(tracce)</em>' if tr else '', fmt1(q)) for n, q, tr in righe)) for st, righe in PROP.items())
+add('cap4-proporzioni.xhtml', 'Prova le proporzioni', ('<section><h1>Prova le proporzioni</h1>'
+    '<p>Scegli uno stile e sposta i cursori: ogni cursore è la quota di un infuso (già portato alla gradazione finale) nella miscela. Se ne alzi uno, gli altri scendono in proporzione e il totale resta 100%%. In alto la striscia delle quote e un solo radar con tutti gli assi, in tre spicchi colorati: i <strong>sapori</strong> in bocca (rosso), i <strong>sentori</strong> al naso (blu) e le <strong>sensazioni</strong> (ocra). La linea tratteggiata è la ricetta di partenza; sotto, le note che salgono e quelle che scendono.</p>'
+    '<div id="ppl" class="ppl" data-v="%s"><p class="nota">Questa pagina è interattiva: serve un lettore che esegua JavaScript, come Kotobee Reader. Qui sotto, le quote di partenza di ogni stile.</p>%s</div>'
+    '<p class="nota">Sapori e sentori sono disegnati come forma del profilo (la nota più forte della ricetta di partenza vale 5); le sensazioni con la loro intensità da 0 a 5. Le quote di partenza sono quelle che l\'app GinBuilder propone per ogni stile. Stime orientative, da verificare all\'assaggio.</p>'
+    '<p class="naviga"><a href="cap4.xhtml">Capitolo 4</a> · <a href="cap4-miscela.xhtml">Dagli infusi al gin: diluire e miscelare</a></p></section>') % (e(pp_dati), pp_tab), 2, True)
 
 # ---------- 5. La percezione ----------
 SENSI = {'gusto': ('Gusto', 'lingua'), 'olfatto': ('Olfatto', 'naso'), 'trigemino': ('Trigemino', 'caldo, freddo, pungente'), 'tatto': ('Tatto', 'meccanico')}

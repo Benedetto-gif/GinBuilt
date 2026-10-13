@@ -395,3 +395,131 @@ function gpId(id){ if (!id) return null; var el = null; try { el = document.getE
     }
   })(art[a]);
 })();
+// ---------- Prova le proporzioni: cursori, striscia, radar unico ----------
+// Alcuni lettori eseguono lo script prima che la pagina sia completa: si parte quando il documento e' pronto.
+(function avvio(){
+  if (document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', avvio); return; }
+  var box = document.getElementById('ppl'); if (!box) return;
+  var D; try { D = JSON.parse(box.getAttribute('data-v')); } catch(e){ return; }
+  var NS = 'http://www.w3.org/2000/svg';
+  var GR = [
+    { t:'Sapori', c:'#C0583E', a:[[0,'Dolce'],[2,'Acido'],[3,'Salino'],[1,'Amaro']] },
+    { t:'Sentori', c:'#4C7BB5', a:[[4,'Agrumato'],[5,'Floreale'],[9,'Fruttato'],[6,'Erbaceo'],[8,'Resinoso'],[7,'Speziato']] },
+    { t:'Sensazioni', c:'#B8921F', a:[[0,'Pungente'],[1,'Rinfrescante'],[2,'Astringente'],[3,'Corpo'],[4,'Persistenza']] }
+  ];
+  var ASSI = []; GR.forEach(function(g, gi){ g.a.forEach(function(x){ ASSI.push({ g: gi, i: x[0], nm: x[1] }); }); });
+  var stili = Object.keys(D.stili); if (!stili.length) return;
+  var st = { nome: stili[0], righe: [], rif: [], q: [], fermo: {} };
+  function f1(x){ return (x >= 10 ? Math.round(x) : Math.round(x * 10) / 10).toString().replace('.', ','); }
+  function aPos(q){ return Math.round(Math.sqrt(Math.max(0, q) / 100) * 1000); }
+  function daPos(p){ return Math.pow(p / 1000, 2) * 100; }
+  function profilo(q){
+    var v = [], tot = 0, k, i; for (i = 0; i < 10; i++) v.push(0);
+    for (k = 0; k < st.righe.length; k++){ var p = D.P[st.righe[k].n]; if (!p) continue; tot += q[k]; for (i = 0; i < 10; i++) v[i] += (p[i] || 0) * q[k]; }
+    return v.map(function(x){ return tot ? x / tot : 0; });
+  }
+  function sens(q){ // media quadratica pesata, come nell'app
+    var v = [0,0,0,0,0], tot = 0, k, i;
+    for (k = 0; k < st.righe.length; k++){ var s = D.S[st.righe[k].n]; if (!s) continue; tot += q[k]; for (i = 0; i < 5; i++) v[i] += (s[i] || 0) * (s[i] || 0) * q[k]; }
+    return v.map(function(x){ return tot ? Math.round(Math.sqrt(x / tot) * 10) / 10 : 0; });
+  }
+  function unici(pr, se, mx){ return ASSI.map(function(x){ return x.g < 2 ? (mx ? pr[x.i] / mx * 5 : 0) : se[x.i]; }); }
+  function el(tag, at){ var e = document.createElementNS(NS, tag); for (var k in at) e.setAttribute(k, at[k]); return e; }
+  function radar(prima, ora){
+    var n = ASSI.length, W = 360, H = 330, cx = W / 2, cy = H / 2 + 6, R = 112, svg = el('svg', { viewBox: '-30 -8 ' + (W + 60) + ' ' + (H + 16), 'class': 'pp-radar', role: 'img' });
+    function ang(k){ return -Math.PI / 2 + k * 2 * Math.PI / n; }
+    function pt(k, v){ return [cx + R * v / 5 * Math.cos(ang(k)), cy + R * v / 5 * Math.sin(ang(k))]; }
+    var k0 = 0;
+    GR.forEach(function(gr){
+      var k1 = k0 + gr.a.length, a0 = ang(k0 - 0.5), a1 = ang(k1 - 0.5), big = (a1 - a0) > Math.PI ? 1 : 0;
+      svg.appendChild(el('path', { d: 'M ' + cx + ' ' + cy + ' L ' + (cx + R * Math.cos(a0)) + ' ' + (cy + R * Math.sin(a0)) + ' A ' + R + ' ' + R + ' 0 ' + big + ' 1 ' + (cx + R * Math.cos(a1)) + ' ' + (cy + R * Math.sin(a1)) + ' Z', fill: gr.c, 'fill-opacity': '0.10' }));
+      k0 = k1;
+    });
+    for (var l = 1; l <= 5; l++) svg.appendChild(el('polygon', { points: ASSI.map(function(_, k){ return pt(k, l).join(','); }).join(' '), fill: 'none', stroke: '#d8d2c6', 'stroke-width': '1' }));
+    ASSI.forEach(function(x, k){
+      var e5 = pt(k, 5), lb = pt(k, 5.55), anc = Math.abs(lb[0] - cx) < 8 ? 'middle' : (lb[0] > cx ? 'start' : 'end');
+      svg.appendChild(el('line', { x1: cx, y1: cy, x2: e5[0], y2: e5[1], stroke: '#d8d2c6', 'stroke-width': '1' }));
+      var t = el('text', { x: lb[0].toFixed(1), y: (lb[1] + 4).toFixed(1), 'text-anchor': anc, 'font-size': '11', 'font-weight': 'bold', 'font-family': 'sans-serif', fill: GR[x.g].c }); t.textContent = x.nm; svg.appendChild(t);
+    });
+    function poly(v){ return v.map(function(y, k){ return pt(k, y).map(function(z){ return z.toFixed(1); }).join(','); }).join(' '); }
+    svg.appendChild(el('polygon', { points: poly(prima), fill: 'none', stroke: '#777777', 'stroke-width': '1.5', 'stroke-dasharray': '4 3' }));
+    svg.appendChild(el('polygon', { points: poly(ora), fill: '#2F7259', 'fill-opacity': '0.28', stroke: '#2F7259', 'stroke-width': '2', 'stroke-linejoin': 'round' }));
+    ora.forEach(function(y, k){ if (y > 0){ var c = pt(k, y); svg.appendChild(el('circle', { cx: c[0].toFixed(1), cy: c[1].toFixed(1), r: '2.6', fill: GR[ASSI[k].g].c })); } });
+    return svg;
+  }
+  var testa, striscia, rbox, cambia, ginepro, cursori;
+  function costruisci(){
+    box.innerHTML = '';
+    var sc = document.createElement('div'); sc.className = 'pp-stili';
+    stili.forEach(function(nm){ var b = document.createElement('button'); b.type = 'button'; b.className = 'chip' + (nm === st.nome ? ' on' : ''); b.textContent = nm;
+      b.addEventListener('click', function(){ carica(nm); }); sc.appendChild(b); });
+    box.appendChild(sc);
+    testa = document.createElement('div'); testa.className = 'pp-testa';
+    striscia = document.createElement('div'); striscia.className = 'pp-striscia';
+    rbox = document.createElement('div'); rbox.className = 'pp-rbox';
+    var leg = document.createElement('div'); leg.className = 'pp-leg';
+    leg.innerHTML = GR.map(function(g){ return '<span><span class="pp-q" style="background:' + g.c + '"></span>' + g.t + '</span>'; }).join('') + '<span><span class="pp-q pp-tr"></span>partenza</span>';
+    cambia = document.createElement('div'); cambia.className = 'pp-cambia';
+    ginepro = document.createElement('div'); ginepro.className = 'pp-ginepro';
+    testa.appendChild(striscia); testa.appendChild(rbox); testa.appendChild(leg); testa.appendChild(cambia); testa.appendChild(ginepro);
+    box.appendChild(testa);
+    var az = document.createElement('p'); az.className = 'pp-az';
+    var rs = document.createElement('button'); rs.type = 'button'; rs.className = 'chip'; rs.textContent = '↺ Quote di partenza';
+    rs.addEventListener('click', function(){ st.q = st.rif.slice(); st.fermo = {}; disegnaCursori(); aggiorna(); });
+    az.appendChild(rs); box.appendChild(az);
+    cursori = document.createElement('div'); box.appendChild(cursori);
+  }
+  function carica(nm){
+    st.nome = nm; st.righe = D.stili[nm].map(function(r, k){ return { n: r[0], tr: r[2], col: r[0] === 'Bacche di ginepro' ? '#2F7259' : D.col[(k + 1) % D.col.length] }; });
+    st.rif = D.stili[nm].map(function(r){ return r[1]; }); st.q = st.rif.slice(); st.fermo = {};
+    var bb = box.querySelectorAll('.pp-stili .chip'); for (var i = 0; i < bb.length; i++) bb[i].className = 'chip' + (bb[i].textContent === nm ? ' on' : '');
+    disegnaCursori(); aggiorna();
+  }
+  function imposta(i, q){
+    var k, sommaF = 0, liberi = [], sommaL = 0;
+    for (k = 0; k < st.q.length; k++){ if (k === i) continue; if (st.fermo[k]) sommaF += st.q[k]; else { liberi.push(k); sommaL += st.q[k]; } }
+    q = Math.max(0, Math.min(q, 100 - sommaF));
+    if (!liberi.length) q = 100 - sommaF;
+    var resto = 100 - sommaF - q;
+    liberi.forEach(function(k){ st.q[k] = sommaL > 0 ? st.q[k] * resto / sommaL : resto / liberi.length; });
+    st.q[i] = q;
+  }
+  function disegnaCursori(){
+    cursori.innerHTML = '';
+    st.righe.forEach(function(r, k){
+      var row = document.createElement('div'); row.className = 'pp-riga'; row.setAttribute('data-k', k);
+      row.innerHTML = '<span class="pp-dot" style="background:' + r.col + '"></span><span class="pp-nome">' + r.n + (r.tr ? ' <em>(tracce)</em>' : '') +
+        '<small>partenza ' + f1(st.rif[k]) + '%</small></span><span class="pp-val"></span>';
+      var lk = document.createElement('button'); lk.type = 'button'; lk.className = 'pp-lock'; lk.textContent = st.fermo[k] ? '🔒' : '🔓';
+      lk.addEventListener('click', function(){ if (st.fermo[k]) delete st.fermo[k]; else st.fermo[k] = 1; disegnaCursori(); aggiorna(); });
+      row.appendChild(lk);
+      var rg = document.createElement('input'); rg.type = 'range'; rg.min = '0'; rg.max = '1000'; rg.step = '1'; rg.value = aPos(st.q[k]);
+      rg.className = 'pp-range'; rg.setAttribute('style', 'accent-color:' + r.col);
+      if (st.fermo[k]) rg.disabled = true;
+      rg.addEventListener('input', function(){ imposta(k, daPos(+this.value)); aggiorna(this); });
+      row.appendChild(rg); cursori.appendChild(row);
+    });
+  }
+  function aggiorna(attivo){
+    var righe = cursori.querySelectorAll('.pp-riga');
+    for (var k = 0; k < righe.length; k++){
+      righe[k].querySelector('.pp-val').textContent = f1(st.q[k]) + '%';
+      var rg = righe[k].querySelector('input'); if (rg !== attivo) rg.value = aPos(st.q[k]);
+    }
+    striscia.innerHTML = st.righe.map(function(r, k){ return st.q[k] > 0.05 ? '<span style="width:' + st.q[k] + '%;background:' + r.col + '"></span>' : ''; }).join('');
+    var p0 = profilo(st.rif), p1 = profilo(st.q), mx = Math.max.apply(null, p0.concat(p1)) || 1;
+    var u0 = unici(p0, sens(st.rif), mx), u1 = unici(p1, sens(st.q), mx);
+    rbox.innerHTML = ''; rbox.appendChild(radar(u0, u1));
+    var d = ASSI.map(function(x, k){ return { nm: x.nm.toLowerCase(), d: u1[k] - u0[k] }; }).filter(function(x){ return Math.abs(x.d) >= 0.25; });
+    var su = d.filter(function(x){ return x.d > 0; }).sort(function(a, b){ return b.d - a.d; }).slice(0, 4);
+    var giu = d.filter(function(x){ return x.d < 0; }).sort(function(a, b){ return a.d - b.d; }).slice(0, 4);
+    function f(x){ return x.nm + ' ' + (x.d > 0 ? '+' : '−') + f1(Math.abs(x.d)); }
+    cambia.innerHTML = !d.length ? 'Profilo come la ricetta di partenza.' :
+      (su.length ? '<span style="color:#2e7d32;font-weight:bold">▲ ' + su.map(f).join(', ') + '</span>' : '') + (su.length && giu.length ? ' · ' : '') +
+      (giu.length ? '<span style="color:#c62828;font-weight:bold">▼ ' + giu.map(f).join(', ') + '</span>' : '');
+    var gi = -1; st.righe.forEach(function(r, k){ if (r.n === 'Bacche di ginepro') gi = k; });
+    var pg = gi >= 0 ? st.q[gi] : 0, col = pg >= 45 ? '#2e7d32' : (pg >= 30 ? '#b26a00' : '#c62828');
+    ginepro.innerHTML = '<span style="color:' + col + ';font-weight:bold">Ginepro ' + f1(pg) + '%</span>' + (pg < 30 ? ' · troppo poco: il ginepro deve restare la nota prevalente' : (pg < 45 ? ' · al limite' : ''));
+  }
+  costruisci(); carica(st.nome);
+})();

@@ -169,3 +169,22 @@ table.tab-comb tr.evitare td{background:#FBE9E5;color:#8A2F1C;}
 .msel{border:1px solid #ddd5c8;border-radius:8px;padding:.3em .8em;margin:.6em 0;background:#fbf9f4;}
 .msel-lista{margin:.3em 0;padding-left:1.2em;}
 .msel-lista li{margin:.35em 0;}
+/* Prova le proporzioni */
+.pp-stili{display:flex;flex-wrap:wrap;gap:6px;margin:.4em 0 .8em;}
+.pp-stili .chip.on{background:#2F7259;color:#fff;border-color:#2F7259;}
+.pp-testa{position:-webkit-sticky;position:sticky;top:0;z-index:3;background:#FDFDF8;border:1px solid #d8d2c6;border-radius:12px;padding:.5em .6em;margin-bottom:.6em;}
+.pp-striscia{display:flex;height:14px;border-radius:7px;overflow:hidden;}
+.pp-striscia span{display:block;height:100%;}
+.pp-rbox svg{width:100%;max-width:360px;height:auto;max-height:42vh;display:block;margin:0 auto;}
+.pp-leg{display:flex;flex-wrap:wrap;justify-content:center;gap:2px 12px;font-size:.8em;color:#555;}
+.pp-q{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px;}
+.pp-q.pp-tr{background:none;border-top:1.5px dashed #777;height:0;width:14px;border-radius:0;vertical-align:3px;}
+.pp-cambia,.pp-ginepro{font-size:.85em;text-align:center;line-height:1.45;margin-top:.2em;}
+.pp-riga{display:grid;grid-template-columns:14px minmax(0,1fr) auto auto;align-items:center;gap:4px 8px;padding:.45em 0;border-bottom:1px solid #e6e0d4;}
+.pp-dot{width:12px;height:12px;border-radius:50%;display:block;}
+.pp-nome{font-weight:bold;font-size:.95em;}
+.pp-nome small{display:block;font-weight:normal;color:#777;font-size:.8em;}
+.pp-val{font-weight:bold;white-space:nowrap;}
+.pp-lock{background:none;border:1px solid #d8d2c6;border-radius:8px;padding:2px 6px;font-size:1em;}
+.pp-range{grid-column:1/-1;width:100%;}
+.pp-az{margin:.2em 0 .4em;}
