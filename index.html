@@ -607,6 +607,22 @@ select.sel-fissa{opacity:1;cursor:default;background-image:none;-webkit-appearan
 .pp-g.on{display:block;}
 .pp-gt{display:none;font-size:12px;font-weight:650;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.05em;}
 .pp-g svg{width:100%;max-width:300px;height:auto;max-height:min(30vh,240px);display:block;margin:0 auto;}
+.pp-striscia{display:flex;height:16px;border-radius:8px;overflow:hidden;margin:2px 0 4px;}
+.pp-striscia span{display:block;height:100%;min-width:1px;}
+.pp-vista{display:block;}
+.pp-torta-box{display:none;}
+.pp-radar-box svg{width:100%;max-width:360px;height:auto;max-height:min(40vh,330px);display:block;margin:0 auto;}
+.pp-cambia{font-size:12.5px;text-align:center;line-height:1.45;margin-top:2px;}
+.pp-leg{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 12px;font-size:11.5px;color:var(--ink-soft);margin-bottom:3px;}
+.pp-leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px;}
+.pp-leg i.tr{background:none;border-top:1.5px dashed var(--ink-soft);height:0;width:14px;border-radius:0;vertical-align:3px;}
+.pp-cambia .su{color:var(--green-sym,#2e7d32);font-weight:650;} .pp-cambia .giu{color:var(--red-sym,#c62828);font-weight:650;}
+@media (min-width:900px){
+  .pp-vista{display:grid;grid-template-columns:260px 1fr;gap:16px;align-items:center;}
+  .pp-torta-box{display:block;} .pp-torta-box svg{width:100%;max-width:240px;height:auto;display:block;margin:0 auto;}
+  .pp-striscia{display:none;}
+  .pp-radar-box svg{max-height:380px;max-width:440px;}
+}
 .pp-g .radar-wrap{margin:0;}
 @media (min-width:900px){ .pp-g svg{max-height:260px;} }
 .pp-g .radar-sottr-btn, .pp-g .radar-nota, .pp-g .pot-leg, .pp-g .pot-tua{display:none !important;}
@@ -3111,7 +3127,7 @@ html details.howto a{color:#5A3E1C;}
         <ul>
           <li>La pagina parte dalla ricetta che hai nel <strong>Gin Builder</strong>, con le quote degli infusi della tabella <em>Dosi per il tuo gin</em>.</li>
           <li>Sposta un cursore: quella botanica cambia e le altre si adeguano in proporzione, così il totale resta 100%. Il lucchetto 🔒 tiene ferma una botanica mentre muovi le altre.</li>
-          <li>In alto la <strong>torta</strong> mostra le quote; sotto, scegli il radar di <strong>gusto e aroma</strong> o quello delle <strong>sensazioni in bocca</strong>. La linea tratteggiata è la ricetta di partenza: vedi subito che cosa hai spostato. Su schermo largo i tre grafici stanno affiancati.</li>
+          <li>In alto, in un'unica vista: la <strong>striscia delle quote</strong> (gli stessi colori dei cursori) e un solo radar con tutti gli assi, divisi in tre spicchi: i <strong>sapori</strong> in bocca, i <strong>sentori</strong> al naso e le <strong>sensazioni</strong> (pungente, rinfrescante, astringente, corpo, persistenza). La linea tratteggiata è la ricetta di partenza; sotto, le note che salgono e quelle che scendono. Su schermo largo compare anche la torta.</li>
           <li>Accanto a ogni cursore trovi i millilitri di infuso, già portato alla gradazione finale, per il volume di gin scelto; in fondo, quanti infusi filtrati e quanta acqua servono in tutto.</li>
         </ul>
         <p>Il radar di gusto e aroma comprende qui anche le botaniche base (ginepro, coriandolo, angelica), perché sono proprio le quote che stai variando. Stime orientative, da verificare all'assaggio.</p>
@@ -3125,16 +3141,12 @@ html details.howto a{color:#5A3E1C;}
       </div>
     </div>
     <div class="pp-grafici" id="pp-grafici">
-      <div class="pp-scelta" role="group" aria-label="Grafico da vedere">
-        <button type="button" class="pp-tab" data-g="torta" aria-pressed="true">Torta</button>
-        <button type="button" class="pp-tab" data-g="gusto" aria-pressed="false">Gusto e aroma</button>
-        <button type="button" class="pp-tab" data-g="sens" aria-pressed="false">Sensazioni</button>
+      <div class="pp-striscia" id="pp-striscia" aria-label="Quote degli infusi"></div>
+      <div class="pp-vista">
+        <div class="pp-torta-box" id="pp-torta"></div>
+        <div class="pp-radar-box" id="pp-unico"></div>
       </div>
-      <div class="pp-tre">
-        <div class="pp-g" data-g="torta"><div class="pp-gt">Quote degli infusi</div><div id="pp-torta"></div></div>
-        <div class="pp-g" data-g="gusto"><div class="pp-gt">Gusto e aroma</div><div id="pp-gusto"></div></div>
-        <div class="pp-g" data-g="sens"><div class="pp-gt">Sensazioni in bocca</div><div id="pp-sens"></div></div>
-      </div>
+      <div class="pp-cambia" id="pp-cambia"></div>
       <div class="pp-ginepro" id="pp-ginepro"></div>
     </div>
     <div class="pp-cursori" id="pp-cursori"></div>
@@ -3726,7 +3738,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 13 ottobre 2026, ore 15:15 · Infusi portati alla gradazione finale prima di miscelarli</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 13 ottobre 2026, ore 16:00 · Proporzioni: sapori, sentori e sensazioni in un unico radar</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -9201,9 +9213,49 @@ function renderDosiGin(selects){
          '<text x="' + c + '" y="' + (c + 16) + '" text-anchor="middle" font-size="18" font-weight="700" fill="var(--ink)">' + (gi >= 0 ? Math.round(st.q[gi]) : 0) + '%</text>';
     return '<svg viewBox="0 0 220 220" role="img" aria-label="Quote degli infusi">' + g + '</svg>';
   }
+  // Radar unico: 4 sapori, 6 sentori, 5 sensazioni, a spicchi colorati. Sapori e sentori sulla stessa scala
+  // della ricetta (forma, massimo 5), sensazioni con la loro intensita' 0-5.
+  const GR = [
+    { t:'Sapori', c:'#C0583E', a:[[0,'Dolce'],[2,'Acido'],[3,'Salino'],[1,'Amaro']] },
+    { t:'Sentori', c:'#4C7BB5', a:[[4,'Agrumato'],[5,'Floreale'],[9,'Fruttato'],[6,'Erbaceo'],[8,'Resinoso'],[7,'Speziato']] },
+    { t:'Sensazioni', c:'#B8921F', a:[[0,'Pungente'],[1,'Rinfrescante'],[2,'Astringente'],[3,'Corpo'],[4,'Persistenza']] }
+  ];
+  const ASSI_U = []; GR.forEach((g, gi) => g.a.forEach(([i, nm]) => ASSI_U.push({ g: gi, i, nm })));
+  function valoriUnici(prof, sens){ return ASSI_U.map(x => x.g < 2 ? (prof[x.i] || 0) : ((sens || [])[x.i] || 0)); }
+  function radarUnico(prima, ora){
+    const n = ASSI_U.length, W = 360, H = 330, cx = W / 2, cy = H / 2 + 6, R = 112;
+    const ang = k => -Math.PI / 2 + k * 2 * Math.PI / n;
+    const pt = (k, v) => [cx + R * v / 5 * Math.cos(ang(k)), cy + R * v / 5 * Math.sin(ang(k))];
+    let g = '';
+    // spicchi dei tre gruppi
+    let k0 = 0;
+    GR.forEach(gr => {
+      const k1 = k0 + gr.a.length, a0 = ang(k0 - 0.5), a1 = ang(k1 - 0.5), big = (a1 - a0) > Math.PI ? 1 : 0;
+      g += '<path d="M ' + cx + ' ' + cy + ' L ' + (cx + R * Math.cos(a0)) + ' ' + (cy + R * Math.sin(a0)) + ' A ' + R + ' ' + R + ' 0 ' + big + ' 1 ' + (cx + R * Math.cos(a1)) + ' ' + (cy + R * Math.sin(a1)) + ' Z" fill="' + gr.c + '" fill-opacity=".09"/>';
+      k0 = k1;
+    });
+    for (let l = 1; l <= 5; l++) g += '<polygon points="' + ASSI_U.map((_, k) => pt(k, l).join(',')).join(' ') + '" fill="none" stroke="var(--line)" stroke-width="1"/>';
+    ASSI_U.forEach((x, k) => {
+      const [ex, ey] = pt(k, 5), [lx, ly] = pt(k, 5.55), anc = Math.abs(lx - cx) < 8 ? 'middle' : (lx > cx ? 'start' : 'end');
+      g += '<line x1="' + cx + '" y1="' + cy + '" x2="' + ex + '" y2="' + ey + '" stroke="var(--line)" stroke-width="1"/>' +
+           '<text x="' + lx.toFixed(1) + '" y="' + (ly + 4).toFixed(1) + '" text-anchor="' + anc + '" font-size="11" font-weight="600" fill="' + GR[x.g].c + '">' + x.nm + '</text>';
+    });
+    const poly = v => v.map((y, k) => pt(k, y).map(z => z.toFixed(1)).join(',')).join(' ');
+    g += '<polygon points="' + poly(prima) + '" fill="none" stroke="var(--ink-soft)" stroke-width="1.5" stroke-dasharray="4 3"/>';
+    g += '<polygon points="' + poly(ora) + '" fill="var(--juniper)" fill-opacity=".25" stroke="var(--juniper)" stroke-width="2" stroke-linejoin="round"/>';
+    ora.forEach((y, k) => { if (y > 0){ const [px, py] = pt(k, y); g += '<circle cx="' + px.toFixed(1) + '" cy="' + py.toFixed(1) + '" r="2.6" fill="' + GR[ASSI_U[k].g].c + '"/>'; } });
+    return '<svg viewBox="-30 -8 ' + (W + 60) + ' ' + (H + 16) + '" role="img" aria-label="Sapori, sentori e sensazioni della ricetta">' + g + '</svg>';
+  }
+  function cosaCambia(prima, ora){
+    const d = ASSI_U.map((x, k) => ({ nm: x.nm.toLowerCase(), d: ora[k] - prima[k] })).filter(x => Math.abs(x.d) >= 0.25);
+    if (!d.length) return 'Profilo come la ricetta di partenza.';
+    const su = d.filter(x => x.d > 0).sort((a, b) => b.d - a.d).slice(0, 4), giu = d.filter(x => x.d < 0).sort((a, b) => a.d - b.d).slice(0, 4);
+    const f = x => x.nm + ' ' + (x.d > 0 ? '+' : '−') + nf(Math.abs(x.d), 1);
+    return (su.length ? '<span class="su">▲ ' + su.map(f).join(', ') + '</span>' : '') + (su.length && giu.length ? ' · ' : '') + (giu.length ? '<span class="giu">▼ ' + giu.map(f).join(', ') + '</span>' : '');
+  }
   function aggiorna(){
     const box = $('pp-cursori'); if (!box) return;
-    if (!st.righe.length){ $('pp-torta').innerHTML = ''; $('pp-gusto').innerHTML = ''; $('pp-sens').innerHTML = ''; $('pp-totali').innerHTML = ''; $('pp-ginepro').textContent = ''; return; }
+    if (!st.righe.length){ ['pp-torta','pp-unico','pp-striscia','pp-cambia','pp-totali','pp-ginepro'].forEach(id => { $(id).innerHTML = ''; }); return; }
     // valori e millilitri accanto ai cursori
     const vol = Math.max(10, parseFloat($('dosi-vol').value) || 700);
     const abvF = Math.min(70, Math.max(1, parseFloat(String($('dosi-abv').value).replace(',', '.')) || 43));
@@ -9228,9 +9280,13 @@ function renderDosiGin(selects){
     $('pp-torta').innerHTML = torta();
     const ora = profilo(el()), prima = profilo(st.righe.map((r, k) => ({ n: r.n, w: Math.max(0.00001, st.rif[k]) })));
     const mx = Math.max.apply(null, prima.concat(ora)) || 1, s5 = v => v.map(x => Math.round(x / mx * 50) / 10);
-    $('pp-gusto').innerHTML = radarSVG([{vals: s5(prima), color: 'var(--ink-soft)', label: 'Partenza', dash: true}, {vals: s5(ora), color: 'var(--juniper)', label: 'Ora'}], 280);
+
     const sOra = sensMiscela(el()), sPrima = sensMiscela(st.righe.map((r, k) => ({ n: r.n, w: Math.max(0.00001, st.rif[k]) })));
-    $('pp-sens').innerHTML = sOra ? radarSensSVG([{vals: sPrima, color: 'var(--ink-soft)', label: 'Partenza', dash: true}, {vals: sOra, color: SENS_COL, label: 'Ora'}], 260) : '';
+    const uPrima = valoriUnici(s5(prima), sPrima), uOra = valoriUnici(s5(ora), sOra);
+    $('pp-unico').innerHTML = radarUnico(uPrima, uOra);
+    $('pp-cambia').innerHTML = '<div class="pp-leg">' + GR.map(g => '<span><i style="background:' + g.c + '"></i>' + g.t + '</span>').join('') + '<span><i class="tr"></i>partenza</span></div>' + cosaCambia(uPrima, uOra);
+    try { ppTop(); } catch(e){}
+    $('pp-striscia').innerHTML = st.righe.map((r, k) => st.q[k] > 0.05 ? '<span style="width:' + st.q[k] + '%;background:' + r.col + '" title="' + r.n.replace(/"/g, '') + ' ' + fq(st.q[k]) + '%"></span>' : '').join('');
   }
   function disegnaCursori(){
     const box = $('pp-cursori'); if (!box) return;
@@ -9250,13 +9306,7 @@ function renderDosiGin(selects){
       row.querySelector('.pp-lock').addEventListener('click', () => { if (st.fermo.has(k)) st.fermo.delete(k); else st.fermo.add(k); disegnaCursori(); aggiorna(); });
     });
   }
-  function scegliGrafico(g){
-    st.grafico = g;
-    document.querySelectorAll('#pp-grafici .pp-scelta .pp-tab').forEach(b => b.setAttribute('aria-pressed', b.dataset.g === g));
-    document.querySelectorAll('#pp-grafici .pp-g').forEach(d => d.classList.toggle('on', d.dataset.g === g));
-  }
-  document.querySelectorAll('#pp-grafici .pp-scelta .pp-tab').forEach(b => b.addEventListener('click', () => scegliGrafico(b.dataset.g)));
-  scegliGrafico('torta');
+
   $('pp-ricarica').addEventListener('click', carica);
   $('pp-reset').addEventListener('click', () => { st.q = st.rif.slice(); st.fermo = new Set(); disegnaCursori(); aggiorna(); });
   $('pp-banco').addEventListener('click', () => {
