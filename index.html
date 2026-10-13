@@ -3055,7 +3055,7 @@ html details.howto a{color:#5A3E1C;}
             della stessa famiglia — uno stile Floreale nasce dall'accostamento di più fiori, è il suo carattere.
             Quelli arancioni segnalano invece un accumulo oltre a quanto previsto, o una coppia a rischio.</li>
           <li>Ogni ruolo si può eliminare con la ✕ e se ne possono aggiungere di nuovi: nessuna struttura è obbligatoria.</li>
-          <li>In <strong>Dosi per il tuo gin</strong> scrivi quanto gin vuoi ottenere e a che gradazione: per ogni botanica trovi la quota nella miscela, i millilitri di infuso da versare e i grammi di botanica che contengono, più l'acqua per arrivare al grado finale.</li>
+          <li>In <strong>Dosi per il tuo gin</strong> scrivi quanto gin vuoi ottenere e a che gradazione: per ogni botanica trovi la quota nella miscela, i millilitri di infuso già portato alla gradazione finale da versare, quanto infuso filtrato e quanta acqua servono per ottenerlo, e i grammi di botanica che contiene.</li>
           <li>Con <strong>Personalizzato</strong> definisci tu i ruoli, aggiungendone quanti ne servono.</li>
           <li>Quando la struttura ti convince, premi <em>Invia al banco di prova</em>: nasce una scheda con le percentuali
             di partenza già calcolate.</li>
@@ -3112,7 +3112,7 @@ html details.howto a{color:#5A3E1C;}
           <li>La pagina parte dalla ricetta che hai nel <strong>Gin Builder</strong>, con le quote degli infusi della tabella <em>Dosi per il tuo gin</em>.</li>
           <li>Sposta un cursore: quella botanica cambia e le altre si adeguano in proporzione, così il totale resta 100%. Il lucchetto 🔒 tiene ferma una botanica mentre muovi le altre.</li>
           <li>In alto la <strong>torta</strong> mostra le quote; sotto, scegli il radar di <strong>gusto e aroma</strong> o quello delle <strong>sensazioni in bocca</strong>. La linea tratteggiata è la ricetta di partenza: vedi subito che cosa hai spostato. Su schermo largo i tre grafici stanno affiancati.</li>
-          <li>Accanto a ogni cursore trovi i millilitri di infuso per il volume di gin scelto; in fondo, il totale e l'acqua per arrivare alla gradazione finale.</li>
+          <li>Accanto a ogni cursore trovi i millilitri di infuso, già portato alla gradazione finale, per il volume di gin scelto; in fondo, quanti infusi filtrati e quanta acqua servono in tutto.</li>
         </ul>
         <p>Il radar di gusto e aroma comprende qui anche le botaniche base (ginepro, coriandolo, angelica), perché sono proprio le quote che stai variando. Stime orientative, da verificare all'assaggio.</p>
       </div>
@@ -3726,7 +3726,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 13 ottobre 2026, ore 15:00 · Proporzioni con cursori, torta e radar</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 13 ottobre 2026, ore 15:15 · Infusi portati alla gradazione finale prima di miscelarli</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -6408,8 +6408,11 @@ function addBotRow(prefill){
     const ml = volumeCampione() * perc / 100;
     const g = doseLibreria(sel.value);
     if (perc > 0){
-      derived.innerHTML = `<strong>${nf(ml,1)} ml</strong> di infuso` +
-        (g !== null ? ` \u00b7 \u2248 ${nf(g * ml / 100, 2)} g di botanica` : '');
+      // infuso gia' portato alla gradazione della scheda: dentro c'e' meno infuso filtrato, e quindi meno botanica
+      const abvT = parseFloat(tfAbvInput.value) || 43, d = byName[sel.value], e = d ? estPer(d) : null, a = e ? (e.a[0] + e.a[1]) / 2 : abvT;
+      const conc = a > abvT ? ml * abvT / a : ml;
+      derived.innerHTML = `<strong>${nf(ml,1)} ml</strong> di infuso a ${nf(abvT,1)}%` + (a > abvT ? ` (${nf(conc,1)} ml filtrato + ${nf(ml - conc,1)} ml d'acqua)` : '') +
+        (g !== null ? ` \u00b7 \u2248 ${nf(g * conc / 100, 2)} g di botanica` : '');
     } else {
       derived.innerHTML = '<span class="muted">indica una percentuale</span>';
     }
@@ -6447,27 +6450,31 @@ function renderMixSummary(){
   const vol = volumeCampione();
   const somma = rows.reduce((t,r) => t + r.perc, 0);
   const resto = 100 - somma;
+  const abv = parseFloat(tfAbvInput.value) || 40;
+  // quota di infuso filtrato dentro l'infuso portato alla gradazione della scheda
+  const fConc = n => { const d = byName[n], e = d ? estPer(d) : null, a = e ? (e.a[0] + e.a[1]) / 2 : abv; return a > abv ? abv / a : 1; };
   const gTot = rows.reduce((t,r) => {
     const g = doseLibreria(r.botanica);
-    return t + (g === null ? 0 : g * (vol * r.perc / 100) / 100);
+    return t + (g === null ? 0 : g * (vol * r.perc / 100) * fConc(r.botanica) / 100);
   }, 0);
-  const abv = parseFloat(tfAbvInput.value) || 40;
 
   let html = `<div class="mix-line"><span>Totale infusi</span><strong>${nf(somma,1)}% \u00b7 ${nf(vol*somma/100,1)} ml</strong></div>`;
   if (resto > 0.05){
     html += `<div class="mix-line"><span>Base neutra da aggiungere (alcol/acqua a ${abv}\u00b0)</span><strong>${nf(resto,1)}% \u00b7 ${nf(vol*resto/100,1)} ml</strong></div>`;
   }
   if (rows.length){
-    let sa = 0; rows.forEach(r => { const d = byName[r.botanica], e = d ? estPer(d) : null; sa += r.perc * (e ? (e.a[0] + e.a[1]) / 2 : abv); });
-    const gm = (sa + Math.max(resto, 0) * abv) / 100, acqua = gm > abv ? vol * (gm / abv - 1) : 0;
-    html += `<div class="mix-line"><span>Grado stimato (infusi alla gradazione consigliata)</span><strong>≈ ${nf(gm,1)}° vol</strong></div>`;
-    html += `<div class="mix-line"><span>Acqua da aggiungere per scendere a ${nf(abv,1)}% vol</span><strong>${gm > abv ? '≈ ' + nf(acqua,1) + ' ml su ' + nf(vol,0) + ' ml' : 'nessuna'}</strong></div>`;
+    // Ogni infuso filtrato si porta da solo alla gradazione finale prima di miscelarlo.
+    let conc = 0, acq = 0; const sotto = [];
+    rows.forEach(r => { const d = byName[r.botanica], e = d ? estPer(d) : null, a = e ? (e.a[0] + e.a[1]) / 2 : abv, ml = vol * r.perc / 100;
+      if (a < abv){ sotto.push(r.botanica); conc += ml; } else { conc += ml * abv / a; acq += ml - ml * abv / a; } });
+    html += `<div class="mix-line"><span>Per portare gli infusi a ${nf(abv,1)}% prima di miscelarli</span><strong>≈ ${nf(conc,1)} ml di infusi filtrati + ${nf(acq,1)} ml d'acqua</strong></div>`;
+    if (sotto.length) html += `<div class="mix-warn">${sotto.join(', ')}: infuso consigliato sotto ${nf(abv,1)}%, non si può diluire.</div>`;
   }
   const P = prezzi();
   if (Object.keys(P).length){
     let costo = 0, senza = [];
     rows.forEach(r => { const g = doseLibreria(r.botanica); if (g === null) return;
-      if (P[r.botanica]) costo += g * (vol * r.perc / 100) / 100 * P[r.botanica] / 100; else senza.push(r.botanica); });
+      if (P[r.botanica]) costo += g * (vol * r.perc / 100) * fConc(r.botanica) / 100 * P[r.botanica] / 100; else senza.push(r.botanica); });
     html += `<div class="mix-line"><span>Costo delle botaniche</span><strong>≈ ${nf(costo,2)} € su ${nf(vol,0)} ml · ≈ ${nf(costo * 700 / vol,2)} € per 700 ml</strong></div>`;
     if (senza.length) html += `<div class="mix-warn">Senza prezzo (non contate): ${senza.join(', ')}.</div>`;
   }
@@ -6492,7 +6499,7 @@ document.getElementById('tf-balance').addEventListener('click', () => {
   renderMixSummary();
 });
 tfVolumeInput.addEventListener('input', () => { activeSyncFns.forEach(fn => fn()); renderMixSummary(); });
-tfAbvInput.addEventListener('input', renderMixSummary);
+tfAbvInput.addEventListener('input', () => { activeSyncFns.forEach(fn => fn()); renderMixSummary(); });
 
 function clearForm(){
   document.getElementById('tf-name').value = '';
@@ -9113,10 +9120,19 @@ function dosiRicetta(selects){
     const g100 = infusoRiga(d, r.abv, REF_TEMP, 100, 'tempo', st, false, ALCOL_PARTENZA);
     r.g100 = g100 && g100.g ? g100.g : (doseLibreria(r.n) || 0);           // g di botanica per 100 ml di infuso
   });
-  const abvMix = righe.reduce((a, r) => a + r.quota * r.abv, 0);           // gradazione della miscela di infusi
-  const volInf = abvMix > abvF ? vol * abvF / abvMix : vol;                 // infusi necessari per il volume finale
-  righe.forEach(r => { r.ml = volInf * r.quota; r.g = r.g100 * r.ml / 100; r.pctGin = r.ml / vol * 100; });
-  return { righe, vol, abvF, abvMix, volInf, acqua: Math.max(0, vol - volInf), basso: abvMix < abvF };
+  righe.forEach(r => Object.assign(r, porzioneInfuso(r, r.quota, vol, abvF)));
+  return totaliInfusi(righe, vol, abvF);
+}
+// Ogni infuso, filtrato, si porta da solo alla gradazione finale e poi si miscela: la quota vale sul volume finale.
+// mlFin = infuso gia' alla gradazione finale da versare; mlConc + acqua = come ottenerlo dall'infuso filtrato.
+function porzioneInfuso(r, quota, vol, abvF){
+  const mlFin = vol * quota, sotto = r.abv < abvF;
+  const mlConc = sotto ? mlFin : mlFin * abvF / r.abv;
+  return { mlFin, mlConc, acquaDil: mlFin - mlConc, ml: mlConc, g: r.g100 * mlConc / 100, pctGin: quota * 100, sotto };
+}
+function totaliInfusi(righe, vol, abvF){
+  const sum = k => righe.reduce((a, r) => a + r[k], 0);
+  return { righe, vol, abvF, volConc: sum('mlConc'), acqua: sum('acquaDil'), gTot: sum('g'), sotto: righe.filter(r => r.sotto).map(r => r.n) };
 }
 function renderDosiGin(selects){
   const out = document.getElementById('dosi-out'); if (!out) return;
@@ -9124,16 +9140,14 @@ function renderDosiGin(selects){
   window._dosiGin = R;
   if (!R){ out.innerHTML = '<div class="radar-nota">Scegli le botaniche della ricetta.</div>'; return; }
   const f1 = x => nf(x, x < 10 ? 1 : 0), fg = x => x > 0 && x < 0.01 ? '< 0,01' : nf(x, x < 1 ? 2 : 1);
-  const righe = R.righe.slice().sort((a, b) => b.ml - a.ml).map(r =>
-    '<tr><td>' + r.n + (r.tracce ? ' <em>(tracce)</em>' : '') + '<small>infuso a ' + r.abv + '% · ' + fg(r.g100) + ' g per 100 ml</small></td>' +
-    '<td>' + nf(r.quota * 100, 1) + '%</td><td><strong>' + f1(r.ml) + ' ml</strong><small>' + nf(r.pctGin, 1) + '% del gin</small></td><td>' + fg(r.g) + ' g</td></tr>').join('');
-  const gTot = R.righe.reduce((a, r) => a + r.g, 0);
-  out.innerHTML = '<table class="dosi-tab"><thead><tr><th>Infuso</th><th>Nella miscela</th><th>Da versare</th><th>Botanica</th></tr></thead><tbody>' + righe + '</tbody>' +
-    '<tfoot><tr><td>Totale infusi<small>miscela a circa ' + nf(R.abvMix, 1) + '% vol</small></td><td>100%</td><td>' + f1(R.volInf) + ' ml</td><td>' + fg(gTot) + ' g</td></tr>' +
-    (R.acqua > 0.5 ? '<tr><td>Acqua demineralizzata</td><td></td><td>' + f1(R.acqua) + ' ml</td><td></td></tr>' : '') +
-    '<tr><td>Gin finito a ' + nf(R.abvF, 1) + '% vol</td><td></td><td>' + f1(R.vol) + ' ml</td><td>' + nf(gTot / R.vol * 1000, 1) + ' g/l</td></tr></tfoot></table>' +
-    (R.basso ? '<div class="warn-box">La miscela di infusi è a circa ' + nf(R.abvMix, 1) + '% vol, sotto la gradazione finale scelta: senza acqua il gin resta a quel grado. Per salire serve alcol neutro, oppure infusi a gradazione più alta.</div>' : '') +
-    '<div class="radar-nota">Ogni botanica si infonde a parte alla sua gradazione consigliata; gli infusi si uniscono nelle quote della colonna <em>Nella miscela</em> (le stesse del banco di prova) e si porta al grado finale con l\'acqua. I volumi d\'acqua sono indicativi: alcol e acqua mescolati si contraggono un poco, quindi verifica il grado con l\'alcolometro e aggiungi l\'acqua per ultima, a poco a poco. Prepara un po\' più infuso del necessario. Dosi di partenza, da correggere all\'assaggio.</div>';
+  const A = nf(R.abvF, 1);
+  const righe = R.righe.slice().sort((a, b) => b.mlFin - a.mlFin).map(r =>
+    '<tr><td>' + r.n + (r.tracce ? ' <em>(tracce)</em>' : '') + '<small>infuso filtrato a ' + r.abv + '% · ' + fg(r.g100) + ' g per 100 ml</small></td>' +
+    '<td>' + nf(r.quota * 100, 1) + '%</td><td><strong>' + f1(r.mlFin) + ' ml</strong><small>' + (r.sotto ? 'già sotto ' + A + '%' : f1(r.mlConc) + ' ml di infuso + ' + f1(r.acquaDil) + ' ml d\'acqua') + '</small></td><td>' + fg(r.g) + ' g</td></tr>').join('');
+  out.innerHTML = '<table class="dosi-tab"><thead><tr><th>Infuso</th><th>Nella miscela</th><th>Da versare a ' + A + '%</th><th>Botanica</th></tr></thead><tbody>' + righe + '</tbody>' +
+    '<tfoot><tr><td>Gin finito a ' + A + '% vol<small>' + f1(R.volConc) + ' ml di infusi filtrati + ' + f1(R.acqua) + ' ml d\'acqua</small></td><td>100%</td><td>' + f1(R.vol) + ' ml</td><td>' + fg(R.gTot) + ' g<small>' + nf(R.gTot / R.vol * 1000, 1) + ' g/l</small></td></tr></tfoot></table>' +
+    (R.sotto.length ? '<div class="warn-box">' + R.sotto.join(', ') + ': infuso consigliato sotto la gradazione finale, non si può diluire. Per portarlo a ' + A + '% serve aggiungere alcol, oppure infonderlo a una gradazione più alta.</div>' : '') +
+    '<div class="radar-nota">Come lavori: ogni infuso, filtrato, si porta da solo a ' + A + '% con acqua demineralizzata e poi si unisce agli altri. La colonna <em>Da versare</em> è l\'infuso già a ' + A + '%; sotto, quanto infuso filtrato e quanta acqua servono per ottenerlo. Alcol e acqua mescolati si contraggono un poco: verifica ogni diluizione con l\'alcolometro. Prepara un po\' più infuso del necessario. Dosi di partenza, da correggere all\'assaggio.</div>';
 }
 
 // ---------- Proporzioni: cursori, torta e radar che cambiano insieme ----------
@@ -9193,20 +9207,19 @@ function renderDosiGin(selects){
     // valori e millilitri accanto ai cursori
     const vol = Math.max(10, parseFloat($('dosi-vol').value) || 700);
     const abvF = Math.min(70, Math.max(1, parseFloat(String($('dosi-abv').value).replace(',', '.')) || 43));
-    const abvMix = st.righe.reduce((a, r, k) => a + st.q[k] / 100 * r.abv, 0);
-    const volInf = abvMix > abvF ? vol * abvF / abvMix : vol;
-    let gTot = 0;
+    const parti = st.righe.map((r, k) => Object.assign({ n: r.n }, porzioneInfuso(r, st.q[k] / 100, vol, abvF)));
+    const T = totaliInfusi(parti, vol, abvF), m1 = x => nf(x, x < 10 ? 1 : 0);
     st.righe.forEach((r, k) => {
-      const ml = volInf * st.q[k] / 100, g = r.g100 * ml / 100; gTot += g;
+      const x = parti[k], g = x.g;
       const row = box.querySelector('.pp-riga[data-k="' + k + '"]'); if (!row) return;
-      row.querySelector('.pp-val').innerHTML = fq(st.q[k]) + '%<small>' + nf(ml, ml < 10 ? 1 : 0) + ' ml · ' + (g > 0 && g < 0.01 ? '< 0,01' : nf(g, g < 1 ? 2 : 1)) + ' g</small>';
+      row.querySelector('.pp-val').innerHTML = fq(st.q[k]) + '%<small>' + m1(x.mlFin) + ' ml a ' + nf(abvF, 1) + '% · ' + (g > 0 && g < 0.01 ? '< 0,01' : nf(g, g < 1 ? 2 : 1)) + ' g</small>';
       const rg = row.querySelector('input[type=range]'); if (document.activeElement !== rg) rg.value = aPos(st.q[k]);
     });
-    $('pp-totali').innerHTML = '<div class="mix-line"><span>Infusi (miscela a circa ' + nf(abvMix, 1) + '% vol)</span><strong>' + nf(volInf, 0) + ' ml</strong></div>' +
-      (vol - volInf > 0.5 ? '<div class="mix-line"><span>Acqua demineralizzata</span><strong>' + nf(vol - volInf, 0) + ' ml</strong></div>' : '') +
-      '<div class="mix-line"><span>Gin finito a ' + nf(abvF, 1) + '% vol</span><strong>' + nf(vol, 0) + ' ml · ' + nf(gTot / vol * 1000, 1) + ' g/l di botaniche</strong></div>' +
-      (abvMix < abvF ? '<div class="warn-box">La miscela di infusi è sotto la gradazione finale scelta: serve alcol neutro o infusi più forti.</div>' : '') +
-      '<div class="radar-nota">Volume e gradazione si cambiano nel Gin Builder, in <em>Dosi per il tuo gin</em>. Acqua indicativa: verifica con l\'alcolometro.</div>';
+    $('pp-totali').innerHTML = '<div class="mix-line"><span>Infusi filtrati da usare</span><strong>' + nf(T.volConc, 0) + ' ml</strong></div>' +
+      '<div class="mix-line"><span>Acqua per portarli a ' + nf(abvF, 1) + '%</span><strong>' + nf(T.acqua, 0) + ' ml</strong></div>' +
+      '<div class="mix-line"><span>Gin finito a ' + nf(abvF, 1) + '% vol</span><strong>' + nf(vol, 0) + ' ml · ' + nf(T.gTot / vol * 1000, 1) + ' g/l di botaniche</strong></div>' +
+      (T.sotto.length ? '<div class="warn-box">' + T.sotto.join(', ') + ': infuso consigliato sotto la gradazione finale, non si può diluire.</div>' : '') +
+      '<div class="radar-nota">Ogni infuso, filtrato, si porta da solo a ' + nf(abvF, 1) + '% e poi si miscela: i millilitri accanto ai cursori sono quelli già diluiti. Volume e gradazione si cambiano nel Gin Builder, in <em>Dosi per il tuo gin</em>.</div>';
     // quota di ginepro
     const gi = st.righe.findIndex(r => r.n === 'Bacche di ginepro'), pg = gi >= 0 ? st.q[gi] : 0;
     const col = pg >= 45 ? 'var(--green-sym, #2e7d32)' : (pg >= 30 ? 'var(--orange-sym, #b26a00)' : 'var(--red-sym, #c62828)');
