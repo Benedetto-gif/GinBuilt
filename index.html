@@ -1530,6 +1530,18 @@ footer.note{
 .dia-item.finito{opacity:.6;}
 .dia-item.scaduto{border-color:var(--ochre);box-shadow:0 0 0 1px var(--ochre) inset;}
 .dia-item h5{margin:0 0 4px;font-size:15px;}
+/* colore del nome secondo il tempo di filtraggio: bianco prima del minimo, giallo-arancio fra minimo e massimo, rosso oltre */
+:root{--fil-g:#B8860B;--fil-a:#D2691E;--fil-r:#C62828;}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){--fil-g:#F2C230;--fil-a:#F28A2E;--fil-r:#FF5A4E;} }
+:root[data-theme="dark"]{--fil-g:#F2C230;--fil-a:#F28A2E;--fil-r:#FF5A4E;}
+.dia-item h5.fil-presto{color:var(--ink);}
+.dia-item h5.fil-ok{color:color-mix(in srgb, var(--fil-a) calc(var(--fp, 0) * 100%), var(--fil-g));}
+.dia-item h5.fil-oltre{color:var(--fil-r);}
+.dia-fil{font-size:12px;font-weight:650;margin:0 0 4px;}
+.dia-fil.fil-presto{color:var(--ink-soft);} .dia-fil.fil-ok{color:color-mix(in srgb, var(--fil-a) calc(var(--fp, 0) * 100%), var(--fil-g));} .dia-fil.fil-oltre{color:var(--fil-r);}
+.dia-leg .fil-presto{color:var(--ink);}
+.dia-leg{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;margin:0 0 10px;color:var(--ink-soft);}
+.dia-leg b{font-weight:700;}
 .dia-item .dia-meta{font-size:12.5px;color:var(--ink-faint);margin-bottom:6px;}
 .dia-item .dia-r{font-size:13.5px;margin:2px 0;}
 .dia-item textarea{width:100%;box-sizing:border-box;font:inherit;font-size:13px;padding:6px 8px;margin-top:6px;border:1px solid var(--line, rgba(0,0,0,.2));border-radius:8px;background:transparent;color:var(--ink);}
@@ -3740,7 +3752,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 13 ottobre 2026, ore 16:15 · Proporzioni: un radar alla volta</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 13 ottobre 2026, ore 17:00 · Diario: colore del nome secondo il tempo di filtraggio</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -8186,12 +8198,23 @@ function diarioRender(){
   if (sum) sum.textContent = '\ud83d\udcd3 Diario degli infusi' + (lista.length ? ' (' + inCorso + ' in corso' + (lista.length > inCorso ? ', ' + (lista.length - inCorso) + ' filtrati' : '') + ')' : '');
   const tecnica = '<p class="dia-tecnica"><button class="ghost-btn" type="button" onclick="apriTecnicaAssaggio()">\ud83d\udc43 Come si assaggia un infuso \u2192</button></p>';
   if (!lista.length){ body.innerHTML = tecnica + '<p>Ancora nessun infuso annotato. Apri una botanica, imposta le condizioni e tocca \u00ab\ud83d\udcd3 Ho preparato l\u2019infuso\u00bb nel quadro delle variabili.</p>'; return; }
-  body.innerHTML = tecnica + '<p class="cond-hint" style="margin:0 0 10px;">Il promemoria avvisa quando l\u2019app \u00e8 aperta. Per un allarme che suoni anche ad app chiusa, tocca \ud83d\udcc5 e aggiungilo al calendario del telefono.</p>' +
+  body.innerHTML = tecnica + '<div class="dia-leg"><span><b class="fil-presto">●</b> prima del tempo minimo</span><span><b style="color:var(--fil-g)">●</b>\u2192<b style="color:var(--fil-a)">●</b> da filtrare (dal minimo al massimo)</span><span><b style="color:var(--fil-r)">●</b> oltre il massimo</span></div>' +
+    '<p class="cond-hint" style="margin:0 0 10px;">Il promemoria avvisa quando l\u2019app \u00e8 aperta. Per un allarme che suoni anche ad app chiusa, tocca \ud83d\udcc5 e aggiungilo al calendario del telefono.</p>' +
     diarioOrdina(lista).map(v => {
       const scad = !!diaDaAssaggiare(v, ora), ult = diaUltimoAssaggio(v);
       const pronto = (v.tmin != null) ? diaData(v.inizio + v.tmin * 3600000) + (v.tmax != null ? ' \u2013 ' + diaData(v.inizio + v.tmax * 3600000) : '') : '\u2014';
+      // tempo di filtraggio: prima del minimo / fra minimo e massimo (da giallo ad arancio) / oltre il massimo
+      let fcl = '', fst = '', fnota = '';
+      if (!v.finito && v.tmin != null){
+        const h = (ora - v.inizio) / 3600000, tmax = v.tmax != null ? v.tmax : v.tmin;
+        if (h < v.tmin){ fcl = 'fil-presto'; fnota = 'Non ancora da filtrare'; }
+        else if (h < tmax){ const fp = Math.max(0, Math.min(1, (h - v.tmin) / Math.max(0.01, tmax - v.tmin))); fcl = 'fil-ok'; fst = ' style="--fp:' + fp.toFixed(2) + '"';
+          fnota = 'Da filtrare entro il ' + diaData(v.inizio + tmax * 3600000); }
+        else { fcl = 'fil-oltre'; fnota = 'Oltre il tempo massimo: filtra subito'; }
+      }
       return '<div class="dia-item' + (v.finito ? ' finito' : '') + (scad ? ' scaduto' : '') + '">' +
-        '<h5>' + diaEsc(v.tipo) + '</h5>' +
+        '<h5' + (fcl ? ' class="' + fcl + '"' + fst : '') + '>' + diaEsc(v.tipo) + '</h5>' +
+        (fnota ? '<div class="dia-fil ' + fcl + '"' + fst + '>' + fnota + '</div>' : '') +
         '<div class="dia-meta">Iniziato ' + diaData(v.inizio) + (v.finito ? ' \u00b7 filtrato ' + diaData(v.finito) : '') + '</div>' +
         '<div class="dia-r">Alcol ' + diaEsc(v.abvS) + '\u00b0 <strong>' + diaNum(v.alcolG, 1) + ' g</strong> \u00b7 acqua <strong>' + diaNum(v.acquaG, 1) + ' g</strong> \u00b7 botanica <strong>' + diaNum(v.botG, 2) + ' g</strong> \u00b7 ' + diaEsc(v.temp) + ' \u00b0C</div>' +
         '<div class="dia-r">Pronto: ' + pronto + '</div>' +
@@ -8536,6 +8559,7 @@ diarioRender();
 setTimeout(diarioControlla, 1500);
 setInterval(diarioControlla, 60000);
 setInterval(() => diarioRiepilogo(diarioCarica()), 60000);
+setInterval(() => { const p = document.getElementById('panel-diario'); if (p && p.classList.contains('active') && !document.querySelector('#diario-body textarea:focus')) diarioRender(); }, 300000);
 // Scorciatoia dall'icona dell'app (?apri=diario o #diario) e tocco sulla notifica
 (function(){
   let qs = null; try { qs = new URLSearchParams(location.search).get('apri'); } catch(e){}
