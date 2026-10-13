@@ -3624,7 +3624,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 13 ottobre 2026, ore 9:00 · Ricerca con tutti i nomi delle botaniche</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 13 ottobre 2026, ore 9:15 · Ricerca: basta una parola in comune</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -4980,14 +4980,25 @@ const ALIAS_BOT = {
 // Il nome, gli altri nomi e il nome botanico; vale ogni parola scritta, nell'ordine che si vuole
 // ("finocchio mare" trova Finocchio di mare, "finocchio" trova tutti i finocchi).
 const _nrm = t => String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-const _VUOTE = new Set(['di', 'de', 'del', 'della', 'dei', 'delle', 'e', 'la', 'il', 'le', 'lo']);
-function nomeCorrisponde(nome, q){
-  const parole = _nrm(q).split(/[\s\/\-(),]+/).filter(w => w && !_VUOTE.has(w));
-  if (!parole.length) return false;
+const _VUOTE = new Set(['di', 'de', 'del', 'della', 'dei', 'delle', 'degli', 'dal', 'da', 'e', 'la', 'il', 'le', 'lo', 'gli', 'un', 'una', 'con', 'in']);
+const _SEP = /[\s\/\-(),'’.]+/;
+// singolare e plurale si equivalgono: cappero/capperi, foglia/foglie, bacca/bacche
+const _radice = w => w.length > 4 ? w.replace(/(he|hi|[aeio])$/, '') : w;
+const _paroleQ = q => _nrm(q).split(_SEP).filter(w => w.length > 1 && !_VUOTE.has(w));
+const _parolaOk = (p, x) => x.startsWith(p) || (p.length > 3 && _radice(x) === _radice(p));
+// Quante parole scritte compaiono nel nome, negli altri nomi o nel nome botanico (latino solo da 4 lettere).
+function paroleTrovate(nome, q){
+  const parole = _paroleQ(q); if (!parole.length) return 0;
   const d = typeof byName !== 'undefined' ? byName[nome] : null;
-  const nomi = [nome].concat(ALIAS_BOT[nome] || [], d && d.nome_botanico ? [d.nome_botanico] : []);
-  return nomi.some(n => { const w = _nrm(n).split(/[\s\/\-(),]+/).filter(Boolean); return parole.every(p => w.some(x => x.startsWith(p))); });
+  const it = [nome].concat(ALIAS_BOT[nome] || []).map(n => _nrm(n).split(_SEP).filter(Boolean));
+  const lat = d && d.nome_botanico ? _nrm(d.nome_botanico).split(_SEP).filter(Boolean) : [];
+  let meglio = 0;
+  it.forEach(w => { const k = parole.filter(p => w.some(x => _parolaOk(p, x)) || (p.length >= 4 && lat.some(x => x.startsWith(p)))).length; if (k > meglio) meglio = k; });
+  if (!meglio) meglio = parole.filter(p => p.length >= 4 && lat.some(x => x.startsWith(p))).length;
+  return meglio;
 }
+// Basta una parola in comune: "cappero" trova Cappero e Foglie di cappero. Chi ne ha di piu' viene prima.
+function nomeCorrisponde(nome, q){ return paroleTrovate(nome, q) > 0; }
 function elencoFiltrato(){
   const q = searchInput.value.trim().toLowerCase();
   const cat = fCategoria.value;
@@ -5013,7 +5024,8 @@ function elencoFiltrato(){
     if (nomeCorrisponde(d.botanica, q)) return 2;
     return 3;
   };
-  return risultato.slice().sort((a, b) => (punteggio(a) - punteggio(b)) || a.botanica.localeCompare(b.botanica, 'it'));
+  const tutte = d => -paroleTrovate(d.botanica, q);   // prima chi ha tutte le parole scritte
+  return risultato.slice().sort((a, b) => (tutte(a) - tutte(b)) || (punteggio(a) - punteggio(b)) || a.botanica.localeCompare(b.botanica, 'it'));
 }
 
 // ---------- Uso nella miscela ----------
