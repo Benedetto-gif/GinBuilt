@@ -593,6 +593,7 @@ section.panel.active{display:block;animation:panelIn .34s var(--ease) both;}
   border-left:3px solid var(--tint-info-line);font-size:13.5px;line-height:1.55;
 }
 .avviso-azioni{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px;justify-content:flex-end;}
+select.sel-fissa{opacity:1;cursor:default;background-image:none;-webkit-appearance:none;appearance:none;}
 .rm-row.bloccato{
   cursor:default;opacity:.45;font-size:13px;
 }
@@ -3623,7 +3624,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 12 ottobre 2026, ore 16:35 · Agrumi di sola scorza: acido a 0</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 13 ottobre 2026, ore 8:45 · Ginepro bloccato davvero negli stili</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -6603,7 +6604,14 @@ function proteggiSostituzione(select, ruolo){
   let prev = select.value;
   const f = FONDAMENTALI[prev];
   const sost = sostituteDi(prev).split(/,|;/).map(x => x.trim()).filter(n => n && byName[n] && n !== prev);
-  if (f && f.blocco){ select.disabled = true; select._bloccata = true; select.title = 'Botanica fondamentale: non sostituibile'; return; }
+  if (f && f.blocco){
+    // Il ginepro non si sceglie: il menù contiene solo lui, cosi' non compare la ricerca e nessuna via lo puo' cambiare.
+    select.innerHTML = ''; const o = document.createElement('option'); o.value = prev; o.textContent = prev; select.appendChild(o);
+    select.value = prev; select.disabled = true; select._bloccata = true; select.classList.add('sel-fissa');
+    select.title = 'Il ginepro non si cambia: senza ginepro non è gin';
+    select.addEventListener('change', e => { if (select.value !== prev){ select.value = prev; e.stopImmediatePropagation(); } }, true);
+    return;
+  }
   if (!f && !(ruolo === 'Base' && sost.length)) return;
   if (!sost.length){ select.disabled = true; select.title = 'Nessuna sostituta equivalente in libreria: per cambiarla rimuovi la riga'; return; }
   const nomi = [prev].concat(sost);
@@ -8516,7 +8524,7 @@ renderDati();
 (function(){
   const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   function potenzia(sel){
-    if (sel.dataset.ric || sel.options.length < 40 || !sel.parentNode) return;
+    if (sel.dataset.ric || sel.options.length < 40 || !sel.parentNode || sel.disabled || sel._bloccata) return;
     sel.dataset.ric = '1';
     const wrap = document.createElement('div'); wrap.className = 'sel-wrap';
     const inp = document.createElement('input');
