@@ -171,6 +171,8 @@ table.tab-comb tr.evitare td{background:#FBE9E5;color:#8A2F1C;}
 .msel-lista li{margin:.35em 0;}
 /* Prova le proporzioni */
 .pp-stili{display:flex;flex-wrap:wrap;gap:6px;margin:.4em 0 .8em;}
+.pp-vista{display:flex;gap:6px;justify-content:center;margin:.4em 0 .1em;}
+.pp-vista .chip.on{background:#2F7259;color:#fff;border-color:#2F7259;}
 .pp-stili .chip.on{background:#2F7259;color:#fff;border-color:#2F7259;}
 .pp-testa{position:-webkit-sticky;position:sticky;top:0;z-index:3;background:#FDFDF8;border:1px solid #d8d2c6;border-radius:12px;padding:.5em .6em;margin-bottom:.6em;}
 .pp-striscia{display:flex;height:14px;border-radius:7px;overflow:hidden;}

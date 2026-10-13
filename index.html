@@ -612,6 +612,8 @@ select.sel-fissa{opacity:1;cursor:default;background-image:none;-webkit-appearan
 .pp-vista{display:block;}
 .pp-torta-box{display:none;}
 .pp-radar-box svg{width:100%;max-width:360px;height:auto;max-height:min(40vh,330px);display:block;margin:0 auto;}
+.pp-scelta2{display:flex;gap:6px;justify-content:center;margin:2px 0 2px;}
+.pp-scelta2 .pp-tab{flex:1;max-width:190px;}
 .pp-cambia{font-size:12.5px;text-align:center;line-height:1.45;margin-top:2px;}
 .pp-leg{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 12px;font-size:11.5px;color:var(--ink-soft);margin-bottom:3px;}
 .pp-leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px;}
@@ -3127,7 +3129,7 @@ html details.howto a{color:#5A3E1C;}
         <ul>
           <li>La pagina parte dalla ricetta che hai nel <strong>Gin Builder</strong>, con le quote degli infusi della tabella <em>Dosi per il tuo gin</em>.</li>
           <li>Sposta un cursore: quella botanica cambia e le altre si adeguano in proporzione, così il totale resta 100%. Il lucchetto 🔒 tiene ferma una botanica mentre muovi le altre.</li>
-          <li>In alto, in un'unica vista: la <strong>striscia delle quote</strong> (gli stessi colori dei cursori) e un solo radar con tutti gli assi, divisi in tre spicchi: i <strong>sapori</strong> in bocca, i <strong>sentori</strong> al naso e le <strong>sensazioni</strong> (pungente, rinfrescante, astringente, corpo, persistenza). La linea tratteggiata è la ricetta di partenza; sotto, le note che salgono e quelle che scendono. Su schermo largo compare anche la torta.</li>
+          <li>In alto, in un'unica vista: la <strong>striscia delle quote</strong> (gli stessi colori dei cursori) e il radar: <strong>sapori</strong> in bocca e <strong>sentori</strong> al naso, oppure le <strong>sensazioni</strong> (pungente, rinfrescante, astringente, corpo, persistenza). La linea tratteggiata è la ricetta di partenza; sotto, le note che salgono e quelle che scendono. Due tasti accendono un radar alla volta: <em>Sapori e sentori</em> oppure <em>Sensazioni in bocca</em>. Su schermo largo compare anche la torta.</li>
           <li>Accanto a ogni cursore trovi i millilitri di infuso, già portato alla gradazione finale, per il volume di gin scelto; in fondo, quanti infusi filtrati e quanta acqua servono in tutto.</li>
         </ul>
         <p>Il radar di gusto e aroma comprende qui anche le botaniche base (ginepro, coriandolo, angelica), perché sono proprio le quote che stai variando. Stime orientative, da verificare all'assaggio.</p>
@@ -3738,7 +3740,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 13 ottobre 2026, ore 16:00 · Proporzioni: sapori, sentori e sensazioni in un unico radar</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 13 ottobre 2026, ore 16:15 · Proporzioni: un radar alla volta</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -9222,20 +9224,21 @@ function renderDosiGin(selects){
   ];
   const ASSI_U = []; GR.forEach((g, gi) => g.a.forEach(([i, nm]) => ASSI_U.push({ g: gi, i, nm })));
   function valoriUnici(prof, sens){ return ASSI_U.map(x => x.g < 2 ? (prof[x.i] || 0) : ((sens || [])[x.i] || 0)); }
-  function radarUnico(prima, ora){
-    const n = ASSI_U.length, W = 360, H = 330, cx = W / 2, cy = H / 2 + 6, R = 112;
+  function radarUnico(prima, ora, gruppi){
+    const AA = ASSI_U.filter(x => gruppi.indexOf(x.g) >= 0), GG = gruppi.map(i => GR[i]);
+    const n = AA.length, W = 360, H = 330, cx = W / 2, cy = H / 2 + 6, R = 112;
     const ang = k => -Math.PI / 2 + k * 2 * Math.PI / n;
     const pt = (k, v) => [cx + R * v / 5 * Math.cos(ang(k)), cy + R * v / 5 * Math.sin(ang(k))];
     let g = '';
     // spicchi dei tre gruppi
     let k0 = 0;
-    GR.forEach(gr => {
+    if (GG.length > 1) GG.forEach(gr => {
       const k1 = k0 + gr.a.length, a0 = ang(k0 - 0.5), a1 = ang(k1 - 0.5), big = (a1 - a0) > Math.PI ? 1 : 0;
       g += '<path d="M ' + cx + ' ' + cy + ' L ' + (cx + R * Math.cos(a0)) + ' ' + (cy + R * Math.sin(a0)) + ' A ' + R + ' ' + R + ' 0 ' + big + ' 1 ' + (cx + R * Math.cos(a1)) + ' ' + (cy + R * Math.sin(a1)) + ' Z" fill="' + gr.c + '" fill-opacity=".09"/>';
       k0 = k1;
     });
-    for (let l = 1; l <= 5; l++) g += '<polygon points="' + ASSI_U.map((_, k) => pt(k, l).join(',')).join(' ') + '" fill="none" stroke="var(--line)" stroke-width="1"/>';
-    ASSI_U.forEach((x, k) => {
+    for (let l = 1; l <= 5; l++) g += '<polygon points="' + AA.map((_, k) => pt(k, l).join(',')).join(' ') + '" fill="none" stroke="var(--line)" stroke-width="1"/>';
+    AA.forEach((x, k) => {
       const [ex, ey] = pt(k, 5), [lx, ly] = pt(k, 5.55), anc = Math.abs(lx - cx) < 8 ? 'middle' : (lx > cx ? 'start' : 'end');
       g += '<line x1="' + cx + '" y1="' + cy + '" x2="' + ex + '" y2="' + ey + '" stroke="var(--line)" stroke-width="1"/>' +
            '<text x="' + lx.toFixed(1) + '" y="' + (ly + 4).toFixed(1) + '" text-anchor="' + anc + '" font-size="11" font-weight="600" fill="' + GR[x.g].c + '">' + x.nm + '</text>';
@@ -9243,11 +9246,11 @@ function renderDosiGin(selects){
     const poly = v => v.map((y, k) => pt(k, y).map(z => z.toFixed(1)).join(',')).join(' ');
     g += '<polygon points="' + poly(prima) + '" fill="none" stroke="var(--ink-soft)" stroke-width="1.5" stroke-dasharray="4 3"/>';
     g += '<polygon points="' + poly(ora) + '" fill="var(--juniper)" fill-opacity=".25" stroke="var(--juniper)" stroke-width="2" stroke-linejoin="round"/>';
-    ora.forEach((y, k) => { if (y > 0){ const [px, py] = pt(k, y); g += '<circle cx="' + px.toFixed(1) + '" cy="' + py.toFixed(1) + '" r="2.6" fill="' + GR[ASSI_U[k].g].c + '"/>'; } });
+    ora.forEach((y, k) => { if (y > 0){ const [px, py] = pt(k, y); g += '<circle cx="' + px.toFixed(1) + '" cy="' + py.toFixed(1) + '" r="2.6" fill="' + GR[AA[k].g].c + '"/>'; } });
     return '<svg viewBox="-30 -8 ' + (W + 60) + ' ' + (H + 16) + '" role="img" aria-label="Sapori, sentori e sensazioni della ricetta">' + g + '</svg>';
   }
-  function cosaCambia(prima, ora){
-    const d = ASSI_U.map((x, k) => ({ nm: x.nm.toLowerCase(), d: ora[k] - prima[k] })).filter(x => Math.abs(x.d) >= 0.25);
+  function cosaCambia(prima, ora, gruppi){
+    const d = ASSI_U.map((x, k) => ({ x, k })).filter(z => gruppi.indexOf(z.x.g) >= 0).map(({ x, k }) => ({ nm: x.nm.toLowerCase(), d: ora[k] - prima[k] })).filter(x => Math.abs(x.d) >= 0.25);
     if (!d.length) return 'Profilo come la ricetta di partenza.';
     const su = d.filter(x => x.d > 0).sort((a, b) => b.d - a.d).slice(0, 4), giu = d.filter(x => x.d < 0).sort((a, b) => a.d - b.d).slice(0, 4);
     const f = x => x.nm + ' ' + (x.d > 0 ? '+' : '−') + nf(Math.abs(x.d), 1);
@@ -9283,8 +9286,13 @@ function renderDosiGin(selects){
 
     const sOra = sensMiscela(el()), sPrima = sensMiscela(st.righe.map((r, k) => ({ n: r.n, w: Math.max(0.00001, st.rif[k]) })));
     const uPrima = valoriUnici(s5(prima), sPrima), uOra = valoriUnici(s5(ora), sOra);
-    $('pp-unico').innerHTML = radarUnico(uPrima, uOra);
-    $('pp-cambia').innerHTML = '<div class="pp-leg">' + GR.map(g => '<span><i style="background:' + g.c + '"></i>' + g.t + '</span>').join('') + '<span><i class="tr"></i>partenza</span></div>' + cosaCambia(uPrima, uOra);
+    const gr = st.vista === 'sens' ? [2] : [0, 1], sel = a => a.filter((_, k) => gr.indexOf(ASSI_U[k].g) >= 0);
+    $('pp-unico').innerHTML = '<div class="pp-scelta2" role="group" aria-label="Radar da vedere">' +
+      '<button type="button" class="pp-tab" data-v="gusto" aria-pressed="' + (st.vista !== 'sens') + '">Sapori e sentori</button>' +
+      '<button type="button" class="pp-tab" data-v="sens" aria-pressed="' + (st.vista === 'sens') + '">Sensazioni in bocca</button></div>' +
+      radarUnico(sel(uPrima), sel(uOra), gr);
+    $('pp-unico').querySelectorAll('.pp-tab').forEach(b => b.addEventListener('click', () => { st.vista = b.dataset.v; aggiorna(); }));
+    $('pp-cambia').innerHTML = '<div class="pp-leg">' + gr.map(i => GR[i]).map(g => '<span><i style="background:' + g.c + '"></i>' + g.t + '</span>').join('') + '<span><i class="tr"></i>partenza</span></div>' + cosaCambia(uPrima, uOra, gr);
     try { ppTop(); } catch(e){}
     $('pp-striscia').innerHTML = st.righe.map((r, k) => st.q[k] > 0.05 ? '<span style="width:' + st.q[k] + '%;background:' + r.col + '" title="' + r.n.replace(/"/g, '') + ' ' + fq(st.q[k]) + '%"></span>' : '').join('');
   }

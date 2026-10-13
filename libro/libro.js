@@ -409,7 +409,7 @@ function gpId(id){ if (!id) return null; var el = null; try { el = document.getE
   ];
   var ASSI = []; GR.forEach(function(g, gi){ g.a.forEach(function(x){ ASSI.push({ g: gi, i: x[0], nm: x[1] }); }); });
   var stili = Object.keys(D.stili); if (!stili.length) return;
-  var st = { nome: stili[0], righe: [], rif: [], q: [], fermo: {} };
+  var st = { nome: stili[0], righe: [], rif: [], q: [], fermo: {}, vista: 'gusto' };
   function f1(x){ return (x >= 10 ? Math.round(x) : Math.round(x * 10) / 10).toString().replace('.', ','); }
   function aPos(q){ return Math.round(Math.sqrt(Math.max(0, q) / 100) * 1000); }
   function daPos(p){ return Math.pow(p / 1000, 2) * 100; }
@@ -425,18 +425,19 @@ function gpId(id){ if (!id) return null; var el = null; try { el = document.getE
   }
   function unici(pr, se, mx){ return ASSI.map(function(x){ return x.g < 2 ? (mx ? pr[x.i] / mx * 5 : 0) : se[x.i]; }); }
   function el(tag, at){ var e = document.createElementNS(NS, tag); for (var k in at) e.setAttribute(k, at[k]); return e; }
-  function radar(prima, ora){
-    var n = ASSI.length, W = 360, H = 330, cx = W / 2, cy = H / 2 + 6, R = 112, svg = el('svg', { viewBox: '-30 -8 ' + (W + 60) + ' ' + (H + 16), 'class': 'pp-radar', role: 'img' });
+  function radar(prima, ora, gruppi){
+    var AA = ASSI.filter(function(x){ return gruppi.indexOf(x.g) >= 0; }), GG = gruppi.map(function(i){ return GR[i]; });
+    var n = AA.length, W = 360, H = 330, cx = W / 2, cy = H / 2 + 6, R = 112, svg = el('svg', { viewBox: '-30 -8 ' + (W + 60) + ' ' + (H + 16), 'class': 'pp-radar', role: 'img' });
     function ang(k){ return -Math.PI / 2 + k * 2 * Math.PI / n; }
     function pt(k, v){ return [cx + R * v / 5 * Math.cos(ang(k)), cy + R * v / 5 * Math.sin(ang(k))]; }
     var k0 = 0;
-    GR.forEach(function(gr){
+    if (GG.length > 1) GG.forEach(function(gr){
       var k1 = k0 + gr.a.length, a0 = ang(k0 - 0.5), a1 = ang(k1 - 0.5), big = (a1 - a0) > Math.PI ? 1 : 0;
       svg.appendChild(el('path', { d: 'M ' + cx + ' ' + cy + ' L ' + (cx + R * Math.cos(a0)) + ' ' + (cy + R * Math.sin(a0)) + ' A ' + R + ' ' + R + ' 0 ' + big + ' 1 ' + (cx + R * Math.cos(a1)) + ' ' + (cy + R * Math.sin(a1)) + ' Z', fill: gr.c, 'fill-opacity': '0.10' }));
       k0 = k1;
     });
-    for (var l = 1; l <= 5; l++) svg.appendChild(el('polygon', { points: ASSI.map(function(_, k){ return pt(k, l).join(','); }).join(' '), fill: 'none', stroke: '#d8d2c6', 'stroke-width': '1' }));
-    ASSI.forEach(function(x, k){
+    for (var l = 1; l <= 5; l++) svg.appendChild(el('polygon', { points: AA.map(function(_, k){ return pt(k, l).join(','); }).join(' '), fill: 'none', stroke: '#d8d2c6', 'stroke-width': '1' }));
+    AA.forEach(function(x, k){
       var e5 = pt(k, 5), lb = pt(k, 5.55), anc = Math.abs(lb[0] - cx) < 8 ? 'middle' : (lb[0] > cx ? 'start' : 'end');
       svg.appendChild(el('line', { x1: cx, y1: cy, x2: e5[0], y2: e5[1], stroke: '#d8d2c6', 'stroke-width': '1' }));
       var t = el('text', { x: lb[0].toFixed(1), y: (lb[1] + 4).toFixed(1), 'text-anchor': anc, 'font-size': '11', 'font-weight': 'bold', 'font-family': 'sans-serif', fill: GR[x.g].c }); t.textContent = x.nm; svg.appendChild(t);
@@ -444,10 +445,10 @@ function gpId(id){ if (!id) return null; var el = null; try { el = document.getE
     function poly(v){ return v.map(function(y, k){ return pt(k, y).map(function(z){ return z.toFixed(1); }).join(','); }).join(' '); }
     svg.appendChild(el('polygon', { points: poly(prima), fill: 'none', stroke: '#777777', 'stroke-width': '1.5', 'stroke-dasharray': '4 3' }));
     svg.appendChild(el('polygon', { points: poly(ora), fill: '#2F7259', 'fill-opacity': '0.28', stroke: '#2F7259', 'stroke-width': '2', 'stroke-linejoin': 'round' }));
-    ora.forEach(function(y, k){ if (y > 0){ var c = pt(k, y); svg.appendChild(el('circle', { cx: c[0].toFixed(1), cy: c[1].toFixed(1), r: '2.6', fill: GR[ASSI[k].g].c })); } });
+    ora.forEach(function(y, k){ if (y > 0){ var c = pt(k, y); svg.appendChild(el('circle', { cx: c[0].toFixed(1), cy: c[1].toFixed(1), r: '2.6', fill: GR[AA[k].g].c })); } });
     return svg;
   }
-  var testa, striscia, rbox, cambia, ginepro, cursori;
+  var testa, striscia, rbox, cambia, ginepro, cursori, leg, vb;
   function costruisci(){
     box.innerHTML = '';
     var sc = document.createElement('div'); sc.className = 'pp-stili';
@@ -457,11 +458,14 @@ function gpId(id){ if (!id) return null; var el = null; try { el = document.getE
     testa = document.createElement('div'); testa.className = 'pp-testa';
     striscia = document.createElement('div'); striscia.className = 'pp-striscia';
     rbox = document.createElement('div'); rbox.className = 'pp-rbox';
-    var leg = document.createElement('div'); leg.className = 'pp-leg';
-    leg.innerHTML = GR.map(function(g){ return '<span><span class="pp-q" style="background:' + g.c + '"></span>' + g.t + '</span>'; }).join('') + '<span><span class="pp-q pp-tr"></span>partenza</span>';
+    vb = document.createElement('div'); vb.className = 'pp-vista';
+    [['gusto','Sapori e sentori'],['sens','Sensazioni in bocca']].forEach(function(v){
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.setAttribute('data-v', v[0]); b.textContent = v[1];
+      b.addEventListener('click', function(){ st.vista = v[0]; aggiorna(); }); vb.appendChild(b); });
+    leg = document.createElement('div'); leg.className = 'pp-leg';
     cambia = document.createElement('div'); cambia.className = 'pp-cambia';
     ginepro = document.createElement('div'); ginepro.className = 'pp-ginepro';
-    testa.appendChild(striscia); testa.appendChild(rbox); testa.appendChild(leg); testa.appendChild(cambia); testa.appendChild(ginepro);
+    testa.appendChild(striscia); testa.appendChild(vb); testa.appendChild(rbox); testa.appendChild(leg); testa.appendChild(cambia); testa.appendChild(ginepro);
     box.appendChild(testa);
     var az = document.createElement('p'); az.className = 'pp-az';
     var rs = document.createElement('button'); rs.type = 'button'; rs.className = 'chip'; rs.textContent = '↺ Quote di partenza';
@@ -509,8 +513,12 @@ function gpId(id){ if (!id) return null; var el = null; try { el = document.getE
     striscia.innerHTML = st.righe.map(function(r, k){ return st.q[k] > 0.05 ? '<span style="width:' + st.q[k] + '%;background:' + r.col + '"></span>' : ''; }).join('');
     var p0 = profilo(st.rif), p1 = profilo(st.q), mx = Math.max.apply(null, p0.concat(p1)) || 1;
     var u0 = unici(p0, sens(st.rif), mx), u1 = unici(p1, sens(st.q), mx);
-    rbox.innerHTML = ''; rbox.appendChild(radar(u0, u1));
-    var d = ASSI.map(function(x, k){ return { nm: x.nm.toLowerCase(), d: u1[k] - u0[k] }; }).filter(function(x){ return Math.abs(x.d) >= 0.25; });
+    var gr = st.vista === 'sens' ? [2] : [0, 1];
+    function sel(a){ return a.filter(function(_, k){ return gr.indexOf(ASSI[k].g) >= 0; }); }
+    var vv = vb.querySelectorAll('.chip'); for (var z = 0; z < vv.length; z++) vv[z].className = 'chip' + (vv[z].getAttribute('data-v') === st.vista ? ' on' : '');
+    rbox.innerHTML = ''; rbox.appendChild(radar(sel(u0), sel(u1), gr));
+    leg.innerHTML = gr.map(function(i){ var g = GR[i]; return '<span><span class="pp-q" style="background:' + g.c + '"></span>' + g.t + '</span>'; }).join('') + '<span><span class="pp-q pp-tr"></span>partenza</span>';
+    var d = ASSI.map(function(x, k){ return { g: x.g, nm: x.nm.toLowerCase(), d: u1[k] - u0[k] }; }).filter(function(x){ return gr.indexOf(x.g) >= 0 && Math.abs(x.d) >= 0.25; });
     var su = d.filter(function(x){ return x.d > 0; }).sort(function(a, b){ return b.d - a.d; }).slice(0, 4);
     var giu = d.filter(function(x){ return x.d < 0; }).sort(function(a, b){ return a.d - b.d; }).slice(0, 4);
     function f(x){ return x.nm + ' ' + (x.d > 0 ? '+' : '−') + f1(Math.abs(x.d)); }
