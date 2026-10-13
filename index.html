@@ -3624,7 +3624,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 13 ottobre 2026, ore 8:45 · Ginepro bloccato davvero negli stili</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 13 ottobre 2026, ore 9:00 · Ricerca con tutti i nomi delle botaniche</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -4914,9 +4914,79 @@ uniqueSorted(MASTER.map(d=>d.carattere)).forEach(c=>{
 });
 
 // Le lettere scritte devono essere l'inizio del nome o di una sua parola (es. «gi» → Ginepro, Pepe di Giava).
+// Altri nomi con cui si cercano le botaniche (nomi popolari e varianti): la ricerca li trova come il nome della scheda.
+const ALIAS_BOT = {
+  'Finocchio di mare': ['finocchio marino', 'critmo', 'erba di San Pietro', 'bacicci', 'salissia'],
+  'Finocchio': ['finocchio dolce', 'semi di finocchio'],
+  'Finocchietto selvatico': ['finocchio selvatico', 'finocchietto', 'finocchio di campo'],
+  'Salicornia': ['asparago di mare', 'asparago marino', 'salicorno'],
+  'Alga verde alimentare': ['lattuga di mare', 'lattuga marina', 'ulva'],
+  'Poseidonia': ['posidonia', 'alga di mare'],
+  'Bacche di ginepro': ['ginepro'],
+  'Iris': ['giaggiolo', 'radice di iris', 'orris'],
+  'Lentisco': ['mastice', 'mastic'],
+  'Elicriso': ['perpetuino', 'semprevivo'],
+  'Elicriso delle scogliere': ['elicriso marino'],
+  'Cappero': ['capperi'],
+  'Arancia amara': ['melangolo', 'bigarade', 'arancio amaro'],
+  'Cedro': ['cedrata'],
+  'Coriandolo': ['coriandro', 'cilantro'],
+  'Cassia': ['cannella cinese'],
+  'Cannella Ceylon': ['cannella'],
+  'Chiodo di garofano': ['garofano', 'chiodi di garofano'],
+  'Grani del paradiso': ['pepe di Guinea', 'malagueta'],
+  'Stella di anice': ['anice stellato', 'badiana'],
+  'Anice verde': ['anice'],
+  'Mirto foglie': ['mirto', 'mortella'],
+  'Mirto bacche': ['mirto', 'mortella'],
+  'Liquirizia': ['regolizia'],
+  'Lavanda': ['spigo'],
+  'Sambuco': ['fiori di sambuco'],
+  'Rosa canina': ['cinorrodi', 'grattaculo'],
+  'Ribes nero': ['cassis'],
+  'Fiori di ciliegio': ['sakura'],
+  'Foglie di ciliegio': ['sakura'],
+  'Foglie di combava': ['combava', 'lime kaffir', 'kaffir'],
+  'Citronella': ['lemongrass', 'erba limone'],
+  'Verbena odorosa': ['cedrina', 'erba Luigia', 'erba luisa', 'limoncina'],
+  'Melissa': ['cedronella', 'erba limona'],
+  'Pepe sansho': ['sansho'],
+  'Kinome': ['foglie di sansho'],
+  'Gyokuro': ['tè giapponese', 'tè verde ombreggiato'],
+  'Tè verde': ['sencha'],
+  'Shiso rosso': ['perilla'],
+  'Fave di tonka': ['tonka'],
+  'Prugnolo': ['prugnolo selvatico', 'sloe', 'strozzapreti'],
+  'Olmaria': ['regina dei prati', 'spirea'],
+  'China': ['cinchona', 'chinino'],
+  'Chinotto': ['arancio mirtifoglio'],
+  'Aghi di pino': ['pino', 'pino mugo', 'mugo'],
+  'Aghi di abete': ['abete'],
+  'Tarassaco': ['dente di leone', 'soffione'],
+  'Portulaca': ['porcellana', 'erba porcellana'],
+  'Carruba polpa': ['carruba', 'carrube'],
+  'Spina santa': ['lycium', 'spina santa siciliana'],
+  'Corbezzolo': ['albatro'],
+  'Santoreggia': ['satureja'],
+  'Levistico': ['sedano di monte'],
+  'Dragoncello': ['estragone'],
+  'Zenzero': ['ginger'],
+  'Galanga': ['galangal'],
+  'Mandorla amara': ['armellina'],
+  'Pitaya (dragon fruit)': ['frutto del drago', 'dragon fruit'],
+  'Alchechengi': ['physalis', 'lanterna cinese'],
+  'Bacche della passione': ['frutto della passione', 'maracuja', 'passion fruit']
+};
+// Il nome, gli altri nomi e il nome botanico; vale ogni parola scritta, nell'ordine che si vuole
+// ("finocchio mare" trova Finocchio di mare, "finocchio" trova tutti i finocchi).
+const _nrm = t => String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+const _VUOTE = new Set(['di', 'de', 'del', 'della', 'dei', 'delle', 'e', 'la', 'il', 'le', 'lo']);
 function nomeCorrisponde(nome, q){
-  const n = nome.toLowerCase();
-  return n.startsWith(q) || n.split(/[\s\/\-(]+/).some(w => w.startsWith(q));
+  const parole = _nrm(q).split(/[\s\/\-(),]+/).filter(w => w && !_VUOTE.has(w));
+  if (!parole.length) return false;
+  const d = typeof byName !== 'undefined' ? byName[nome] : null;
+  const nomi = [nome].concat(ALIAS_BOT[nome] || [], d && d.nome_botanico ? [d.nome_botanico] : []);
+  return nomi.some(n => { const w = _nrm(n).split(/[\s\/\-(),]+/).filter(Boolean); return parole.every(p => w.some(x => x.startsWith(p))); });
 }
 function elencoFiltrato(){
   const q = searchInput.value.trim().toLowerCase();
@@ -4937,10 +5007,10 @@ function elencoFiltrato(){
   // proprio con quello scritto, poi una sua parola inizia così, poi il nome lo contiene
   // altrove, infine solo il profilo lo contiene.
   const punteggio = d => {
-    const nome = d.botanica.toLowerCase();
-    if (nome.startsWith(q)) return 0;
-    if (nome.split(/[\s\/\-(]+/).some(w => w.startsWith(q))) return 1;
-    if (nome.includes(q)) return 2;
+    const nome = _nrm(d.botanica), qq = _nrm(q);
+    if (nome.startsWith(qq)) return 0;
+    if (nome.split(/[\s\/\-(]+/).some(w => w.startsWith(qq))) return 1;
+    if (nomeCorrisponde(d.botanica, q)) return 2;
     return 3;
   };
   return risultato.slice().sort((a, b) => (punteggio(a) - punteggio(b)) || a.botanica.localeCompare(b.botanica, 'it'));
@@ -5185,10 +5255,9 @@ function chiudiDetail(){
 function trovaUnica(){
   const q = searchInput.value.trim().toLowerCase();
   if (!q) return null;
+  // Si apre da sola solo quando resta una botanica: scrivendo "finocchio" si vedono tutti i finocchi.
   const lista = elencoFiltrato();
-  if (lista.length === 1) return lista[0].botanica;
-  const esatta = lista.find(d => d.botanica.toLowerCase() === q);
-  return esatta ? esatta.botanica : null;
+  return lista.length === 1 ? lista[0].botanica : null;
 }
 searchInput.addEventListener('input', () => {
   window.cercaNelProfilo = false;
@@ -5233,17 +5302,20 @@ searchInput.addEventListener('keydown', e => { if (e.key === 'Enter'){ e.prevent
   }
   function cerca(alternative){
     const nomi = MASTER.map(d => d.botanica);
-    let scelta = null, detto = alternative[0];
+    let scelta = null, detto = alternative[0], piu = 0;
     for (const alt of alternative){
       const q = norm(alt); if (!q) continue;
-      scelta = nomi.find(n => norm(n) === q) || nomi.find(n => norm(n).split(' ').some(w => w === q)) ||
-               nomi.find(n => norm(n).startsWith(q)) || nomi.find(n => q.includes(norm(n)));
+      // Se il nome detto vale per piu' botaniche (es. "finocchio"), si mostra l'elenco di tutte.
+      const tutte = nomi.filter(n => nomeCorrisponde(n, q));
+      if (tutte.length > 1){ detto = alt; piu = tutte.length; break; }
+      scelta = tutte[0] || nomi.find(n => norm(n) === q) || nomi.find(n => q.includes(norm(n)));
       if (scelta){ detto = alt; break; }
     }
     if (currentDetailName) chiudiDetail();
     searchInput.value = scelta || detto;
     searchInput.dispatchEvent(new Event('input', { bubbles: true }));
     if (scelta){ scrivi('Ho capito \u00ab' + detto + '\u00bb: apro ' + scelta + '.'); showDetail(scelta, true); }
+    else if (piu) scrivi('Ho capito \u00ab' + detto + '\u00bb: ' + piu + ' botaniche con questo nome, scegli nell\u2019elenco qui sotto.');
     else scrivi('Ho capito \u00ab' + detto + '\u00bb: nessuna botanica con questo nome, guarda l\u2019elenco qui sotto.');
   }
   btn.addEventListener('click', () => {
