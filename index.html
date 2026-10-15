@@ -1317,6 +1317,11 @@ footer.note{
 .calc-row{display:flex;flex-wrap:wrap;gap:18px;margin-bottom:16px;}
 .calc-row label{display:flex;flex-direction:column;gap:6px;font-size:11px;color:var(--ink-faint);font-weight:650;text-transform:uppercase;letter-spacing:.06em;}
 .calc-row input{width:140px;}
+.calc-disp{display:flex;gap:8px;align-items:stretch;}
+.calc-disp select{font-family:'Public Sans',sans-serif;font-size:14.5px;padding:11px 10px;border:1px solid var(--line-strong);border-radius:var(--r-xs);background:var(--surface);color:var(--ink);}
+.calc-row-disp{margin-bottom:6px;}
+.calc-disp-hint{display:block;margin-bottom:16px;font-size:12px;}
+.calc-vol-off{opacity:.45;}
 .calc-result{
   font-family:'Fraunces',serif;font-size:19px;color:var(--juniper-deep);
   line-height:1.45;letter-spacing:-0.015em;
@@ -3211,6 +3216,13 @@ html details.howto a{color:#5A3E1C;}
         <label>Grado desiderato (°)<input type="number" id="calc-to" value="40" step="0.1"></label>
         <label>Volume finale (ml)<input type="number" id="calc-vol" value="100" step="1"></label>
       </div>
+      <div class="calc-row calc-row-disp">
+        <label>Oppure: alcol che ho già, a grado di partenza<span class="calc-disp">
+          <input type="number" id="calc-disp" placeholder="quantità" step="0.1" min="0">
+          <select id="calc-disp-u"><option value="g">gr</option><option value="ml">ml</option></select>
+        </span></label>
+      </div>
+      <div class="cond-hint calc-disp-hint">Se scrivi qui la quantità di alcol che possiedi (pesata in grammi o misurata in ml), il calcolatore ignora il volume finale e ti dice quanta acqua aggiungere e il volume massimo che ottieni al grado desiderato.</div>
       <div class="calc-result" id="calc-result"></div>
     </div>
 
@@ -6105,16 +6117,31 @@ const calcFrom = document.getElementById('calc-from');
 const calcTo = document.getElementById('calc-to');
 const calcVol = document.getElementById('calc-vol');
 const calcResult = document.getElementById('calc-result');
+const calcDisp = document.getElementById('calc-disp');
+const calcDispU = document.getElementById('calc-disp-u');
 
 function renderCalc(){
   const from = parseFloat(calcFrom.value);
   const to = parseFloat(calcTo.value);
   const vol = parseFloat(calcVol.value);
-  if (!from || !to || !vol || to > from){
+  const haDisp = parseFloat(calcDisp.value) > 0;
+  if (!from || !to || (!vol && !haDisp) || to > from){
     calcResult.textContent = to > from ? 'Il grado desiderato non può superare quello di partenza.' : 'Inserisci valori validi.';
     return;
   }
   if (from > 100){ calcResult.textContent = 'Il grado di partenza non può superare 100°.'; return; }
+  const disp = parseFloat(calcDisp.value);
+  calcVol.closest('label').classList.toggle('calc-vol-off', disp > 0);
+  if (disp > 0){
+    const u = calcDispU.value;
+    const d = daAlcolDisponibile(disp, u, from, to);
+    calcResult.innerHTML =
+      `<div><strong>Alcol a ${from}° che hai:</strong> ${nf(d.alcG, 1)} g &nbsp;·&nbsp; ${nf(d.alcMl, 1)} ml</div>` +
+      `<div><strong>Acqua demineralizzata da aggiungere:</strong> ${nf(d.acquaG, 1)} g &nbsp;·&nbsp; ${nf(d.acquaMl, 1)} ml</div>` +
+      `<div>→ <strong>volume massimo ottenibile: ${nf(d.volMl, 1)} ml a ${to}°</strong> &nbsp;·&nbsp; peso totale ${nf(d.massaG, 1)} g</div>` +
+      `<div style="font-size:12px;color:var(--ink-faint);margin-top:6px;">Calcolo a 20 °C con la contrazione di volume: il volume finale è un po' minore della somma di alcol e acqua in ml. Il volume finale inserito sopra non viene usato. Pesa l'acqua sulla bilancia e verifica con l'alcolometro.</div>`;
+    return;
+  }
   const d = diluizione(to, vol, from);
   calcResult.innerHTML =
     `<div><strong>Alcol a ${from}°:</strong> ${nf(d.alcMl, 1)} ml &nbsp;·&nbsp; ${nf(d.alcG, 1)} g</div>` +
@@ -6122,7 +6149,7 @@ function renderCalc(){
     `<div>→ ${nf(vol, 0)} ml a ${to}° &nbsp;·&nbsp; peso totale ${nf(d.massaG, 1)} g</div>` +
     `<div style="font-size:12px;color:var(--ink-faint);margin-top:6px;">Calcolo a 20 °C con la contrazione di volume: alcol e acqua sommati in ml superano il volume finale. I grammi sono la misura più precisa: pesa l'acqua e l'alcol sulla bilancia.</div>`;
 }
-[calcFrom, calcTo, calcVol].forEach(el => el.addEventListener('input', renderCalc));
+[calcFrom, calcTo, calcVol, calcDisp, calcDispU].forEach(el => { el.addEventListener('input', renderCalc); el.addEventListener('change', renderCalc); });
 // le tabelle di densità sono definite più avanti: si calcola a pagina caricata
 document.addEventListener('DOMContentLoaded', renderCalc);
 
@@ -7870,6 +7897,13 @@ function diluizione(abvT, volMl, abvS){
   const a = abvS || ALCOL_PARTENZA;
   const M = volMl * rhoDaVol(abvT), me = wDaVol(abvT) * M, Ms = me / wDaVol(a), Mw = Math.max(0, M - Ms);
   return { alcMl: Ms / rhoDaVol(a), alcG: Ms, acquaG: Mw, acquaMl: Mw / 0.99823, massaG: M };
+}
+// Partendo da una quantità di alcol disponibile (g o ml) al grado abvS, quanta acqua serve per scendere a abvT
+// e quale volume massimo si ottiene (bilancio di massa dell'etanolo, densità a 20 °C).
+function daAlcolDisponibile(q, unita, abvS, abvT){
+  const Ms = unita === 'ml' ? q * rhoDaVol(abvS) : q;
+  const me = Ms * wDaVol(abvS), M = me / wDaVol(abvT), Mw = Math.max(0, M - Ms);
+  return { alcG: Ms, alcMl: Ms / rhoDaVol(abvS), acquaG: Mw, acquaMl: Mw / 0.99823, massaG: M, volMl: M / rhoDaVol(abvT) };
 }
 function estAbvTxt(a){ return a[0] === a[1] ? a[0] + ' % vol' : a[0] + '–' + a[1] + ' % vol'; }
 function estTempoTxt(t){
