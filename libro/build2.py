@@ -460,24 +460,66 @@ def dl_interp(xs, ys, x):
     return ys[i-1] + (ys[i] - ys[i-1]) * (x - xs[i-1]) / (xs[i] - xs[i-1])
 dl_w = lambda v: dl_interp(DL_V, DL_W, v) / 100
 dl_rho = lambda v: dl_interp(DL_W, DL_R, dl_interp(DL_V, DL_W, v))
-def dl_da_alcol(q, ml, a, t):
-    Ms = q * dl_rho(a) if ml else q
-    M = Ms * dl_w(a) / dl_w(t)
-    return M - Ms, M / dl_rho(t)
+# Letture dell'alcolometro alla temperatura della soluzione (OIML R22, vetro 25e-6/°C), stessa formula di libro.js
+OI_C = [
+  [1.285617841998974e3,-3.903285426e4],
+  [7.442971530188783,-7.420201433430137e3,2.234460334e5],
+  [-5.411227621436812e-1,-4.414153236817392e1,1.852373922069467e4,-5.478461354e5],
+  [2.458043105903461,1.080435942856230e2,-2.605562982188164e4,7.470172998e5],
+  [-4.672147440794683,-1.422753946421155e2,2.248646550400788e4,-6.138381234e5],
+  [4.810060584300675,1.096355666577570e2,-1.210164659068747e4,3.062874042e5],
+  [-2.895696483903638,-5.029988758547014e1,3.924090430035045e3,-8.829278388e4],
+  [-1.515784836987210e-6,1.022992966719220,1.353034988843029e1,-7.047478054272792e2,1.352215441e4],
+  [6.515031360099368e-6,-2.002561813734156e-1,-2.170575700536993,7.196353469546523e1,-1.668103923e3],
+  [1.345612883493354e-8,-8.763058573471110e-6,1.876837790289664e-2,2.517399633803461e-1,-1.046914743455169e1,3.891238958e2],
+  [-2.788074354782409e-8,4.075376675622027e-6,-6.802995733503803e-4,-1.193013005057010e-2,1.693433461530087e-1,-1.929769495e2],
+  [-9.9739231e-11,7.1693540e-9,-3.8957702e-7,3.6130013e-5,-5.2682542e-3,-2.0618513e-1,9.982012300e2]]
+def oi_poli(c, v):
+    a = 0
+    for x in c: a = a * v + x
+    return a
+oi_rho = lambda p, t: oi_poli([oi_poli(r, t - 20) for r in OI_C], p)
+oi_abv = lambda p: 100 * p * oi_rho(p, 20) / oi_rho(1, 20)
+def oi_cerca(f, y, sale):
+    lo, hi = 0.0, 1.0
+    for _ in range(60):
+        m = (lo + hi) / 2
+        if (f(m) < y) == sale: lo = m
+        else: hi = m
+    return (lo + hi) / 2
+def oi_lettura(abv, t):
+    ra = oi_rho(oi_cerca(oi_abv, abv, True), t) * (1 + 25e-6 * (t - 20))
+    return oi_abv(oi_cerca(lambda p: oi_rho(p, 20), ra, False))
+DL_T = (10, 15, 20, 25, 30)
+dl_lett = ''.join('<tr><td>%d°</td>%s</tr>' % (g, ''.join('<td>%s°</td>' % fmt1(round(oi_lettura(g, t), 1)) for t in DL_T)) for g in (40, 43, 45, 50, 60, 70, 96))
+def dl_da_alcol(q, ml, a, t):   # a 20 °C, con le densità OIML
+    pa, pt = oi_cerca(oi_abv, a, True), oi_cerca(oi_abv, t, True)
+    Ms = q * oi_rho(pa, 20) / 1000 if ml else q
+    M = Ms * pa / pt
+    return M - Ms, M / (oi_rho(pt, 20) / 1000)
 dl_righe = ''.join('<tr><td>%d°</td><td>%s gr · %s ml</td><td>%s gr · %s ml</td></tr>' % ((t,) + tuple(fmt1(x) for x in dl_da_alcol(100, False, 96, t) + dl_da_alcol(100, True, 96, t)))
                    for t in (40, 43, 45, 50, 60, 70))
 DILUIZIONE = ('<section><h1>Il calcolatore della diluizione</h1>'
-    '<p>Due domande tornano sempre in laboratorio: <em>quanto alcol e quanta acqua servono per avere un certo volume a un certo grado?</em> e <em>ho questa quantità di alcol: quanta acqua aggiungo, e quanto ne ottengo, per scendere al grado che voglio?</em> Il calcolatore risponde a tutte e due, con la contrazione di volume di alcol e acqua a 20 °C.</p>'
+    '<p>Due domande tornano sempre in laboratorio: <em>quanto alcol e quanta acqua servono per avere un certo volume a un certo grado?</em> e <em>ho questa quantità di alcol: quanta acqua aggiungo, e quanto ne ottengo, per scendere al grado che voglio?</em> Il calcolatore risponde a tutte e due, con la contrazione di volume di alcol e acqua e alla temperatura della soluzione, misurata con un termometro.</p>'
     '<div id="dil" class="dil"><p class="nota">Questa pagina è interattiva: serve un lettore che esegua JavaScript, come Kotobee Reader. Senza, valgono le formule e la tabella qui sotto.</p></div>'
     '<h2>Le formule</h2>'
     '<p><strong>Regola rapida, in volume.</strong> Volume finale ≈ volume di alcol × grado di partenza ÷ grado finale. Un litro a 96° portato a 40° dà circa 1 × 96 ÷ 40 = 2,4 litri. Al contrario, per avere un volume voluto: alcol necessario = volume voluto × grado finale ÷ grado di partenza.</p>'
     '<p><strong>Perché i millilitri non tornano.</strong> Alcol e acqua mescolati si contraggono: 1 litro di alcol a 96° più 1,47 litri d\'acqua non danno 2,47 litri ma circa 2,40. Per questo l\'acqua calcolata in millilitri è sempre un poco più di quanto suggerisce la regola rapida, e il volume finale un poco meno della somma.</p>'
-    '<p><strong>Il calcolo preciso, in peso.</strong> La massa di etanolo non cambia quando si aggiunge acqua. Se <em>m</em> sono i grammi di alcol al grado di partenza e <em>w</em> la frazione in peso di etanolo di quel grado (per il 96% vol è circa 0,94), la massa finale è <em>M = m × w<sub>partenza</sub> ÷ w<sub>finale</sub></em>; l\'acqua da aggiungere è <em>M − m</em>, e il volume finale è <em>M</em> diviso la densità della miscela finale. Le frazioni in peso e le densità vengono dalle tabelle alcolometriche a 20 °C.</p>'
-    '<p>I grammi sono la misura più affidabile: si pesa l\'acqua sulla bilancia e alla fine si controlla con l\'alcolometro, a 20 °C.</p>'
-    '<h2>Tabella pronta: alcol a 96°</h2>'
+    '<p><strong>Il calcolo preciso, in peso.</strong> La massa di etanolo non cambia quando si aggiunge acqua. Se <em>m</em> sono i grammi di alcol al grado di partenza e <em>w</em> la frazione in peso di etanolo di quel grado (per il 96% vol è circa 0,94), la massa finale è <em>M = m × w<sub>partenza</sub> ÷ w<sub>finale</sub></em>; l\'acqua da aggiungere è <em>M − m</em>, e il volume finale è <em>M</em> diviso la densità della miscela finale. Le frazioni in peso e le densità vengono dalle tabelle alcolometriche.</p>'
+    '<p>I grammi sono la misura più affidabile: si pesa l\'acqua sulla bilancia e alla fine si controlla con l\'alcolometro.</p>'
+    '<h2>La temperatura della soluzione</h2>'
+    '<p>Il grado alcolico si intende sempre a 20 °C: è quello scritto in etichetta. Ma non serve portare la soluzione a 20 °C. Basta misurarne la temperatura con un semplice termometro e scriverla nel calcolatore, che ne tiene conto in tre punti.</p>'
+    '<ul><li><strong>I grammi non cambiano.</strong> La massa non dipende dalla temperatura: pesando alcol e acqua, il conto è giusto a qualsiasi temperatura.</li>'
+    '<li><strong>I millilitri sì.</strong> Al caldo i liquidi si dilatano, al fresco si contraggono, e l\'alcol più dell\'acqua: il calcolatore dà i millilitri misurati alla temperatura indicata.</li>'
+    '<li><strong>L\'alcolometro segna un grado apparente.</strong> È tarato a 20 °C: al caldo segna di più, al fresco di meno, circa 0,4° per ogni grado di temperatura intorno ai 40% vol. Il calcolatore dice quanto deve segnare alla tua temperatura per avere il grado voluto e, se il grado di partenza l\'hai letto tu con l\'alcolometro, lo riporta al grado reale.</li></ul>'
+    '<p>Le densità di alcol e acqua alle diverse temperature sono quelle delle tabelle alcolometriche internazionali (OIML R22), valide fra 0 e 40 °C.</p>'
+    '<h2>Tabella pronta: che cosa segna l\'alcolometro</h2>'
+    '<p>Per ogni grado reale (a 20 °C), il grado che legge un alcolometro di vetro immerso nella soluzione alle diverse temperature.</p>'
+    '<table class="mol"><thead><tr><th>Grado reale</th>' + ''.join('<th>%d °C</th>' % t for t in DL_T) + '</tr></thead><tbody>' + dl_lett + '</tbody></table>'
+    '<h2>Tabella pronta: alcol a 96°, a 20 °C</h2>'
     '<p>Acqua da aggiungere e volume massimo ottenibile, partendo da 100 gr oppure da 100 ml di alcol a 96°. Per altre quantità basta moltiplicare in proporzione.</p>'
     '<table class="mol"><thead><tr><th>Grado finale</th><th>Da 100 gr: acqua · volume</th><th>Da 100 ml: acqua · volume</th></tr></thead><tbody>' + dl_righe + '</tbody></table>'
-    '<p class="nota">Calcolo a 20 °C con le stesse tabelle di densità dell\'app GinBuilder, dove lo stesso calcolatore è nella pagina Schede di prova.</p>'
+    '<p class="nota">Le due tabelle usano le stesse densità dell\'app GinBuilder, dove lo stesso calcolatore è nella pagina Schede di prova.</p>'
     '<p class="naviga"><a href="cap4.xhtml">Capitolo 4</a> · <a href="cap4-miscela.xhtml">Dagli infusi al gin: diluire e miscelare</a></p></section>')
 add('cap4-diluizione.xhtml', 'Il calcolatore della diluizione', DILUIZIONE, 2, True)
 # ---------- pagina interattiva: proporzioni ----------

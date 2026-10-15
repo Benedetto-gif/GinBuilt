@@ -1322,6 +1322,8 @@ footer.note{
 .calc-row-disp{margin-bottom:6px;}
 .calc-disp-hint{display:block;margin-bottom:16px;font-size:12px;}
 .calc-vol-off{opacity:.45;}
+.calc-check{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--ink-soft, var(--ink));margin:-4px 0 14px;line-height:1.35;}
+.calc-check input{margin-top:2px;flex:none;}
 .calc-result{
   font-family:'Fraunces',serif;font-size:19px;color:var(--juniper-deep);
   line-height:1.45;letter-spacing:-0.015em;
@@ -3215,7 +3217,9 @@ html details.howto a{color:#5A3E1C;}
         <label>Grado di partenza (°)<input type="number" id="calc-from" value="96" step="0.1"></label>
         <label>Grado desiderato (°)<input type="number" id="calc-to" value="40" step="0.1"></label>
         <label>Volume finale (ml)<input type="number" id="calc-vol" value="100" step="1"></label>
+        <label>Temperatura della soluzione (°C)<input type="number" id="calc-temp" value="20" step="0.5"></label>
       </div>
+      <label class="calc-check"><input type="checkbox" id="calc-letto"> Il grado di partenza l'ho letto con l'alcolometro a questa temperatura (non è quello dell'etichetta)</label>
       <div class="calc-row calc-row-disp">
         <label>Oppure: alcol che ho già, a grado di partenza<span class="calc-disp">
           <input type="number" id="calc-disp" placeholder="quantità" step="0.1" min="0">
@@ -6120,36 +6124,35 @@ const calcResult = document.getElementById('calc-result');
 const calcDisp = document.getElementById('calc-disp');
 const calcDispU = document.getElementById('calc-disp-u');
 
+const calcTemp = document.getElementById('calc-temp');
+const calcLetto = document.getElementById('calc-letto');
 function renderCalc(){
-  const from = parseFloat(calcFrom.value);
-  const to = parseFloat(calcTo.value);
-  const vol = parseFloat(calcVol.value);
-  const haDisp = parseFloat(calcDisp.value) > 0;
-  if (!from || !to || (!vol && !haDisp) || to > from){
-    calcResult.textContent = to > from ? 'Il grado desiderato non può superare quello di partenza.' : 'Inserisci valori validi.';
-    return;
-  }
+  const from = parseFloat(calcFrom.value), to = parseFloat(calcTo.value), vol = parseFloat(calcVol.value);
+  const disp = parseFloat(calcDisp.value), haDisp = disp > 0;
+  let t = parseFloat(calcTemp.value); if (isNaN(t)) t = 20;
+  calcVol.closest('label').classList.toggle('calc-vol-off', haDisp);
+  if (!from || !to || (!vol && !haDisp)){ calcResult.textContent = 'Inserisci valori validi.'; return; }
   if (from > 100){ calcResult.textContent = 'Il grado di partenza non può superare 100°.'; return; }
-  const disp = parseFloat(calcDisp.value);
-  calcVol.closest('label').classList.toggle('calc-vol-off', disp > 0);
-  if (disp > 0){
-    const u = calcDispU.value;
-    const d = daAlcolDisponibile(disp, u, from, to);
-    calcResult.innerHTML =
-      `<div><strong>Alcol a ${from}° che hai:</strong> ${nf(d.alcG, 1)} g &nbsp;·&nbsp; ${nf(d.alcMl, 1)} ml</div>` +
-      `<div><strong>Acqua demineralizzata da aggiungere:</strong> ${nf(d.acquaG, 1)} g &nbsp;·&nbsp; ${nf(d.acquaMl, 1)} ml</div>` +
-      `<div>→ <strong>volume massimo ottenibile: ${nf(d.volMl, 1)} ml a ${to}°</strong> &nbsp;·&nbsp; peso totale ${nf(d.massaG, 1)} g</div>` +
-      `<div style="font-size:12px;color:var(--ink-faint);margin-top:6px;">Calcolo a 20 °C con la contrazione di volume: il volume finale è un po' minore della somma di alcol e acqua in ml. Il volume finale inserito sopra non viene usato. Pesa l'acqua sulla bilancia e verifica con l'alcolometro.</div>`;
-    return;
+  if (t < 0 || t > 40){ calcResult.textContent = 'La temperatura deve stare fra 0 e 40 °C (fuori da questo intervallo le tabelle alcolometriche non valgono).'; return; }
+  const d = diluizioneT({ da: from, a: to, t, vol, q: haDisp ? disp : 0, unita: calcDispU.value, letto: calcLetto.checked });
+  if (to > d.reale + 1e-9){ calcResult.textContent = 'Il grado desiderato non può superare quello di partenza' + (calcLetto.checked && Math.abs(t - 20) >= 0.05 ? ' (reale a 20 °C: ' + nf(d.reale, 1) + '°).' : '.'); return; }
+  const a20 = Math.abs(t - 20) < 0.05, X = nf(d.reale, 1);
+  let h = '';
+  if (calcLetto.checked && !a20) h += `<div><strong>Grado reale dell'alcol di partenza:</strong> l'alcolometro segna ${from}° a ${nf(t, 1)} °C, cioè ${X}° a 20 °C</div>`;
+  if (haDisp){
+    h += `<div><strong>Alcol a ${X}° che hai:</strong> ${nf(d.alcG, 1)} gr &nbsp;·&nbsp; ${nf(d.alcMl, 1)} ml</div>` +
+         `<div><strong>Acqua demineralizzata da aggiungere:</strong> ${nf(d.acquaG, 1)} gr &nbsp;·&nbsp; ${nf(d.acquaMl, 1)} ml</div>` +
+         `<div>→ <strong>volume massimo ottenibile: ${nf(d.volMl, 1)} ml a ${to}°</strong> &nbsp;·&nbsp; peso totale ${nf(d.massaG, 1)} gr</div>`;
+  } else {
+    h += `<div><strong>Alcol a ${X}°:</strong> ${nf(d.alcMl, 1)} ml &nbsp;·&nbsp; ${nf(d.alcG, 1)} gr</div>` +
+         `<div><strong>Acqua demineralizzata potabile:</strong> ${nf(d.acquaMl, 1)} ml &nbsp;·&nbsp; ${nf(d.acquaG, 1)} gr</div>` +
+         `<div>→ ${nf(vol, 0)} ml a ${to}° &nbsp;·&nbsp; peso totale ${nf(d.massaG, 1)} gr</div>`;
   }
-  const d = diluizione(to, vol, from);
-  calcResult.innerHTML =
-    `<div><strong>Alcol a ${from}°:</strong> ${nf(d.alcMl, 1)} ml &nbsp;·&nbsp; ${nf(d.alcG, 1)} g</div>` +
-    `<div><strong>Acqua demineralizzata potabile:</strong> ${nf(d.acquaMl, 1)} ml &nbsp;·&nbsp; ${nf(d.acquaG, 1)} g</div>` +
-    `<div>→ ${nf(vol, 0)} ml a ${to}° &nbsp;·&nbsp; peso totale ${nf(d.massaG, 1)} g</div>` +
-    `<div style="font-size:12px;color:var(--ink-faint);margin-top:6px;">Calcolo a 20 °C con la contrazione di volume: alcol e acqua sommati in ml superano il volume finale. I grammi sono la misura più precisa: pesa l'acqua e l'alcol sulla bilancia.</div>`;
+  if (!a20) h += `<div><strong>Controllo con l'alcolometro a ${nf(t, 1)} °C:</strong> a fine diluizione deve segnare circa <strong>${nf(d.letturaFin, 1)}°</strong>, che corrispondono a ${to}° reali a 20 °C</div>`;
+  h += `<div style="font-size:12px;color:var(--ink-faint);margin-top:6px;">Il grado alcolico si intende sempre a 20 °C, ma non serve portare la soluzione a 20 °C: basta misurarne la temperatura con un termometro. I grammi non cambiano con la temperatura; i millilitri sono quelli misurati alla temperatura indicata. Alcol e acqua si contraggono: il volume finale è minore della somma dei due.${haDisp ? ' Il volume finale inserito sopra non viene usato.' : ''} Calcolo secondo le tabelle alcolometriche internazionali (OIML R22).</div>`;
+  calcResult.innerHTML = h;
 }
-[calcFrom, calcTo, calcVol, calcDisp, calcDispU].forEach(el => { el.addEventListener('input', renderCalc); el.addEventListener('change', renderCalc); });
+[calcFrom, calcTo, calcVol, calcDisp, calcDispU, calcTemp, calcLetto].forEach(el => { el.addEventListener('input', renderCalc); el.addEventListener('change', renderCalc); });
 // le tabelle di densità sono definite più avanti: si calcola a pagina caricata
 document.addEventListener('DOMContentLoaded', renderCalc);
 
@@ -7881,6 +7884,51 @@ function salvaTaratura(n){
   showDetail(n);
 }
 function rimuoviTaratura(n){ const T = tarature(); delete T[n]; try { localStorage.setItem('gb-tarature', JSON.stringify(T)); } catch(e){} showDetail(n); }
+// ---------- Alcolometria con la temperatura (formula internazionale OIML R22) ----------
+// Densita' di alcol e acqua in funzione della frazione in peso p (0-1) e della temperatura t (°C).
+// Il grado alcolico (% vol) e' sempre riferito a 20 °C; l'alcolometro di vetro, usato a un'altra temperatura,
+// segna un grado apparente che si converte con le stesse densita' (dilatazione del vetro 25e-6 per °C).
+var OIML_C = [
+  [1.285617841998974e3,-3.903285426e4],
+  [7.442971530188783,-7.420201433430137e3,2.234460334e5],
+  [-5.411227621436812e-1,-4.414153236817392e1,1.852373922069467e4,-5.478461354e5],
+  [2.458043105903461,1.080435942856230e2,-2.605562982188164e4,7.470172998e5],
+  [-4.672147440794683,-1.422753946421155e2,2.248646550400788e4,-6.138381234e5],
+  [4.810060584300675,1.096355666577570e2,-1.210164659068747e4,3.062874042e5],
+  [-2.895696483903638,-5.029988758547014e1,3.924090430035045e3,-8.829278388e4],
+  [-1.515784836987210e-6,1.022992966719220,1.353034988843029e1,-7.047478054272792e2,1.352215441e4],
+  [6.515031360099368e-6,-2.002561813734156e-1,-2.170575700536993,7.196353469546523e1,-1.668103923e3],
+  [1.345612883493354e-8,-8.763058573471110e-6,1.876837790289664e-2,2.517399633803461e-1,-1.046914743455169e1,3.891238958e2],
+  [-2.788074354782409e-8,4.075376675622027e-6,-6.802995733503803e-4,-1.193013005057010e-2,1.693433461530087e-1,-1.929769495e2],
+  [-9.9739231e-11,7.1693540e-9,-3.8957702e-7,3.6130013e-5,-5.2682542e-3,-2.0618513e-1,9.982012300e2]
+];
+function oimlPoli(c, v){ var a = 0; for (var i = 0; i < c.length; i++) a = a * v + c[i]; return a; }
+function oimlRho(p, t){ var r = []; for (var i = 0; i < OIML_C.length; i++) r.push(oimlPoli(OIML_C[i], t - 20)); return oimlPoli(r, p) / 1000; } // g/ml
+function oimlCerca(f, y, sale){ var lo = 0, hi = 1; for (var k = 0; k < 60; k++){ var m = (lo + hi) / 2; if ((f(m) < y) === sale) lo = m; else hi = m; } return (lo + hi) / 2; }
+function oimlAbv(p){ return 100 * p * oimlRho(p, 20) / oimlRho(1, 20); }                 // % vol a 20 °C
+function oimlP(abv){ return oimlCerca(oimlAbv, abv, true); }                             // frazione in peso
+var OIML_VETRO = 25e-6;
+// grado che segna l'alcolometro alla temperatura t per un liquido che a 20 °C ha il grado abv20
+function oimlLettura(abv20, t){
+  var ra = oimlRho(oimlP(abv20), t) * (1 + OIML_VETRO * (t - 20));
+  return oimlAbv(oimlCerca(function(p){ return oimlRho(p, 20); }, ra, false));
+}
+// grado reale a 20 °C a partire da quanto segna l'alcolometro alla temperatura t
+function oimlReale(lettura, t){
+  var ra = oimlRho(oimlP(lettura), 20);
+  return oimlAbv(oimlCerca(function(p){ return oimlRho(p, t) * (1 + OIML_VETRO * (t - 20)); }, ra, false));
+}
+// Diluizione alla temperatura della soluzione. o = { da, a, t, vol, q, unita ('g'|'ml'), letto }
+// da/a: gradi alcolici (a e' il grado reale voluto, a 20 °C); letto = il grado di partenza e' una lettura dell'alcolometro a t.
+function diluizioneT(o){
+  var t = o.t, x = o.letto ? oimlReale(o.da, t) : o.da, px = oimlP(x), py = oimlP(o.a);
+  var Ms, M;
+  if (o.q > 0){ Ms = o.unita === 'ml' ? o.q * oimlRho(px, t) : o.q; M = Ms * px / py; }
+  else { M = o.vol * oimlRho(py, t); Ms = M * py / px; }
+  var Mw = Math.max(0, M - Ms);
+  return { reale: x, alcG: Ms, alcMl: Ms / oimlRho(px, t), acquaG: Mw, acquaMl: Mw / oimlRho(0, t), massaG: M,
+           volMl: M / oimlRho(py, t), letturaFin: oimlLettura(o.a, t), letturaIni: oimlLettura(x, t) };
+}
 // Diluizione precisa alcol-acqua a 20 °C (densità per % in massa, tabelle standard), con contrazione di volume.
 const W_GRID = [0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100];
 const RHO_GRID = [0.99823,0.98938,0.98187,0.97514,0.96864,0.96168,0.95382,0.94494,0.93518,0.92472,0.91384,0.90258,0.89113,0.87948,0.86766,0.85564,0.84344,0.83095,0.81797,0.80424,0.78934];
@@ -7897,13 +7945,6 @@ function diluizione(abvT, volMl, abvS){
   const a = abvS || ALCOL_PARTENZA;
   const M = volMl * rhoDaVol(abvT), me = wDaVol(abvT) * M, Ms = me / wDaVol(a), Mw = Math.max(0, M - Ms);
   return { alcMl: Ms / rhoDaVol(a), alcG: Ms, acquaG: Mw, acquaMl: Mw / 0.99823, massaG: M };
-}
-// Partendo da una quantità di alcol disponibile (g o ml) al grado abvS, quanta acqua serve per scendere a abvT
-// e quale volume massimo si ottiene (bilancio di massa dell'etanolo, densità a 20 °C).
-function daAlcolDisponibile(q, unita, abvS, abvT){
-  const Ms = unita === 'ml' ? q * rhoDaVol(abvS) : q;
-  const me = Ms * wDaVol(abvS), M = me / wDaVol(abvT), Mw = Math.max(0, M - Ms);
-  return { alcG: Ms, alcMl: Ms / rhoDaVol(abvS), acquaG: Mw, acquaMl: Mw / 0.99823, massaG: M, volMl: M / rhoDaVol(abvT) };
 }
 function estAbvTxt(a){ return a[0] === a[1] ? a[0] + ' % vol' : a[0] + '–' + a[1] + ' % vol'; }
 function estTempoTxt(t){

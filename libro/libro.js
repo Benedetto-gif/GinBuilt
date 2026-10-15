@@ -531,45 +531,91 @@ function gpId(id){ if (!id) return null; var el = null; try { el = document.getE
   }
   costruisci(); carica(st.nome);
 })();
-// ---------- Calcolatore della diluizione (stesse densita' a 20 °C dell'app) ----------
+// ---------- Alcolometria con la temperatura (formula internazionale OIML R22) ----------
+// Densita' di alcol e acqua in funzione della frazione in peso p (0-1) e della temperatura t (°C).
+// Il grado alcolico (% vol) e' sempre riferito a 20 °C; l'alcolometro di vetro, usato a un'altra temperatura,
+// segna un grado apparente che si converte con le stesse densita' (dilatazione del vetro 25e-6 per °C).
+var OIML_C = [
+  [1.285617841998974e3,-3.903285426e4],
+  [7.442971530188783,-7.420201433430137e3,2.234460334e5],
+  [-5.411227621436812e-1,-4.414153236817392e1,1.852373922069467e4,-5.478461354e5],
+  [2.458043105903461,1.080435942856230e2,-2.605562982188164e4,7.470172998e5],
+  [-4.672147440794683,-1.422753946421155e2,2.248646550400788e4,-6.138381234e5],
+  [4.810060584300675,1.096355666577570e2,-1.210164659068747e4,3.062874042e5],
+  [-2.895696483903638,-5.029988758547014e1,3.924090430035045e3,-8.829278388e4],
+  [-1.515784836987210e-6,1.022992966719220,1.353034988843029e1,-7.047478054272792e2,1.352215441e4],
+  [6.515031360099368e-6,-2.002561813734156e-1,-2.170575700536993,7.196353469546523e1,-1.668103923e3],
+  [1.345612883493354e-8,-8.763058573471110e-6,1.876837790289664e-2,2.517399633803461e-1,-1.046914743455169e1,3.891238958e2],
+  [-2.788074354782409e-8,4.075376675622027e-6,-6.802995733503803e-4,-1.193013005057010e-2,1.693433461530087e-1,-1.929769495e2],
+  [-9.9739231e-11,7.1693540e-9,-3.8957702e-7,3.6130013e-5,-5.2682542e-3,-2.0618513e-1,9.982012300e2]
+];
+function oimlPoli(c, v){ var a = 0; for (var i = 0; i < c.length; i++) a = a * v + c[i]; return a; }
+function oimlRho(p, t){ var r = []; for (var i = 0; i < OIML_C.length; i++) r.push(oimlPoli(OIML_C[i], t - 20)); return oimlPoli(r, p) / 1000; } // g/ml
+function oimlCerca(f, y, sale){ var lo = 0, hi = 1; for (var k = 0; k < 60; k++){ var m = (lo + hi) / 2; if ((f(m) < y) === sale) lo = m; else hi = m; } return (lo + hi) / 2; }
+function oimlAbv(p){ return 100 * p * oimlRho(p, 20) / oimlRho(1, 20); }                 // % vol a 20 °C
+function oimlP(abv){ return oimlCerca(oimlAbv, abv, true); }                             // frazione in peso
+var OIML_VETRO = 25e-6;
+// grado che segna l'alcolometro alla temperatura t per un liquido che a 20 °C ha il grado abv20
+function oimlLettura(abv20, t){
+  var ra = oimlRho(oimlP(abv20), t) * (1 + OIML_VETRO * (t - 20));
+  return oimlAbv(oimlCerca(function(p){ return oimlRho(p, 20); }, ra, false));
+}
+// grado reale a 20 °C a partire da quanto segna l'alcolometro alla temperatura t
+function oimlReale(lettura, t){
+  var ra = oimlRho(oimlP(lettura), 20);
+  return oimlAbv(oimlCerca(function(p){ return oimlRho(p, t) * (1 + OIML_VETRO * (t - 20)); }, ra, false));
+}
+// Diluizione alla temperatura della soluzione. o = { da, a, t, vol, q, unita ('g'|'ml'), letto }
+// da/a: gradi alcolici (a e' il grado reale voluto, a 20 °C); letto = il grado di partenza e' una lettura dell'alcolometro a t.
+function diluizioneT(o){
+  var t = o.t, x = o.letto ? oimlReale(o.da, t) : o.da, px = oimlP(x), py = oimlP(o.a);
+  var Ms, M;
+  if (o.q > 0){ Ms = o.unita === 'ml' ? o.q * oimlRho(px, t) : o.q; M = Ms * px / py; }
+  else { M = o.vol * oimlRho(py, t); Ms = M * py / px; }
+  var Mw = Math.max(0, M - Ms);
+  return { reale: x, alcG: Ms, alcMl: Ms / oimlRho(px, t), acquaG: Mw, acquaMl: Mw / oimlRho(0, t), massaG: M,
+           volMl: M / oimlRho(py, t), letturaFin: oimlLettura(o.a, t), letturaIni: oimlLettura(x, t) };
+}
+// ---------- Calcolatore della diluizione, con la temperatura della soluzione ----------
 (function avvioDil(){
   if (document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', avvioDil); return; }
   var box = gpId('dil'); if (!box) return;
-  var W = [0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100];
-  var R = [0.99823,0.98938,0.98187,0.97514,0.96864,0.96168,0.95382,0.94494,0.93518,0.92472,0.91384,0.90258,0.89113,0.87948,0.86766,0.85564,0.84344,0.83095,0.81797,0.80424,0.78934];
-  var V = []; for (var k = 0; k < W.length; k++) V.push(W[k] * R[k] / 0.78934);
-  function ip(xs, ys, x){ if (x <= xs[0]) return ys[0]; if (x >= xs[xs.length-1]) return ys[ys.length-1]; var i = 1; while (xs[i] < x) i++; return ys[i-1] + (ys[i]-ys[i-1]) * (x - xs[i-1]) / (xs[i] - xs[i-1]); }
-  function w(v){ return ip(V, W, v) / 100; }
-  function rho(v){ return ip(W, R, ip(V, W, v)); }
   function nf(x){ return (Math.round(x * 10) / 10).toLocaleString('it-IT'); }
   box.innerHTML = '<div class="dil-campi">' +
     '<label>Grado di partenza (°)<input type="number" id="dil-da" value="96" step="0.1"/></label>' +
     '<label>Grado desiderato (°)<input type="number" id="dil-a" value="40" step="0.1"/></label>' +
-    '<label id="dil-vol-l">Volume finale (ml)<input type="number" id="dil-vol" value="100" step="1"/></label></div>' +
+    '<label id="dil-vol-l">Volume finale (ml)<input type="number" id="dil-vol" value="100" step="1"/></label>' +
+    '<label>Temperatura della soluzione (°C)<input type="number" id="dil-t" value="20" step="0.5"/></label></div>' +
+    '<p class="dil-chk"><input type="checkbox" id="dil-letto"/> Il grado di partenza l\'ho letto con l\'alcolometro a questa temperatura (non è quello dell\'etichetta)</p>' +
     '<div class="dil-campi"><label>Oppure: alcol che ho già, a grado di partenza<span class="dil-q"><input type="number" id="dil-disp" placeholder="quantità" step="0.1" min="0"/>' +
     '<select id="dil-u"><option value="g">gr</option><option value="ml">ml</option></select></span></label></div>' +
     '<p class="nota">Se scrivi la quantità di alcol che possiedi, il volume finale non conta: il calcolatore dice quanta acqua aggiungere e il volume massimo che ottieni.</p>' +
     '<div class="dil-ris" id="dil-ris"></div>';
-  var da = gpId('dil-da'), a = gpId('dil-a'), vol = gpId('dil-vol'), disp = gpId('dil-disp'), u = gpId('dil-u'), ris = gpId('dil-ris'), volL = gpId('dil-vol-l');
+  var da = gpId('dil-da'), a = gpId('dil-a'), vol = gpId('dil-vol'), te = gpId('dil-t'), le = gpId('dil-letto'), disp = gpId('dil-disp'), u = gpId('dil-u'), ris = gpId('dil-ris'), volL = gpId('dil-vol-l');
   function calcola(){
-    var x = parseFloat(da.value), y = parseFloat(a.value), v = parseFloat(vol.value), q = parseFloat(disp.value), haQ = q > 0;
+    var x = parseFloat(da.value), y = parseFloat(a.value), v = parseFloat(vol.value), q = parseFloat(disp.value), haQ = q > 0, t = parseFloat(te.value);
+    if (isNaN(t)) t = 20;
     volL.className = haQ ? 'dil-off' : '';
     if (!x || !y || (!v && !haQ)){ ris.innerHTML = '<p>Inserisci valori validi.</p>'; return; }
     if (x > 100){ ris.innerHTML = '<p>Il grado di partenza non può superare 100°.</p>'; return; }
-    if (y > x){ ris.innerHTML = '<p>Il grado desiderato non può superare quello di partenza.</p>'; return; }
-    var Ms, M, Mw;
+    if (t < 0 || t > 40){ ris.innerHTML = '<p>La temperatura deve stare fra 0 e 40 °C.</p>'; return; }
+    var d = diluizioneT({ da: x, a: y, t: t, vol: v, q: haQ ? q : 0, unita: u.value, letto: le.checked });
+    var a20 = Math.abs(t - 20) < 0.05, X = nf(d.reale);
+    if (y > d.reale + 1e-9){ ris.innerHTML = '<p>Il grado desiderato non può superare quello di partenza' + (le.checked && !a20 ? ' (reale a 20 °C: ' + X + '°)' : '') + '.</p>'; return; }
+    var h = '';
+    if (le.checked && !a20) h += '<p><strong>Grado reale dell\'alcol di partenza:</strong> l\'alcolometro segna ' + x + '° a ' + nf(t) + ' °C, cioè ' + X + '° a 20 °C</p>';
     if (haQ){
-      Ms = u.value === 'ml' ? q * rho(x) : q; M = Ms * w(x) / w(y); Mw = Math.max(0, M - Ms);
-      ris.innerHTML = '<p><strong>Alcol a ' + x + '° che hai:</strong> ' + nf(Ms) + ' gr · ' + nf(Ms / rho(x)) + ' ml</p>' +
-        '<p><strong>Acqua demineralizzata da aggiungere:</strong> ' + nf(Mw) + ' gr · ' + nf(Mw / 0.99823) + ' ml</p>' +
-        '<p>→ <strong>volume massimo ottenibile: ' + nf(M / rho(y)) + ' ml a ' + y + '°</strong> · peso totale ' + nf(M) + ' gr</p>';
+      h += '<p><strong>Alcol a ' + X + '° che hai:</strong> ' + nf(d.alcG) + ' gr · ' + nf(d.alcMl) + ' ml</p>' +
+        '<p><strong>Acqua demineralizzata da aggiungere:</strong> ' + nf(d.acquaG) + ' gr · ' + nf(d.acquaMl) + ' ml</p>' +
+        '<p>→ <strong>volume massimo ottenibile: ' + nf(d.volMl) + ' ml a ' + y + '°</strong> · peso totale ' + nf(d.massaG) + ' gr</p>';
     } else {
-      M = v * rho(y); Ms = M * w(y) / w(x); Mw = Math.max(0, M - Ms);
-      ris.innerHTML = '<p><strong>Alcol a ' + x + '°:</strong> ' + nf(Ms / rho(x)) + ' ml · ' + nf(Ms) + ' gr</p>' +
-        '<p><strong>Acqua demineralizzata:</strong> ' + nf(Mw / 0.99823) + ' ml · ' + nf(Mw) + ' gr</p>' +
-        '<p>→ ' + nf(v) + ' ml a ' + y + '° · peso totale ' + nf(M) + ' gr</p>';
+      h += '<p><strong>Alcol a ' + X + '°:</strong> ' + nf(d.alcMl) + ' ml · ' + nf(d.alcG) + ' gr</p>' +
+        '<p><strong>Acqua demineralizzata:</strong> ' + nf(d.acquaMl) + ' ml · ' + nf(d.acquaG) + ' gr</p>' +
+        '<p>→ ' + nf(v) + ' ml a ' + y + '° · peso totale ' + nf(d.massaG) + ' gr</p>';
     }
+    if (!a20) h += '<p><strong>Controllo con l\'alcolometro a ' + nf(t) + ' °C:</strong> a fine diluizione deve segnare circa <strong>' + nf(d.letturaFin) + '°</strong>, cioè ' + y + '° reali a 20 °C</p>';
+    ris.innerHTML = h;
   }
-  [da, a, vol, disp, u].forEach(function(el){ el.addEventListener('input', calcola); el.addEventListener('change', calcola); });
+  [da, a, vol, te, le, disp, u].forEach(function(el){ el.addEventListener('input', calcola); el.addEventListener('change', calcola); });
   calcola();
 })();

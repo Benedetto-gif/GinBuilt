@@ -190,7 +190,7 @@ MISCELA = '''<section><h1>Dagli infusi al gin: diluire e miscelare</h1>
 </ul>
 <h2>Come si fa</h2>
 <ol>
-<li>Si filtra ogni infuso e se ne misura il grado con l'alcolometro, a 20 °C. Il grado vero può essere un poco diverso da quello di partenza: la botanica, soprattutto se fresca, porta acqua.</li>
+<li>Si filtra ogni infuso e se ne misura il grado con l'alcolometro, annotando con un termometro la temperatura della soluzione: non serve portarla a 20 °C, la lettura si corregge con <a href="cap4-diluizione.xhtml">il calcolatore della diluizione</a>. Il grado vero può essere un poco diverso da quello di partenza: la botanica, soprattutto se fresca, porta acqua.</li>
 <li>Si calcola l'acqua: <strong>infuso necessario = volume voluto × grado finale ÷ grado dell'infuso</strong>; l'acqua è la differenza fino al volume voluto. Per avere 323 ml a 43% partendo da un infuso a 60%: 323 × 43 ÷ 60 = 231 ml di infuso, più circa 91 ml d'acqua.</li>
 <li>Si aggiunge l'acqua demineralizzata poco alla volta, mescolando, e si ricontrolla il grado. Alcol e acqua insieme si contraggono di qualche millilitro ogni cento, quindi il conto è indicativo: decide l'alcolometro. I conti precisi, in grammi e in millilitri, li fa <a href="cap4-diluizione.xhtml">il calcolatore della diluizione</a>.</li>
 <li>Si lascia riposare l'infuso diluito qualche ora al fresco; se è torbido si filtra ancora a freddo.</li>
