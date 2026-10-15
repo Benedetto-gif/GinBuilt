@@ -190,3 +190,12 @@ table.tab-comb tr.evitare td{background:#FBE9E5;color:#8A2F1C;}
 .pp-lock{background:none;border:1px solid #d8d2c6;border-radius:8px;padding:2px 6px;font-size:1em;}
 .pp-range{grid-column:1/-1;width:100%;}
 .pp-az{margin:.2em 0 .4em;}
+/* Calcolatore della diluizione */
+.dil-campi{display:flex;flex-wrap:wrap;gap:.6em;margin:.6em 0;}
+.dil-campi label{display:flex;flex-direction:column;font-family:sans-serif;font-size:.75em;color:#666;text-transform:uppercase;flex:1;min-width:8em;}
+.dil-campi input, .dil-campi select{font:inherit;font-size:1.3em;text-transform:none;color:#222;padding:.35em .5em;border:1px solid #c9c2b6;border-radius:8px;box-sizing:border-box;width:100%;margin-top:.2em;}
+.dil-q{display:flex;gap:.3em;}
+.dil-q select{width:auto;}
+.dil-off{opacity:.45;}
+.dil-ris{background:#f6f1e7;border-radius:10px;padding:.7em .9em;margin:.6em 0 1em;}
+.dil-ris p{margin:.25em 0;}

@@ -415,7 +415,7 @@ for i, t in enumerate(ESTR):
 # ---------- 4. Costruire un gin ----------
 add('cap4.xhtml', 'Capitolo 4 · Costruire un gin', '''<section epub:type="chapter"><h1>Capitolo 4<br/>Costruire un gin</h1>
 <p>Una ricetta non è un elenco di botaniche: ogni botanica ha un compito. Il capitolo presenta i sei ruoli, gli stili di partenza dell'app con il loro profilo, il criterio con cui due botaniche si sommano (ridondanza) o si completano, e come dagli infusi filtrati si arriva al gin: diluire ciascuno alla gradazione finale e poi miscelare.</p>
-<ol class="indice"><li><a href="cap4-ruoli.xhtml">I ruoli delle botaniche</a></li><li><a href="cap4-stili.xhtml">Gli stili</a></li><li><a href="cap4-ridondanze.xhtml">Ridondanze e complementari</a></li><li><a href="cap4-miscela.xhtml">Dagli infusi al gin: diluire e miscelare</a></li><li><a href="cap4-proporzioni.xhtml">Prova le proporzioni</a></li></ol></section>''', 1)
+<ol class="indice"><li><a href="cap4-ruoli.xhtml">I ruoli delle botaniche</a></li><li><a href="cap4-stili.xhtml">Gli stili</a></li><li><a href="cap4-ridondanze.xhtml">Ridondanze e complementari</a></li><li><a href="cap4-miscela.xhtml">Dagli infusi al gin: diluire e miscelare</a></li><li><a href="cap4-diluizione.xhtml">Il calcolatore della diluizione</a></li><li><a href="cap4-proporzioni.xhtml">Prova le proporzioni</a></li></ol></section>''', 1)
 add('cap4-ruoli.xhtml', 'I ruoli delle botaniche', '<section><h1>I ruoli delle botaniche nella ricetta</h1>%s</section>' % sez('nozioni', 'I ruoli delle botaniche nella ricetta'), 2)
 FRAZ = {'Base': 1, 'Freschezza': 1, 'Identità': .8, 'Cuore': .7, 'Botanica firma': .3, 'Firma': .3, 'Rifinitura': .15}
 BASE = set(D['GIN_BASE'])
@@ -447,6 +447,39 @@ for nome, inten, maxb, ruoli in D['STYLES']:
 add('cap4-stili.xhtml', 'Gli stili', stili + '</section>', 2)
 add('cap4-ridondanze.xhtml', 'Ridondanze e complementari', RIDONDANZE, 2)
 add('cap4-miscela.xhtml', 'Dagli infusi al gin: diluire e miscelare', MISCELA, 2)
+# ---------- pagina interattiva: calcolatore della diluizione ----------
+# Stesse densità alcol-acqua a 20 °C dell'app (W_GRID/RHO_GRID in index.html), con la contrazione di volume.
+DL_W = [0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100]
+DL_R = [0.99823,0.98938,0.98187,0.97514,0.96864,0.96168,0.95382,0.94494,0.93518,0.92472,0.91384,0.90258,0.89113,0.87948,0.86766,0.85564,0.84344,0.83095,0.81797,0.80424,0.78934]
+DL_V = [w * r / 0.78934 for w, r in zip(DL_W, DL_R)]
+def dl_interp(xs, ys, x):
+    if x <= xs[0]: return ys[0]
+    if x >= xs[-1]: return ys[-1]
+    i = 1
+    while xs[i] < x: i += 1
+    return ys[i-1] + (ys[i] - ys[i-1]) * (x - xs[i-1]) / (xs[i] - xs[i-1])
+dl_w = lambda v: dl_interp(DL_V, DL_W, v) / 100
+dl_rho = lambda v: dl_interp(DL_W, DL_R, dl_interp(DL_V, DL_W, v))
+def dl_da_alcol(q, ml, a, t):
+    Ms = q * dl_rho(a) if ml else q
+    M = Ms * dl_w(a) / dl_w(t)
+    return M - Ms, M / dl_rho(t)
+dl_righe = ''.join('<tr><td>%d°</td><td>%s gr · %s ml</td><td>%s gr · %s ml</td></tr>' % ((t,) + tuple(fmt1(x) for x in dl_da_alcol(100, False, 96, t) + dl_da_alcol(100, True, 96, t)))
+                   for t in (40, 43, 45, 50, 60, 70))
+DILUIZIONE = ('<section><h1>Il calcolatore della diluizione</h1>'
+    '<p>Due domande tornano sempre in laboratorio: <em>quanto alcol e quanta acqua servono per avere un certo volume a un certo grado?</em> e <em>ho questa quantità di alcol: quanta acqua aggiungo, e quanto ne ottengo, per scendere al grado che voglio?</em> Il calcolatore risponde a tutte e due, con la contrazione di volume di alcol e acqua a 20 °C.</p>'
+    '<div id="dil" class="dil"><p class="nota">Questa pagina è interattiva: serve un lettore che esegua JavaScript, come Kotobee Reader. Senza, valgono le formule e la tabella qui sotto.</p></div>'
+    '<h2>Le formule</h2>'
+    '<p><strong>Regola rapida, in volume.</strong> Volume finale ≈ volume di alcol × grado di partenza ÷ grado finale. Un litro a 96° portato a 40° dà circa 1 × 96 ÷ 40 = 2,4 litri. Al contrario, per avere un volume voluto: alcol necessario = volume voluto × grado finale ÷ grado di partenza.</p>'
+    '<p><strong>Perché i millilitri non tornano.</strong> Alcol e acqua mescolati si contraggono: 1 litro di alcol a 96° più 1,47 litri d\'acqua non danno 2,47 litri ma circa 2,40. Per questo l\'acqua calcolata in millilitri è sempre un poco più di quanto suggerisce la regola rapida, e il volume finale un poco meno della somma.</p>'
+    '<p><strong>Il calcolo preciso, in peso.</strong> La massa di etanolo non cambia quando si aggiunge acqua. Se <em>m</em> sono i grammi di alcol al grado di partenza e <em>w</em> la frazione in peso di etanolo di quel grado (per il 96% vol è circa 0,94), la massa finale è <em>M = m × w<sub>partenza</sub> ÷ w<sub>finale</sub></em>; l\'acqua da aggiungere è <em>M − m</em>, e il volume finale è <em>M</em> diviso la densità della miscela finale. Le frazioni in peso e le densità vengono dalle tabelle alcolometriche a 20 °C.</p>'
+    '<p>I grammi sono la misura più affidabile: si pesa l\'acqua sulla bilancia e alla fine si controlla con l\'alcolometro, a 20 °C.</p>'
+    '<h2>Tabella pronta: alcol a 96°</h2>'
+    '<p>Acqua da aggiungere e volume massimo ottenibile, partendo da 100 gr oppure da 100 ml di alcol a 96°. Per altre quantità basta moltiplicare in proporzione.</p>'
+    '<table class="mol"><thead><tr><th>Grado finale</th><th>Da 100 gr: acqua · volume</th><th>Da 100 ml: acqua · volume</th></tr></thead><tbody>' + dl_righe + '</tbody></table>'
+    '<p class="nota">Calcolo a 20 °C con le stesse tabelle di densità dell\'app GinBuilder, dove lo stesso calcolatore è nella pagina Schede di prova.</p>'
+    '<p class="naviga"><a href="cap4.xhtml">Capitolo 4</a> · <a href="cap4-miscela.xhtml">Dagli infusi al gin: diluire e miscelare</a></p></section>')
+add('cap4-diluizione.xhtml', 'Il calcolatore della diluizione', DILUIZIONE, 2, True)
 # ---------- pagina interattiva: proporzioni ----------
 PROP = D.get('PROP') or {}
 PP_COL = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C','#D9A441','#7A5A3A']

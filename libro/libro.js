@@ -531,3 +531,45 @@ function gpId(id){ if (!id) return null; var el = null; try { el = document.getE
   }
   costruisci(); carica(st.nome);
 })();
+// ---------- Calcolatore della diluizione (stesse densita' a 20 °C dell'app) ----------
+(function avvioDil(){
+  if (document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', avvioDil); return; }
+  var box = gpId('dil'); if (!box) return;
+  var W = [0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100];
+  var R = [0.99823,0.98938,0.98187,0.97514,0.96864,0.96168,0.95382,0.94494,0.93518,0.92472,0.91384,0.90258,0.89113,0.87948,0.86766,0.85564,0.84344,0.83095,0.81797,0.80424,0.78934];
+  var V = []; for (var k = 0; k < W.length; k++) V.push(W[k] * R[k] / 0.78934);
+  function ip(xs, ys, x){ if (x <= xs[0]) return ys[0]; if (x >= xs[xs.length-1]) return ys[ys.length-1]; var i = 1; while (xs[i] < x) i++; return ys[i-1] + (ys[i]-ys[i-1]) * (x - xs[i-1]) / (xs[i] - xs[i-1]); }
+  function w(v){ return ip(V, W, v) / 100; }
+  function rho(v){ return ip(W, R, ip(V, W, v)); }
+  function nf(x){ return (Math.round(x * 10) / 10).toLocaleString('it-IT'); }
+  box.innerHTML = '<div class="dil-campi">' +
+    '<label>Grado di partenza (°)<input type="number" id="dil-da" value="96" step="0.1"/></label>' +
+    '<label>Grado desiderato (°)<input type="number" id="dil-a" value="40" step="0.1"/></label>' +
+    '<label id="dil-vol-l">Volume finale (ml)<input type="number" id="dil-vol" value="100" step="1"/></label></div>' +
+    '<div class="dil-campi"><label>Oppure: alcol che ho già, a grado di partenza<span class="dil-q"><input type="number" id="dil-disp" placeholder="quantità" step="0.1" min="0"/>' +
+    '<select id="dil-u"><option value="g">gr</option><option value="ml">ml</option></select></span></label></div>' +
+    '<p class="nota">Se scrivi la quantità di alcol che possiedi, il volume finale non conta: il calcolatore dice quanta acqua aggiungere e il volume massimo che ottieni.</p>' +
+    '<div class="dil-ris" id="dil-ris"></div>';
+  var da = gpId('dil-da'), a = gpId('dil-a'), vol = gpId('dil-vol'), disp = gpId('dil-disp'), u = gpId('dil-u'), ris = gpId('dil-ris'), volL = gpId('dil-vol-l');
+  function calcola(){
+    var x = parseFloat(da.value), y = parseFloat(a.value), v = parseFloat(vol.value), q = parseFloat(disp.value), haQ = q > 0;
+    volL.className = haQ ? 'dil-off' : '';
+    if (!x || !y || (!v && !haQ)){ ris.innerHTML = '<p>Inserisci valori validi.</p>'; return; }
+    if (x > 100){ ris.innerHTML = '<p>Il grado di partenza non può superare 100°.</p>'; return; }
+    if (y > x){ ris.innerHTML = '<p>Il grado desiderato non può superare quello di partenza.</p>'; return; }
+    var Ms, M, Mw;
+    if (haQ){
+      Ms = u.value === 'ml' ? q * rho(x) : q; M = Ms * w(x) / w(y); Mw = Math.max(0, M - Ms);
+      ris.innerHTML = '<p><strong>Alcol a ' + x + '° che hai:</strong> ' + nf(Ms) + ' gr · ' + nf(Ms / rho(x)) + ' ml</p>' +
+        '<p><strong>Acqua demineralizzata da aggiungere:</strong> ' + nf(Mw) + ' gr · ' + nf(Mw / 0.99823) + ' ml</p>' +
+        '<p>→ <strong>volume massimo ottenibile: ' + nf(M / rho(y)) + ' ml a ' + y + '°</strong> · peso totale ' + nf(M) + ' gr</p>';
+    } else {
+      M = v * rho(y); Ms = M * w(y) / w(x); Mw = Math.max(0, M - Ms);
+      ris.innerHTML = '<p><strong>Alcol a ' + x + '°:</strong> ' + nf(Ms / rho(x)) + ' ml · ' + nf(Ms) + ' gr</p>' +
+        '<p><strong>Acqua demineralizzata:</strong> ' + nf(Mw / 0.99823) + ' ml · ' + nf(Mw) + ' gr</p>' +
+        '<p>→ ' + nf(v) + ' ml a ' + y + '° · peso totale ' + nf(M) + ' gr</p>';
+    }
+  }
+  [da, a, vol, disp, u].forEach(function(el){ el.addEventListener('input', calcola); el.addEventListener('change', calcola); });
+  calcola();
+})();
