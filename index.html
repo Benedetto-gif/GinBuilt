@@ -353,6 +353,9 @@ header.top .kicker{
   letter-spacing:.09em;
   margin:0 0 10px;
 }
+header.top .h1-riga{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+header.top .h1-riga h1{min-width:0;}
+body.scrolled header.top .cond-app-btn{padding:6px 11px;font-size:13px;}
 header.top h1{
   font-size:clamp(34px, 6vw, 52px);
   margin:0 0 12px;
@@ -2128,7 +2131,7 @@ html details.howto a{color:#5A3E1C;}
   </div>
   <header class="top">
     <p class="kicker">Compound gin · libreria botanica interattiva</p>
-    <h1>GinBuilder</h1>
+    <div class="h1-riga"><h1>GinBuilder</h1><button type="button" class="cond-app-btn" onclick="condividiApp()" aria-label="Condividi l'app con un amico">📤 Condividi</button></div>
     <p>Filtra, confronta e costruisci: <span class="bot-count">84</span> botaniche, funzione aromatica, rischio di ridondanza e strutture di partenza per stile.</p>
   </header>
 
@@ -10493,6 +10496,55 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
   window.collegaTermini = tutto;
   const parti = () => { tutto(); obs.observe(document.body, { childList: true, subtree: true }); };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', parti); else setTimeout(parti, 0);
+})();
+</script>
+<script id="condividi-app">
+/* Tasto Condividi: manda il link dell'app con le istruzioni per installarla */
+(function(){
+  var URL_APP = 'https://benedetto-gif.github.io/GinBuilt/', NOME = 'GinBuilder';
+  var TESTO = 'Ciao! Ti mando ' + NOME + ' da provare 🍸\n' +
+    'Aprila dal link qui sotto e installala sulla schermata Home:\n' +
+    '• iPhone: aprila con Safari → tasto Condividi ⬆️ → «Aggiungi alla schermata Home»\n' +
+    '• Android: aprila con Chrome → menu ⋮ → «Installa app»\n' +
+    'Fammi sapere cosa ne pensi!';
+  function copia(t){
+    try { if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(t); } catch(e){}
+    return new Promise(function(ok,ko){ try{ var a=document.createElement('textarea'); a.value=t; a.style.position='fixed'; a.style.opacity='0'; document.body.appendChild(a); a.select(); var r=document.execCommand('copy'); a.remove(); r?ok():ko(); }catch(e){ko(e);} });
+  }
+  function pannello(){
+    var v = document.getElementById('cond-app-pan'); if (v) v.remove();
+    v = document.createElement('div'); v.id = 'cond-app-pan';
+    v.innerHTML = '<div class="cap-in" role="dialog" aria-label="Condividi l\'app">' +
+      '<h3>📤 Condividi ' + NOME + '</h3>' +
+      '<a class="cap-b cap-wa" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(TESTO + '\n' + URL_APP) + '">💬 Manda con WhatsApp</a>' +
+      '<a class="cap-b cap-ml" href="mailto:?subject=' + encodeURIComponent(NOME + ' da provare') + '&body=' + encodeURIComponent(TESTO + '\n' + URL_APP) + '">✉️ Manda per email</a>' +
+      '<button type="button" class="cap-b cap-cp">🔗 Copia il link e le istruzioni</button>' +
+      '<p class="cap-u">' + URL_APP + '</p>' +
+      '<button type="button" class="cap-x">Chiudi</button></div>';
+    document.body.appendChild(v);
+    v.addEventListener('click', function(e){ if (e.target === v || e.target.classList.contains('cap-x')) v.remove(); });
+    v.querySelector('.cap-cp').addEventListener('click', function(){
+      var b = this;
+      copia(TESTO + '\n' + URL_APP).then(function(){ b.textContent = '✅ Copiato: incollalo dove vuoi'; }, function(){ b.textContent = '⚠️ Copia non riuscita: tieni premuto il link qui sotto'; });
+    });
+  }
+  window.condividiApp = function(){
+    if (navigator.share) {
+      navigator.share({ title: NOME, text: TESTO, url: URL_APP }).catch(function(e){ if (!e || e.name !== 'AbortError') pannello(); });
+    } else pannello();
+  };
+  var st = document.createElement('style');
+  st.textContent =
+    '.cond-app-btn{display:inline-flex;align-items:center;gap:6px;flex:none;cursor:pointer;border:0;border-radius:999px;padding:8px 14px;font:700 14px/1 system-ui,-apple-system,sans-serif;color:#fff;background:#25A56A;box-shadow:0 2px 8px rgba(0,0,0,.18)}' +
+    '.cond-app-btn:active{transform:scale(.96)}' +
+    '#cond-app-pan{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.5);display:flex;align-items:flex-end;justify-content:center;padding:16px}' +
+    '#cond-app-pan .cap-in{background:#fff;color:#222;border-radius:20px;padding:20px;width:100%;max-width:420px;display:flex;flex-direction:column;gap:10px;font-family:system-ui,-apple-system,sans-serif}' +
+    '#cond-app-pan h3{margin:0 0 4px;font-size:18px;color:#222}' +
+    '#cond-app-pan .cap-b{display:block;text-align:center;text-decoration:none;border:0;border-radius:14px;padding:14px;font:700 16px/1.2 system-ui,-apple-system,sans-serif;color:#fff;cursor:pointer}' +
+    '#cond-app-pan .cap-wa{background:#25A56A}#cond-app-pan .cap-ml{background:#3B6FB6}#cond-app-pan .cap-cp{background:#C4803A}' +
+    '#cond-app-pan .cap-u{margin:2px 0;font-size:13px;color:#555;text-align:center;word-break:break-all;user-select:all;-webkit-user-select:all}' +
+    '#cond-app-pan .cap-x{background:none;border:0;color:#555;font:600 15px system-ui,sans-serif;padding:8px;cursor:pointer}';
+  document.head.appendChild(st);
 })();
 </script>
 </body>
