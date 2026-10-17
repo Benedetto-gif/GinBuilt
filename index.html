@@ -2,6 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8" />
+<meta name="author" content="Benedetto Daniele Sgroi">
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>GinBuilder</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -353,6 +354,7 @@ header.top .kicker{
   letter-spacing:.09em;
   margin:0 0 10px;
 }
+header.top p.autore-app{margin:-6px 0 14px;font-family:'Fraunces',serif;font-style:italic;font-size:16px;color:var(--ink-soft);}
 header.top .h1-riga{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
 header.top .h1-riga h1{min-width:0;}
 body.scrolled header.top .cond-app-btn{padding:6px 11px;font-size:13px;}
@@ -687,6 +689,7 @@ html.con-splash, html.con-splash body{overflow:hidden;}
   font-family:'Fraunces',serif;font-size:17px;color:var(--ink-faint);
   opacity:0;animation:splashFirma .7s var(--ease) 1.9s both;letter-spacing:.01em;
 }
+.splash-autore{font-family:'Fraunces',serif;font-style:italic;font-size:15px;color:var(--ink-faint);margin-top:-6px;opacity:0;animation:splashFirma .7s var(--ease) 2.05s both;}
 @keyframes splashFirma{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
 
 .sp-bottiglia{opacity:0;animation:splashFirma .6s var(--ease) .1s both;}
@@ -2118,6 +2121,7 @@ html details.howto a{color:#5A3E1C;}
     </g>
   </svg>
   <div class="splash-firma">GinBuilder</div>
+  <div class="splash-autore">di Benedetto Daniele Sgroi</div>
 </div>
 
 <div class="wrap">
@@ -2132,6 +2136,7 @@ html details.howto a{color:#5A3E1C;}
   <header class="top">
     <p class="kicker">Compound gin · libreria botanica interattiva</p>
     <div class="h1-riga"><h1>GinBuilder</h1><button type="button" class="cond-app-btn" onclick="condividiApp()" aria-label="Condividi l'app con un amico">📤 Condividi</button></div>
+    <p class="autore-app">di Benedetto Daniele Sgroi</p>
     <p>Filtra, confronta e costruisci: <span class="bot-count">84</span> botaniche, funzione aromatica, rischio di ridondanza e strutture di partenza per stile.</p>
   </header>
 
