@@ -3245,10 +3245,10 @@ html details.howto a{color:#5A3E1C;}
       <button class="primary-btn" id="new-test-btn">+ Nuova scheda</button>
     </div>
     <div class="backup-box" id="backup-box">
-      <button class="ghost-btn" id="bk-export" type="button">⬇ Esporta schede (backup)</button>
-      <button class="ghost-btn" id="bk-import" type="button">⬆ Importa schede</button>
+      <button class="ghost-btn" id="bk-export" type="button">⬇ Salva tutto (Drive o file)</button>
+      <button class="ghost-btn" id="bk-import" type="button">⬆ Ripristina da file</button>
       <button class="ghost-btn" id="bk-confronta" type="button">⇄ Confronta versioni</button>
-      <input type="file" id="bk-file" accept="application/json,.json" hidden>
+      <input type="file" id="bk-file" accept="application/json,.json,text/plain,.txt" hidden>
       <span class="bk-info" id="bk-info"></span>
     </div>
     <div class="controls">
@@ -6667,7 +6667,7 @@ document.getElementById('new-test-btn').addEventListener('click', () => openForm
   const KB = 'gb-backup-data', info = document.getElementById('bk-info'), file = document.getElementById('bk-file');
   const chiave = t => t.id !== undefined ? 'id:' + t.id : 'n:' + (t.name || '') + '|' + (t.date || '');
   function aggInfo(){
-    let d = null; try { d = localStorage.getItem(KB); } catch(e){}
+    let d = null; try { d = localStorage.getItem('gb-backup-tutto') || localStorage.getItem(KB); } catch(e){}
     const n = loadTests().length;
     if (!n){ info.textContent = ''; return; }
     const giorni = d ? Math.floor((Date.now() - Date.parse(d)) / 864e5) : null;
@@ -6675,7 +6675,8 @@ document.getElementById('new-test-btn').addEventListener('click', () => openForm
                          : n + ' schede salvate solo su questo dispositivo: fai un backup.';
     info.classList.toggle('bk-warn', !d || giorni > 30);
   }
-  document.getElementById('bk-export').addEventListener('click', () => {
+  document.getElementById('bk-export').addEventListener('click', () => { salvaTutto(); setTimeout(aggInfo, 1500); });
+  document.getElementById('bk-export-vecchio') && document.getElementById('bk-export-vecchio').addEventListener('click', () => {
     const dati = { app: 'GinBuilder', versione: 1, esportato: new Date().toISOString(), schede: loadTests(), tarature: tarature(), prezzi: prezzi(), fonti: fonti() };
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([JSON.stringify(dati, null, 1)], {type: 'application/json'}));
@@ -6684,7 +6685,7 @@ document.getElementById('new-test-btn').addEventListener('click', () => openForm
     try { localStorage.setItem(KB, new Date().toISOString()); } catch(e){}
     aggInfo();
   });
-  document.getElementById('bk-import').addEventListener('click', () => file.click());
+  document.getElementById('bk-import').addEventListener('click', () => ripristinaTutto());
   file.addEventListener('change', () => {
     const f = file.files[0]; if (!f) return;
     const r = new FileReader();
@@ -8686,14 +8687,18 @@ function ultimoBackup(){ try { return localStorage.getItem(BK_TUTTO); } catch(e)
 function salvaTutto(){
   const dati = { app: 'GinBuilder', tipo: 'tutto', versione: 2, esportato: new Date().toISOString(), chiavi: {} };
   chiaviApp().forEach(k => { try { dati.chiavi[k] = localStorage.getItem(k); } catch(e){} });
-  const nome = 'ginbuilder-backup-' + new Date().toISOString().slice(0, 10) + '.json';
-  const blob = new Blob([JSON.stringify(dati)], {type: 'application/json'});
+  const giorno = new Date().toISOString().slice(0, 10);
+  const nome = 'ginbuilder-backup-' + giorno + '.json';
+  const testo = JSON.stringify(dati);
+  const blob = new Blob([testo], {type: 'application/json'});
   const segna = () => { try { localStorage.setItem(BK_TUTTO, new Date().toISOString()); } catch(e){} renderDati(); };
   // Sul telefono si apre il pannello di condivisione (Salva in File, Drive, e-mail...); altrimenti si scarica.
   try {
-    const f = new File([blob], nome, {type: 'application/json'});
+    /* Chrome su Android condivide i .txt ma non i .json: dentro c'e' lo stesso contenuto.
+       Dal pannello si sceglie Drive e la cartella GinBuilder. */
+    const f = new File([testo], 'ginbuilder-backup-' + giorno + '.txt', {type: 'text/plain'});
     if (navigator.canShare && navigator.canShare({files: [f]})){
-      navigator.share({files: [f], title: 'Backup GinBuilder'}).then(segna).catch(() => {});
+      navigator.share({files: [f], title: 'Backup GinBuilder \u2014 ' + giorno}).then(segna).catch(() => {});
       return;
     }
   } catch(e){}
@@ -8710,7 +8715,7 @@ function unisci(attuale, nuovo){
   return attuale;
 }
 function ripristinaTutto(){
-  const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'application/json,.json';
+  const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'application/json,.json,text/plain,.txt';
   inp.addEventListener('change', () => {
     const f = inp.files[0]; if (!f) return;
     const r = new FileReader();
@@ -8751,7 +8756,7 @@ function renderDati(){
   box.innerHTML = '<div class="hdati-tit">\ud83d\udcbe I tuoi dati</div>' +
     '<div class="hdati-info">' + (ci ? datiTesto() + ', solo su questo dispositivo. ' : 'Ancora nessun dato salvato. ') +
     (d ? 'Ultimo backup: ' + new Date(d).toLocaleDateString('it-IT') + (giorni > 14 ? ' \u2014 conviene rifarlo.' : '.') : (ci ? '<strong>Nessun backup: se cambi telefono o cancelli i dati del browser li perdi.</strong>' : '')) + '</div>' +
-    '<div class="hdati-btn"><button type="button" class="ghost-btn" onclick="salvaTutto()">\u2b07 Salva tutto in un file</button>' +
+    '<div class="hdati-btn"><button type="button" class="ghost-btn" onclick="salvaTutto()">\u2b07 Salva tutto (Drive o file)</button>' +
     '<button type="button" class="ghost-btn" onclick="ripristinaTutto()">\u2b06 Ripristina da file</button></div>';
 }
 window.salvaTutto = salvaTutto; window.ripristinaTutto = ripristinaTutto;
