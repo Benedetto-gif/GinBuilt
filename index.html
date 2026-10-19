@@ -1767,10 +1767,12 @@ footer.note{
 
 .home-hero{
   background:linear-gradient(145deg, color-mix(in srgb, var(--c-mediterraneo) var(--tinta-hero), var(--surface)), color-mix(in srgb, var(--c-mediterraneo) var(--tinta-2), var(--surface)));
+  background:linear-gradient(145deg, oklch(from color-mix(in srgb, var(--c-mediterraneo) var(--tinta-hero), var(--surface)) clamp(.3, calc(l + var(--riq-l, 0)), .99) calc(c * var(--riq-b, 1)) h), oklch(from color-mix(in srgb, var(--c-mediterraneo) var(--tinta-2), var(--surface)) clamp(.3, calc(l + var(--riq-l, 0)), .99) calc(c * var(--riq-b, 1)) h));
   border-color:color-mix(in srgb, var(--c-mediterraneo) var(--tinta-bordo), var(--surface));
 }
 .page-hero{
   background:linear-gradient(145deg, color-mix(in srgb, var(--pc) var(--tinta-hero), var(--surface)), color-mix(in srgb, var(--pc) var(--tinta-2), var(--surface)));
+  background:linear-gradient(145deg, oklch(from color-mix(in srgb, var(--pc) var(--tinta-hero), var(--surface)) clamp(.3, calc(l + var(--riq-l, 0)), .99) calc(c * var(--riq-b, 1)) h), oklch(from color-mix(in srgb, var(--pc) var(--tinta-2), var(--surface)) clamp(.3, calc(l + var(--riq-l, 0)), .99) calc(c * var(--riq-b, 1)) h));
   border-color:color-mix(in srgb, var(--pc) var(--tinta-bordo), var(--surface));
 }
 .page-hero .ph-icon{background:color-mix(in srgb, var(--pc) 45%, var(--surface));}
@@ -1779,6 +1781,7 @@ footer.note{
 .pg-bento details.howto, .pg-bento .cond-box, .pg-bento .calc-box, .pg-bento .build-summary,
 .pg-bento .mix-summary, .pg-bento .detail, .pg-bento .sem-box{
   background:linear-gradient(160deg, color-mix(in srgb, var(--c) var(--tinta), var(--surface)), color-mix(in srgb, var(--c) var(--tinta-2), var(--surface)));
+  background:linear-gradient(160deg, oklch(from color-mix(in srgb, var(--c) var(--tinta), var(--surface)) clamp(.3, calc(l + var(--riq-l, 0)), .99) calc(c * var(--riq-b, 1)) h), oklch(from color-mix(in srgb, var(--c) var(--tinta-2), var(--surface)) clamp(.3, calc(l + var(--riq-l, 0)), .99) calc(c * var(--riq-b, 1)) h));
   border-color:color-mix(in srgb, var(--c) var(--tinta-bordo), var(--surface));
   box-shadow:inset 0 4px 0 var(--c), var(--sh-1);
 }
@@ -1787,6 +1790,7 @@ footer.note{
 /* Dentro una sezione già colorata, i riquadri a scomparsa restano un po' più chiari */
 .pg-sez details.howto{
   background:color-mix(in srgb, var(--c) var(--tinta-2), var(--surface));
+  background:oklch(from color-mix(in srgb, var(--c) var(--tinta-2), var(--surface)) clamp(.3, calc(l + var(--riq-l, 0)), .99) calc(c * var(--riq-b, 1)) h);
   box-shadow:none;
 }
 @media print{
@@ -1801,12 +1805,12 @@ footer.note{
    (oklch), più saturo, con testo bianco ben leggibile.
    ============================================================ */
 @supports (color: oklch(from red l c h)){
-:root[data-theme="dark"]{--vv-l:.56;--vv-l2:.47;--vv-cr:1.45;}
+:root[data-theme="dark"]{--vv-l:clamp(.3, calc(.56 + var(--riq-l, 0)), .64);--vv-l2:clamp(.24, calc(.47 + var(--riq-l, 0)), .57);--vv-cr:1.45;}
 :root[data-theme="dark"] :is(.home-hero, .page-hero, .home-card, .bot-card, .test-list > .test-card, .ck-card, .pg-sez,
   .pg-bento details.howto, .pg-bento .cond-box, .pg-bento .calc-box, .pg-bento .build-summary,
   .pg-bento .mix-summary, .pg-bento .detail, .pg-bento .sem-box){
-  --vv:oklch(from var(--c) var(--vv-l) min(.2, calc(c * var(--vv-cr))) h);
-  --vv2:oklch(from var(--c) var(--vv-l2) min(.19, calc(c * var(--vv-cr))) calc(h - 8));
+  --vv:oklch(from var(--c) var(--vv-l) min(calc(.2 * var(--riq-b, 1)), calc(c * var(--vv-cr) * var(--riq-b, 1))) h);
+  --vv2:oklch(from var(--c) var(--vv-l2) min(calc(.19 * var(--riq-b, 1)), calc(c * var(--vv-cr) * var(--riq-b, 1))) calc(h - 8));
   background:linear-gradient(155deg, var(--vv), var(--vv2)) !important;
   border-color:oklch(from var(--c) .74 min(.2, calc(c * 1.4)) h) !important;
   box-shadow:0 2px 6px rgba(0,0,0,.35), 0 14px 30px -14px oklch(from var(--c) .5 .2 h / .7), inset 0 1px 0 rgba(255,255,255,.18) !important;
@@ -2049,6 +2053,18 @@ html details.howto a{color:#5A3E1C;}
 .pot-range::-moz-range-track{height:12px;border-radius:6px;background:transparent;}
 .pot-tua-b{display:flex;gap:8px;flex-wrap:wrap;}
 .gl-term{text-decoration:underline dotted;text-underline-offset:2px;cursor:help;}
+/* ---------------- Sfondo e riquadri in OKLCH: luce, brillo, tinta ---------------- */
+.theme-pop{max-height:calc(100vh - 90px);overflow-y:auto;}
+.theme-pop .tp-cur{display:grid;grid-template-columns:74px 1fr 34px;align-items:center;gap:8px;margin:10px 0 0;font-size:12px;font-weight:700;color:var(--ink-soft);}
+.theme-pop .tp-cur output{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-faint);font-weight:650;}
+.theme-pop .tp-cur input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:999px;outline:none;margin:0;background:var(--line-strong);}
+.theme-pop .tp-cur input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:20px;height:20px;border-radius:50%;background:var(--surface);border:2px solid var(--juniper);box-shadow:var(--sh-2);cursor:pointer;}
+.theme-pop .tp-cur input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--surface);border:2px solid var(--juniper);box-shadow:var(--sh-2);cursor:pointer;}
+.theme-pop .tp-sez{margin-top:16px;padding-top:12px;border-top:1px solid var(--line-strong);}
+.theme-pop .tp-prev{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin:4px 0 2px;}
+.theme-pop .tp-prev span{height:22px;border-radius:7px;background:oklch(from var(--c) clamp(.3, calc(.62 + var(--riq-l, 0)), .9) min(calc(.2 * var(--riq-b, 1)), calc(c * 1.2 * var(--riq-b, 1))) h);}
+.theme-pop .tp-zero{margin-top:12px;font:inherit;font-size:11.5px;font-weight:700;color:var(--ink-soft);background:transparent;border:1px solid var(--line-strong);border-radius:999px;padding:5px 12px;cursor:pointer;}
+.theme-pop .tp-nota{font-size:10.5px;color:var(--ink-faint);margin:6px 0 0;line-height:1.35;}
 </style>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0C110E" id="meta-theme-color">
@@ -2128,17 +2144,27 @@ html details.howto a{color:#5A3E1C;}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v161</div>
+  <div class="splash-ver" id="splash-ver">v162</div>
 </div>
 
 <div class="wrap">
   <div class="sticky-head">
   <button class="theme-btn" id="theme-btn" type="button" aria-label="Regola la luce">Luce</button>
   <div class="theme-pop" id="theme-pop" hidden>
-    <div class="tp-title">Luce dello sfondo</div>
+    <div class="tp-title">☀️ Luce dello sfondo</div>
     <input type="range" id="theme-range" min="0" max="100" step="1" value="80" aria-label="Da chiaro a scuro">
     <div class="tp-scale"><span>Chiaro</span><span>Scuro</span></div>
     <div class="tp-level" id="theme-level">Scuro</div>
+    <label class="tp-cur"><span>✨ Brillo</span><input type="range" id="tp-sc" min="0" max="100" step="1" value="20" aria-label="Brillantezza dello sfondo"><output id="tp-sc-n">20</output></label>
+    <label class="tp-cur"><span>🎨 Tinta</span><input type="range" id="tp-sh" min="0" max="359" step="1" value="150" aria-label="Tinta dello sfondo"><output id="tp-sh-n">150</output></label>
+    <div class="tp-sez">
+      <div class="tp-title" style="margin-bottom:4px">Riquadri colorati</div>
+      <div class="tp-prev"><span style="--c:var(--c-mediterraneo)"></span><span style="--c:var(--c-agrumato)"></span><span style="--c:var(--c-marino)"></span><span style="--c:var(--c-erbaceo)"></span><span style="--c:var(--c-floreale)"></span><span style="--c:var(--c-siciliano)"></span></div>
+      <label class="tp-cur"><span>✨ Brillo</span><input type="range" id="tp-rb" min="30" max="180" step="1" value="100" aria-label="Brillantezza dei riquadri"><output id="tp-rb-n">100</output></label>
+      <label class="tp-cur"><span>☀️ Luce</span><input type="range" id="tp-rl" min="-12" max="12" step="1" value="0" aria-label="Luminosità dei riquadri"><output id="tp-rl-n">0</output></label>
+      <p class="tp-nota">Colori calcolati in OKLCH: cambiando luce o brillo la tinta resta la stessa.</p>
+    </div>
+    <button type="button" class="tp-zero" id="tp-zero">↺ Valori iniziali</button>
   </div>
   <header class="top">
     <p class="kicker">Compound gin · libreria botanica interattiva</p>
@@ -3793,7 +3819,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione v161 · 19 ottobre 2026</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione v162 · 19 ottobre 2026</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -4845,7 +4871,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v161</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v162</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = ['storia', 'builder', 'prove', 'libreria', 'cocktail', 'laboratorio'];   // già raggiungibili dalla prima pagina
@@ -9156,17 +9182,65 @@ function renderSemafori(nomi){
   }
   const clamp = (v) => Math.min(100, Math.max(0, v));
 
+  // --- OKLCH: luminosita' (L 0-1), brillantezza (C), tinta (H 0-360) ---
+  const lin = v => { v /= 255; return v <= .04045 ? v/12.92 : Math.pow((v+.055)/1.055, 2.4); };
+  const gam = v => 255 * (v <= .0031308 ? 12.92*v : 1.055*Math.pow(v, 1/2.4) - .055);
+  function aOklch(c){
+    const r = lin(c[0]), g = lin(c[1]), b = lin(c[2]);
+    const l = Math.cbrt(.4122214708*r + .5363325363*g + .0514459929*b),
+          m = Math.cbrt(.2119034982*r + .6806995451*g + .1073969566*b),
+          q = Math.cbrt(.0883024619*r + .2817188376*g + .6299787005*b);
+    const L = .2104542553*l + .7936177850*m - .0040720468*q,
+          A = 1.9779984951*l - 2.4285922050*m + .4505937099*q,
+          B = .0259040371*l + .7827717662*m - .8086757660*q;
+    let h = Math.atan2(B, A) * 180 / Math.PI; if (h < 0) h += 360;
+    return [L, Math.hypot(A, B), h];
+  }
+  function grezzo(L, C, H){
+    const a = C*Math.cos(H*Math.PI/180), b = C*Math.sin(H*Math.PI/180);
+    const l = Math.pow(L + .3963377774*a + .2158037573*b, 3),
+          m = Math.pow(L - .1055613458*a - .0638541728*b, 3),
+          q = Math.pow(L - .0894841775*a - 1.2914855480*b, 3);
+    return [ 4.0767416621*l - 3.3077115913*m + .2309699292*q,
+            -1.2684380046*l + 2.6097574011*m - .3413193965*q,
+            -.0041960863*l - .7034186147*m + 1.7076147010*q];
+  }
+  const dentro = v => v.every(x => x >= -.0005 && x <= 1.0005);
+  // da OKLCH a RGB; se il colore non e' visualizzabile abbasso solo la brillantezza
+  function daOklch(L, C, H){
+    L = Math.max(0, Math.min(1, L)); C = Math.max(0, C);
+    if (!dentro(grezzo(L, C, H))){
+      let lo = 0, hi = C;
+      for (let i = 0; i < 22; i++){ const md = (lo+hi)/2; if (dentro(grezzo(L, md, H))) lo = md; else hi = md; }
+      C = lo;
+    }
+    return grezzo(L, C, H).map(v => Math.round(Math.min(255, Math.max(0, gam(Math.max(0, Math.min(1, v)))))));
+  }
+  const hexRgb = h => [1,3,5].map(i => parseInt(h.slice(i, i+2), 16));
+  // Colore di riferimento: lo stesso salvia dell'HSL di prima, poi tinta e brillo dai cursori
+  const H0 = Math.round(aOklch(hexRgb(hslHex(140, 10, 50)))[2]);
+  let SF = {c: 20, h: H0};
+  try { const v = JSON.parse(localStorage.getItem('gb-sfondo') || 'null'); if (v){ SF.c = +v.c; SF.h = +v.h; } } catch(e){}
+  if (!(SF.c >= 0 && SF.c <= 100)) SF.c = 20;
+  if (!(SF.h >= 0 && SF.h < 360)) SF.h = H0;
+  // luminosita' HSL del vecchio schema -> stesso grado di luce in OKLCH, con tinta e brillo scelti
+  function carta(sat, lHsl, alfa){
+    const k = aOklch(hexRgb(hslHex(140, sat, clamp(lHsl))));
+    const c = daOklch(k[0], k[1] * SF.c / 20, SF.h);
+    return alfa === undefined ? `rgb(${c[0]}, ${c[1]}, ${c[2]})` : `rgba(${c[0]}, ${c[1]}, ${c[2]}, ${alfa})`;
+  }
+
   function applica(t){
     const st = document.documentElement.style;
     const k  = t < .5 ? 0 : 1;                // 0 = inchiostro scuro, 1 = inchiostro chiaro
     const L  = luce(t);
 
-    st.setProperty('--paper',        `hsl(140, 10%, ${clamp(L).toFixed(1)}%)`);
-    st.setProperty('--paper-2',      `hsl(140, 10%, ${clamp(L + misc(-3, 2, k)).toFixed(1)}%)`);
-    st.setProperty('--surface',      `hsl(140, 9%, ${clamp(L + 4).toFixed(1)}%)`);
-    st.setProperty('--surface-2',    `hsl(140, 9%, ${clamp(L + 7.5).toFixed(1)}%)`);
-    st.setProperty('--glass',        `hsla(140, 10%, ${clamp(L + 3).toFixed(1)}%, .72)`);
-    st.setProperty('--glass-strong', `hsla(140, 10%, ${clamp(L + 3).toFixed(1)}%, .9)`);
+    st.setProperty('--paper',        carta(10, L));
+    st.setProperty('--paper-2',      carta(10, L + misc(-3, 2, k)));
+    st.setProperty('--surface',      carta(9, L + 4));
+    st.setProperty('--surface-2',    carta(9, L + 7.5));
+    st.setProperty('--glass',        carta(10, L + 3, .72));
+    st.setProperty('--glass-strong', carta(10, L + 3, .9));
 
     for (const nome in PAL_SCURA){
       const a = PAL_CHIARA[nome], b = PAL_SCURA[nome];
@@ -9189,8 +9263,52 @@ function renderSemafori(nomi){
                     '</span><span class="tb-nome">' + nome + '</span>';
 
     const meta = document.getElementById('meta-theme-color');
-    if (meta) meta.setAttribute('content', hslHex(140, 10, clamp(L)));
+    if (meta){ const c = daOklch(aOklch(hexRgb(hslHex(140, 10, clamp(L))))[0], aOklch(hexRgb(hslHex(140, 10, clamp(L))))[1] * SF.c / 20, SF.h);
+      meta.setAttribute('content', '#' + c.map(x => x.toString(16).padStart(2, '0')).join('')); }
+    dipingi();
   }
+
+  // --- cursori brillo e tinta dello sfondo, e dei riquadri colorati ---
+  const $ = id => document.getElementById(id);
+  const sc = $('tp-sc'), sh = $('tp-sh'), rb = $('tp-rb'), rl = $('tp-rl');
+  let RQ = {b: 1, l: 0};
+  try { const v = JSON.parse(localStorage.getItem('gb-riq') || 'null'); if (v){ RQ.b = +v.b || 1; RQ.l = +v.l || 0; } } catch(e){}
+  RQ.b = Math.max(.3, Math.min(1.8, RQ.b)); RQ.l = Math.max(-.12, Math.min(.12, RQ.l));
+  function applicaRiq(){
+    const st = document.documentElement.style;
+    st.setProperty('--riq-b', String(RQ.b));
+    st.setProperty('--riq-l', String(RQ.l));
+  }
+  function dipingi(){
+    if (!sc) return;
+    const Lm = .62, base = aOklch(hexRgb(hslHex(140, 10, 50)));
+    const grad = (fn, n) => 'linear-gradient(90deg,' + Array.from({length: n+1}, (_, i) => { const c = fn(i/n); return `rgb(${c[0]},${c[1]},${c[2]})`; }).join(',') + ')';
+    sc.style.background = grad(t => daOklch(Lm, base[1] * t * 5, SF.h), 8);
+    sh.style.background = grad(t => daOklch(Lm, Math.max(.08, base[1] * SF.c / 20), t * 360), 12);
+    range.style.background = grad(t => daOklch(aOklch(hexRgb(hslHex(140, 10, clamp(luce(t)))))[0], base[1] * SF.c / 20, SF.h), 10);
+  }
+  function mostra(){
+    if (!sc) return;
+    sc.value = SF.c; $('tp-sc-n').textContent = SF.c;
+    sh.value = SF.h; $('tp-sh-n').textContent = SF.h;
+    rb.value = Math.round(RQ.b * 100); $('tp-rb-n').textContent = Math.round(RQ.b * 100);
+    rl.value = Math.round(RQ.l * 100); $('tp-rl-n').textContent = (RQ.l > 0 ? '+' : '') + Math.round(RQ.l * 100);
+  }
+  const salvaSF = () => { try { localStorage.setItem('gb-sfondo', JSON.stringify(SF)); } catch(e){} };
+  const salvaRQ = () => { try { localStorage.setItem('gb-riq', JSON.stringify(RQ)); } catch(e){} };
+  if (sc){
+    sc.addEventListener('input', () => { SF.c = +sc.value; mostra(); applica(t); salvaSF(); });
+    sh.addEventListener('input', () => { SF.h = +sh.value; mostra(); applica(t); salvaSF(); });
+    rb.addEventListener('input', () => { RQ.b = +rb.value / 100; mostra(); applicaRiq(); salvaRQ(); });
+    rl.addEventListener('input', () => { RQ.l = +rl.value / 100; mostra(); applicaRiq(); salvaRQ(); });
+    $('tp-zero').addEventListener('click', () => {
+      SF = {c: 20, h: H0}; RQ = {b: 1, l: 0};
+      try { localStorage.removeItem('gb-sfondo'); localStorage.removeItem('gb-riq'); } catch(e){}
+      mostra(); applicaRiq(); applica(t);
+    });
+  }
+  applicaRiq();
+  mostra();
 
   let t = .80;
   try { const s = parseFloat(localStorage.getItem('gb-luce')); if (!isNaN(s)) t = s; } catch(e){}
