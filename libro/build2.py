@@ -677,7 +677,7 @@ for fid, href, title, xh, scr, lvl in files:
 opf = '''<?xml version="1.0" encoding="UTF-8"?>
 <package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="uid" xml:lang="it">
 <metadata xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:identifier id="uid">urn:uuid:3e8b6f0a-2c4d-4f71-9a5e-0b7c1d2e3f40</dc:identifier>
-<dc:title>Gin in provetta</dc:title><dc:description>Quaderno di laboratorio: appunti sul gin compound, dalle pagine di GinBuilder.</dc:description><dc:creator>Benedetto Sgroi</dc:creator><dc:language>it</dc:language>
+<dc:title>Gin in provetta</dc:title><dc:description>Quaderno di laboratorio: appunti sul gin compound, dalle pagine di GinBuilder.</dc:description><dc:creator>Benedetto Daniele Sgroi</dc:creator><dc:language>it</dc:language>
 <meta property="dcterms:modified">%s</meta><meta name="cover" content="cover"/></metadata>
 <manifest>%s</manifest><spine>%s</spine></package>''' % (oggi, ''.join(man), ''.join(spine))
 with zipfile.ZipFile(OUT, 'w') as z:
@@ -691,6 +691,6 @@ with zipfile.ZipFile(OUT, 'w') as z:
       '<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, height=device-height"/><title>Copertina</title>'
       '<style>html,body{margin:0;padding:0;height:100%;background:#FDFDF8;} .cop{height:100vh;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;} .cop img{max-width:100%;max-height:100vh;width:auto;height:auto;object-fit:contain;display:block;}</style></head>'
       '<body style="margin:0;padding:0;"><section epub:type="cover" class="cop" style="height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;">'
-      '<img src="copertina.png" alt="Gin in provetta. Appunti sul gin compound. Benedetto Sgroi" style="max-width:100%;max-height:100vh;width:auto;height:auto;object-fit:contain;display:block;"/></section></body></html>')
+      '<img src="copertina.png" alt="Gin in provetta. Appunti sul gin compound. Benedetto Daniele Sgroi" style="max-width:100%;max-height:100vh;width:auto;height:auto;object-fit:contain;display:block;"/></section></body></html>')
     for fid, href, title, xh, scr, lvl in files: w('OEBPS/' + href, xh)
 print('ok', OUT, len(files), 'pagine')
