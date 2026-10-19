@@ -377,6 +377,8 @@ nav.tabs{display:none !important;}
   background:var(--glass-strong);-webkit-backdrop-filter:saturate(160%) blur(14px);backdrop-filter:saturate(160%) blur(14px);box-shadow:var(--sh-1), var(--sh-inset);
   font-family:'Public Sans',sans-serif;font-size:15px;font-weight:650;color:var(--ink);cursor:pointer;text-align:left;}
 .menu-ic{font-size:18px;line-height:1;}.menu-cur{flex:1;}.menu-car{color:var(--ink-faint);transition:transform .2s;}
+.menu-ver{margin-left:auto;font:700 11px/1 'Inter',system-ui,sans-serif;letter-spacing:.04em;opacity:.65;}
+.menu-ver + .menu-car{margin-left:6px;}
 .menu-btn[aria-expanded="true"] .menu-car{transform:rotate(180deg);}
 .menu-pop{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:60;max-height:72vh;overflow-y:auto;padding:10px;border-radius:22px;
   border:1px solid var(--line);background:var(--surface);box-shadow:0 12px 36px rgba(0,0,0,.25);display:grid;grid-template-columns:1fr 1fr;grid-auto-flow:dense;gap:8px;}
@@ -689,6 +691,7 @@ html.con-splash, html.con-splash body{overflow:hidden;}
   font-family:'Fraunces',serif;font-size:17px;color:var(--ink-faint);
   opacity:0;animation:splashFirma .7s var(--ease) 1.9s both;letter-spacing:.01em;
 }
+.splash-ver{font:700 13px/1 'Inter',system-ui,sans-serif;letter-spacing:.06em;color:var(--ink-faint);margin-top:6px;opacity:0;animation:splashFirma .7s var(--ease) 2.2s both;}
 .splash-autore{font-family:'Fraunces',serif;font-style:italic;font-size:15px;color:var(--ink-faint);margin-top:-6px;opacity:0;animation:splashFirma .7s var(--ease) 2.05s both;}
 @keyframes splashFirma{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
 
@@ -875,7 +878,10 @@ html.con-splash, html.con-splash body{overflow:hidden;}
 @media (hover:hover){
   .ck-card:hover{transform:translateY(-3px);box-shadow:var(--sh-2), var(--sh-inset);}
 }
-.ck-card h3{margin:0 0 3px;font-size:21px;color:var(--c);}
+.ck-card h3{margin:0 0 3px;font-size:21px;font-weight:700;
+  /* Titolo non più tono su tono: stessa tinta del riquadro ma molto più scura */
+  color:color-mix(in srgb, var(--c) 45%, #0c1410);
+  color:oklch(from var(--c) .30 min(.13, c) h);}
 .ck-card .ck-origin{
   font-size:10.5px;color:var(--ink-faint);margin:0 0 12px;
   text-transform:uppercase;letter-spacing:.08em;font-weight:700;
@@ -1823,7 +1829,7 @@ footer.note{
   background:radial-gradient(circle, rgba(255,255,255,.22), transparent 68%);
 }
 /* Titoli che prima usavano il colore del riquadro: ora bianchi */
-:root[data-theme="dark"] :is(.home-card h3, .bot-card .name, .test-list > .test-card .tname, .pg-sez > h3,
+:root[data-theme="dark"] :is(.ck-card h3, .home-card h3, .bot-card .name, .test-list > .test-card .tname, .pg-sez > h3,
   .pg-bento details.howto summary, .pg-bento .cond-label, .pg-bento .sem-box h4, .pg-bento .calc-box h3,
   .pg-bento .prove-head h2, .page-hero .ph-kicker, .home-hero .hero-kicker, .page-hero h2, .home-hero h2){color:#fff !important;}
 :root[data-theme="dark"] .storia .pg-sez > h3::before{background:#fff;}
@@ -2122,6 +2128,7 @@ html details.howto a{color:#5A3E1C;}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
+  <div class="splash-ver" id="splash-ver">v161</div>
 </div>
 
 <div class="wrap">
@@ -3786,7 +3793,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 14 ottobre 2026, ore 17:15 · Storia del gin: le origini salernitane e la Lucas Bols</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione v161 · 19 ottobre 2026</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -4838,7 +4845,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v161</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = ['storia', 'builder', 'prove', 'libreria', 'cocktail', 'laboratorio'];   // già raggiungibili dalla prima pagina
