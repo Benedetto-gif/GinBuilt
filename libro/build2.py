@@ -1,3 +1,4 @@
+import urllib.parse
 # Costruisce l'ePub completo di «Gin in provetta» (quaderno di laboratorio sul gin compound) dai dati esportati da GinBuilder (dati.json)
 import json, math, re, os, html, zipfile, unicodedata, datetime, sys, random
 QUI = os.path.dirname(os.path.abspath(__file__))
@@ -389,6 +390,10 @@ for c in cat_list:
         body = '<article class="bot" id="b-%s">' % slug(n)
         body += naviga
         body += '<h2>%s %s</h2><p class="bsub"><em>%s</em> · %s · %s</p>' % (e(m.get('icona') or '🌿'), e(n), e(m.get('nome_botanico') or '—'), e(c), e(m.get('parte') or '—'))
+        # Foto della pianta: la carica libro.js da Wikipedia quando il lettore e' collegato a internet
+        # (tocco = ingrandisce, altro tocco = torna piccola). Senza JavaScript o senza rete resta il collegamento alle immagini.
+        body += '<div class="bot-foto" data-sci="%s" data-nome="%s"><p class="foto-link"><a href="https://commons.wikimedia.org/w/index.php?search=%s&amp;title=Special:MediaSearch&amp;type=image">📷 Immagini della pianta (Wikimedia Commons)</a></p></div>' % (
+            e(m.get('nome_botanico') or ''), e(n), urllib.parse.quote(m.get('nome_botanico') or n))
         # Un radar alla volta: un tasto passa da gusto e aroma alle sensazioni in bocca (trigemino). Senza JavaScript restano tutti e due, uno sotto l'altro.
         vista_sel = '<p class="vista-sel solo-js"><button type="button" class="chip" data-k="g">Gusto e aroma</button> <button type="button" class="chip" data-k="b">Sensazioni in bocca</button></p>'
         body += bsez('1 · Profilo sensoriale', vista_sel +

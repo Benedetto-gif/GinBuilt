@@ -619,3 +619,55 @@ function diluizioneT(o){
   [da, a, vol, te, le, disp, u].forEach(function(el){ el.addEventListener('input', calcola); el.addEventListener('change', calcola); });
   calcola();
 })();
+
+// Foto della pianta nelle schede botaniche: chiesta a Wikipedia (prima in italiano, poi in inglese)
+// con il nome scientifico ripulito. Serve la connessione; senza, resta solo il collegamento alle immagini.
+// Un tocco sulla foto la ingrandisce (versione piu' grande), un altro tocco la riporta piccola.
+(function(){
+  function pulisci(n){
+    n = String(n || '').replace(/^\s+|\s+$/g, '');
+    n = n.split(/\s*[(,]/)[0].split(/\s*\/\s*/)[0];
+    return n.replace(/\s+(var\.|cv\.|subsp\.|f\.)\s.*$/, '').replace(/\s+spp?\.?$/, '').replace(/^\s+|\s+$/g, '');
+  }
+  function chiedi(url, ok, ko){
+    try {
+      var x = new XMLHttpRequest(); x.open('GET', url, true); x.timeout = 8000;
+      x.onload = function(){ if (x.status === 200){ try { ok(JSON.parse(x.responseText)); return; } catch(e){} } ko(); };
+      x.onerror = ko; x.ontimeout = ko; x.send();
+    } catch(e){ ko(); }
+  }
+  function mostra(box, j, titolo){
+    var src = (j.thumbnail && j.thumbnail.source) || '';
+    if (!src) return false;
+    var grande = src.replace(/\/(\d+)px-/, '/1024px-');
+    var img = document.createElement('img');
+    img.setAttribute('alt', box.getAttribute('data-nome') || titolo);
+    img.setAttribute('src', src);
+    img.onerror = function(){ if (img.getAttribute('src') !== src){ img.setAttribute('src', src); } else if (img.parentNode) img.parentNode.removeChild(img); };
+    img.addEventListener('click', function(ev){
+      ev.preventDefault();
+      if (/(^|\s)grande(\s|$)/.test(img.className)){ img.className = ''; img.setAttribute('src', src); }
+      else { img.className = 'grande'; img.setAttribute('src', grande); }
+    });
+    var did = document.createElement('p'); did.className = 'foto-did';
+    did.appendChild(document.createTextNode((j.title || titolo) + ' · foto da Wikipedia (la pianta, non sempre la parte usata) · tocca per ingrandire'));
+    box.insertBefore(did, box.firstChild);
+    box.insertBefore(img, box.firstChild);
+    return true;
+  }
+  function carica(box){
+    var sci = pulisci(box.getAttribute('data-sci')), nome = box.getAttribute('data-nome') || '';
+    var prove = [];
+    if (sci){ prove.push(['it', sci]); prove.push(['en', sci]); }
+    if (nome) prove.push(['it', nome]);
+    (function avanti(i){
+      if (i >= prove.length) return;
+      var t = prove[i];
+      chiedi('https://' + t[0] + '.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(t[1].replace(/ /g, '_')),
+        function(j){ if (j.type === 'disambiguation' || !mostra(box, j, t[1])) avanti(i + 1); },
+        function(){ avanti(i + 1); });
+    })(0);
+  }
+  function avvioFoto(){ var b = document.querySelectorAll('.bot-foto[data-sci]'); for (var i = 0; i < b.length; i++) carica(b[i]); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', avvioFoto); else avvioFoto();
+})();
