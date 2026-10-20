@@ -1116,6 +1116,12 @@ ul.prova3 li{margin:3px 0;}
 }
 .detail h3{font-size:27px;margin:0 0 5px;}
 .detail .sub{color:var(--ink-faint);font-size:14px;margin-bottom:24px;}
+.bot-foto{margin:-10px 0 20px;}
+.bot-foto figure{margin:0 0 8px;}
+.bot-foto img{display:block;width:100%;max-width:340px;height:190px;object-fit:cover;border-radius:14px;border:1px solid var(--line);background:var(--surface-2);}
+.bot-foto figcaption{font-size:12px;color:var(--ink-faint);margin-top:4px;}
+.bot-foto .foto-link{display:flex;flex-wrap:wrap;gap:8px;}
+.bot-foto .foto-link a{font-size:13px;text-decoration:none;padding:6px 10px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);color:var(--ink-soft);}
 .radar-box{margin:18px 0 22px;padding:14px 16px 12px;background:var(--surface-2);border:1px solid var(--line);border-radius:14px;text-align:center;}
 .radar-title{font-weight:600;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:4px;}
 .radar8{width:100%;max-width:300px;height:auto;display:block;margin:0 auto;}
@@ -2144,7 +2150,7 @@ html details.howto a{color:#5A3E1C;}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v162</div>
+  <div class="splash-ver" id="splash-ver">v163</div>
 </div>
 
 <div class="wrap">
@@ -3819,7 +3825,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione v162 · 19 ottobre 2026</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione v163 · 20 ottobre 2026</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -4871,7 +4877,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v162</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v163</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = ['storia', 'builder', 'prove', 'libreria', 'cocktail', 'laboratorio'];   // già raggiungibili dalla prima pagina
@@ -5343,6 +5349,56 @@ wrapStepper(libAbvInput, 1, { emptyStart: () => {
   return Ecur ? Ecur.a[0] : null;
 }});
 
+// ===== Foto della botanica (Wikipedia/Wikimedia Commons, caricata al volo) =====
+// Il nome scientifico viene ripulito (niente varietà, parti, alternative) e cercato
+// prima su it.wikipedia, poi su en.wikipedia. Il risultato resta in memoria e in
+// localStorage, così la foto non si riscarica a ogni ricalcolo della scheda.
+const FOTO_CACHE = (() => { try { return JSON.parse(localStorage.getItem('gb-foto') || '{}'); } catch (e) { return {}; } })();
+function salvaFotoCache(){ try { localStorage.setItem('gb-foto', JSON.stringify(FOTO_CACHE)); } catch (e) {} }
+function nomeScientificoPulito(d){
+  let n = (d.nome_botanico || '').trim();
+  n = n.split(/\s*[(,]/)[0].split(/\s*\/\s*/)[0];
+  n = n.replace(/\s+(var\.|cv\.|subsp\.|f\.)\s.*$/,'').replace(/\s+spp?\.?$/,'').trim();
+  return n;
+}
+function linkImmaginiHtml(d){
+  const sci = nomeScientificoPulito(d);
+  const q = encodeURIComponent(sci || d.botanica);
+  return `<div class="foto-link">
+      <a href="https://www.google.com/search?tbm=isch&q=${encodeURIComponent((sci ? sci + ' ' : '') + d.botanica + (d.parte ? ' ' + d.parte : ''))}" target="_blank" rel="noopener">🖼️ Altre immagini</a>
+      <a href="https://commons.wikimedia.org/w/index.php?search=${q}&title=Special:MediaSearch&type=image" target="_blank" rel="noopener">📷 Wikimedia Commons</a>
+    </div>`;
+}
+function fotoBotanicaHtml(d){
+  const c = FOTO_CACHE[d.botanica];
+  const fig = (c && c.src)
+    ? `<figure><img src="${c.src}" alt="${d.botanica}" loading="lazy" onerror="this.closest('figure').remove()"><figcaption>${c.titolo ? c.titolo + ' · ' : ''}foto da <a href="${c.pagina}" target="_blank" rel="noopener">Wikipedia</a> (la pianta, non sempre la parte usata)</figcaption></figure>`
+    : '';
+  return fig + linkImmaginiHtml(d);
+}
+async function caricaFotoBotanica(d){
+  if (FOTO_CACHE[d.botanica] !== undefined) return;
+  const sci = nomeScientificoPulito(d);
+  const tentativi = [];
+  if (sci) tentativi.push(['it', sci], ['en', sci]);
+  tentativi.push(['it', d.botanica]);
+  for (const [lang, titolo] of tentativi){
+    try {
+      const r = await fetch(`https://${lang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(titolo.replace(/ /g,'_'))}`);
+      if (!r.ok) continue;
+      const j = await r.json();
+      if (j.type === 'disambiguation') continue;
+      const src = (j.thumbnail && j.thumbnail.source) || (j.originalimage && j.originalimage.source);
+      if (!src) continue;
+      FOTO_CACHE[d.botanica] = { src, titolo: j.title || titolo, pagina: (j.content_urls && j.content_urls.mobile && j.content_urls.mobile.page) || `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(titolo)}` };
+      salvaFotoCache();
+      break;
+    } catch (e) { return; } // offline: niente foto, restano i link
+  }
+  if (FOTO_CACHE[d.botanica] === undefined){ FOTO_CACHE[d.botanica] = null; salvaFotoCache(); }
+  const box = document.getElementById('bot-foto');
+  if (box && currentDetailName === d.botanica) box.innerHTML = fotoBotanicaHtml(d);
+}
 function showDetail(name, nuovaScelta){
   const d = byName[name];
   if (!d) return;
@@ -5415,6 +5471,7 @@ function showDetail(name, nuovaScelta){
     <div class="detail-icon">${d.icona || '🌿'}</div>
     <h3>${d.botanica}</h3>
     <div class="sub">${d.nome_botanico ? d.nome_botanico + ' · ' : ''}${d.categoria} — ${d.sottofamiglia || ''}</div>
+    <div class="bot-foto" id="bot-foto">${fotoBotanicaHtml(d)}</div>
     ${vistaRadarHtml(d.botanica)}
     <div class="inf-in-scheda" id="inf-body"></div>
     <div class="detail-grid">
@@ -5433,6 +5490,7 @@ function showDetail(name, nuovaScelta){
     <div class="warn-box">⚠️ Da non accumulare con: ${r.non_accumulare || 'nessuna nota particolare'}</div>
     <button class="ghost-btn vai-prep" type="button" onclick="vaiPreparazione()">⚗️ Passa alla preparazione dell'infuso ↓</button>
   `;
+  caricaFotoBotanica(d);
   mostraLavoro(true);
   // Scrolla alla scheda solo quando si apre una nuova botanica: variare le condizioni con i
   // tasti su/giù deve solo aggiornare i numeri, senza far saltare la pagina.
