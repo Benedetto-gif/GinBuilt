@@ -8,6 +8,7 @@ D = json.load(open(os.path.join(QUI, 'dati.json')))
 P, ASSI, ORD, MOL, MASTER, DOSE, MAT, PAN = D['P'], D['ASSI'], D['ORD'], D['MOL'], D['MASTER'], D['DOSE'], D['MAT'], D['PAN']
 SENS, UMAMI, ASSI_SENS = D.get('SENS', {}), D.get('UMAMI', {}), D.get('ASSI_SENS', [])
 NOTA = D.get('NOTA', {})    # botaniche poco utili (i) o pericolose (p): restano solo per sapere che esistono
+FOTO = D.get('FOTO', {})    # foto scelte a mano (file di Wikimedia Commons)
 ICONE = D.get('ICONE', {})  # icone disegnate (SVG) per chi non ha un'emoji adatta
 icona = lambda m: ICONE.get(m['botanica']) or e(m.get('icona') or '🌿')
 BUCCIA = D.get('BUCCIA', {})   # agrumi: profilo dell'altra buccia (fresca o disidratata), come nell'app
@@ -399,8 +400,8 @@ for c in cat_list:
                 ng['t'], '☠️ Pericolosa.' if ng['t'] == 'p' else '🚫 Poco utile nel gin.', e(ng['n']))
         # Foto della pianta: la carica libro.js da Wikipedia quando il lettore e' collegato a internet
         # (tocco = ingrandisce, altro tocco = torna piccola). Senza JavaScript o senza rete resta il collegamento alle immagini.
-        body += '<div class="bot-foto" data-sci="%s" data-nome="%s"><p class="foto-link"><a href="https://commons.wikimedia.org/w/index.php?search=%s&amp;title=Special:MediaSearch&amp;type=image">📷 Immagini della pianta (Wikimedia Commons)</a></p></div>' % (
-            e(m.get('nome_botanico') or ''), e(n), urllib.parse.quote(m.get('nome_botanico') or n))
+        body += '<div class="bot-foto" data-sci="%s" data-nome="%s"%s><p class="foto-link"><a href="https://commons.wikimedia.org/w/index.php?search=%s&amp;title=Special:MediaSearch&amp;type=image">📷 Immagini della pianta (Wikimedia Commons)</a></p></div>' % (
+            e(m.get('nome_botanico') or ''), e(n), (' data-file="%s"' % e(FOTO[n])) if FOTO.get(n) else '', urllib.parse.quote(m.get('nome_botanico') or n))
         # Un radar alla volta: un tasto passa da gusto e aroma alle sensazioni in bocca (trigemino). Senza JavaScript restano tutti e due, uno sotto l'altro.
         vista_sel = '<p class="vista-sel solo-js"><button type="button" class="chip" data-k="g">Gusto e aroma</button> <button type="button" class="chip" data-k="b">Sensazioni in bocca</button></p>'
         body += bsez('1 · Profilo sensoriale', vista_sel +

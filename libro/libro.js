@@ -639,7 +639,7 @@ function diluizioneT(o){
   function mostra(box, j, titolo){
     var src = (j.thumbnail && j.thumbnail.source) || '';
     if (!src) return false;
-    var grande = src.replace(/\/(\d+)px-/, '/1024px-');
+    var grande = src.replace(/\/(\d+)px-/, '/1024px-').replace(/([?&]width=)\d+/, '$11280');
     var img = document.createElement('img');
     img.setAttribute('alt', box.getAttribute('data-nome') || titolo);
     img.setAttribute('src', src);
@@ -650,13 +650,15 @@ function diluizioneT(o){
       else { img.className = 'grande'; img.setAttribute('src', grande); }
     });
     var did = document.createElement('p'); did.className = 'foto-did';
-    did.appendChild(document.createTextNode((j.title || titolo) + ' · foto da Wikipedia (la pianta, non sempre la parte usata) · tocca per ingrandire'));
+    did.appendChild(document.createTextNode((j.title || titolo) + ' · foto da ' + (j.fonte || 'Wikipedia') + ' (la pianta, non sempre la parte usata) · tocca per ingrandire'));
     box.insertBefore(did, box.firstChild);
     box.insertBefore(img, box.firstChild);
     return true;
   }
   function carica(box){
     var sci = pulisci(box.getAttribute('data-sci')), nome = box.getAttribute('data-nome') || '';
+    var file = box.getAttribute('data-file');
+    if (file){ mostra(box, {thumbnail: {source: 'https://commons.wikimedia.org/wiki/Special:FilePath/' + encodeURIComponent(file.replace(/ /g, '_')) + '?width=640'}, title: sci || nome, fonte: 'Wikimedia Commons'}, nome); return; }
     var prove = [];
     if (sci){ prove.push(['it', sci]); prove.push(['en', sci]); }
     if (nome) prove.push(['it', nome]);
