@@ -8,7 +8,7 @@
  * l'app continua comunque a funzionare senza connessione.
  */
 
-const VERSIONE = 'ginbuilder-v178';
+const VERSIONE = 'ginbuilder-v179';
 
 const FILE = [
   './',
@@ -16,8 +16,7 @@ const FILE = [
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
-  './icon-maskable-512.png',
-  './foto/lime-nero.jpg'
+  './icon-maskable-512.png'
 ];
 
 self.addEventListener('install', (e) => {
