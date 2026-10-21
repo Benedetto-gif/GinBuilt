@@ -5431,7 +5431,7 @@ function fotoScelta(d){
 function fotoBotanicaHtml(d){
   const c = fotoScelta(d) || FOTO_CACHE[d.botanica];
   const fig = (c && c.src)
-    ? `<figure><img src="${c.src}" alt="${d.botanica}" loading="lazy" title="Tocca per ingrandire" onclick="zoomFoto(this.src)" onerror="this.closest('figure').remove()"><figcaption>${c.titolo ? c.titolo + ' · ' : ''}${c.pagina ? `foto da <a href="${c.pagina}" target="_blank" rel="noopener">${c.fonte || 'Wikipedia'}</a>` : 'foto'} (la pianta, non sempre la parte usata)</figcaption></figure>`
+    ? `<figure><img src="${c.src}" alt="${d.botanica}" loading="lazy" title="Tocca per ingrandire" onclick="zoomFoto(this.src)" onerror="this.closest('figure').remove()"><figcaption>${c.titolo ? c.titolo + ' · ' : ''}${c.fonte === 'locale' ? (d.parte || 'parte usata') : (c.pagina ? `foto da <a href="${c.pagina}" target="_blank" rel="noopener">${c.fonte || 'Wikipedia'}</a>` : 'foto') + ' (la pianta, non sempre la parte usata)'}</figcaption></figure>`
     : '';
   return fig + linkImmaginiHtml(d);
 }
