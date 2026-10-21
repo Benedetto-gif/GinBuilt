@@ -8,6 +8,8 @@ D = json.load(open(os.path.join(QUI, 'dati.json')))
 P, ASSI, ORD, MOL, MASTER, DOSE, MAT, PAN = D['P'], D['ASSI'], D['ORD'], D['MOL'], D['MASTER'], D['DOSE'], D['MAT'], D['PAN']
 SENS, UMAMI, ASSI_SENS = D.get('SENS', {}), D.get('UMAMI', {}), D.get('ASSI_SENS', [])
 NOTA = D.get('NOTA', {})    # botaniche poco utili (i) o pericolose (p): restano solo per sapere che esistono
+ICONE = D.get('ICONE', {})  # icone disegnate (SVG) per chi non ha un'emoji adatta
+icona = lambda m: ICONE.get(m['botanica']) or e(m.get('icona') or '🌿')
 BUCCIA = D.get('BUCCIA', {})   # agrumi: profilo dell'altra buccia (fresca o disidratata), come nell'app
 EXT = D.get('EXT', {})   # estrazione consigliata per botanica, come nell'app (grado alcolico, tempo, limiti)
 OUT = sys.argv[1] if len(sys.argv) > 1 else 'Gin-in-provetta.epub'
@@ -350,7 +352,7 @@ for c in cat_list:
     fam = per_cat[c]
     add('cap2-%s.xhtml' % slug(c), c, '<section epub:type="chapter"><h1>%s</h1><p class="nota">%d botaniche · <a href="cap2-famiglie.xhtml">tutte le famiglie</a></p><p class="nota">Tocca una botanica per aprirne la scheda. Il pallino colorato è la potenza.</p><ul class="fam-lista">%s</ul></section>' % (
         e(c), len(fam), ''.join('<li><a href="b-%s.xhtml"><span class="pall" style="background:%s"></span>%s %s</a></li>' % (
-            slug(m['botanica']), pot_colore(potenza(m['botanica'])) if potenza(m['botanica']) else '#cccccc', e(m.get('icona') or ''), e(m['botanica'])) for m in fam)), 2)
+            slug(m['botanica']), pot_colore(potenza(m['botanica'])) if potenza(m['botanica']) else '#cccccc', icona(m), e(m['botanica'])) for m in fam)), 2)
     for k, m in enumerate(fam):
         body = ''
         n = m['botanica']; v = prof(n)
@@ -390,7 +392,7 @@ for c in cat_list:
         bsez = lambda t, h, cl='': '<section class="bsez%s"><h3>%s</h3>%s</section>' % (cl, t, h)
         body = '<article class="bot" id="b-%s">' % slug(n)
         body += naviga
-        body += '<h2>%s %s</h2><p class="bsub"><em>%s</em> · %s · %s</p>' % (e(m.get('icona') or '🌿'), e(n), e(m.get('nome_botanico') or '—'), e(c), e(m.get('parte') or '—'))
+        body += '<h2>%s %s</h2><p class="bsub"><em>%s</em> · %s · %s</p>' % (icona(m), e(n), e(m.get('nome_botanico') or '—'), e(c), e(m.get('parte') or '—'))
         ng = NOTA.get(n)
         if ng:
             body += '<p class="nota-gin nota-gin-%s"><strong>%s</strong> %s La scheda resta solo per sapere che esiste.</p>' % (

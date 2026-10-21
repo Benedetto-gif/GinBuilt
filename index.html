@@ -1108,6 +1108,7 @@ ul.prova3 li{margin:3px 0;}
 .detail.active{display:block;animation:panelIn .3s var(--ease) both;}
 .grid.is-hidden{display:none;}
 .bot-back{margin-bottom:18px;}
+.ic-svg{display:inline-block;vertical-align:-0.12em;}
 .detail-icon{
   display:inline-flex;align-items:center;justify-content:center;
   width:64px;height:64px;border-radius:var(--r-md);
@@ -2156,7 +2157,7 @@ html details.howto a{color:#5A3E1C;}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v166</div>
+  <div class="splash-ver" id="splash-ver">v167</div>
 </div>
 
 <div class="wrap">
@@ -3831,7 +3832,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione v166 · 21 ottobre 2026</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione v167 · 21 ottobre 2026</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -4893,7 +4894,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v166</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v167</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = ['storia', 'builder', 'prove', 'libreria', 'cocktail', 'laboratorio'];   // già raggiungibili dalla prima pagina
@@ -5263,6 +5264,9 @@ function elencoFiltrato(){
 //  - Di firma o rare: la loro funzione tipica nel compound e' firma, traccia, rifinitura o marina, oppure compaiono
 //    solo in tracce, in un solo gin o in un solo stile.
 //  - Altre: non compaiono nei gin e negli stili di riferimento e non hanno una funzione di firma.
+// Icone disegnate per le botaniche che non hanno un'emoji adatta (la castagna non è noce moscata né mandorla).
+const ICONE_SVG = {"Noce moscata": "<svg class=\"ic-svg\" viewBox=\"0 0 32 32\" width=\"1em\" height=\"1em\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><ellipse cx=\"16\" cy=\"16.5\" rx=\"10\" ry=\"12\" fill=\"#8B5A3C\"/><ellipse cx=\"12.5\" cy=\"10.5\" rx=\"3.2\" ry=\"2.2\" fill=\"#A8744F\"/><path d=\"M8.5 11.5c3.5 1.5 3 5 6.5 6.5s4.5 4.5 7.5 5.5M7 18.5c3-.8 5 1.8 8 1M14 5.5c1 3 3.5 4.5 2.8 8.5M20.5 7c-1.2 3 1.5 5 3.5 6.5M11 26c2-3 5-3 6-6.5M18 27c.5-2.5 2.5-3.5 4-6\" stroke=\"#D4A77A\" stroke-width=\"1.2\" fill=\"none\" stroke-linecap=\"round\"/></svg>", "Macis": "<svg class=\"ic-svg\" viewBox=\"0 0 32 32\" width=\"1em\" height=\"1em\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><ellipse cx=\"16\" cy=\"16.5\" rx=\"8.6\" ry=\"10.8\" fill=\"#5A3A28\"/><g stroke=\"#D2452B\" stroke-width=\"1.5\" fill=\"none\" stroke-linecap=\"round\"><path d=\"M16 28c-4-3-7.5-7-7.2-12.5C9 11 11 7.5 13 5.5\"/><path d=\"M16 28c4-3 7.5-7 7.2-12.5C23 11 21 7.5 19 5.5\"/><path d=\"M16 28c-2-4-3.3-8-2.6-13 .3-2.5 1-5 .3-8\"/><path d=\"M16 28c2-4 3.3-8 2.6-13-.3-2.5-1-5-.3-8\"/><path d=\"M10 19.5c1.5-.3 2.6-1.5 3.6-3M22 19.5c-1.5-.3-2.6-1.5-3.6-3M13.6 11c.9.7 1.6 1.7 2.4 1.7s1.5-1 2.4-1.7M11.5 24c1.2 0 2.2-.7 3.2-1.8M20.5 24c-1.2 0-2.2-.7-3.2-1.8\"/></g></svg>", "Fave di tonka": "<svg class=\"ic-svg\" viewBox=\"0 0 32 32\" width=\"1em\" height=\"1em\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M5.5 25.5C3.5 20 10 9 19 5c4.5-2 8.5.2 7.3 4.3C24.8 15.5 18 23.5 11 26.8c-3 1.3-4.5.6-5.5-1.3z\" fill=\"#3A2820\"/><path d=\"M9.5 22.5c2.5-3 5-6 7.5-9M13 24c3-4 6-7 9.5-11M8.5 18c2-2 3.5-4 6.5-7.5M17 8.5c2-1 4-2 6.5-2\" stroke=\"#8A6852\" stroke-width=\"1.1\" fill=\"none\" stroke-linecap=\"round\"/></svg>", "Mandorla dolce": "<svg class=\"ic-svg\" viewBox=\"0 0 32 32\" width=\"1em\" height=\"1em\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M16 3C8.5 9.5 6.8 17.5 8.8 23.3 10.3 27.5 13.3 29 16 29s5.7-1.5 7.2-5.7C25.2 17.5 23.5 9.5 16 3z\" fill=\"#C8955E\"/><path d=\"M15.5 6.5c-3 5-4 11-2.8 18M18 8.5c1.2 5 1.2 10 .2 16M11.5 13c-.3 4 0 8 2 11.5M20.5 13c.5 3.5.3 7.5-1 11\" stroke=\"#9C6B3A\" stroke-width=\"1\" fill=\"none\" stroke-linecap=\"round\"/></svg>", "Durian": "<svg class=\"ic-svg\" viewBox=\"0 0 32 32\" width=\"1em\" height=\"1em\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M15 5.5c.5-2 1.8-3 3.2-3\" stroke=\"#6B4A2B\" stroke-width=\"1.8\" fill=\"none\" stroke-linecap=\"round\"/><ellipse cx=\"16\" cy=\"18\" rx=\"10\" ry=\"11\" fill=\"#8FAE34\"/><g fill=\"#6E8C22\"><path d=\"M9 11l1.6-3 1.6 3z\"/><path d=\"M13 9l1.6-3 1.6 3z\"/><path d=\"M17 9l1.6-3 1.6 3z\"/><path d=\"M21 11l1.6-3 1.6 3z\"/><path d=\"M7 16l1.6-3 1.6 3z\"/><path d=\"M11 15l1.6-3 1.6 3z\"/><path d=\"M15 14l1.6-3 1.6 3z\"/><path d=\"M19 15l1.6-3 1.6 3z\"/><path d=\"M23 16l1.6-3 1.6 3z\"/><path d=\"M8 21l1.6-3 1.6 3z\"/><path d=\"M12 20l1.6-3 1.6 3z\"/><path d=\"M16 19.5l1.6-3 1.6 3z\"/><path d=\"M20 20l1.6-3 1.6 3z\"/><path d=\"M24 21l1.6-3 1.6 3z\"/><path d=\"M10 25.5l1.6-3 1.6 3z\"/><path d=\"M14 25l1.6-3 1.6 3z\"/><path d=\"M18 25l1.6-3 1.6 3z\"/><path d=\"M21.5 25.5l1.6-3 1.6 3z\"/></g></svg>", "Mandorla amara": "<svg class=\"ic-svg\" viewBox=\"0 0 32 32\" width=\"1em\" height=\"1em\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M16 3C8.5 9.5 6.8 17.5 8.8 23.3 10.3 27.5 13.3 29 16 29s5.7-1.5 7.2-5.7C25.2 17.5 23.5 9.5 16 3z\" fill=\"#C8955E\"/><path d=\"M15.5 6.5c-3 5-4 11-2.8 18M18 8.5c1.2 5 1.2 10 .2 16M11.5 13c-.3 4 0 8 2 11.5M20.5 13c.5 3.5.3 7.5-1 11\" stroke=\"#9C6B3A\" stroke-width=\"1\" fill=\"none\" stroke-linecap=\"round\"/></svg>"};
+function iconaHtml(d){ return (d && ICONE_SVG[d.botanica]) || (d && d.icona) || '🌿'; }
 // Botaniche tenute in libreria solo per sapere che esistono: poco utili nel gin (i) o pericolose (p).
 // Restano consultabili, ma la scheda, la card e il Builder lo dicono chiaramente.
 const NOTA_GIN = {"Ginestra": {"t": "p", "n": "Contiene citisina, un alcaloide tossico, e non ha un uso alimentare sicuro: non usarla."}, "Mandorla amara": {"t": "p", "n": "L’amigdalina libera acido cianidrico: solo in dosi minime e con materia prima controllata. Meglio la Mandorla dolce."}, "Fave di tonka": {"t": "p", "n": "La cumarina ha limiti di legge negli alimenti: solo in tracce. Per la nota vanigliata meglio la Vaniglia."}, "Pitaya (dragon fruit)": {"t": "i", "n": "Quasi senza aroma in alcol: porta zuccheri e colore, non carattere."}, "Papaya": {"t": "i", "n": "Essiccata, in alcol cede poco aroma e molti zuccheri: più torbidità che carattere."}, "Rambutan": {"t": "i", "n": "Essiccata, in alcol cede poco aroma e molti zuccheri: più torbidità che carattere."}, "Mango": {"t": "i", "n": "Essiccata, in alcol cede poco aroma e molti zuccheri: più torbidità che carattere."}, "Durian": {"t": "i", "n": "Composti solforati sgradevoli e grassi: il risultato è torbido e poco pulito."}, "Cocco": {"t": "i", "n": "Molti grassi: torbidità e louche, aroma debole a freddo."}, "Kiwano": {"t": "i", "n": "Aroma quasi neutro, un cetriolo leggero: porta acqua e zuccheri."}, "Portulaca": {"t": "i", "n": "Soprattutto acqua, mucillagini o note di verdura cotta: nel gin porta più colore e torbidità che carattere."}, "Asparago": {"t": "i", "n": "Soprattutto acqua, mucillagini o note di verdura cotta: nel gin porta più colore e torbidità che carattere."}, "Cardo": {"t": "i", "n": "Soprattutto acqua, mucillagini o note di verdura cotta: nel gin porta più colore e torbidità che carattere."}, "Gelso": {"t": "i", "n": "Soprattutto acqua, mucillagini o note di verdura cotta: nel gin porta più colore e torbidità che carattere."}, "Moringa": {"t": "i", "n": "Soprattutto acqua, mucillagini o note di verdura cotta: nel gin porta più colore e torbidità che carattere."}, "Malva": {"t": "i", "n": "Soprattutto acqua, mucillagini o note di verdura cotta: nel gin porta più colore e torbidità che carattere."}, "Castagna": {"t": "i", "n": "Amido e poco aroma a freddo: porta torbidità."}, "Uva Cataratto": {"t": "i", "n": "Acini freschi: soprattutto acqua e zuccheri, l’aroma in alcol è debole."}, "Spirulina alimentare": {"t": "i", "n": "Sa di pesce e tinge di verde. Per la nota marina sono migliori Salicornia, Finocchio di mare e Alga nori."}, "Papavero": {"t": "i", "n": "Crudo in alcol non sa quasi di nulla: il suo aroma nasce dalla tostatura."}, "Shikuwasa": {"t": "i", "n": "Introvabile in Sicilia, fresco o secco: per un agrume acido usa Lime, Limone o Bergamotto."}, "Amanatsu": {"t": "i", "n": "Introvabile in Sicilia, fresco o secco: per un agrume acido usa Lime, Limone o Bergamotto."}, "Kabosu": {"t": "i", "n": "Introvabile in Sicilia, fresco o secco: per un agrume acido usa Lime, Limone o Bergamotto."}, "Clementina": {"t": "i", "n": "Quasi identica al Mandarino: tenerle entrambe non aggiunge nulla."}, "Gyokuro": {"t": "i", "n": "È un tè verde: con Tè verde e Tè nero già in elenco è ridondante."}, "Sandalo bianco": {"t": "i", "n": "Specie vulnerabile, costosa, e a freddo estrae poco: sconsigliato."}};
@@ -5324,7 +5328,7 @@ function renderGrid(){
     card.className = 'bot-card';
     card.style.setProperty('--c', coloreCarattere(d.carattere));
     card.innerHTML = `
-      <div class="card-icon">${d.icona || '🌿'}</div>
+      <div class="card-icon">${iconaHtml(d)}</div>
       <p class="name">${d.botanica}</p>
       <p class="meta">${d.categoria} · ${d.parte || ''}</p>
       <p class="profilo">${d.profilo || ''}</p>
@@ -5521,7 +5525,7 @@ function showDetail(name, nuovaScelta){
   detail.innerHTML = `
     <h3 class="passo-tit"><span class="passo-n">3</span> La scheda della botanica</h3>
     <button class="ghost-btn bot-back" type="button" onclick="chiudiDetail()">← Torna all'elenco</button>
-    <div class="detail-icon">${d.icona || '🌿'}</div>
+    <div class="detail-icon">${iconaHtml(d)}</div>
     <h3>${d.botanica}</h3>
     <div class="sub">${d.nome_botanico ? d.nome_botanico + ' · ' : ''}${d.categoria} — ${d.sottofamiglia || ''}</div>
     ${notaGinBox(d)}
@@ -5728,7 +5732,7 @@ function renderAr(){
     const sim = similiHtml(d.botanica, r.simili);
     const nSim = (sim.match(/<strong>/g) || []).length, nNo = conta(r.non_accumulare);
     const apri = d.botanica === apertaNome ? ' open' : '';
-    return '<details class="ar-item" data-n="' + d.botanica.replace(/"/g, '&quot;') + '"' + apri + '><summary><span class="ar-nome">' + (d.icona || '\ud83c\udf3f') + ' ' + d.botanica + '</span>' +
+    return '<details class="ar-item" data-n="' + d.botanica.replace(/"/g, '&quot;') + '"' + apri + '><summary><span class="ar-nome">' + iconaHtml(d) + ' ' + d.botanica + '</span>' +
       '<span class="ar-badge">' + (nSim ? '<span class="b-sim">' + nSim + ' simil' + (nSim === 1 ? 'e' : 'i') + '</span>' : '') + (nNo ? '<span class="b-no">' + nNo + ' da non accumulare</span>' : '') + '</span></summary>' +
       '<div class="ar-corpo">' + sez('Simili', sim) + sez('Sostitutive', r.sostitutive) + sez('Complementari', r.complementari, 'ok') +
       sez('Da non accumulare con', r.non_accumulare, 'no') + sez('Rischio principale', r.rischio) + '</div></details>';
@@ -10338,7 +10342,7 @@ if ("serviceWorker" in navigator) {
       const perCat = {}; qui.forEach(v => (perCat[v.x.categoria] = perCat[v.x.categoria] || []).push(v));
       box.innerHTML = '<div class="cal-mesi">' + MESI.map((m, k) => '<button type="button" class="cal-m' + (k === mese ? ' on' : '') + '" data-k="' + k + '"><span>' + m + '</span><small>' + conta[k] + '</small></button>').join('') + '</div>' +
         '<p class="gar-g">' + NOMI[mese] + ': ' + qui.length + ' botaniche da raccogliere</p>' +
-        Object.keys(perCat).map(c => '<div class="cal-cat"><div class="cond-label">' + esc(c) + '</div><ul class="inv-lista">' + perCat[c].map(v => '<li><strong>' + esc(v.x.icona || '') + ' ' + esc(v.x.botanica) + '</strong> · ' + esc(v.x.parte || '') + ' <span class="cond-hint">(' + esc(v.x.periodo_raccolta) + ')</span></li>').join('') + '</ul></div>').join('') +
+        Object.keys(perCat).map(c => '<div class="cal-cat"><div class="cond-label">' + esc(c) + '</div><ul class="inv-lista">' + perCat[c].map(v => '<li><strong>' + (ICONE_SVG[v.x.botanica] || esc(v.x.icona || '')) + ' ' + esc(v.x.botanica) + '</strong> · ' + esc(v.x.parte || '') + ' <span class="cond-hint">(' + esc(v.x.periodo_raccolta) + ')</span></li>').join('') + '</ul></div>').join('') +
         '<div class="radar-nota">Periodi dalla libreria, indicativi per l’Italia: altitudine e annata li spostano anche di settimane. Raccogli solo dove è consentito e lontano da strade e coltivi trattati.</div>';
       box.querySelectorAll('.cal-m').forEach(b => b.onclick = () => { mese = +b.dataset.k; disegna(); });
     }
