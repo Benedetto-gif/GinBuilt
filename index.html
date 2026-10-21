@@ -1121,6 +1121,7 @@ ul.prova3 li{margin:3px 0;}
 .bot-foto figure{margin:0 0 8px;}
 .bot-foto img{display:block;width:100%;max-width:340px;height:190px;object-fit:cover;border-radius:14px;border:1px solid var(--line);background:var(--surface-2);}
 .bot-foto img{cursor:zoom-in;}
+.bot-foto img.foto-scelta{object-fit:contain;width:auto;max-width:100%;height:170px;}
 .foto-zoom{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;padding:16px;cursor:zoom-out;animation:panelIn .2s ease both;}
 .foto-zoom img{max-width:100%;max-height:100%;object-fit:contain;border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,.5);}
 .foto-zoom .fz-x{position:absolute;top:14px;right:16px;color:#fff;font-size:28px;line-height:1;background:rgba(255,255,255,.15);border-radius:999px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;}
@@ -2157,7 +2158,7 @@ html details.howto a{color:#5A3E1C;}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v172</div>
+  <div class="splash-ver" id="splash-ver">v173</div>
 </div>
 
 <div class="wrap">
@@ -3832,7 +3833,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione v172 · 21 ottobre 2026</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione v173 · 21 ottobre 2026</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -4894,7 +4895,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v172</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v173</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = ['storia', 'builder', 'prove', 'libreria', 'cocktail', 'laboratorio'];   // già raggiungibili dalla prima pagina
@@ -5416,13 +5417,13 @@ const FOTO_SCELTE = {
 function fotoScelta(d){
   const f = FOTO_SCELTE[d.botanica]; if (!f) return null;
   const n = encodeURIComponent(f.replace(/ /g, '_'));
-  return { src: 'https://commons.wikimedia.org/wiki/Special:FilePath/' + n + '?width=640', titolo: nomeScientificoPulito(d) || d.botanica,
+  return { src: 'https://commons.wikimedia.org/wiki/Special:FilePath/' + n + '?width=480', titolo: nomeScientificoPulito(d) || d.botanica,
            pagina: 'https://commons.wikimedia.org/wiki/File:' + n, fonte: 'Wikimedia Commons' };
 }
 function fotoBotanicaHtml(d){
   const c = fotoScelta(d) || FOTO_CACHE[d.botanica];
   const fig = (c && c.src)
-    ? `<figure><img src="${c.src}" alt="${d.botanica}" loading="lazy" title="Tocca per ingrandire" onclick="zoomFoto(this.src)" onerror="this.closest('figure').remove()"><figcaption>${c.titolo ? c.titolo + ' · ' : ''}foto da <a href="${c.pagina}" target="_blank" rel="noopener">${c.fonte || 'Wikipedia'}</a> (la pianta, non sempre la parte usata)</figcaption></figure>`
+    ? `<figure><img${c.fonte ? ' class="foto-scelta"' : ''} src="${c.src}" alt="${d.botanica}" loading="lazy" title="Tocca per ingrandire" onclick="zoomFoto(this.src)" onerror="this.closest('figure').remove()"><figcaption>${c.titolo ? c.titolo + ' · ' : ''}foto da <a href="${c.pagina}" target="_blank" rel="noopener">${c.fonte || 'Wikipedia'}</a> (la pianta, non sempre la parte usata)</figcaption></figure>`
     : '';
   return fig + linkImmaginiHtml(d);
 }
