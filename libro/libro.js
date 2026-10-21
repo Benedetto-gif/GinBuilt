@@ -659,6 +659,12 @@ function diluizioneT(o){
     var sci = pulisci(box.getAttribute('data-sci')), nome = box.getAttribute('data-nome') || '';
     var file = box.getAttribute('data-file');
     if (file && /^foto\//.test(file)){ mostra(box, {thumbnail: {source: file}, title: sci || nome, fonte: 'foto scelta'}, nome); return; }
+    if (file && file.indexOf('|') > 0){
+      var nomi = file.split('|'), k = 0;
+      var prova = function(){ if (k >= nomi.length) return; var u = 'https://commons.wikimedia.org/wiki/Special:FilePath/' + encodeURIComponent(nomi[k].replace(/ /g, '_')) + '?width=320'; k++;
+        var t = new Image(); t.onload = function(){ mostra(box, {thumbnail: {source: u}, title: sci || nome, fonte: 'Wikimedia Commons'}, nome); }; t.onerror = prova; t.src = u; };
+      prova(); return;
+    }
     if (file){ mostra(box, {thumbnail: {source: 'https://commons.wikimedia.org/wiki/Special:FilePath/' + encodeURIComponent(file.replace(/ /g, '_')) + '?width=320'}, title: sci || nome, fonte: 'Wikimedia Commons'}, nome); return; }
     var prove = [];
     if (sci){ prove.push(['it', sci]); prove.push(['en', sci]); }
