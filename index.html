@@ -2157,7 +2157,7 @@ html details.howto a{color:#5A3E1C;}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v184</div>
+  <div class="splash-ver" id="splash-ver">v185</div>
 </div>
 
 <div class="wrap">
@@ -3832,7 +3832,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione v184 · 21 ottobre 2026</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione v185 · 21 ottobre 2026</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -3866,7 +3866,7 @@ const MOLECOLE = {
   "Lime": "Limonene con una quota maggiore di aldeidi verdi (citrale) rispetto al limone, da cui la nota più acida e tagliente.",
   "Yuzu": "Miscela complessa di limonene, linalolo e composti floreali tipici degli ibridi Citrus; profilo meno standardizzabile degli agrumi comuni.",
   "Kumquat": "Olio di scorza simile al mandarino (limonene, metil-antranilato) ma frutto piccolo e intero: anche pectine e zuccheri della polpa entrano nell'infuso.",
-  "Lime nero": "I lime verdi vengono sbollentati in acqua e sale e poi lasciati al sole finché diventano scuri, duri e secchi. Durante la lunga essiccazione gli zuccheri e gli acidi del frutto imbruniscono (reazioni di Maillard e ossidazione dei polifenoli): nascono note scure, di tè e di frutta secca, mentre le aldeidi verdi del lime fresco quasi spariscono. Restano l'acido citrico, che dà l'acidità, e parte del limonene; il sale della bollitura porta una leggera sapidità.",
+  "Lime nero": "I lime verdi vengono sbollentati in acqua e sale e poi lasciati al sole finché diventano scuri, duri e secchi. Al sole la buccia scura arriva a 50-60 °C, non ai 140 °C della rosolatura: l\'imbrunimento è lento e dura settimane. Lo guidano soprattutto la degradazione dell\'acido ascorbico (tipica degli agrumi) e reazioni di Maillard lente a bassa temperatura, come nell\'aglio nero; la sbollentatura ferma in gran parte gli enzimi, quindi l\'ossidazione enzimatica conta poco. Nascono note scure, di tè e di frutta secca, mentre le aldeidi verdi del lime fresco quasi spariscono. Restano l'acido citrico, che dà l'acidità, e parte del limonene; il sale della bollitura porta una leggera sapidità.",
   "Coriandolo": "Linalolo (fino al 70% dell'olio essenziale), responsabile della nota agrumato-floreale; sovraestratto vira su note terrose/sapone per la pirazina.",
   "Cardamomo verde": "1,8-cineolo e alfa-terpinil acetato, le molecole della freschezza eucaliptata; il cineolo si estrae rapidamente, l'acetato richiede più tempo.",
   "Cardamomo nero": "Specie diversa dal cardamomo verde (genere Amomum, non Elettaria; stessa famiglia delle Zingiberaceae). Domina l'1,8-cineolo (nota canforata-balsamica), con poco acetato di alfa-terpinile, l'estere dolce-floreale tipico del verde. L'aroma affumicato non è della pianta: viene dall'essiccazione tradizionale dei baccelli sopra il fuoco o sulle braci, che deposita fenoli del fumo (guaiacolo e simili). Il cardamomo verde invece si essicca all'aria o con calore indiretto, e resta fresco e floreale.",
@@ -4899,7 +4899,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v184</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v185</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = ['storia', 'builder', 'prove', 'libreria', 'cocktail', 'laboratorio'];   // già raggiungibili dalla prima pagina
