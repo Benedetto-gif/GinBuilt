@@ -658,6 +658,7 @@ function diluizioneT(o){
   function carica(box){
     var sci = pulisci(box.getAttribute('data-sci')), nome = box.getAttribute('data-nome') || '';
     var file = box.getAttribute('data-file');
+    if (file && /^foto\//.test(file)){ mostra(box, {thumbnail: {source: file}, title: sci || nome, fonte: 'foto scelta'}, nome); return; }
     if (file){ mostra(box, {thumbnail: {source: 'https://commons.wikimedia.org/wiki/Special:FilePath/' + encodeURIComponent(file.replace(/ /g, '_')) + '?width=320'}, title: sci || nome, fonte: 'Wikimedia Commons'}, nome); return; }
     var prove = [];
     if (sci){ prove.push(['it', sci]); prove.push(['en', sci]); }

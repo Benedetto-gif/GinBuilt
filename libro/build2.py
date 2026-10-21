@@ -680,6 +680,10 @@ man = ['<item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" prope
        '<item id="cover" href="copertina.png" media-type="image/png" properties="cover-image"/>',
        '<item id="coverp" href="copertina.xhtml" media-type="application/xhtml+xml"/>']
 spine = ['<itemref idref="coverp"/>', '<itemref idref="indice"/>']
+# Foto locali scelte a mano (cartella foto dell'app): entrano nel libro come file
+FOTO_LOCALI = sorted(set(v for v in FOTO.values() if v.startswith('foto/')))
+for k, f in enumerate(FOTO_LOCALI):
+    man.append('<item id="foto%d" href="%s" media-type="image/%s"/>' % (k, f, 'png' if f.endswith('.png') else 'jpeg'))
 man.append('<item id="indice" href="indice.xhtml" media-type="application/xhtml+xml" properties="scripted"/>')
 ids = set()
 for fid, href, title, xh, scr, lvl in files:
@@ -706,4 +710,5 @@ with zipfile.ZipFile(OUT, 'w') as z:
       '<body style="margin:0;padding:0;"><section epub:type="cover" class="cop" style="height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;">'
       '<img src="copertina.png" alt="Gin in provetta. Appunti sul gin compound. Benedetto Daniele Sgroi" style="max-width:100%;max-height:100vh;width:auto;height:auto;object-fit:contain;display:block;"/></section></body></html>')
     for fid, href, title, xh, scr, lvl in files: w('OEBPS/' + href, xh)
+    for f in FOTO_LOCALI: z.writestr('OEBPS/' + f, open(os.path.join(QUI, '..', f), 'rb').read(), compress_type=zipfile.ZIP_STORED)
 print('ok', OUT, len(files), 'pagine')

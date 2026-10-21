@@ -2157,7 +2157,7 @@ html details.howto a{color:#5A3E1C;}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v176</div>
+  <div class="splash-ver" id="splash-ver">v177</div>
 </div>
 
 <div class="wrap">
@@ -3832,7 +3832,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione v176 · 21 ottobre 2026</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione v177 · 21 ottobre 2026</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -4899,7 +4899,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v176</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v177</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = ['storia', 'builder', 'prove', 'libreria', 'cocktail', 'laboratorio'];   // già raggiungibili dalla prima pagina
@@ -5418,10 +5418,12 @@ function linkImmaginiHtml(d){
 // Foto scelte a mano (file di Wikimedia Commons): prendono il posto di quella trovata in automatico su Wikipedia.
 const FOTO_SCELTE = {
   'Salvia': 'Salvia officinalis Szałwia lekarska 2023-07-21 02.jpg',
-  'Lime': 'Key Lime Citris aurantifolia.jpg'
+  'Lime': 'Key Lime Citris aurantifolia.jpg',
+  'Lime nero': 'foto/lime-nero.jpg'   // foto data da Benny, nella cartella foto dell'app
 };
 function fotoScelta(d){
   const f = FOTO_SCELTE[d.botanica]; if (!f) return null;
+  if (/^foto\//.test(f)) return { src: f, titolo: nomeScientificoPulito(d) || d.botanica, pagina: '', fonte: 'locale' };
   const n = encodeURIComponent(f.replace(/ /g, '_'));
   return { src: 'https://commons.wikimedia.org/wiki/Special:FilePath/' + n + '?width=320', titolo: nomeScientificoPulito(d) || d.botanica,
            pagina: 'https://commons.wikimedia.org/wiki/File:' + n, fonte: 'Wikimedia Commons' };
@@ -5429,7 +5431,7 @@ function fotoScelta(d){
 function fotoBotanicaHtml(d){
   const c = fotoScelta(d) || FOTO_CACHE[d.botanica];
   const fig = (c && c.src)
-    ? `<figure><img src="${c.src}" alt="${d.botanica}" loading="lazy" title="Tocca per ingrandire" onclick="zoomFoto(this.src)" onerror="this.closest('figure').remove()"><figcaption>${c.titolo ? c.titolo + ' · ' : ''}foto da <a href="${c.pagina}" target="_blank" rel="noopener">${c.fonte || 'Wikipedia'}</a> (la pianta, non sempre la parte usata)</figcaption></figure>`
+    ? `<figure><img src="${c.src}" alt="${d.botanica}" loading="lazy" title="Tocca per ingrandire" onclick="zoomFoto(this.src)" onerror="this.closest('figure').remove()"><figcaption>${c.titolo ? c.titolo + ' · ' : ''}${c.pagina ? `foto da <a href="${c.pagina}" target="_blank" rel="noopener">${c.fonte || 'Wikipedia'}</a>` : 'foto'} (la pianta, non sempre la parte usata)</figcaption></figure>`
     : '';
   return fig + linkImmaginiHtml(d);
 }
