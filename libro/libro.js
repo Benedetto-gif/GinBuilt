@@ -650,7 +650,7 @@ function diluizioneT(o){
       else { img.className = 'grande'; img.setAttribute('src', grande); }
     });
     var did = document.createElement('p'); did.className = 'foto-did';
-    did.appendChild(document.createTextNode((j.title || titolo) + (j.fonte === 'foto scelta' ? ' · la parte usata' : ' · foto da ' + (j.fonte || 'Wikipedia') + ' (la pianta, non sempre la parte usata)') + ' · tocca per ingrandire'));
+    did.appendChild(document.createTextNode((j.title || titolo) + (j.fonte === 'foto scelta' ? ' · immagine ricostruita al computer, non una fotografia' : ' · foto da ' + (j.fonte || 'Wikipedia') + ' (la pianta, non sempre la parte usata)') + ' · tocca per ingrandire'));
     box.insertBefore(did, box.firstChild);
     box.insertBefore(img, box.firstChild);
     return true;

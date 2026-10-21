@@ -8,7 +8,12 @@ D = json.load(open(os.path.join(QUI, 'dati.json')))
 P, ASSI, ORD, MOL, MASTER, DOSE, MAT, PAN = D['P'], D['ASSI'], D['ORD'], D['MOL'], D['MASTER'], D['DOSE'], D['MAT'], D['PAN']
 SENS, UMAMI, ASSI_SENS = D.get('SENS', {}), D.get('UMAMI', {}), D.get('ASSI_SENS', [])
 NOTA = D.get('NOTA', {})    # botaniche poco utili (i) o pericolose (p): restano solo per sapere che esistono
-FOTO = D.get('FOTO', {})    # foto scelte a mano (file di Wikimedia Commons)
+import base64 as _b64
+FOTO = D.get('FOTO', {})
+FOTO_DATI = {}
+for _n, _v in list(FOTO.items()):
+    if isinstance(_v, str) and _v.startswith('data:image/jpeg;base64,'):
+        _f = 'foto/' + re.sub(r'[^a-z0-9]+', '-', _n.lower()).strip('-') + '.jpg'; FOTO_DATI[_f] = _b64.b64decode(_v.split(',', 1)[1]); FOTO[_n] = _f    # foto scelte a mano (file di Wikimedia Commons)
 ICONE = D.get('ICONE', {})  # icone disegnate (SVG) per chi non ha un'emoji adatta
 icona = lambda m: ICONE.get(m['botanica']) or e(m.get('icona') or '🌿')
 BUCCIA = D.get('BUCCIA', {})   # agrumi: profilo dell'altra buccia (fresca o disidratata), come nell'app
@@ -710,5 +715,5 @@ with zipfile.ZipFile(OUT, 'w') as z:
       '<body style="margin:0;padding:0;"><section epub:type="cover" class="cop" style="height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;">'
       '<img src="copertina.png" alt="Gin in provetta. Appunti sul gin compound. Benedetto Daniele Sgroi" style="max-width:100%;max-height:100vh;width:auto;height:auto;object-fit:contain;display:block;"/></section></body></html>')
     for fid, href, title, xh, scr, lvl in files: w('OEBPS/' + href, xh)
-    for f in FOTO_LOCALI: z.writestr('OEBPS/' + f, open(os.path.join(QUI, '..', f), 'rb').read(), compress_type=zipfile.ZIP_STORED)
+    for f in FOTO_LOCALI: z.writestr('OEBPS/' + f, FOTO_DATI[f] if f in FOTO_DATI else open(os.path.join(QUI, '..', f), 'rb').read(), compress_type=zipfile.ZIP_STORED)
 print('ok', OUT, len(files), 'pagine')
