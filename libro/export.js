@@ -2,7 +2,7 @@ const {JSDOM,VirtualConsole}=require('jsdom');const fs=require('fs');
 const SRC=process.argv[2]||'../index.html', OUT=process.argv[3]||'dati.json';
 const dom=new JSDOM(fs.readFileSync(SRC,'utf8'),{runScripts:'dangerously',pretendToBeVisual:true,virtualConsole:new VirtualConsole(),url:'https://x.test/'});
 setTimeout(()=>{const w=dom.window,d=w.document,ser=new w.XMLSerializer();
- const data=JSON.parse(w.eval(`JSON.stringify({GLOSS_FORME:GLOSS_FORME,SIGLE_FORME:SIGLE_FORME,SENS:SENS5,UMAMI:UMAMI,ASSI_SENS:ASSI_SENS,P:PROFILO8,ASSI:ASSI8,ORD:ORDINE_RADAR,MOL:MOLECOLE,MASTER:MASTER,DOSE:DATA.dose,MAT:window.MATRICE_SENTORI,
+ const data=JSON.parse(w.eval(`JSON.stringify({GLOSS_FORME:GLOSS_FORME,SIGLE_FORME:SIGLE_FORME,SENS:SENS5,UMAMI:UMAMI,ASSI_SENS:ASSI_SENS,P:PROFILO8,ASSI:ASSI8,ORD:ORDINE_RADAR,MOL:MOLECOLE,NOTA:NOTA_GIN,MASTER:MASTER,DOSE:DATA.dose,MAT:window.MATRICE_SENTORI,
    STYLES:DATA.styles, GIN:GIN_LISTE, GIN_BASE:GIN_BASE, GARN:window.GARNISH_STILI,
    EXT:Object.fromEntries(MASTER.filter(x=>EST[x.botanica]).map(x=>{const r=infRif(x),e=estPer(x,r),E=EST[x.botanica],l=estLimiti(x);return [x.botanica,{rif:r,a:e.a,t:e.t,n:e.n,f:E.f?{a:E.f.a,t:E.f.t,n:EST_N[E.f.n]||E.f.n||''}:null,lim:l}];})),
    BUCCIA:Object.fromEntries(MASTER.filter(x=>agrumeBuccia(x.botanica)).map(x=>{const ag=agrumeBuccia(x.botanica),altro=ag.proprio==='fresca'?'secca':'fresca';return [x.botanica,{proprio:ag.proprio,v:valBuccia(ag,altro,'tutto'),rif:altro==='secca'?ag.secca:ag.fresca,stima:!ag.secca}];})),

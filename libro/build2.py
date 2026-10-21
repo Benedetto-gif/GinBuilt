@@ -7,6 +7,7 @@ from testi import INTRO, USO, FONTI, RIDONDANZE, DECOLORAZIONE, MISCELA
 D = json.load(open(os.path.join(QUI, 'dati.json')))
 P, ASSI, ORD, MOL, MASTER, DOSE, MAT, PAN = D['P'], D['ASSI'], D['ORD'], D['MOL'], D['MASTER'], D['DOSE'], D['MAT'], D['PAN']
 SENS, UMAMI, ASSI_SENS = D.get('SENS', {}), D.get('UMAMI', {}), D.get('ASSI_SENS', [])
+NOTA = D.get('NOTA', {})    # botaniche poco utili (i) o pericolose (p): restano solo per sapere che esistono
 BUCCIA = D.get('BUCCIA', {})   # agrumi: profilo dell'altra buccia (fresca o disidratata), come nell'app
 EXT = D.get('EXT', {})   # estrazione consigliata per botanica, come nell'app (grado alcolico, tempo, limiti)
 OUT = sys.argv[1] if len(sys.argv) > 1 else 'Gin-in-provetta.epub'
@@ -390,6 +391,10 @@ for c in cat_list:
         body = '<article class="bot" id="b-%s">' % slug(n)
         body += naviga
         body += '<h2>%s %s</h2><p class="bsub"><em>%s</em> · %s · %s</p>' % (e(m.get('icona') or '🌿'), e(n), e(m.get('nome_botanico') or '—'), e(c), e(m.get('parte') or '—'))
+        ng = NOTA.get(n)
+        if ng:
+            body += '<p class="nota-gin nota-gin-%s"><strong>%s</strong> %s La scheda resta solo per sapere che esiste.</p>' % (
+                ng['t'], '☠️ Pericolosa.' if ng['t'] == 'p' else '🚫 Poco utile nel gin.', e(ng['n']))
         # Foto della pianta: la carica libro.js da Wikipedia quando il lettore e' collegato a internet
         # (tocco = ingrandisce, altro tocco = torna piccola). Senza JavaScript o senza rete resta il collegamento alle immagini.
         body += '<div class="bot-foto" data-sci="%s" data-nome="%s"><p class="foto-link"><a href="https://commons.wikimedia.org/w/index.php?search=%s&amp;title=Special:MediaSearch&amp;type=image">📷 Immagini della pianta (Wikimedia Commons)</a></p></div>' % (

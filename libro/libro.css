@@ -208,3 +208,7 @@ table.tab-comb tr.evitare td{background:#FBE9E5;color:#8A2F1C;}
 .bot-foto img.grande{width:100%;max-width:100%;cursor:zoom-out;}
 .bot-foto .foto-did{font-size:0.8em;color:#777;margin:0.3em 0 0.4em;}
 .bot-foto .foto-link{font-size:0.85em;margin:0.3em 0;}
+
+/* Botaniche poco utili o pericolose */
+.nota-gin{margin:.6em 0;padding:.5em .7em;border-left:4px solid #8a8a8a;background:#f1efec;border-radius:4px;}
+.nota-gin-p{border-left-color:#A83A2C;background:#f7e6e3;}
