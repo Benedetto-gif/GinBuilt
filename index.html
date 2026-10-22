@@ -5110,7 +5110,11 @@ function botDelloStile(nome){
 // Ordina o raggruppa l'elenco filtrato; per i raggruppamenti restituisce anche le intestazioni.
 function ordinaBotaniche(lista){
   const o = fOrdine.value, nm = (a, b) => a.botanica.localeCompare(b.botanica, 'it');
-  if (!o) return lista;
+  if (!o){
+    // Predefinito: le famiglie nell'ordine dell'archivio, e dentro ogni famiglia le botaniche in ordine alfabetico
+    const posFam = {}; MASTER.forEach(d => { if (!(d.categoria in posFam)) posFam[d.categoria] = Object.keys(posFam).length; });
+    return lista.slice().sort((a, b) => ((posFam[a.categoria] ?? 99) - (posFam[b.categoria] ?? 99)) || nm(a, b));
+  }
   if (o.indexOf('g:') === 0){
     const k = o.slice(2), gr = {};
     lista.forEach(d => (gr[d[k] || 'Altro'] = gr[d[k] || 'Altro'] || []).push(d));

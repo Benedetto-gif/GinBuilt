@@ -216,12 +216,17 @@ def estrazione(n, cat):
     return s, lim
 
 # ---------- botaniche: indice e collegamenti ----------
+import unicodedata as _ud
+def locale_chiave(t):
+    # ordine alfabetico italiano: senza accenti e senza maiuscole
+    return ''.join(ch for ch in _ud.normalize('NFD', t.lower()) if _ud.category(ch) != 'Mn')
 seen = set(); per_cat = {}
 for m in MASTER:
     if m.get('potenza10'): POT.setdefault(m['botanica'], float(m['potenza10']))
 for m in MASTER:
     if m['botanica'] in seen: continue
     seen.add(m['botanica']); per_cat.setdefault(m['categoria'], []).append(m)
+for _c in per_cat: per_cat[_c].sort(key=lambda m: locale_chiave(m['botanica']))
 ORDINE_CAT = ['Agrumi','Semi e spezie','Radici e rizomi','Erbe aromatiche','Fiori','Frutti e bacche','Marine e saline','Specialità e gastronomiche']
 cat_list = [c for c in ORDINE_CAT if c in per_cat] + [c for c in per_cat if c not in ORDINE_CAT]
 CAT_DI = {m['botanica']: c for c in cat_list for m in per_cat[c]}
