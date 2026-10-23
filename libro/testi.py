@@ -8,7 +8,7 @@ INTRO = '''<section epub:type="foreword"><h1>Introduzione</h1>
 <p class="firma">Benedetto Daniele Sgroi</p></section>'''
 
 USO = '''<section><h1>Come usare questo libro</h1>
-<p>Il libro raccoglie i contenuti dell'app GinBuilder. Gli strumenti di lavoro (il Gin Builder, le schede di prova, il diario degli infusi, i calcolatori) restano nell'app: qui si trovano le conoscenze su cui si basano.</p>
+<p>Il libro raccoglie i contenuti dell'app GinBuilder, che si apre gratuitamente nel browser all'indirizzo <a href="https://benedetto-gif.github.io/GinBuilt/">benedetto-gif.github.io/GinBuilt</a> e si può installare sul telefono come un'app. Gli strumenti di lavoro (il Gin Builder, le schede di prova, il diario degli infusi, i calcolatori) restano nell'app: qui si trovano le conoscenze su cui si basano.</p>
 <p>Alcune pagine sono <strong>interattive</strong> nei lettori che eseguono JavaScript, come Kotobee Reader: sotto i radar delle botaniche e dei gin si può sovrapporre un profilo vicino, la matrice dei sentori si filtra toccando la griglia, il calendario delle raccolte si apre sul mese scelto. Negli altri lettori il libro resta completo: i radar sono immagini e tutto il testo è visibile.</p>
 <p>I collegamenti fra le pagine sono attivi: dalla matrice dei sentori si salta alla scheda della botanica, dalle schede ai capitoli che le spiegano.</p>
 <p class="nota">I profili radar, le dosi e i tempi sono stime orientative da verificare all'assaggio. Le fonti delle informazioni scientifiche sono elencate in appendice, in <a href="app-fonti.xhtml">Fonti e bibliografia</a>.</p></section>'''
