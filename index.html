@@ -485,6 +485,13 @@ section.panel.active{display:block;animation:panelIn .34s var(--ease) both;}
   box-shadow:var(--sh-1), var(--sh-inset);
 }
 
+/* ---------------- Manuale «Dal macerato alla bottiglia» (si apre con l'impronta) ---------------- */
+.man-lock{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;padding:36px 18px;max-width:520px;margin:0 auto;}
+.man-lock-ic{font-size:52px;line-height:1;}
+.man-lock p{margin:0;}
+.man-msg{min-height:1.4em;font-weight:600;}
+.man-barra{display:flex;justify-content:flex-end;margin-bottom:10px;}
+#man-frame{display:block;width:100%;min-height:70vh;border:0;border-radius:16px;background:#f5f6fb;}
 /* ---------------- Home: griglia bento ---------------- */
 .home-hero{
   position:relative;
@@ -2157,7 +2164,7 @@ html details.howto a{color:#5A3E1C;}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v185</div>
+  <div class="splash-ver" id="splash-ver">v193</div>
 </div>
 
 <div class="wrap">
@@ -2205,6 +2212,7 @@ html details.howto a{color:#5A3E1C;}
     <button data-tab="toniche">🫧 Acque toniche</button>
     <button data-tab="special">✨ Special</button>
     <button data-tab="laboratorio">🧪 Laboratorio cocktail</button>
+    <button data-tab="manuale">📘 Dal macerato alla bottiglia</button>
   </nav>
   </div>
 
@@ -3854,8 +3862,23 @@ html details.howto a{color:#5A3E1C;}
     <p class="home-note">Le corrispondenze molecola–recettore indicate sono quelle accertate negli studi elencati in 📚 Fonti scientifiche; la quantità di una molecola in una botanica varia con varietà, raccolta ed estrazione.</p>
   </section>
 
+  <!-- MANUALE: si apre con l'impronta -->
+  <section class="panel" id="panel-manuale">
+    <div class="man-lock" id="man-lock">
+      <div class="man-lock-ic" aria-hidden="true">🔒</div>
+      <h2>Dal macerato alla bottiglia</h2>
+      <p>Il manuale della base del gin: preparare gli infusi, misurarne la potenza, comporre la triade, gestire i lotti e imbottigliare, con i calcolatori e i fogli Excel.</p>
+      <button type="button" class="primary-btn" id="man-apri">👆 Apri con l'impronta</button>
+      <p class="man-msg" id="man-msg" role="status"></p>
+    </div>
+    <div id="man-aperto" hidden>
+      <div class="man-barra"><button type="button" class="ghost-btn" id="man-blocca">🔒 Blocca il manuale</button></div>
+      <iframe id="man-frame" title="Dal macerato alla bottiglia"></iframe>
+    </div>
+  </section>
+
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione v192 · 22 ottobre 2026</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione v193 · 24 ottobre 2026</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -4936,14 +4959,14 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v192</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v193</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = ['storia', 'builder', 'prove', 'libreria', 'cocktail', 'laboratorio'];   // già raggiungibili dalla prima pagina
   // Le pagine restanti si presentano raggruppate, dalla più utile mentre si costruisce
   // una ricetta alle pagine di approfondimento/riferimento, invece che nell'ordine dei tab.
   const GROUPS = [
-    { label: 'La ricetta', tabs: ['proporzioni'] },
+    { label: 'La ricetta', tabs: ['proporzioni', 'manuale'] },
     { label: 'Prima di costruire', tabs: ['ridondanza'] },
     { label: 'Il servizio', tabs: ['garnish', 'toniche'] },
     { label: 'Special', tabs: ['special'] },
@@ -8926,6 +8949,71 @@ setInterval(() => { const p = document.getElementById('panel-diario'); if (p && 
   }
   window.addEventListener('hashchange', () => { if (location.hash === '#diario'){ apriDiario(); try { history.replaceState(null, '', location.pathname); } catch(e){} } });
   if (navigator.serviceWorker) navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.apri === 'diario') apriDiario(); });
+})();
+// ---------- Manuale «Dal macerato alla bottiglia»: si apre con l'impronta ----------
+// Blocco di comodo, non una protezione: il contenuto è nel file manuale.html.
+// La prima volta il telefono registra una chiave legata all'impronta; dopo, ogni apertura la chiede.
+(function(){
+  const CHIAVE = 'gb-manuale-chiave', lock = document.getElementById('man-lock'), aperto = document.getElementById('man-aperto');
+  const frame = document.getElementById('man-frame'), msg = document.getElementById('man-msg'), btn = document.getElementById('man-apri');
+  if (!lock || !frame) return;
+  const b64 = buf => btoa(String.fromCharCode.apply(null, new Uint8Array(buf)));
+  const daB64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  const caso = n => crypto.getRandomValues(new Uint8Array(n));
+  let sbloccato = false;
+  function mostra(){
+    lock.hidden = sbloccato; aperto.hidden = !sbloccato;
+    if (sbloccato && !frame.getAttribute('src')){ try { sessionStorage.setItem('gb-manuale-ok', '1'); } catch(e){} frame.src = 'manuale.html'; }
+  }
+  function blocca(){
+    sbloccato = false; try { sessionStorage.removeItem('gb-manuale-ok'); } catch(e){}
+    frame.removeAttribute('src'); frame.style.height = ''; msg.textContent = ''; mostra();
+  }
+  window.bloccaManuale = blocca;
+  // l'altezza del riquadro segue quella del manuale, così si scorre con la pagina
+  frame.addEventListener('load', () => {
+    try {
+      const d = frame.contentDocument; if (!d || !d.body) return;
+      const adatta = () => { frame.style.height = d.documentElement.scrollHeight + 'px'; };
+      adatta(); new frame.contentWindow.ResizeObserver(adatta).observe(d.body);
+    } catch(e){}
+  });
+  async function apri(){
+    msg.textContent = '';
+    if (!window.PublicKeyCredential || !navigator.credentials){ msg.textContent = 'Questo browser non supporta lo sblocco con l\'impronta.'; return; }
+    try {
+      const ok = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+      if (!ok){ msg.textContent = 'Su questo dispositivo non c\'è un\'impronta o un blocco schermo da usare.'; return; }
+      let id = null; try { id = localStorage.getItem(CHIAVE); } catch(e){}
+      if (!id){
+        msg.textContent = 'Prima volta: registro la tua impronta per questo manuale…';
+        const cred = await navigator.credentials.create({ publicKey: {
+          challenge: caso(32), rp: { name: 'GinBuilder' },
+          user: { id: caso(16), name: 'manuale', displayName: 'Manuale GinBuilder' },
+          pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+          authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required', residentKey: 'discouraged' },
+          timeout: 60000 } });
+        try { localStorage.setItem(CHIAVE, b64(cred.rawId)); } catch(e){}
+      } else {
+        await navigator.credentials.get({ publicKey: {
+          challenge: caso(32), allowCredentials: [{ type: 'public-key', id: daB64(id) }],
+          userVerification: 'required', timeout: 60000 } });
+      }
+      sbloccato = true; msg.textContent = ''; mostra();
+    } catch(e){
+      if (e && e.name === 'NotAllowedError') msg.textContent = 'Sblocco annullato. Riprova quando vuoi.';
+      else if (e && e.name === 'InvalidStateError') msg.textContent = 'L\'impronta è già registrata: riprova.';
+      else msg.textContent = 'Lo sblocco non è riuscito su questo dispositivo.';
+    }
+  }
+  btn.addEventListener('click', apri);
+  document.getElementById('man-blocca').addEventListener('click', blocca);
+  // «Ho finito · esci» e la lunga pausa richiudono anche il manuale
+  const esciOrig = window.esciApp;
+  if (esciOrig){ window.esciApp = function(){ blocca(); return esciOrig.apply(this, arguments); }; }
+  let qs = null; try { qs = new URLSearchParams(location.search).get('apri'); } catch(e){}
+  if (qs === 'manuale'){ setTimeout(() => window.showTab('manuale'), 120); try { history.replaceState(null, '', location.pathname); } catch(e){} }
+  mostra();
 })();
 document.addEventListener('visibilitychange', () => { if (!document.hidden) diarioControlla(); });
 

@@ -8,11 +8,12 @@
  * l'app continua comunque a funzionare senza connessione.
  */
 
-const VERSIONE = 'ginbuilder-v193';
+const VERSIONE = 'ginbuilder-v194';
 
 const FILE = [
   './',
   './index.html',
+  './manuale.html',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
@@ -44,13 +45,15 @@ self.addEventListener('fetch', (e) => {
   // La pagina: prima la rete, poi la cache.
   if (req.mode === 'navigate' || req.destination === 'document') {
     e.respondWith((async () => {
+      // il manuale ha la sua pagina: non deve prendere il posto di index.html nella cache
+      const chiave = new URL(req.url).pathname.endsWith('/manuale.html') ? './manuale.html' : './index.html';
       try {
         const risposta = await fetch(req);
         const cache = await caches.open(VERSIONE);
-        cache.put('./index.html', risposta.clone());
+        cache.put(chiave, risposta.clone());
         return risposta;
       } catch (err) {
-        return (await caches.match('./index.html')) || Response.error();
+        return (await caches.match(chiave)) || Response.error();
       }
     })());
     return;
