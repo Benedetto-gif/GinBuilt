@@ -212,3 +212,11 @@ table.tab-comb tr.evitare td{background:#FBE9E5;color:#8A2F1C;}
 /* Botaniche poco utili o pericolose */
 .nota-gin{margin:.6em 0;padding:.5em .7em;border-left:4px solid #8a8a8a;background:#f1efec;border-radius:4px;}
 .nota-gin-p{border-left-color:#A83A2C;background:#f7e6e3;}
+/* Capitolo 8 · Leggi e regole */
+.leg-avviso{border:1px solid #E0B25A;background:#FBF1DC;border-radius:6px;padding:.6em .9em;}
+.leg-tab{border-collapse:collapse;width:100%;font-size:.92em;margin:.6em 0 1em;}
+.leg-tab th,.leg-tab td{border-bottom:1px solid #d8d2c6;padding:.45em .4em;text-align:left;vertical-align:top;}
+.leg-tab th{font-size:.8em;text-transform:uppercase;letter-spacing:.04em;color:#6b6358;}
+.leg-tab td:nth-child(2){white-space:nowrap;font-weight:bold;}
+.leg-fonti li{font-size:.92em;}
+.pull{border-left:3px solid #2F7259;background:#EEF5F0;padding:.7em 1em;margin:1em 0;font-style:italic;}

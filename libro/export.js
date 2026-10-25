@@ -38,7 +38,7 @@ setTimeout(()=>{const w=dom.window,d=w.document,ser=new w.XMLSerializer();
   } else out.push(['',xs(c)]);
   return out;
  }
- data.PAN={}; ['storia','nozioni','analisi','ruota','altrigin','ridondanza','cocktail','laboratorio','garnish','toniche','prove'].forEach(id=>data.PAN[id]=sezioni(id));
+ data.PAN={}; ['storia','nozioni','analisi','ruota','altrigin','ridondanza','cocktail','laboratorio','garnish','toniche','prove','leggi'].forEach(id=>data.PAN[id]=sezioni(id));
  const box=(pid,txt,k)=>{const el=[...d.querySelectorAll('#panel-'+pid+' details')].find(x=>x.querySelector('summary').textContent.includes(txt));return el?xs(clean(el.querySelector('.howto-body,.tar-body')||el,k)):'';};
  data.QUATTRO=box('matrice','Quattro sistemi'); data.CANALI=box('matrice','I canali e dove',true); data.SIGLE=box('matrice','Che cosa vogliono dire le sigle'); data.CURIOSO=box('matrice','Le domande del curioso'); data.PORTE=box('matrice','Chiavi, grimaldelli');
  data.RIDGUIDA=box('ridondanza','Come si usa'); data.TARATURA=box('prove','Taratura del palato');

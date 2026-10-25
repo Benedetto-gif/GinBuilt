@@ -656,6 +656,15 @@ add('cap7-toniche.xhtml', 'Le acque toniche', '<section><h1>Le acque toniche</h1
 add('cap7-cocktail.xhtml', 'I cocktail classici', '<section><h1>I cocktail classici</h1><p>Venti classici in cui il gin è protagonista, con le dosi standard per un drink.</p>%s</section>' % sez('cocktail', ''), 2)
 add('cap7-laboratorio.xhtml', 'Il laboratorio', '<section><h1>Il laboratorio: cocktail sperimentali</h1>%s</section>' % sez('laboratorio', ''), 2)
 
+# ---------- 8. Leggi e regole ----------
+leggi = [t for t, _ in PAN['leggi'] if t]
+pre_leggi = [h for t, h in PAN['leggi'] if not t]
+add('cap8.xhtml', 'Capitolo 8 · Leggi e regole', '<section epub:type="chapter"><h1>Capitolo 8<br/>Leggi e regole</h1>'
+    '<p>Che cosa dicono la legge europea e quella italiana su gin, bevande spiritose, accise e distillazione. Aggiornato al 25 ottobre 2026.</p>'
+    + (pulisci(pre_leggi[0]) if pre_leggi else '') + '<ol class="indice">' +
+    ''.join('<li><a href="#lg-%d">%s</a></li>' % (i, e(t)) for i, t in enumerate(leggi)) + '</ol>' +
+    ''.join('<section id="lg-%d"><h2>%s</h2>%s</section>' % (i, e(t), sez('leggi', t)) for i, t in enumerate(leggi)) + '</section>', 1)
+
 # ---------- Appendici ----------
 add('app-glossario.xhtml', 'Appendice A · Glossario', '<section epub:type="glossary"><h1>Appendice A<br/>Glossario A–Z</h1><p class="nota">Le parole color ambra sottolineate a puntini nel libro aprono la loro definizione in un riquadro sulla pagina stessa, senza lasciare il punto di lettura; qui le trovi tutte in ordine alfabetico. Per le sigle la voce completa è in «Che cosa vogliono dire le sigle», nel capitolo 5.</p>%s</section>' % ancore_glossario(sez('nozioni', 'Glossario A–Z')), 1)
 MESI = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre']
