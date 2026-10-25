@@ -485,6 +485,25 @@ section.panel.active{display:block;animation:panelIn .34s var(--ease) both;}
   box-shadow:var(--sh-1), var(--sh-inset);
 }
 
+/* ---------------- Leggi e regole ---------------- */
+.leg-avviso{border:1px solid color-mix(in srgb, var(--c-siciliano) 45%, var(--line));background:color-mix(in srgb, var(--c-siciliano) 10%, var(--surface));border-radius:var(--r-sm);padding:12px 16px;font-size:15px !important;}
+.leg-tw{overflow-x:auto;margin:0 0 16px;border-radius:var(--r-sm);border:1px solid var(--line);background:var(--surface);}
+.leg-tab{border-collapse:collapse;width:100%;min-width:560px;font-size:14.5px;line-height:1.5;}
+.leg-tab th,.leg-tab td{padding:9px 11px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;color:var(--ink-soft);}
+.leg-tab th{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);}
+.leg-tab td:nth-child(2){white-space:nowrap;font-weight:700;color:var(--ink);}
+.leg-tab tr:last-child td{border-bottom:0;}
+.leg-fonti li{font-size:14.5px !important;}
+@media (max-width:600px){
+  .leg-tab{min-width:0;}
+  .leg-tab thead{display:none;}
+  .leg-tab tr{display:block;padding:10px 12px;border-bottom:1px solid var(--line);}
+  .leg-tab tr:last-child{border-bottom:0;}
+  .leg-tab td{display:block;border:0;padding:2px 0;}
+  .leg-tab td:nth-child(2){white-space:normal;}
+  .leg-tab td:nth-child(2)::before{content:"Grado minimo: ";font-weight:400;color:var(--ink-faint);}
+}
+.leg-fonti a{color:var(--c, var(--juniper-deep));}
 /* ---------------- Manuale «Dal macerato alla bottiglia» (si apre con l'impronta) ---------------- */
 .man-lock{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;padding:36px 18px;max-width:520px;margin:0 auto;}
 .man-lock-ic{font-size:52px;line-height:1;}
@@ -2164,7 +2183,7 @@ html details.howto a{color:#5A3E1C;}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v193</div>
+  <div class="splash-ver" id="splash-ver">v194</div>
 </div>
 
 <div class="wrap">
@@ -2213,6 +2232,7 @@ html details.howto a{color:#5A3E1C;}
     <button data-tab="special">✨ Special</button>
     <button data-tab="laboratorio">🧪 Laboratorio cocktail</button>
     <button data-tab="manuale">📘 Dal macerato alla bottiglia</button>
+    <button data-tab="leggi">⚖️ Leggi e regole</button>
   </nav>
   </div>
 
@@ -3557,6 +3577,100 @@ html details.howto a{color:#5A3E1C;}
     <p class="home-note">Gli abbinamenti sono punti di partenza: la prova vera è lo stesso gin con due toniche diverse, assaggiate una accanto all'altra.</p>
   </section>
 
+  <!-- ============ LEGGI E REGOLE ============ -->
+  <section class="panel" id="panel-leggi">
+    <div class="storia">
+      <h2>Leggi e regole del gin</h2>
+      <p class="storia-sub">Che cosa dicono la legge europea e quella italiana su gin, bevande spiritose, accise e distillazione. Aggiornato al 25 ottobre 2026.</p>
+
+      <p class="leg-avviso">⚠️ Queste pagine riassumono le norme per orientarsi: non sono una consulenza legale. Prima di vendere o di avviare un'attività verifica sempre con l'Ufficio delle Dogane competente e con un consulente, perché le regole cambiano.</p>
+
+      <h3>🇪🇺 La legge europea: il Regolamento (UE) 2019/787</h3>
+      <p>Il <strong>Regolamento (UE) 2019/787</strong> vale direttamente in tutti i Paesi dell'Unione e definisce che cos'è una bevanda spiritosa, come si produce e come si chiama. Una <strong>bevanda spiritosa</strong> deve avere almeno <strong>15 % vol</strong> (art. 2). Le bevande sono divise in categorie, ognuna con i suoi requisiti: chi non li rispetta non può usare quel nome.</p>
+      <p>Per la famiglia del ginepro le categorie sono queste:</p>
+      <div class="leg-tw"><table class="leg-tab">
+        <thead><tr><th>Categoria</th><th>Grado minimo</th><th>Come si fa</th></tr></thead>
+        <tbody>
+          <tr><td>🌿 <strong>Bevanda spiritosa al ginepro</strong> (cat. 19)</td><td>30 % vol</td><td>Alcol agricolo, acquavite o distillato di cereali aromatizzati con bacche di ginepro. Il ginepro si deve riconoscere, anche attenuato.</td></tr>
+          <tr><td>🍸 <strong>Gin</strong> (cat. 20)</td><td>37,5 % vol</td><td>Alcol etilico di origine agricola aromatizzato con bacche di ginepro e con aromi o preparazioni aromatiche. Il gusto deve essere <strong>prevalentemente di ginepro</strong>.</td></tr>
+          <tr><td>⚗️ <strong>Gin distillato</strong> (cat. 21)</td><td>37,5 % vol</td><td>Ridistillazione di alcol agricolo (almeno 96 % vol) con ginepro e altre botaniche naturali, o miscela di quel distillato con alcol uguale. Aggiungere solo essenze o aromi all'alcol non basta.</td></tr>
+          <tr><td>🎩 <strong>London gin</strong> (cat. 22)</td><td>37,5 % vol</td><td>Tutti gli aromi entrano in distillazione, il distillato esce ad almeno 70 % vol, metanolo al massimo 5 g per ettolitro di alcol puro. Dopo si aggiunge solo acqua, al massimo 0,1 g/L di zuccheri, <strong>niente colorazione</strong>.</td></tr>
+          <tr><td>🫐 <strong>Sloe gin</strong> (cat. 35)</td><td>25 % vol</td><td>Liquore ottenuto macerando prugnole nel gin; solo aromi naturali.</td></tr>
+          <tr><td>🍯 <strong>Liquore</strong> (cat. 33)</td><td>15 % vol</td><td>Almeno 100 g/L di zuccheri nella maggior parte dei casi (80 g/L per genziana e assenzio, 70 g/L per i liquori di ciliegia).</td></tr>
+        </tbody>
+      </table></div>
+      <div class="pull">Sotto 37,5 % vol non è gin. Lo ha ribadito la Corte di Giustizia UE il 13 novembre 2025, a proposito di un «gin» senza alcol.</div>
+
+      <h3>🧪 Il gin compound davanti alla legge</h3>
+      <p>Un gin fatto con <strong>infusi di botaniche in alcol neutro</strong>, senza ridistillazione, rientra nella categoria 20, <strong>Gin</strong>. Che cosa significa in pratica:</p>
+      <ul>
+        <li>🏷️ <strong>Il nome.</strong> In etichetta si scrive «gin». Non si può scrivere «gin distillato», «London gin» né «London dry».</li>
+        <li>🫐 <strong>Il ginepro.</strong> Il gusto deve restare prevalentemente di ginepro, qualunque siano le altre botaniche.</li>
+        <li>🍬 <strong>«Dry».</strong> Si può aggiungere «dry» se gli zuccheri aggiunti non superano 0,1 g per litro, espressi come zucchero invertito. Contano come edulcoranti zucchero, destrosio, fruttosio, sciroppi di glucosio e di zucchero invertito, mosti d'uva, zucchero bruciato, miele, sciroppo di carruba e simili (art. 4, punto 9).</li>
+        <li>🎨 <strong>Il colore.</strong> Per il gin non c'è un divieto specifico di colorazione: il divieto riguarda il London gin. Il caramello ammesso è l'additivo E150 (art. 4, punto 21).</li>
+        <li>💧 <strong>L'acqua.</strong> Si può ridurre il grado con acqua, ma senza scendere sotto il minimo della categoria.</li>
+        <li>📍 <strong>L'origine.</strong> «Prodotto in Sicilia» indica il luogo in cui si è svolta la fase che dà al gin il suo carattere (art. 14).</li>
+        <li>🚫 <strong>Le imitazioni.</strong> Un prodotto che non rispetta i requisiti non può chiamarsi gin, nemmeno con «tipo», «genere» o «gusto» (art. 10).</li>
+      </ul>
+
+      <h3>🏷️ L'etichetta</h3>
+      <p>Oltre al Regolamento 2019/787, per l'etichetta valgono le regole generali sugli alimenti del <strong>Regolamento (UE) 1169/2011</strong>.</p>
+      <ul>
+        <li>📛 <strong>Denominazione legale</strong>: «gin», ben visibile.</li>
+        <li>🍾 <strong>Titolo alcolometrico</strong> in «% vol». Per le bevande spiritose la tolleranza è di ±0,3 % vol.</li>
+        <li>⚖️ <strong>Quantità netta</strong>, per esempio 70 cl.</li>
+        <li>⚠️ <strong>Allergeni</strong>, se presenti (per esempio frutta a guscio), con la dicitura «contiene».</li>
+        <li>🏢 <strong>Nome e indirizzo</strong> di chi produce o commercializza, e in Italia la <strong>sede dello stabilimento</strong> (D.Lgs. 145/2017).</li>
+        <li>🔢 <strong>Lotto</strong> di produzione.</li>
+      </ul>
+      <p>Sopra 1,2 % vol <strong>non sono obbligatori</strong> l'elenco degli ingredienti e la tabella nutrizionale, e sopra 10 % vol non serve il termine minimo di conservazione. Se si sceglie di metterli, vanno scritti secondo le regole.</p>
+      <p>💊 <strong>Niente salute in etichetta.</strong> Sulle bevande con più di 1,2 % vol sono vietate le indicazioni sulla salute (Reg. CE 1924/2006, art. 4): un gin non può vantare effetti digestivi, tonificanti o altri benefici.</p>
+
+      <h3>💶 Le accise: l'alcol e lo Stato</h3>
+      <p>In Italia l'alcol è un prodotto soggetto ad <strong>accisa</strong>, regolato dal <strong>Testo Unico Accise</strong> (D.Lgs. 504/1995), che l'Agenzia delle Dogane e dei Monopoli (ADM) applica e controlla. Il D.Lgs. 43/2025 lo ha aggiornato dal 1° gennaio 2026.</p>
+      <ul>
+        <li>💰 <strong>Quanto.</strong> L'accisa sull'alcol etilico è di <strong>1.035,52 € per ettolitro di alcol puro</strong> (tabella ADM aggiornata al 1° gennaio 2024). Una bottiglia da 70 cl a 43 % contiene 0,30 litri di alcol puro: circa <strong>3,12 €</strong> di accisa, a cui si aggiunge l'IVA.</li>
+        <li>🏦 <strong>Il deposito fiscale.</strong> È il magazzino in cui l'alcol sta ad accisa sospesa: si paga quando il prodotto esce per essere venduto. La produzione commerciale di bevande alcoliche si svolge in deposito fiscale, salvo chi lavora alcol su cui l'accisa è già stata pagata.</li>
+        <li>📝 <strong>Denuncia e licenza.</strong> Chi trasforma, imbottiglia o tiene in deposito alcol e bevande alcoliche soggette ad accisa deve denunciarlo all'Ufficio delle Dogane, ottenere la <strong>licenza fiscale</strong> (con un diritto annuale) e tenere un <strong>registro di carico e scarico</strong> (art. 29).</li>
+        <li>🎫 <strong>Il contrassegno di Stato.</strong> Le bottiglie di bevande spiritose vendute in Italia portano la fascetta che certifica l'accisa pagata (art. 13).</li>
+        <li>🏪 <strong>Vendere.</strong> Dal 1° gennaio 2026 bar, ristoranti e negozi non hanno più bisogno della licenza fiscale per vendere alcolici: basta la comunicazione di avvio attività al SUAP del Comune, che la gira alle Dogane. La licenza resta per chi produce, trasforma o tiene depositi.</li>
+        <li>🔞 <strong>Minori.</strong> È vietato vendere e somministrare alcolici ai minori di 18 anni, e chi vende deve chiedere un documento quando la maggiore età non è evidente (L. 125/2001, art. 14-ter).</li>
+      </ul>
+
+      <h3>⚗️ Distillare: che cosa dice la legge</h3>
+      <p>In Italia l'alcol si può produrre solo in impianti <strong>denunciati e verificati</strong> dall'ADM. Distillare in casa, anche per sé, è <strong>fabbricazione clandestina</strong>.</p>
+      <ul>
+        <li>⚖️ <strong>La pena.</strong> Reclusione da sei mesi a tre anni e multa da due a dieci volte l'imposta evasa, mai sotto 7.746 € (art. 41 TUA). Basta la presenza di materie prime e apparecchi non denunciati nello stesso locale per provarla.</li>
+        <li>🫙 <strong>L'alambicco da solo.</strong> Tenere un apparecchio di distillazione non denunciato, anche senza materie prime, costa una sanzione da 258 a 1.549 €. La stessa sanzione colpisce chi lo costruisce, lo vende o lo presta senza denuncia.</li>
+        <li>🧴 <strong>I piccoli apparecchi.</strong> Gli apparecchi con caldaia sotto i 3 litri destinati ad altri usi, come gli oli essenziali o gli esperimenti di laboratorio, non vanno denunciati se portano un'avvertenza indelebile sul divieto (D.M. 153/2001, art. 16). Usarli per produrre alcol resta vietato.</li>
+        <li>🏭 <strong>Il gin distillato.</strong> Anche ridistillare alcol già tassato con le botaniche richiede un alambicco denunciato e un impianto autorizzato: licenza ADM, autorizzazione del Comune, spesso prevenzione incendi e scarichi. Tra locale e permessi servono in genere 18–24 mesi.</li>
+        <li>🌿 <strong>Il compound.</strong> Il gin per infusione non distilla nulla, quindi non richiede alambicco: per questo è la via praticabile per chi comincia.</li>
+      </ul>
+
+      <h3>🏠 Per sé o per vendere: i tre casi</h3>
+      <ul>
+        <li>🏠 <strong>Per uso personale.</strong> Preparare gin e liquori per infusione con alcol comprato, su cui l'accisa è già pagata, per sé, la famiglia e gli ospiti <strong>non richiede autorizzazioni</strong>, purché non venga venduto nulla.</li>
+        <li>🏭 <strong>Per vendere.</strong> Serve un laboratorio dedicato con denuncia e licenza ADM, registro di carico e scarico, contrassegni di Stato, registrazione sanitaria con piano HACCP (Reg. CE 852/2004, tramite SCIA al SUAP) ed etichetta conforme.</li>
+        <li>🔥 <strong>Per distillare.</strong> Solo in un impianto autorizzato, come visto sopra.</li>
+      </ul>
+
+      <h3>📚 Fonti</h3>
+      <ul class="leg-fonti">
+        <li><a href="https://eur-lex.europa.eu/legal-content/IT/TXT/HTML/?uri=CELEX:32019R0787" target="_blank" rel="noopener">Regolamento (UE) 2019/787 sulle bevande spiritose (EUR-Lex)</a> e <a href="https://www.legislation.gov.uk/cy/eur/2019/787/annexes/2019-05-17?timeline=false" target="_blank" rel="noopener">Allegato I con le categorie</a></li>
+        <li><a href="https://www.eunews.it/en/2025/11/13/either-it-is-gin-with-its-minimum-37-5-per-cent-alcohol-or-it-is-not-and-you-cannot-call-it-that/" target="_blank" rel="noopener">Corte di Giustizia UE, 13 novembre 2025: il gin senza alcol non è gin (Eunews)</a></li>
+        <li><a href="https://www.businesscompanion.info/node/1361/printable/pdf" target="_blank" rel="noopener">Etichettatura delle bevande alcoliche secondo il Reg. 1169/2011 (Business Companion)</a> e <a href="https://ilfattoalimentare.it/etichetta-bevande-alcoliche-ingredienti.html" target="_blank" rel="noopener">ingredienti in etichetta (Il Fatto Alimentare)</a></li>
+        <li><a href="https://curia.europa.eu/jcms/jcms/P_86019/en" target="_blank" rel="noopener">Indicazioni sulla salute vietate sopra 1,2 % vol, causa Deutsches Weintor C-544/10 (Corte di Giustizia UE)</a></li>
+        <li><a href="https://adm.gov.it/portale/documents/20182/43975520/Aliquote-ACCISE-naz-01012024.pdf/29bbbc39-bde5-e5fe-82d6-1e92f908063b" target="_blank" rel="noopener">Aliquote di accisa nazionali al 1° gennaio 2024 (ADM)</a></li>
+        <li><a href="https://miolegale.it/testi-unici/accise/art-29/" target="_blank" rel="noopener">Art. 29 TUA: denuncia, licenza e registro</a> · <a href="https://miolegale.it/testi-unici/accise/art-41/" target="_blank" rel="noopener">Art. 41 TUA: fabbricazione clandestina</a> · <a href="https://leggeinchiaro.it/articolo-13-accise/" target="_blank" rel="noopener">Art. 13 TUA: contrassegni di Stato</a></li>
+        <li><a href="https://www.ascomtorino.it/file/45697" target="_blank" rel="noopener">D.Lgs. 43/2025: fine della licenza fiscale per la vendita dal 2026 (FIPE)</a></li>
+        <li><a href="https://www.edizionieuropee.it/law/html/88/zn95_18_032.html" target="_blank" rel="noopener">D.M. 153/2001, art. 16: apparecchi di distillazione</a></li>
+        <li><a href="https://assodistil.it/faq/" target="_blank" rel="noopener">FAQ AssoDistil: liquori per uso personale e produzione commerciale</a></li>
+        <li><a href="https://www.bargiornale.it/featured/come-avviare-una-microdistilleria-di-gin/" target="_blank" rel="noopener">Come avviare una microdistilleria di gin (Bargiornale, 2023)</a></li>
+        <li><a href="https://miolegale.it/guide/limiti-vendita-alcolici/" target="_blank" rel="noopener">Vendita di alcolici ai minori</a></li>
+      </ul>
+    </div>
+  </section>
+
   <!-- ============ SPECIAL ============ -->
   <section class="panel" id="panel-special">
     <details class="howto">
@@ -3878,7 +3992,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione v193 · 24 ottobre 2026</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione v194 · 25 ottobre 2026</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -4959,7 +5073,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v193</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v194</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = ['storia', 'builder', 'prove', 'libreria', 'cocktail', 'laboratorio'];   // già raggiungibili dalla prima pagina
@@ -4970,7 +5084,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
     { label: 'Prima di costruire', tabs: ['ridondanza'] },
     { label: 'Il servizio', tabs: ['garnish', 'toniche'] },
     { label: 'Special', tabs: ['special'] },
-    { label: 'Per approfondire', tabs: ['nozioni', 'analisi', 'matrice', 'ruota', 'altrigin'] }
+    { label: 'Per approfondire', tabs: ['nozioni', 'analisi', 'matrice', 'ruota', 'altrigin', 'leggi'] }
   ];
   const fuoriHome = btns.filter(b => IN_HOME.indexOf(b.dataset.tab) < 0 && b.dataset.tab !== 'home');
   const homeBtn = btns.find(b => b.dataset.tab === 'home');
@@ -10785,6 +10899,7 @@ if ("serviceWorker" in navigator) {
 (function(){
   const PAGINE = {
     storia:      { c:'--c-mediterraneo', k:'Per cominciare' },
+    leggi:       { c:'--c-secco',        k:'Per approfondire' },
     diario:      { c:'--yellow-sym',     k:'Il lavoro in corso',
                    s:'Gli infusi in macerazione, con i promemoria per controllarli e filtrarli al momento giusto.' },
     libreria:    { c:'--c-erbaceo',      k:'Passo 1 di 3',
