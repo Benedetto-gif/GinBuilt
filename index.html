@@ -2104,6 +2104,104 @@ html details.howto a{color:#5A3E1C;}
 .theme-pop .tp-prev span{height:22px;border-radius:7px;background:oklch(from var(--c) clamp(.3, calc(.62 + var(--riq-l, 0)), .9) min(calc(.2 * var(--riq-b, 1)), calc(c * 1.2 * var(--riq-b, 1))) h);}
 .theme-pop .tp-zero{margin-top:12px;font:inherit;font-size:11.5px;font-weight:700;color:var(--ink-soft);background:transparent;border:1px solid var(--line-strong);border-radius:999px;padding:5px 12px;cursor:pointer;}
 .theme-pop .tp-nota{font-size:10.5px;color:var(--ink-faint);margin:6px 0 0;line-height:1.35;}
+
+/* ===== v2.0 · il percorso a tappe ===== */
+#panel-mappa{max-width:520px;margin:0 auto}
+.mp-barra{display:flex;gap:8px;justify-content:space-between;align-items:center;margin:2px 0 8px}
+.mp-prog,.mp-diario{display:inline-flex;align-items:center;gap:6px;padding:8px 13px;border-radius:999px;border:0;cursor:pointer;
+  font:700 13px/1.1 'Inter',system-ui,sans-serif;color:#fff;box-shadow:0 3px 10px rgba(0,0,0,.2)}
+.mp-prog{background:#5D6F8C;max-width:68%;overflow:hidden}
+.mp-prog span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mp-diario{background:#B8921F}
+.mp-tit{text-align:center;margin:4px 0 2px;font-size:clamp(22px,6.4vw,28px)}
+.mp-sub{text-align:center;color:var(--ink-soft);font-size:14px;margin:0 0 6px;line-height:1.4}
+.mp-mappa{position:relative;width:100%;margin-top:6px}
+.mp-strada{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.mp-st{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:3px;width:47%;
+  background:none;border:0;padding:0;color:inherit;cursor:pointer;font:inherit;text-align:center}
+.mp-cerchio{position:relative;width:clamp(62px,19vw,76px);height:clamp(62px,19vw,76px);border-radius:50%;display:grid;place-items:center;
+  background:var(--pc);box-shadow:0 0 0 4px var(--paper),0 0 0 7px var(--pc),0 6px 16px rgba(0,0,0,.28);transition:transform .15s}
+.mp-em{font-size:clamp(28px,8.5vw,36px);line-height:1}
+.mp-st:active .mp-cerchio{transform:scale(.93)}
+.mp-prossima::after{content:"";position:absolute;inset:-7px;border-radius:50%;border:4px solid var(--pc);animation:mp-pulsa 1.8s ease-out infinite}
+@keyframes mp-pulsa{0%{transform:scale(1);opacity:.9}100%{transform:scale(1.45);opacity:0}}
+@media (prefers-reduced-motion:reduce){.mp-prossima::after{animation:none;opacity:.6}}
+.mp-num{position:absolute;top:-6px;left:-6px;width:26px;height:26px;border-radius:50%;background:#fff;color:#14213d;font:800 13px/26px 'Inter',system-ui,sans-serif;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+.mp-ok{position:absolute;bottom:-4px;right:-6px;width:24px;height:24px;border-radius:50%;background:#2E9D5B;color:#fff;font:800 13px/24px system-ui;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+.mp-et{display:flex;flex-direction:column;align-items:center;margin-top:6px;padding:4px 10px 5px;border-radius:12px;
+  background:var(--paper);box-shadow:0 0 0 2px var(--pc),0 3px 10px rgba(0,0,0,.2);max-width:100%}
+.mp-et b{font-size:15px;line-height:1.15;color:var(--ink)}
+.mp-et small{font-size:12px;color:var(--ink-soft);line-height:1.25}
+.mp-cartello{position:absolute;left:50%;transform:translate(-50%,-50%);padding:6px 12px;border-radius:10px;background:#6F8A2E;color:#fff;
+  font:700 12.5px/1.2 'Inter',system-ui,sans-serif;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.25);z-index:1}
+.mp-sez{margin-top:22px}
+.mp-sez h3{margin:0 0 4px;font-size:19px}
+.mp-sez p{margin:0 0 10px;color:var(--ink-soft);font-size:14px;line-height:1.4}
+.mp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:9px}
+.mp-tile{display:flex;align-items:center;gap:8px;min-height:56px;padding:10px 12px;border:0;border-radius:14px;cursor:pointer;text-align:left;
+  background:var(--h);color:#fff;font:700 14px/1.2 'Inter',system-ui,sans-serif;box-shadow:0 3px 10px rgba(0,0,0,.18)}
+.mp-tile .mt-ic{font-size:22px;flex:none}
+.mp-tile:active{transform:scale(.97)}
+#panel-mappa .home-dati{margin-top:22px}
+
+/* testata delle tappe */
+.tappa-h{display:flex;align-items:center;gap:10px;margin:2px 0 6px}
+.tappa-h span{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--juniper);color:#fff;font:800 16px/1 'Inter',system-ui,sans-serif;flex:none}
+.tappa-intro{color:var(--ink-soft);margin:0 0 14px;line-height:1.45}
+
+/* tappa 1 */
+.tipo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.tipo-card{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:13px 14px;border:0;border-radius:16px;cursor:pointer;text-align:left;
+  background:var(--c);color:var(--on);box-shadow:0 3px 12px rgba(0,0,0,.18);font:inherit}
+.tipo-card.on{outline:4px solid var(--ink);outline-offset:2px}
+.tc-nome{font:800 17px/1.2 'Inter',system-ui,sans-serif}
+.tc-ok{display:inline-block;margin-left:6px;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.9);color:#1B4536;font-size:11.5px;vertical-align:2px}
+.tc-int{font-size:12.5px;opacity:.9;letter-spacing:.05em}
+.tc-bot{font-size:13px;line-height:1.35;opacity:.95}
+
+/* tappa 2 */
+.grado-chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px;margin-bottom:14px}
+.grado-chip{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:11px 12px;border:0;border-radius:14px;cursor:pointer;text-align:left;
+  background:var(--c);color:#fff;font:inherit;box-shadow:0 3px 10px rgba(0,0,0,.18)}
+.grado-chip b{font:800 22px/1 'Inter',system-ui,sans-serif}
+.grado-chip span{font-weight:700;font-size:14px}
+.grado-chip small{font-size:12px;line-height:1.3;opacity:.92}
+.grado-chip.on{outline:4px solid var(--ink);outline-offset:2px}
+.grado-box{max-width:360px}
+
+/* tappa 3 */
+#panel-builder #style-picker,#panel-builder #build-dosi{display:none!important}
+.erb-tutto{display:flex;gap:8px;align-items:center;font-weight:650;margin:4px 0 2px;cursor:pointer}
+.erb-nota{margin:0 0 10px}
+
+/* tappa 4 */
+.pp-volbox{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:end;margin-bottom:12px}
+.pp-abv{display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--ink-soft)}
+.pp-abv b{font-size:18px;color:var(--ink)}
+.pp-abv a{font-size:12.5px}
+
+/* barra di fondo delle tappe */
+.tappa-bar{margin:22px 0 8px;padding:14px;border-radius:16px;background:var(--card);box-shadow:0 0 0 2px var(--tc),0 4px 14px rgba(0,0,0,.14);display:flex;flex-direction:column;gap:9px}
+.tb-tit{font-weight:750;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.tb-tit small{flex-basis:100%;font-weight:500;color:var(--ink-soft)}
+.tb-e{font-size:22px}
+.tb-ok{padding:2px 8px;border-radius:999px;background:#2E9D5B;color:#fff;font-size:12px}
+.tappa-bar .primary-btn{width:100%}
+.tappa-bar .tb-fatto{background:var(--tc);border-color:var(--tc)}
+.tb-row{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.tb-row .ghost-btn{flex:1 1 140px}
+
+/* progetti */
+.pj-lista{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}
+.pj-riga{display:flex;gap:6px;align-items:stretch}
+.pj-apri{flex:1;display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:9px 12px;border-radius:12px;border:1px solid var(--line-strong);background:var(--card);color:var(--ink);cursor:pointer;text-align:left;font:inherit}
+.pj-riga.on .pj-apri{border:2px solid var(--juniper)}
+.pj-apri small{color:var(--ink-soft)}
+.pj-del{border:1px solid var(--line-strong);background:var(--card);border-radius:12px;padding:0 10px;cursor:pointer;font-size:17px}
+.pj-lab{display:block;font-weight:650;font-size:13.5px;margin-top:10px}
+.pj-in{display:flex;gap:6px;margin-top:4px}
+.pj-in input{flex:1;min-width:0}
+
 </style>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0C110E" id="meta-theme-color">
@@ -2183,7 +2281,7 @@ html details.howto a{color:#5A3E1C;}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v194</div>
+  <div class="splash-ver" id="splash-ver">v2.0</div>
 </div>
 
 <div class="wrap">
@@ -2213,10 +2311,12 @@ html details.howto a{color:#5A3E1C;}
   </header>
 
   <nav class="tabs">
-    <button data-tab="home" class="active">🏠 Pagina iniziale</button>
+    <button data-tab="mappa" class="active">🧭 La mappa</button>
+    <button data-tab="tipo">🏷️ Che gin vuoi?</button>
+    <button data-tab="grado">🌡️ Gradazione finale</button>
     <button data-tab="storia">📖 Storia del gin</button>
-    <button data-tab="builder">🎯 Gin Builder</button>
-    <button data-tab="proporzioni">⚖️ Proporzioni della ricetta</button>
+    <button data-tab="builder">🌿 Le botaniche (Gin Builder)</button>
+    <button data-tab="proporzioni">⚖️ Quanto gin e le quote</button>
     <button data-tab="ridondanza">🧬 Ridondanze e complementari</button>
     <button data-tab="prove">🧪 Schede di prova</button>
     <button data-tab="libreria">🌿 Botaniche e infusi</button>
@@ -2237,7 +2337,25 @@ html details.howto a{color:#5A3E1C;}
   </div>
 
   <!-- HOME -->
-  <section class="panel active" id="panel-home">
+  <section class="panel active" id="panel-mappa"><div id="mappa-box"></div></section>
+
+  <section class="panel" id="panel-tipo">
+    <h2 class="tappa-h"><span>1</span>Che gin vuoi?</h2>
+    <p class="tappa-intro">Il progetto parte da qui. Ogni stile propone già i ruoli e le botaniche di partenza: le confermi o le cambi nella tappa 3. Con <strong>Personalizzato</strong> parti dal solo ginepro e decidi tu.</p>
+    <div class="tipo-grid" id="tipo-grid"></div>
+  </section>
+
+  <section class="panel" id="panel-grado">
+    <h2 class="tappa-h"><span>2</span>Gradazione finale</h2>
+    <p class="tappa-intro">La gradazione del gin in bottiglia. Decide quanta acqua serve: ogni infuso, filtrato, si porta da solo a questo grado e poi si unisce agli altri.</p>
+    <div class="grado-chips" id="grado-chips"></div>
+    <div class="cond-box cond-compact grado-box">
+      <label>Oppure scrivi la tua gradazione (% vol)<input type="number" id="grado-abv" min="37.5" max="70" step="0.5" inputmode="decimal"></label>
+    </div>
+    <p class="cond-hint">Più alta è la gradazione, più oli aromatici restano sciolti: meno rischio di velatura (effetto louche) e più profumo, ma anche più calore in bocca. Un infuso che va estratto sotto questa gradazione non si può diluire fino a qui: la tappa 4 lo segnala.</p>
+  </section>
+
+  <section class="panel" id="panel-home">
     <div class="home-hero" data-goto="storia">
       <div class="hero-art" aria-hidden="true">
         <svg viewBox="0 0 64 64" class="anim anim-still" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
@@ -3197,20 +3315,18 @@ html details.howto a{color:#5A3E1C;}
     <details class="howto">
       <summary>Come si usa</summary>
       <div class="howto-body">
-        <p>Qui si disegna la struttura della ricetta, prima di toccare l'alcol.</p>
+        <p>Tappa 3 del progetto: lo stile scelto nella tappa 1 propone ruoli e botaniche; qui le confermi o le cambi.</p>
         <ol>
-          <li>Scegli uno stile fra i pulsanti colorati: ciascuno propone un'intensità target e una serie di ruoli da riempire.</li>
           <li>Per ogni ruolo — base, freschezza, identità, cuore, firma, rifinitura — seleziona la botanica che vuoi provare.
             Il suggerimento accanto al nome del ruolo indica le scelte più comuni.
             <button type="button" class="ghost-btn" id="ruoli-def-btn" style="display:block;margin-top:8px;">📖 Definizioni dei ruoli</button></li>
+          <li>Nei menu compaiono le botaniche proposte dallo stile e le più usate. Per vederle tutte spunta <em>Mostra tutto l'erbario</em>.</li>
           <li>Controlla i messaggi in fondo. Quelli azzurri ricordano che lo stile stesso prevede più botaniche
             della stessa famiglia — uno stile Floreale nasce dall'accostamento di più fiori, è il suo carattere.
             Quelli arancioni segnalano invece un accumulo oltre a quanto previsto, o una coppia a rischio.</li>
           <li>Ogni ruolo si può eliminare con la ✕ e se ne possono aggiungere di nuovi: nessuna struttura è obbligatoria.</li>
-          <li>In <strong>Dosi per il tuo gin</strong> scrivi quanto gin vuoi ottenere e a che gradazione: per ogni botanica trovi la quota nella miscela, i millilitri di infuso già portato alla gradazione finale da versare, quanto infuso filtrato e quanta acqua servono per ottenerlo, e i grammi di botanica che contiene.</li>
-          <li>Con <strong>Personalizzato</strong> definisci tu i ruoli, aggiungendone quanti ne servono.</li>
-          <li>Quando la struttura ti convince, premi <em>Invia al banco di prova</em>: nasce una scheda con le percentuali
-            di partenza già calcolate.</li>
+          <li>Con <strong>Personalizzato</strong> (tappa 1) definisci tu i ruoli, aggiungendone quanti ne servono.</li>
+          <li>Quanto gin fare e le quote di ciascun infuso si decidono nella tappa 4.</li>
         </ol>
       </div>
     </details>
@@ -3219,6 +3335,7 @@ html details.howto a{color:#5A3E1C;}
       <h2 id="builder-title">—</h2>
       <span class="builder-meta" id="builder-meta"></span>
     </div>
+    <button type="button" class="ghost-btn" id="cambia-tipo" style="margin:-14px 0 14px">🏷️ Cambia tipo di gin</button>
     <p class="noz-rimando">🔬 Approfondisci: <a href="#" class="noz-link" data-noz="Da cosa dipende il ruolo di una botanica">da cosa dipende il ruolo di una botanica</a> <span class="cond-hint">(in Nozioni tecniche)</span></p>
     <details class="howto" id="vademecum" open hidden>
       <summary>Vademecum: i ruoli delle botaniche</summary>
@@ -3229,6 +3346,8 @@ html details.howto a{color:#5A3E1C;}
         <p>Sotto la combinazione compaiono i semafori: <strong>rosso</strong> ridondanza, <strong>arancio</strong> rischio se messe insieme (o da dosare), <strong>verde</strong> complementari.</p>
       </div>
     </details>
+    <label class="erb-tutto"><input type="checkbox" id="erb-tutto"> 🌿 Mostra tutto l'erbario nei menu (<span id="erb-n"></span> botaniche)</label>
+    <p class="cond-hint erb-nota">Nei menu trovi le botaniche proposte dallo stile e le più usate (nel nucleo dell'app, in almeno due gin di riferimento o due stili). Le base restano sempre.</p>
     <div id="role-list"></div>
     <button class="ghost-btn" id="add-role-btn" style="display:none;margin-top:8px;">+ Aggiungi ruolo</button>
     <div class="build-summary">
@@ -3261,7 +3380,7 @@ html details.howto a{color:#5A3E1C;}
       <summary>Come si usa</summary>
       <div class="howto-body">
         <ul>
-          <li>La pagina parte dalla ricetta che hai nel <strong>Gin Builder</strong>, con le quote degli infusi della tabella <em>Dosi per il tuo gin</em>.</li>
+          <li>Tappa 4 del progetto: scrivi quanto gin vuoi fare; la pagina parte dalle botaniche scelte nella tappa 3, con le quote di partenza dei loro ruoli. Le quote che scegli restano nel progetto.</li>
           <li>Sposta un cursore: quella botanica cambia e le altre si adeguano in proporzione, così il totale resta 100%. Il lucchetto 🔒 tiene ferma una botanica mentre muovi le altre.</li>
           <li>In alto, in un'unica vista: la <strong>striscia delle quote</strong> (gli stessi colori dei cursori) e il radar: <strong>sapori</strong> in bocca e <strong>sentori</strong> al naso, oppure le <strong>sensazioni</strong> (pungente, rinfrescante, astringente, corpo, persistenza). La linea tratteggiata è la ricetta di partenza; sotto, le note che salgono e quelle che scendono. Due tasti accendono un radar alla volta: <em>Sapori e sentori</em> oppure <em>Sensazioni in bocca</em>. Su schermo largo compare anche la torta.</li>
           <li>Accanto a ogni cursore trovi i millilitri di infuso, già portato alla gradazione finale, per il volume di gin scelto; in fondo, quanti infusi filtrati e quanta acqua servono in tutto.</li>
@@ -3269,6 +3388,11 @@ html details.howto a{color:#5A3E1C;}
         <p>Il radar di gusto e aroma comprende qui anche le botaniche base (ginepro, coriandolo, angelica), perché sono proprio le quote che stai variando. Stime orientative, da verificare all'assaggio.</p>
       </div>
     </details>
+    <h2 class="tappa-h"><span>4</span>Quanto gin e le quote</h2>
+    <div class="cond-box cond-compact pp-volbox">
+      <label>Quanto gin vuoi fare (ml)<input type="number" id="pp-vol" min="50" step="50" inputmode="decimal"></label>
+      <div class="pp-abv">Gradazione finale<b id="pp-abv-txt"></b><a href="#" onclick="event.preventDefault();window._navDaMenu=true;showTab('grado')">cambia (tappa 2)</a></div>
+    </div>
     <div class="pp-head">
       <div class="pp-tit" id="pp-tit">—</div>
       <div class="pp-azioni">
@@ -3992,7 +4116,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione v194 · 25 ottobre 2026</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.0 · 29 ottobre 2026 · il percorso a tappe</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -5073,21 +5197,16 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v194</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.0</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
-  const IN_HOME = ['storia', 'builder', 'prove', 'libreria', 'cocktail', 'laboratorio'];   // già raggiungibili dalla prima pagina
+  const IN_HOME = [];   // già raggiungibili dalla prima pagina
   // Le pagine restanti si presentano raggruppate, dalla più utile mentre si costruisce
   // una ricetta alle pagine di approfondimento/riferimento, invece che nell'ordine dei tab.
-  const GROUPS = [
-    { label: 'La ricetta', tabs: ['proporzioni', 'manuale'] },
-    { label: 'Prima di costruire', tabs: ['ridondanza'] },
-    { label: 'Il servizio', tabs: ['garnish', 'toniche'] },
-    { label: 'Special', tabs: ['special'] },
-    { label: 'Per approfondire', tabs: ['nozioni', 'analisi', 'matrice', 'ruota', 'altrigin', 'leggi'] }
-  ];
+  // Tappe, teoria e servizio stanno sulla mappa: il menu tiene solo mappa, diario e impostazioni.
+  const GROUPS = [];
   const fuoriHome = btns.filter(b => IN_HOME.indexOf(b.dataset.tab) < 0 && b.dataset.tab !== 'home');
-  const homeBtn = btns.find(b => b.dataset.tab === 'home');
+  const homeBtn = btns.find(b => b.dataset.tab === 'mappa');
   const aggiungiTile = (b, i, wide) => {
     const t = b.textContent.trim(), sp = t.indexOf(' '), ic = t.slice(0, sp), lab = t.slice(sp + 1);
     const el = document.createElement('button'); el.type = 'button'; el.className = 'menu-tile' + (wide ? ' wide' : '');
@@ -6307,6 +6426,7 @@ function renderBuilder(styleIndex){
         const select = document.createElement('select');
         select.dataset.role = roleName;
         select.dataset.k = ri + '-' + gi;
+        select.dataset.cand = grp.candidati.join('|');
         if (grp.tracce) select.dataset.trace = '1';
         allBotNames.forEach(n => {
           const o = document.createElement('option'); o.value = n; o.textContent = n; select.appendChild(o);
@@ -9251,9 +9371,7 @@ window.salvaStatoBuilder = function(){
   // Il ripristino parte quando tutto lo script e' caricato (alcune costanti, come i ruoli, sono definite piu' avanti).
   setTimeout(ripristina, 0);
 })();
-function ripristina(){
-  // Builder
-  const sb = leggiJ(BUILDER_KEY);
+function applicaBuilder(sb){
   try {
     if (sb && STYLES[sb.i] && STYLES[sb.i][0] === sb.nome){
       const btn = document.querySelectorAll('.style-btn')[sb.i]; if (btn) btn.click();
@@ -9274,6 +9392,11 @@ function ripristina(){
       renderSummary();
     }
   } catch(e){}
+}
+window.applicaBuilder = applicaBuilder;
+function ripristina(){
+  // Builder
+  applicaBuilder(leggiJ(BUILDER_KEY));
   // La pagina non si ripristina: chi chiude l'app ha finito, e alla riapertura si parte dalla pagina iniziale.
   // Restano invece la ricetta del Builder, le schede, il diario e le tarature.
   setTimeout(() => { _ripristinoInCorso = false; window.salvaStatoBuilder(); }, 200);
@@ -9862,6 +9985,7 @@ function renderDosiGin(selects){
     st.rif = st.righe.map(r => r.quota * 100);
     st.q = st.rif.slice(); st.fermo = new Set(); st.stile = currentStyleName;
     st.firma = st.righe.map(r => r.n).join('|');
+    try { if (window.ppCarica) window.ppCarica(st); } catch(e){}
     disegnaCursori(); aggiorna();
   }
   function imposta(i, q){
@@ -9955,7 +10079,7 @@ function renderDosiGin(selects){
       '<div class="mix-line"><span>Acqua per portarli a ' + nf(abvF, 1) + '%</span><strong>' + nf(T.acqua, 0) + ' ml</strong></div>' +
       '<div class="mix-line"><span>Gin finito a ' + nf(abvF, 1) + '% vol</span><strong>' + nf(vol, 0) + ' ml · ' + nf(T.gTot / vol * 1000, 1) + ' g/l di botaniche</strong></div>' +
       (T.sotto.length ? '<div class="warn-box">' + T.sotto.join(', ') + ': infuso consigliato sotto la gradazione finale, non si può diluire.</div>' : '') +
-      '<div class="radar-nota">Ogni infuso, filtrato, si porta da solo a ' + nf(abvF, 1) + '% e poi si miscela: i millilitri accanto ai cursori sono quelli già diluiti. Volume e gradazione si cambiano nel Gin Builder, in <em>Dosi per il tuo gin</em>.</div>';
+      '<div class="radar-nota">Ogni infuso, filtrato, si porta da solo a ' + nf(abvF, 1) + '% e poi si miscela: i millilitri accanto ai cursori sono quelli già diluiti. Il volume si cambia in alto, la gradazione nella tappa 2.</div>';
     // quota di ginepro
     const gi = st.righe.findIndex(r => r.n === 'Bacche di ginepro'), pg = gi >= 0 ? st.q[gi] : 0;
     const col = pg >= 45 ? 'var(--green-sym, #2e7d32)' : (pg >= 30 ? 'var(--orange-sym, #b26a00)' : 'var(--red-sym, #c62828)');
@@ -9975,12 +10099,13 @@ function renderDosiGin(selects){
     $('pp-unico').querySelectorAll('.pp-tab').forEach(b => b.addEventListener('click', () => { st.vista = b.dataset.v; aggiorna(); }));
     $('pp-cambia').innerHTML = '<div class="pp-leg">' + gr.map(i => GR[i]).map(g => '<span><i style="background:' + g.c + '"></i>' + g.t + '</span>').join('') + '<span><i class="tr"></i>partenza</span></div>' + cosaCambia(uPrima, uOra, gr);
     try { ppTop(); } catch(e){}
+    try { if (window.ppSalva) window.ppSalva(st); } catch(e){}
     $('pp-striscia').innerHTML = st.righe.map((r, k) => st.q[k] > 0.05 ? '<span style="width:' + st.q[k] + '%;background:' + r.col + '" title="' + r.n.replace(/"/g, '') + ' ' + fq(st.q[k]) + '%"></span>' : '').join('');
   }
   function disegnaCursori(){
     const box = $('pp-cursori'); if (!box) return;
     $('pp-tit').textContent = st.righe.length ? (st.stile || 'Ricetta') + ' · ' + st.righe.length + ' botaniche' : 'Nessuna ricetta';
-    if (!st.righe.length){ box.innerHTML = '<div class="radar-nota">Nel Gin Builder non c\'è ancora una ricetta: scegli uno stile e torna qui.</div>'; return; }
+    if (!st.righe.length){ box.innerHTML = '<div class="radar-nota">Non c\'è ancora una ricetta: scegli tipo di gin e botaniche (tappe 1 e 3) e torna qui.</div>'; return; }
     box.innerHTML = st.righe.map((r, k) =>
       '<div class="pp-riga' + (st.fermo.has(k) ? ' ferma' : '') + '" data-k="' + k + '" style="--pc:' + r.col + '">' +
       '<span class="pp-dot" style="background:' + r.col + '"></span>' +
@@ -11117,6 +11242,316 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     '#cond-app-pan .cap-x{background:none;border:0;color:#555;font:600 15px system-ui,sans-serif;padding:8px;cursor:pointer}';
   document.head.appendChild(st);
 })();
+</script>
+<script>
+// ===================================================================================
+// v2.0 · Il percorso a tappe (come in «Che cucino?»)
+// La prima pagina è la mappa. Il sentiero principale è il PROGETTO operativo:
+//   1 Che gin vuoi? → 2 Gradazione finale → 3 Le botaniche → 4 Quanto gin e le quote
+// poi dal progetto alla bottiglia: 5 Gli infusi → 6 Assaggio → 7 In bottiglia.
+// A parte, il sentiero «Capire perché» (la teoria) e «Servire».
+// Ogni progetto (un gin) si salva con stile, gradazione, botaniche, volume, quote e tappe fatte.
+// ===================================================================================
+(function(){
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const PK = 'gb-progetti';
+  const TAPPE = [
+    { tab:'tipo',        e:'🏷️', t:'Che gin vuoi?',          c:'#2F7259' },
+    { tab:'grado',       e:'🌡️', t:'Gradazione finale',      c:'#C4803A' },
+    { tab:'builder',     e:'🌿',       t:'Le botaniche',           c:'#4C7BB5' },
+    { tab:'proporzioni', e:'⚖️',       t:'Quanto gin e le quote',  c:'#B04A6B' },
+    { tab:'diario',      e:'🫙',       t:'Gli infusi',             c:'#8A63B0' },
+    { tab:'prove',       e:'👅',       t:'Assaggio e correzioni',  c:'#B8921F' },
+    { tab:'manuale',     e:'🍾',       t:'In bottiglia',           c:'#2F8F8F' }
+  ];
+  const CAPIRE = ['libreria','ridondanza','matrice','ruota','nozioni','analisi','leggi','storia','altrigin'];
+  const SERVIRE = ['garnish','toniche','cocktail','laboratorio','special'];
+  const HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
+
+  // ---------- progetti ----------
+  function leggiP(){ try { return JSON.parse(localStorage.getItem(PK)); } catch(e){ return null; } }
+  let P = leggiP(); if (!P || !Array.isArray(P.lista)) P = { att: null, lista: [] };
+  let _cambio = false;
+  function scriviP(){ try { localStorage.setItem(PK, JSON.stringify(P)); } catch(e){} }
+  const att = () => P.lista.find(x => x.id === P.att) || null;
+  const nuovoId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+  function nuovoProgetto(nome){ return { id: nuovoId(), nome: nome || 'Il mio gin', creato: Date.now(), fatte: [0,0,0,0,0,0,0], builder: null, vol: '700', abv: '43', pp: null }; }
+  function cattura(pr){
+    if (!pr) return;
+    try { pr.builder = JSON.parse(localStorage.getItem('gb-builder')); } catch(e){}
+    pr.vol = $('dosi-vol').value; pr.abv = $('dosi-abv').value; pr.stile = currentStyleName; pr.agg = Date.now();
+  }
+  function applica(pr){
+    _cambio = true;
+    try {
+      $('dosi-vol').value = pr.vol || 700; $('dosi-abv').value = pr.abv || 43;
+      $('dosi-vol').dispatchEvent(new Event('input'));
+      if (pr.builder && window.applicaBuilder) window.applicaBuilder(pr.builder);
+      else { const b = document.querySelector('.style-btn'); if (b) b.click(); }
+    } catch(e){}
+    _cambio = false;
+    try { window.salvaStatoBuilder(); } catch(e){}
+    cattura(pr); scriviP();
+    try { $('pp-ricarica').click(); } catch(e){}
+  }
+  function fatta(i, v){ const pr = att(); if (!pr) return; pr.fatte[i] = v === false ? 0 : 1; scriviP(); }
+
+  // il Builder e le dosi salvano anche nel progetto attivo
+  const prevSalva = window.salvaStatoBuilder;
+  window.salvaStatoBuilder = function(){
+    prevSalva.apply(this, arguments);
+    if (_cambio || (typeof _ripristinoInCorso !== 'undefined' && _ripristinoInCorso)) return;
+    const pr = att(); if (!pr) return;
+    try { pr.builder = JSON.parse(localStorage.getItem('gb-builder')); } catch(e){}
+    pr.stile = currentStyleName; scriviP();
+  };
+  ['dosi-vol','dosi-abv'].forEach(id => $(id).addEventListener('input', () => {
+    if (_cambio) return; const pr = att(); if (!pr) return;
+    pr.vol = $('dosi-vol').value; pr.abv = $('dosi-abv').value; scriviP();
+  }));
+  // le quote della tappa 4 restano nel progetto
+  let tQ = null;
+  window.ppSalva = st => {
+    if (_cambio || !st.righe.length) return; clearTimeout(tQ);
+    tQ = setTimeout(() => { const pr = att(); if (!pr) return; pr.pp = { firma: st.firma, q: st.q.map(x => Math.round(x * 100) / 100) }; scriviP(); }, 300);
+  };
+  window.ppCarica = st => {
+    const pr = att();
+    if (pr && pr.pp && pr.pp.firma === st.firma && Array.isArray(pr.pp.q) && pr.pp.q.length === st.q.length) st.q = pr.pp.q.slice();
+  };
+
+  // ---------- menu delle botaniche: le più usate, l'erbario intero a richiesta ----------
+  function filtraSelect(sel){
+    if (!sel || sel.disabled || sel._bloccata || sel.options.length < 20) return;   // ginepro e sostitute protette restano come sono
+    assegnaUso(); if (!MASTER._uso) return;
+    const tutto = $('erb-tutto') && $('erb-tutto').checked;
+    const v = sel.value, ord = (a, b) => a.localeCompare(b, 'it');
+    const di = u => [...new Set(MASTER.filter(d => d.uso === u).map(d => d.botanica))];
+    const cand = [...new Set((sel.dataset.cand || '').split('|').filter(n => byName[n]))];
+    const g = [];
+    if (cand.length) g.push(['Proposte dallo stile', cand]);
+    g.push(['Le più usate', di('comune').filter(n => !cand.includes(n)).sort(ord)]);
+    if (tutto){ g.push(['Di firma o rare', di('firma').filter(n => !cand.includes(n)).sort(ord)]); g.push(['Altre dell’erbario', di('altra').filter(n => !cand.includes(n)).sort(ord)]); }
+    const ci = new Set(g.flatMap(x => x[1]));
+    if (v && !ci.has(v)) g.unshift(['Scelta attuale', [v]]);
+    sel.innerHTML = g.filter(x => x[1].length).map(x => '<optgroup label="' + esc(x[0]) + '">' + x[1].map(n => '<option value="' + esc(n) + '">' + esc(n) + '</option>').join('') + '</optgroup>').join('');
+    sel.value = v;
+  }
+  const tutteSel = () => [...roleList.querySelectorAll('select:not(.role-label-input)')];
+  new MutationObserver(() => tutteSel().forEach(s => { if (!s._filtrato){ s._filtrato = true; filtraSelect(s); } })).observe(roleList, { childList: true, subtree: true });
+  $('erb-tutto').addEventListener('change', () => tutteSel().forEach(s => { s._filtrato = true; filtraSelect(s); }));
+  try { assegnaUso(); $('erb-n').textContent = MASTER.length; } catch(e){}
+
+  // ---------- tappa 1: che gin vuoi? ----------
+  function renderTipo(){
+    const box = $('tipo-grid'); if (!box) return;
+    box.innerHTML = STYLES.map((s, i) => {
+      const [nome, int, , ruoli] = s, col = (STYLE_COLORS[nome] || ['var(--c-neutro)', '#fff']);
+      const bot = (ruoli || []).map(r => String(r[1]).replace(/\s*\((?:tracce|dose piena|una sola)\)/gi, '')).join(', ');
+      const on = nome === currentStyleName;
+      return '<button type="button" class="tipo-card' + (on ? ' on' : '') + '" data-i="' + i + '" style="--c:' + col[0] + ';--on:' + col[1] + '">' +
+        '<span class="tc-nome">' + esc(nome) + (on ? ' <span class="tc-ok">✓ scelto</span>' : '') + '</span>' +
+        (ruoli && ruoli.length ? '<span class="tc-int">Intensità ' + '●'.repeat(int) + '○'.repeat(Math.max(0, 5 - int)) + '</span><span class="tc-bot">' + esc(bot) + '</span>'
+          : '<span class="tc-bot">Parti dal ginepro e scegli tu ruoli e botaniche.</span>') + '</button>';
+    }).join('');
+    box.querySelectorAll('.tipo-card').forEach(b => b.addEventListener('click', () => {
+      const i = +b.dataset.i, pr = att();
+      const vai = () => {
+        const sb = document.querySelectorAll('.style-btn')[i]; if (sb) sb.click();
+        fatta(0); if (pr){ pr.fatte[2] = 0; pr.fatte[3] = 0; pr.pp = null; scriviP(); }
+        renderTipo(); barra('tipo');
+        const tb = document.querySelector('#panel-tipo .tappa-bar'); if (tb) tb.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      };
+      if (STYLES[i][0] === currentStyleName){ fatta(0); renderTipo(); barra('tipo'); return; }
+      if (pr && pr.fatte[2]) mostraAvviso('Cambi tipo di gin?', '<p>Le botaniche ripartono dalla proposta dello stile <strong>' + esc(STYLES[i][0]) + '</strong>: quelle scelte finora nel progetto si perdono.</p>', 'Cambia', vai);
+      else vai();
+    }));
+  }
+
+  // ---------- tappa 2: gradazione finale ----------
+  const GRADI = [
+    [37.5, 'Il minimo', 'La gradazione minima del gin nell’Unione Europea (Reg. UE 2019/787).'],
+    [40, 'Classica', 'La gradazione di molti gin da scaffale: più morbido, aroma più leggero.'],
+    [43, 'Equilibrata', 'Molto usata nei gin artigianali: buon equilibrio fra profumo e calore.'],
+    [45, 'Piena', 'Più aroma e più corpo; regge bene la tonica e la miscelazione.'],
+    [47, 'Intensa', 'Aroma ricco e persistente; si sente di più il calore dell’alcol.'],
+    [57, 'Navy Strength', 'La tradizione della marina britannica: per chi lo vuole molto deciso.']
+  ];
+  function renderGrado(){
+    const v = parseFloat(String($('dosi-abv').value).replace(',', '.')) || 43;
+    const inp = $('grado-abv'); if (document.activeElement !== inp) inp.value = v;
+    $('grado-chips').innerHTML = GRADI.map(([g, t, d], k) => '<button type="button" class="grado-chip' + (Math.abs(g - v) < 0.01 ? ' on' : '') + '" data-g="' + g + '" style="--c:' + HUES[k] + '">' +
+      '<b>' + nf(g, g % 1 ? 1 : 0) + '%</b><span>' + t + '</span><small>' + d + '</small></button>').join('');
+    $('grado-chips').querySelectorAll('.grado-chip').forEach(b => b.addEventListener('click', () => imposta(+b.dataset.g)));
+  }
+  function imposta(g){
+    if (!(g >= 37.5 && g <= 70)) return;
+    $('dosi-abv').value = g; $('dosi-abv').dispatchEvent(new Event('input')); renderGrado();
+  }
+  $('grado-abv').addEventListener('input', () => { const g = parseFloat(String($('grado-abv').value).replace(',', '.')); if (g >= 37.5 && g <= 70) imposta(g); });
+  try { wrapStepper($('grado-abv'), 0.5); } catch(e){}
+
+  // ---------- tappa 4: il volume si sceglie qui ----------
+  $('pp-vol').value = $('dosi-vol').value;
+  $('pp-vol').addEventListener('input', () => { $('dosi-vol').value = $('pp-vol').value; $('dosi-vol').dispatchEvent(new Event('input')); });
+  try { wrapStepper($('pp-vol'), 50); } catch(e){}
+  function syncPP(){ if (document.activeElement !== $('pp-vol')) $('pp-vol').value = $('dosi-vol').value; $('pp-abv-txt').textContent = nf(parseFloat($('dosi-abv').value) || 43, 1) + '% vol'; }
+
+  // ---------- la barra in fondo a ogni tappa ----------
+  window._tappa = null;
+  function barra(tab){
+    document.querySelectorAll('.tappa-bar').forEach(b => { b.hidden = true; });
+    const i = TAPPE.findIndex(t => t.tab === tab); if (i < 0) return;
+    if (i > 3 && window._tappa !== i) return;   // diario, schede e manuale si usano anche fuori dal percorso
+    const pan = $('panel-' + tab); if (!pan) return;
+    let b = pan.querySelector(':scope > .tappa-bar');
+    if (!b){ b = document.createElement('div'); b.className = 'tappa-bar'; pan.appendChild(b); }
+    const pr = att(), ok = pr && pr.fatte[i], dopo = TAPPE[i + 1];
+    const extra = i === 4 ? '<button type="button" class="primary-btn tb-x" data-x="infusi">🫙 Prepara gli infusi del progetto</button>'
+      : i === 5 ? '<button type="button" class="primary-btn tb-x" data-x="scheda">🧪 Nuova scheda con le quote del progetto</button>' : '';
+    b.style.setProperty('--tc', TAPPE[i].c);
+    b.innerHTML = '<div class="tb-tit"><span class="tb-e">' + TAPPE[i].e + '</span>Tappa ' + (i + 1) + ' di ' + TAPPE.length + ' · ' + TAPPE[i].t + (ok ? ' <span class="tb-ok">✓ fatta</span>' : '') +
+      (pr ? '<small>Progetto: ' + esc(pr.nome) + '</small>' : '') + '</div>' + extra +
+      '<button type="button" class="primary-btn tb-fatto">✓ ' + (ok ? 'Torna alla mappa' : 'Fatto · torna alla mappa') + '</button>' +
+      '<div class="tb-row">' + (i > 0 ? '<button type="button" class="ghost-btn tb-prima">← ' + (i) + ' ' + TAPPE[i - 1].t + '</button>' : '<span></span>') +
+      (dopo ? '<button type="button" class="ghost-btn tb-dopo">' + (i + 2) + ' ' + dopo.t + ' →</button>' : '') + '</div>';
+    b.hidden = false;
+    b.querySelector('.tb-fatto').onclick = () => { fatta(i); vaiMappa(); };
+    const pb = b.querySelector('.tb-prima'); if (pb) pb.onclick = () => vaiTappa(i - 1);
+    const db = b.querySelector('.tb-dopo'); if (db) db.onclick = () => { fatta(i); vaiTappa(i + 1); };
+    const x = b.querySelector('.tb-x');
+    if (x) x.onclick = () => {
+      if (x.dataset.x === 'infusi') preparaInfusiRicetta();
+      else { window._navDaMenu = true; showTab('proporzioni'); window._tappa = 5; $('pp-banco').click(); }
+    };
+  }
+  function vaiTappa(i){ window._tappa = i; window._navDaMenu = true; showTab(TAPPE[i].tab); }
+  function vaiMappa(){ window._tappa = null; window._navDaMenu = true; showTab('mappa'); }
+  window.vaiMappa = vaiMappa;
+
+  // ---------- la mappa ----------
+  function sotto(i){
+    const pr = att();
+    try {
+      if (i === 0) return pr && pr.fatte[0] ? currentStyleName : 'lo stile, il carattere';
+      if (i === 1) return nf(parseFloat($('dosi-abv').value) || 43, 1) + '% vol';
+      if (i === 2){ const n = new Set(tutteSel().map(s => s.value)).size; return pr && pr.fatte[2] ? n + ' botaniche' : 'base e le più usate'; }
+      if (i === 3) return nf(parseFloat($('dosi-vol').value) || 700, 0) + ' ml · quote degli infusi';
+      if (i === 4){ const n = diarioCarica().filter(x => !x.finito).length; return n ? n + ' in corso' : 'macerazione e diario'; }
+      if (i === 5){ let n = 0; try { n = (JSON.parse(localStorage.getItem('erbario_test_sheets_v1')) || []).length; } catch(e){} return n ? n + ' schede' : 'schede di prova'; }
+      return 'filtrare, unire, imbottigliare';
+    } catch(e){ return ''; }
+  }
+  const nomeTab = t => { const b = document.querySelector('nav.tabs button[data-tab="' + t + '"]'); const s = b ? b.textContent.trim() : t, k = s.indexOf(' '); return k > 0 ? [s.slice(0, k), s.slice(k + 1)] : ['', s]; };
+  function tessere(lista, h0){
+    return lista.map((t, k) => { const [ic, lab] = nomeTab(t);
+      return '<button type="button" class="mp-tile" data-tab="' + t + '" style="--h:' + HUES[(k + h0) % HUES.length] + '"><span class="mt-ic">' + ic + '</span><span class="mt-l">' + esc(lab) + '</span></button>'; }).join('');
+  }
+  function renderMappa(){
+    const box = $('mappa-box'); if (!box) return;
+    if (!att()){ const pr = nuovoProgetto(); P.lista.push(pr); P.att = pr.id; cattura(pr); scriviP(); }
+    const pr = att(), ok = pr.fatte, prossima = Math.max(0, ok.findIndex(x => !x));
+    const X = [92, 268], Y0 = 74, DY = 112;
+    const pos = TAPPE.map((_, i) => ({ x: X[i % 2], y: Y0 + i * DY + (i > 3 ? 84 : 0) }));
+    const H = pos[pos.length - 1].y + 70;
+    let d = 'M ' + pos[0].x + ' ' + pos[0].y;
+    for (let i = 1; i < pos.length; i++){ const a = pos[i - 1], b = pos[i], my = (a.y + b.y) / 2; d += ' C ' + a.x + ' ' + my + ', ' + b.x + ' ' + my + ', ' + b.x + ' ' + b.y; }
+    const pct = (v, t) => (v / t * 100).toFixed(2) + '%';
+    const yCart = (pos[3].y + pos[4].y) / 2 + 12;
+    box.innerHTML =
+      '<div class="mp-barra"><button type="button" class="mp-prog" id="mp-prog">📁 <span>' + esc(pr.nome) + '</span> ▾</button>' +
+        '<button type="button" class="mp-diario" id="mp-diario">📓 Diario</button></div>' +
+      '<h2 class="mp-tit">Il progetto del tuo gin</h2>' +
+      '<p class="mp-sub">Tocca una tappa per andarci: quella che pulsa è la prossima da fare. Le prime quattro sono il progetto; poi si va dal progetto alla bottiglia.</p>' +
+      '<div class="mp-mappa" style="aspect-ratio:360/' + H + '">' +
+        '<svg class="mp-strada" viewBox="0 0 360 ' + H + '" preserveAspectRatio="none" aria-hidden="true">' +
+          '<path d="' + d + '" fill="none" stroke="rgba(0,0,0,.18)" stroke-width="30" stroke-linecap="round" transform="translate(0,4)"/>' +
+          '<path d="' + d + '" fill="none" stroke="#7E8C7A" stroke-width="28" stroke-linecap="round"/>' +
+          '<path d="' + d + '" fill="none" stroke="#9DAE97" stroke-width="22" stroke-linecap="round"/>' +
+          '<path d="' + d + '" fill="none" stroke="#F3EFD8" stroke-width="2.6" stroke-dasharray="11 11" stroke-linecap="round"/>' +
+        '</svg>' +
+        '<div class="mp-cartello" style="top:' + pct(yCart, H) + '">📐 Progetto pronto · ora si lavora</div>' +
+        TAPPE.map((t, i) => '<button type="button" class="mp-st" data-i="' + i + '" style="left:' + pct(pos[i].x, 360) + ';top:' + pct(pos[i].y, H) + ';--pc:' + t.c + '">' +
+          '<span class="mp-cerchio' + (i === prossima && !ok[i] ? ' mp-prossima' : '') + '"><span class="mp-em">' + t.e + '</span><span class="mp-num">' + (i + 1) + '</span>' + (ok[i] ? '<span class="mp-ok">✓</span>' : '') + '</span>' +
+          '<span class="mp-et"><b>' + t.t + '</b><small>' + esc(sotto(i)) + '</small></span></button>').join('') +
+      '</div>' +
+      '<div class="mp-sez"><h3>📚 Capire perché</h3><p>La parte teorica, da studiare a parte: le botaniche e la loro potenza, cosa si estrae e a che gradazione, i ruoli, le ridondanze, le leggi.</p>' +
+        '<div class="mp-grid">' + tessere(CAPIRE, 2) + '</div></div>' +
+      '<div class="mp-sez"><h3>🍸 Servire</h3><div class="mp-grid">' + tessere(SERVIRE, 6) + '</div></div>';
+    const dati = $('home-dati'); if (dati){ box.appendChild(dati); try { renderDati(); } catch(e){} }
+    box.querySelectorAll('.mp-st').forEach(b => b.addEventListener('click', () => vaiTappa(+b.dataset.i)));
+    box.querySelectorAll('.mp-tile').forEach(b => b.addEventListener('click', () => { window._tappa = null; showTab(b.dataset.tab); }));
+    $('mp-prog').onclick = apriProgetti;
+    $('mp-diario').onclick = () => { window._tappa = null; showTab('diario'); };
+  }
+
+  // ---------- i progetti: elenco, nuovo, rinomina, elimina ----------
+  function apriProgetti(){
+    const pr = att();
+    const lista = P.lista.slice().sort((a, b) => (b.agg || b.creato) - (a.agg || a.creato)).map(x => {
+      const n = x.fatte.filter(Boolean).length;
+      return '<div class="pj-riga' + (x.id === P.att ? ' on' : '') + '"><button type="button" class="pj-apri" data-id="' + x.id + '"><b>' + esc(x.nome) + '</b><small>' +
+        esc(x.stile || '—') + ' · ' + nf(parseFloat(x.abv) || 43, 1) + '% · ' + n + '/7 tappe' + (x.id === P.att ? ' · aperto' : '') + '</small></button>' +
+        '<button type="button" class="pj-del" data-id="' + x.id + '" aria-label="Elimina ' + esc(x.nome) + '">🗑️</button></div>';
+    }).join('');
+    mostraAvviso('📁 I tuoi progetti',
+      '<div class="pj-lista">' + lista + '</div>' +
+      '<label class="pj-lab">Rinomina il progetto aperto<span class="pj-in"><input type="text" id="pj-nome" value="' + esc(pr ? pr.nome : '') + '"><button type="button" class="ghost-btn" id="pj-rin">✏️ Rinomina</button></span></label>' +
+      '<label class="pj-lab">Nuovo progetto<span class="pj-in"><input type="text" id="pj-nuovo" placeholder="es. Thalassa · prova 4"><button type="button" class="primary-btn" id="pj-crea">＋ Crea</button></span></label>' +
+      '<p class="cond-hint">Ogni progetto tiene stile, gradazione, botaniche, volume, quote e tappe fatte. Schede di prova e diario degli infusi sono comuni a tutti.</p>', '', null);
+    document.querySelectorAll('.pj-apri').forEach(b => b.onclick = () => {
+      const x = P.lista.find(y => y.id === b.dataset.id); chiudiAvviso(); if (!x || x.id === P.att) return;
+      cattura(att()); P.att = x.id; scriviP(); applica(x); renderMappa();
+    });
+    document.querySelectorAll('.pj-del').forEach(b => b.onclick = () => {
+      const x = P.lista.find(y => y.id === b.dataset.id); if (!x) return;
+      mostraAvviso('Eliminare il progetto?', '<p>Il progetto <strong>' + esc(x.nome) + '</strong> verrà eliminato. Schede di prova e diario restano.</p>', 'Elimina', () => {
+        P.lista = P.lista.filter(y => y.id !== x.id);
+        if (P.att === x.id){ const altro = P.lista[0]; if (altro){ P.att = altro.id; scriviP(); applica(altro); } else { P.att = null; scriviP(); } }
+        else scriviP();
+        renderMappa();
+      });
+    });
+    $('pj-rin').onclick = () => { const v = $('pj-nome').value.trim(); if (!v || !pr) return; pr.nome = v; scriviP(); chiudiAvviso(); renderMappa(); };
+    $('pj-crea').onclick = () => {
+      const v = $('pj-nuovo').value.trim() || ('Gin ' + new Date().toLocaleDateString('it-IT'));
+      cattura(att()); const x = nuovoProgetto(v); x.vol = $('dosi-vol').value; x.abv = $('dosi-abv').value;
+      P.lista.push(x); P.att = x.id; scriviP(); chiudiAvviso(); applica(x); vaiTappa(0);
+    };
+  }
+
+  // ---------- navigazione ----------
+  const prevShow = window.showTab;
+  window.showTab = function(name){
+    if (name === 'home') name = 'mappa';
+    if (window._navDaMenu && TAPPE.findIndex(t => t.tab === name) !== window._tappa) window._tappa = null;
+    const i = TAPPE.findIndex(t => t.tab === name);
+    if (i >= 0 && i <= 3) window._tappa = i;
+    const r = prevShow(name);
+    if (name === 'mappa') renderMappa();
+    if (name === 'tipo') renderTipo();
+    if (name === 'grado') renderGrado();
+    if (name === 'proporzioni') syncPP();
+    barra(name);
+    return r;
+  };
+  $('dosi-abv').addEventListener('input', () => { if ($('panel-proporzioni').classList.contains('active')) syncPP(); });
+  $('cambia-tipo').addEventListener('click', () => vaiTappa(0));
+
+  // all'avvio: dopo il ripristino della ricetta, il progetto attivo e la mappa
+  setTimeout(() => {
+    if (!att()){
+      const pr = nuovoProgetto(); P.lista.push(pr); P.att = pr.id;
+      cattura(pr);
+      try { if (pr.builder) { pr.fatte[0] = 1; pr.fatte[1] = 1; pr.fatte[2] = 1; } } catch(e){}
+      scriviP();
+    }
+    tutteSel().forEach(s => { s._filtrato = true; filtraSelect(s); });
+    window._navDaMenu = true; showTab('mappa');
+  }, 450);
+})();
+
 </script>
 </body>
 </html>
