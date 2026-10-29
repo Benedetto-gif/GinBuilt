@@ -2257,6 +2257,48 @@ html details.howto a{color:#5A3E1C;}
 .lib-testa{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .info-i{flex:none;width:32px;height:32px;border-radius:50%;border:0;background:#5A4E43;color:#fff;font:italic 800 17px/32px Georgia,'Fraunces',serif;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.3);padding:0}
 .lib-info-nota{margin:-2px 0 6px}
+.lez-corpo p,.lez-corpo li{line-height:1.55}
+.lez-teoria{padding:14px;border-radius:16px;background:var(--card);box-shadow:0 0 0 1px var(--line-strong)}
+.lez-approf{font-size:14px;margin:8px 0 0}
+.lez-prova{margin:20px 0 10px;font-size:19px}
+.lez-sub{margin:16px 0 8px}
+.lez-bots{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.lez-bot{padding:10px;border-radius:14px;background:var(--card);box-shadow:0 0 0 1px var(--line)}
+.lez-bot-t small{display:block;color:var(--ink-soft);font-size:12.5px}
+.lez-bot svg,.sc-gin svg,#lez-cfr-out svg{width:100%;height:auto;max-width:280px;display:block;margin:0 auto}
+.lez-cfr{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.lez-cfr label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:650}
+.lez-ruoli{display:grid;gap:8px}
+.lez-ruolo{padding:10px 12px;border-radius:12px;background:var(--card);box-shadow:0 0 0 1px var(--line)}
+.lez-ruolo b{display:block;margin-bottom:2px}.lez-ruolo span{font-size:14px;line-height:1.45}.lez-ruolo i{display:block;margin-top:4px;font-size:13.5px;color:var(--ink-soft)}
+.lez-partenza{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.lez-part{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px 12px;border:0;border-radius:14px;background:var(--c,#2F7259);color:#fff;font:700 15px/1.2 'Inter',system-ui,sans-serif;cursor:pointer;text-align:left}
+.lez-part small{font-weight:500;font-size:12px;opacity:.9}
+.lez-part.on{outline:4px solid var(--ink);outline-offset:2px}
+.lez-estr{display:grid;gap:8px}
+.lez-estr-r{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:10px 12px;border-radius:12px;background:var(--card);box-shadow:0 0 0 1px var(--line)}
+.lez-gr{font-weight:800;color:var(--juniper)}.lez-tm{grid-column:2;font-size:13px;color:var(--ink-soft);text-align:right}
+.lez-estr-r small{grid-column:1 / -1;color:var(--ink-soft);font-size:12.5px;line-height:1.4}
+details.lez-carta{margin:0 0 14px;border-radius:16px;background:color-mix(in srgb,var(--juniper) 12%,var(--card));box-shadow:0 0 0 2px var(--juniper)}
+details.lez-carta > summary{padding:12px 14px;font-weight:800;cursor:pointer}
+details.lez-carta .lez-corpo{padding:0 14px 12px}
+.sc-gin{padding:10px;border-radius:16px;background:var(--card);box-shadow:0 4px 14px rgba(0,0,0,.2);margin-bottom:12px}
+.sc-gin svg{max-width:200px}
+.sc-gin-t{font-weight:800;text-align:center}
+#sc-avvisi{font-size:13px}
+.sc-ruolo{margin:14px 0;padding:12px;border-radius:16px;background:var(--card);box-shadow:0 0 0 1px var(--line-strong)}
+.sc-ruolo h3{margin:0 0 4px}
+.sc-desc{margin:0 0 10px;font-size:13.5px;line-height:1.45;color:var(--ink-soft)}
+.sc-chips{display:flex;flex-wrap:wrap;gap:7px}
+.sc-chip{position:relative;display:inline-flex;align-items:center;gap:5px;padding:7px 34px 7px 11px;border-radius:999px;border:1.5px solid var(--line-strong);background:var(--paper);color:var(--ink);font-size:14px;cursor:pointer;user-select:none}
+.sc-chip.on{background:#2E9D5B;border-color:#2E9D5B;color:#fff}
+.sc-chip.altrove{opacity:.55}
+.sc-chip.fissa{border-style:dashed}
+.sc-chip em{font-size:11px;font-style:normal;opacity:.85}
+.sc-pot{font-style:normal;font-size:8px;letter-spacing:1px;color:#C0583E}.sc-chip.on .sc-pot{color:#fff}
+.sc-i{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:24px;height:24px;border-radius:50%;border:0;background:#5A4E43;color:#fff;font:italic 800 13px/24px Georgia,serif;padding:0;cursor:pointer}
+.sc-liv{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.sc-liv button{padding:6px 11px;border-radius:999px;border:1px solid var(--line-strong);background:var(--card);color:var(--ink);font:650 12.5px/1.1 'Inter',system-ui,sans-serif;cursor:pointer}
 /* v2.1 · le due strade e la ricetta passo passo */
 html.in-mappa .menu-bar{display:none!important}
 .mp-via .mv-sub{font:italic 600 16px/1.2 'Fraunces',Georgia,serif;margin-top:-4px}
@@ -2372,7 +2414,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.6.2</div>
+  <div class="splash-ver" id="splash-ver">v2.7</div>
 </div>
 
 <div class="wrap">
@@ -2405,6 +2447,8 @@ html.in-mappa #nav-indietro{display:none!important}
     <button data-tab="grado">🌡️ Gradazione finale</button>
     <button data-tab="ricetta">📋 La ricetta passo passo</button>
     <button data-tab="servire">🍸 Servire</button>
+    <button data-tab="lezione">📖 Lezione</button>
+    <button data-tab="scelta">🌿 Le botaniche, ruolo per ruolo</button>
     <button data-tab="calcoli">🧮 I calcoli dell'alcol</button>
     <button data-tab="storia">📖 Storia del gin</button>
     <button data-tab="builder">🌿 Le botaniche (Gin Builder)</button>
@@ -2449,6 +2493,17 @@ html.in-mappa #nav-indietro{display:none!important}
       <label>Oppure scrivi la tua gradazione (% vol)<input type="number" id="grado-abv" min="37.5" max="70" step="0.5" inputmode="decimal"></label>
     </div>
     <p class="cond-hint" id="grado-nota">Più alta è la gradazione, più oli aromatici restano sciolti: meno rischio di velatura (effetto louche) e più profumo, ma anche più calore in bocca. Un infuso che va estratto sotto questa gradazione non si può diluire fino a qui: la tappa 4 lo segnala.</p>
+  </section>
+
+  <section class="panel" id="panel-lezione">
+    <h2 class="tappa-h" id="lez-h"><span>1</span>Lezione</h2>
+    <div id="lez-box"></div>
+  </section>
+
+  <section class="panel" id="panel-scelta">
+    <h2 class="tappa-h"><span>4</span>Le botaniche, ruolo per ruolo</h2>
+    <p class="tappa-intro">Le basi ci sono già. Per ogni ruolo scegli una o due botaniche: prima compaiono le più usate, poi, se vuoi, le più originali. Il radar in alto mostra come cambia il tuo gin.</p>
+    <div id="scelta-box"></div>
   </section>
 
   <section class="panel" id="panel-servire">
@@ -4110,7 +4165,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.6.2 · 29 ottobre 2026 · riordino: cocktail, calcoli, taratura</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.7 · 29 ottobre 2026 · riordino: cocktail, calcoli, taratura</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -5191,7 +5246,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.6.2</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.7</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -11328,21 +11383,19 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         { id:'servire', tab:'servire', e:'🍸', t:'Servire', c:'#C0583E', d:'garnish, tonica, cocktail' }
       ] },
     pers: { e:'🧪', t:'Il gin personalizzato', c:'#4C7BB5',
-      d:'Prima capisci la ragione di ogni passo — cosa si estrae, a che grado, come si calcola, come si filtra e si assaggia — poi progetti tu il tuo gin.',
+      d:'Impari facendo: ogni tappa ha una breve lezione e una prova pratica, dal ginepro fino al bicchiere. La teoria completa è sempre a un tocco.',
       tappe: [
-        { id:'s-bot',    tab:'libreria',   e:'🌿', t:'Cosa si estrae',          c:'#6F8A2E', studio:1, d:'le botaniche e le loro molecole' },
-        { id:'s-grado',  tab:'nozioni',    apri:'La solubilità selettiva', e:'⚗️', t:'Il grado per ogni molecola', c:'#2F8F8F', studio:1, d:'perché non è uguale per tutte' },
-        { id:'s-calc',   tab:'calcoli',    e:'🧮', t:'I calcoli dell’alcol',  c:'#C0583E', studio:1, d:'diluire e rinforzare' },
-        { id:'s-filtri', tab:'nozioni',    apri:'Filtrazione a freddo', e:'🧻', t:'Le filtrazioni',  c:'#5D6F8C', studio:1, d:'limpidezza, velature, metodi' },
-        { id:'s-degusta',tab:'analisi',    e:'👅', t:'Degustare gli infusi',     c:'#B04A6B', studio:1, d:'la potenza di un infuso' },
-        { id:'s-radar',  tab:'ridondanza', e:'📡', t:'I radar della miscela',    c:'#8A63B0', studio:1, d:'cosa succede unendo gli infusi' },
-        { id:'bot',      tab:'builder',    e:'🌿', t:'Ruoli e botaniche',        c:'#4C7BB5' },
-        { id:'grado',    tab:'grado',      e:'🌡️', t:'Gradazione finale', c:'#C4803A' },
-        { id:'quote',    tab:'proporzioni',e:'⚖️', t:'Quanto gin e le quote',    c:'#B04A6B' },
-        { id:'infusi',   tab:'diario',     e:'🫙', t:'Gli infusi',               c:'#8A63B0' },
-        { id:'assaggio', tab:'prove',      e:'👅', t:'Assaggio e correzioni',    c:'#B8921F' },
-        { id:'bottiglia',tab:'manuale',    e:'🍾', t:'In bottiglia',             c:'#2F8F8F' },
-        { id:'servire',  tab:'servire',    e:'🍸', t:'Servire',                  c:'#C0583E', d:'garnish, tonica, cocktail' }
+        { id:'l-basi',   tab:'lezione',    lez:'basi',       e:'🫐', t:'Il ginepro e le tre basi',     c:'#2F7259', d:'cos\u2019è un gin' },
+        { id:'l-ruoli',  tab:'lezione',    lez:'ruoli',      e:'🧭', t:'I sei ruoli',                  c:'#5D6F8C', d:'e da dove partire' },
+        { id:'l-radar',  tab:'lezione',    lez:'radar',      e:'📡', t:'Leggere il radar',             c:'#8A63B0', d:'profilo e potenza' },
+        { id:'scelta',   tab:'scelta',                       e:'🌿', t:'Le botaniche, ruolo per ruolo', c:'#4C7BB5' },
+        { id:'l-estr',   tab:'lezione',    lez:'estrazione', e:'⚗️', t:'Cosa si estrae e a che grado', c:'#2F8F8F', d:'una gradazione per botanica' },
+        { id:'grado',    tab:'grado',      lez:'diluizione', e:'🌡️', t:'Gradazione finale',            c:'#C4803A' },
+        { id:'quote',    tab:'proporzioni',lez:'quote',      e:'⚖️', t:'Quanto gin e le quote',        c:'#B04A6B' },
+        { id:'infusi',   tab:'diario',     lez:'filtrazione',e:'🫙', t:'Gli infusi',                   c:'#8A63B0' },
+        { id:'assaggio', tab:'prove',      lez:'degustare',  e:'👅', t:'Assaggio e correzioni',        c:'#B8921F' },
+        { id:'bottiglia',tab:'manuale',                      e:'🍾', t:'In bottiglia',                 c:'#2F8F8F' },
+        { id:'servire',  tab:'servire',                      e:'🍸', t:'Servire',                      c:'#C0583E', d:'garnish, tonica, cocktail' }
       ] }
   };
   // I due tondi animati del bivio
@@ -11634,11 +11687,13 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     const cur = T.find(t => t.id === window._tappa && t.tab === tab);
     if (cur) return cur;
     // le pagine di progetto mostrano la barra anche se aperte dal menu; diario, schede, manuale e teoria solo dal percorso
-    return T.find(t => t.tab === tab && ['tipo','grado','builder','proporzioni','ricetta','servire'].includes(tab)) || null;
+    return T.find(t => t.tab === tab && ['tipo','grado','builder','proporzioni','ricetta','servire','lezione','scelta'].includes(tab)) || null;
   }
   function barra(tab){
     document.querySelectorAll('.tappa-bar').forEach(b => { b.hidden = true; });
-    const pr = att(), T = tappeDi(pr), tp = tappaPer(tab); if (!tp) return;
+    const pr = att(), T = tappeDi(pr), tp = tappaPer(tab);
+    cartaLezione(tab, window._tappa && tp && tp.id === window._tappa ? tp : null);
+    if (!tp) return;
     const i = T.indexOf(tp), pan = $('panel-' + tab); if (!pan) return;
     let b = pan.querySelector(':scope > .tappa-bar');
     if (!b){ b = document.createElement('div'); b.className = 'tappa-bar'; pan.appendChild(b); }
@@ -11685,6 +11740,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         case 'tipo': return pr.fatte.tipo ? currentStyleName : 'il carattere del gin';
         case 'quanto': return f1(parseFloat($('dosi-vol').value) || 700) + ' ml · ' + nf(parseFloat($('dosi-abv').value) || 43, 1) + '%';
         case 'grado': return nf(parseFloat($('dosi-abv').value) || 43, 1) + '% vol';
+        case 'scelta': { const n = new Set(tutteSel().map(s => s.value)).size; return n + ' botaniche'; }
         case 'bot': { const n = new Set(tutteSel().map(s => s.value)).size; return pr.fatte.bot ? n + ' botaniche' : 'tu scegli i ruoli'; }
         case 'quote': return f1(parseFloat($('dosi-vol').value) || 700) + ' ml · quote degli infusi';
         case 'spesa': return 'botaniche, alcol, attrezzi';
@@ -11730,10 +11786,10 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     if (!V){
       h += '<h2 class="mp-tit">Come vuoi fare il tuo gin?</h2><p class="mp-sub">Due strade, secondo quanto vuoi metterci le mani. Puoi cambiarla in ogni momento.</p>' +
         '<div class="mp-bivio">' + Object.keys(VIE).map(k => '<button type="button" class="mp-via" data-via="' + k + '" style="--c:' + VIE[k].c + '"><span class="mv-tondo">' + TONDI[k] + '</span><b>' + VIE[k].t + '</b>' + (VIE[k].st ? '<i class="mv-sub">' + VIE[k].st + '</i>' : '') + '<span>' + VIE[k].d + '</span>' +
-          '<small>' + VIE[k].tappe.length + ' tappe' + (k === 'pers' ? ' · 6 per capire, 7 per fare' : '') + '</small></button>').join('') + '</div>';
+          '<small>' + VIE[k].tappe.length + ' tappe' + (k === 'pers' ? ' · teoria e pratica insieme' : '') + '</small></button>').join('') + '</div>';
     } else {
       h += '<h2 class="mp-tit">' + V.e + ' ' + V.t + '</h2>' + (V.st ? '<p class="mp-st-sub">' + V.st + '</p>' : '') +
-        '<p class="mp-sub">' + (pr.via === 'chiavi' ? 'Una ricetta codificata da seguire passo passo.' : 'Prima le sei tappe per capire, poi il progetto.') + ' Tocca una tappa: quella che pulsa è la prossima.</p>' +
+        '<p class="mp-sub">' + (pr.via === 'chiavi' ? 'Una ricetta codificata da seguire passo passo.' : 'Ogni tappa: una breve lezione e una prova.') + ' Tocca una tappa: quella che pulsa è la prossima.</p>' +
         '<button type="button" class="mp-bivio-btn" id="mp-cambia">\u21a9\ufe0f Torna al bivio \u00b7 cambia strada</button>' +
         strada(V.tappe, pr.fatte);
     }
@@ -11782,6 +11838,183 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
   function suonaTondo(via){
     if (via === 'chiavi'){ plop(0); plop(0.38); plop(0.76); }            // bacca, foglia, scorza nel barattolo
     else { plic(0, 950, 0.38); plic(0.42, 520, 0.12); plic(0.62, 640, 0.10); }   // la goccia, poi due bollicine
+  }
+
+  // ===================================================================================
+  // v2.7 · Il gin personalizzato: teoria e pratica insieme.
+  // Ogni tappa ha una breve lezione e una prova; «Approfondisci» porta alla pagina teorica completa.
+  // ===================================================================================
+  const RUOLI_IC = { 'Base':'🫐', 'Freschezza':'🍋', 'Identità':'📍', 'Cuore':'❤️', 'Firma':'✍️', 'Rifinitura':'🎀' };
+  const approf = (testo, js) => '<p class="lez-approf">🔬 Approfondisci: <a href="#" onclick="event.preventDefault();' + js + '">' + testo + '</a></p>';
+  const noz = (testo, chiave) => '<p class="lez-approf">🔬 Approfondisci: <a href="#" class="noz-link" data-noz="' + chiave + '">' + testo + '</a> <span class="cond-hint">(in Nozioni)</span></p>';
+  const LEZ = {
+    basi: { e:'🫐', t:'Il ginepro e le tre basi',
+      html: '<p>Per la legge europea (Reg. UE 2019/787) il gin è una bevanda alcolica aromatizzata con bacche di <strong>ginepro</strong> (<em>Juniperus communis</em>), il cui sapore deve restare <strong>prevalente</strong>, con una gradazione minima di 37,5% vol. Tutto il resto è scelta di chi lo fa.</p>' +
+        '<p>Attorno al ginepro la tradizione ha fissato altre due botaniche, quasi sempre presenti:</p><ul>' +
+        '<li><strong>Ginepro</strong>: resinoso e balsamico, la spina dorsale del gin.</li>' +
+        '<li><strong>Coriandolo</strong> (semi): agrumato e appena speziato, fa da ponte fra il ginepro e le altre note.</li>' +
+        '<li><strong>Angelica</strong> (radice): terrosa e asciutta, profuma poco ma lega gli aromi e dà tenuta al finale.</li></ul>' +
+        '<p>Nel tuo progetto queste tre ci sono già. Qui sotto, come «suona» ciascuna sul radar.</p>' + noz('il ginepro deve superare il 50%?', 'Il ginepro deve superare') },
+    ruoli: { e:'🧭', t:'I sei ruoli delle botaniche',
+      html: '<p>In un gin ogni botanica ha un compito. Pensare per ruoli aiuta a non mettere tutto insieme: un gin riuscito si riconosce in due o tre note, non in venti.</p>' },
+    radar: { e:'📡', t:'Leggere il radar e la potenza',
+      html: '<p>Il radar disegna il profilo di una botanica su dieci assi: quattro <strong>gusti</strong> che si sentono in bocca (dolce, amaro, acido, salino) e sei famiglie di <strong>aromi</strong> che arrivano al naso (agrumato, floreale, fruttato, erbaceo, resinoso, speziato). Ogni asse va da 0, assente, a 5, dominante.</p>' +
+        '<p>La <strong>potenza</strong>, da 1 a 10, dice quanto una botanica si fa sentire rispetto alle altre: il chiodo di garofano, a potenza 10, copre tutto anche in dosi minime; una botanica a potenza bassa va usata in quantità maggiore per farsi notare. Per questo il ruolo decide anche la dose.</p>' +
+        '<p>Il radar del gin finito è la somma dei radar delle botaniche, pesata sulla quantità di ciascuna. Sono stime orientative: le conferma l’assaggio. Prova a confrontarne due.</p>' +
+        approf('che cosa si sente e perché', "showTab('matrice')") },
+    estrazione: { e:'⚗️', t:'Cosa si estrae e a che grado',
+      html: '<p>L’alcol non estrae tutto allo stesso modo. Più il grado è alto, più scioglie le sostanze che non amano l’acqua: gli <strong>oli essenziali</strong> e i terpeni, che portano il profumo. Più è basso, più passano le sostanze solubili in acqua: <strong>zuccheri, acidi, tannini</strong>.</p>' +
+        '<p>Per questo ogni botanica ha la sua gradazione di estrazione. Troppo alta, e si estraggono anche clorofilla, resine e note amare o «verdi»; troppo bassa, e l’infuso resta acquoso e povero di profumo. Conta anche il tempo: oltre il limite escono le sostanze indesiderate.</p>' +
+        '<p>Ecco gradazione e tempo consigliati per le botaniche del tuo progetto: ognuna si mette in infusione da sola, alla sua gradazione.</p>' + noz('la solubilità selettiva', 'La solubilità selettiva') },
+    diluizione: { e:'🌡️', t:'Diluire e rinforzare',
+      html: '<p>Ogni infuso si prepara alla sua gradazione e poi, filtrato, si porta con acqua demineralizzata alla gradazione finale che scegli qui. Diluire è semplice; alzare il grado invece richiede di aggiungere un alcol più forte, perché l’acqua non si toglie.</p>' +
+        '<p>I conti si fanno sul peso dell’alcol: alcol e acqua, mescolandosi, si contraggono e i millilitri non si sommano esattamente.</p>' + approf('🧮 I calcoli dell’alcol', "showTab('calcoli')") },
+    quote: { e:'⚖️', t:'Quote e potenza',
+      html: '<p>La quota è la parte di gin occupata da ciascun infuso, già portato alla gradazione finale. Da sola non basta a giudicare: conta la potenza. Una botanica forte in una quota piccola può pesare più di una debole in una quota grande.</p>' +
+        '<p>Il ginepro deve restare la nota prevalente. Come soglia pratica, qui la sua quota è verde dal 45% in su, arancio fra 30 e 44%, rossa sotto il 30%: soglie di lavoro, non di legge. Muovi i cursori e guarda come cambia il radar.</p>' },
+    filtrazione: { e:'🧻', t:'Macerare e filtrare',
+      html: '<p>Ogni infuso macera al buio per il suo tempo. Quando è pronto si filtra: prima un colino o una garza per togliere le botaniche, poi un filtro di carta per le particelle fini.</p>' +
+        '<p>Se dopo la diluizione compare una velatura, è l’<strong>effetto louche</strong>: gli oli essenziali non restano sciolti quando il grado scende. Si rimedia raffreddando e filtrando a freddo. Il diario ti ricorda quando assaggiare e quando filtrare.</p>' + noz('i metodi di filtrazione', 'Metodi di filtrazione') },
+    degustare: { e:'👅', t:'Degustare',
+      html: '<p>Assaggiare non è bere: si annusa, si assaggia a piccoli sorsi, si annota. Per confrontare le botaniche fra loro si assaggiano gli infusi diluiti alla stessa gradazione.</p>' +
+        '<p>Prima di dare i voti conviene <strong>tarare il palato</strong> con le soluzioni di riferimento (dolce, amaro, acido, salato), così un 3 vuol dire sempre la stessa cosa. Nelle schede di prova annoti percentuali, voti sugli stessi assi del radar e correzioni per la volta dopo.</p>' +
+        approf('la procedura di assaggio', 'apriTecnicaAssaggio()') + approf('la taratura del palato', 'apriTaratura()') }
+  };
+  // la scheda «La lezione» in cima alle pagine di lavoro, quando ci si arriva dal percorso
+  function cartaLezione(tab, tp){
+    document.querySelectorAll('.lez-carta').forEach(c => c.remove());
+    if (!tp || !tp.lez || tab === 'lezione') return;
+    const L = LEZ[tp.lez], pan = $('panel-' + tab); if (!L || !pan) return;
+    const d = document.createElement('details'); d.className = 'lez-carta'; d.open = true;
+    d.innerHTML = '<summary>📖 La lezione · ' + L.t + '</summary><div class="lez-corpo">' + L.html + '</div>';
+    const hero = pan.querySelector(':scope > .page-hero');
+    if (hero) hero.after(d); else pan.prepend(d);
+  }
+
+  // ---------- le pratiche delle lezioni ----------
+  const mini = (n, col, size) => radarSVG([{ vals: PROFILO8[n] || [], color: col || 'var(--juniper)', label: n }], size || 300, {});
+  function botCard(n, col){
+    const d = byName[n] || {};
+    return '<div class="lez-bot"><div class="lez-bot-t">' + (d.icona || '🌿') + ' <b>' + n + '</b><small>potenza ' + (d.potenza10 ?? '—') + '/10 · ' + (d.profilo || '') + '</small></div>' + mini(n, col, 300) + '</div>';
+  }
+  function renderLezione(){
+    const T = tappeDi(att()), tp = T.find(t => t.id === window._tappa && t.tab === 'lezione') || T.find(t => t.tab === 'lezione');
+    const box = $('lez-box'); if (!tp || !box) return;
+    const L = LEZ[tp.lez], i = T.indexOf(tp);
+    $('lez-h').innerHTML = '<span>' + (i + 1) + '</span>' + L.t;
+    let pr = '';
+    if (tp.lez === 'basi') pr = '<div class="lez-bots">' + ['Bacche di ginepro', 'Coriandolo', 'Angelica'].map((n, k) => botCard(n, ['#2F7259', '#C4803A', '#8A63B0'][k])).join('') + '</div>';
+    if (tp.lez === 'ruoli') pr = renderRuoli();
+    if (tp.lez === 'radar') pr = '<div class="lez-cfr"><label>Prima botanica<select id="lez-a"></select></label><label>Seconda botanica<select id="lez-b"></select></label></div><div id="lez-cfr-out"></div>';
+    if (tp.lez === 'estrazione') pr = tabellaEstrazione();
+    box.innerHTML = '<div class="lez-corpo lez-teoria">' + L.html + '</div>' + (pr ? '<h3 class="lez-prova">✋ Prova</h3>' + pr : '');
+    if (tp.lez === 'ruoli') agganciaRuoli();
+    if (tp.lez === 'radar'){
+      assegnaUso();
+      const opz = [...new Set(MASTER.filter(d => d.uso === 'comune' && PROFILO8[d.botanica]).map(d => d.botanica))].sort((a, b) => a.localeCompare(b, 'it')).map(n => '<option>' + n + '</option>').join('');
+      $('lez-a').innerHTML = opz; $('lez-b').innerHTML = opz; $('lez-a').value = 'Bacche di ginepro'; $('lez-b').value = byName['Lavanda'] ? 'Lavanda' : 'Limone';
+      const cfr = () => { const a = $('lez-a').value, b = $('lez-b').value, da = byName[a] || {}, db = byName[b] || {};
+        $('lez-cfr-out').innerHTML = radarSVG([{ vals: PROFILO8[a], color: '#2F7259', label: a }, { vals: PROFILO8[b], color: '#C0583E', label: b }], 320, {}) +
+          '<p class="cond-hint">' + a + ': potenza ' + (da.potenza10 ?? '—') + '/10 · ' + b + ': potenza ' + (db.potenza10 ?? '—') + '/10. Dove le due forme si sovrappongono le note si sommano; dove una riempie un vuoto dell’altra, si completano.</p>'; };
+      $('lez-a').onchange = cfr; $('lez-b').onchange = cfr; cfr();
+    }
+  }
+  // ruoli: la teoria dei sei ruoli e da dove partire (solo le basi, o uno stile come modello)
+  function renderRuoli(){
+    const pr = att();
+    return '<div class="lez-ruoli">' + RUOLI.map(r => { const [desc, dom] = (RUOLI_DESC[r] || '').split('Domanda guida:');
+      return '<div class="lez-ruolo"><b>' + RUOLI_IC[r] + ' ' + r + '</b><span>' + desc.trim() + '</span>' + (dom ? '<i>' + dom.trim() + '</i>' : '') + '</div>'; }).join('') + '</div>' +
+      '<h4 class="lez-sub">Da dove parti?</h4><div class="lez-partenza">' +
+      '<button type="button" class="lez-part' + (pr && !pr.modello ? ' on' : '') + '" data-m="">🫐 Dalle sole tre basi<small>e scegli tu tutto il resto</small></button>' +
+      STYLES.map((s, k) => (s[3] && s[3].length) ? '<button type="button" class="lez-part' + (pr && pr.modello === s[0] ? ' on' : '') + '" data-m="' + k + '" style="--c:' + (STYLE_COLORS[s[0]] || ['#5D6F8C'])[0] + '">' + s[0] + '<small>come modello</small></button>' : '').join('') + '</div>' +
+      '<p class="cond-hint">Partire da uno stile carica le sue botaniche come proposta: nella tappa successiva le cambi, le togli o ne aggiungi.</p>';
+  }
+  const normRuolo = r => /^Identit/.test(r) ? 'Identità' : /^Cuore/.test(r) ? 'Cuore' : /Firma/.test(r) ? 'Firma' : /^Rifinitura/.test(r) ? 'Rifinitura' : /^Freschezza/.test(r) ? 'Freschezza' : 'Base';
+  function partiDa(k){
+    const pr = att(); if (!pr) return;
+    let righe = [];
+    if (k !== ''){ scegliStile(+k); righe = tutteSel().map(s => [normRuolo(s.dataset.role || ''), s.value]); }
+    scegliStile(idxPers());   // sempre Personalizzato: ginepro, angelica, coriandolo
+    const gia = new Set(tutteSel().map(s => s.value));
+    righe.forEach(([r, n]) => { if (!gia.has(n) && byName[n]){ addCustomRoleRow(r, n, false); gia.add(n); } });
+    renderSummary();
+    pr.modello = k === '' ? null : STYLES[+k][0]; delete pr.fatte.scelta; scriviP();
+  }
+  function agganciaRuoli(){
+    document.querySelectorAll('.lez-part').forEach(b => b.onclick = () => {
+      const fare = () => { partiDa(b.dataset.m); renderLezione(); };
+      const pr = att(), n = tutteSel().length;
+      if (n > 3) mostraAvviso('Ricominci da qui?', '<p>Le botaniche scelte finora lasciano il posto a quelle ' + (b.dataset.m === '' ? 'delle sole tre basi' : 'dello stile <strong>' + STYLES[+b.dataset.m][0] + '</strong>') + '.</p>', 'Ricomincia', fare);
+      else fare();
+    });
+  }
+  function tabellaEstrazione(){
+    const nomi = [...new Set(tutteSel().map(s => s.value))].filter(n => byName[n]);
+    if (!nomi.length) return '<p class="cond-hint">Non hai ancora scelto botaniche.</p>';
+    return '<div class="lez-estr">' + nomi.map(n => { const d = byName[n], E = estPer(d, infRif(d));
+      return '<div class="lez-estr-r"><b>' + (d.icona || '🌿') + ' ' + n + '</b><span class="lez-gr">' + (E ? estAbvTxt(E.a) : '—') + '</span><span class="lez-tm">' + (E && E.t ? '⏱️ ' + estTempoTxt(E.t) : '') + '</span>' +
+        (MOLECOLE[n] ? '<small>' + MOLECOLE[n] + '</small>' : '') + '</div>'; }).join('') + '</div>';
+  }
+
+  // ---------- tappa: le botaniche, ruolo per ruolo ----------
+  const FUNZ = {
+    'Base': /fissativo|spina dorsale|rotondit/,
+    'Freschezza': /^top/,
+    'Identità': /marin|firma/,
+    'Cuore': /cuore/,
+    'Firma': /firma/,
+    'Rifinitura': /traccia|rifinitura|correttore|fondo/
+  };
+  function candidati(ruolo){
+    assegnaUso();
+    const daStili = new Set();
+    STYLES.forEach(s => (s[3] || []).forEach(r => { if (normRuolo(r[0]) === ruolo) candidatiDaSuggerimento(r[1]).forEach(n => daStili.add(n)); }));
+    const ok = MASTER.filter(d => d.funzione_compound !== 'non usare' && PROFILO8[d.botanica] && (FUNZ[ruolo].test(d.funzione_compound || '') || daStili.has(d.botanica)));
+    const ord = { comune: 0, firma: 1, altra: 2 };
+    return [...new Map(ok.map(d => [d.botanica, d])).values()].sort((a, b) => (ord[a.uso] - ord[b.uso]) || (daStili.has(b.botanica) - daStili.has(a.botanica)) || a.botanica.localeCompare(b.botanica, 'it'));
+  }
+  const livScelta = {};
+  function ruoliScelti(){ const m = {}; roleList.querySelectorAll('.role-row-custom').forEach(r => { const s = r.querySelector('select:not(.role-label-input)'), l = r.querySelector('.role-label-input'); if (s) m[s.value] = { ruolo: l ? l.value : 'Base', protetta: !!r.dataset.protetta || s.disabled || s._bloccata }; }); return m; }
+  function radarGin(){
+    const sc = ruoliScelti(), el = Object.keys(sc).filter(n => PROFILO8[n]).map(n => ({ n, w: Math.max(0.0001, (doseLibreria(n) || 0.5) * (RUOLO_DOSE[sc[n].ruolo] ?? 1)) }));
+    if (!el.length) return '';
+    const tot = el.reduce((a, x) => a + x.w, 0), v = ASSI8.map((_, i) => el.reduce((a, x) => a + PROFILO8[x.n][i] * x.w, 0) / tot), mx = Math.max.apply(null, v) || 1;
+    return radarSVG([{ vals: v.map(x => Math.round(x / mx * 50) / 10), color: 'var(--juniper)', label: 'Il tuo gin', potenza: potenzaMedia(el) }], 250, {});
+  }
+  function renderScelta(){
+    const box = $('scelta-box'); if (!box) return;
+    if (currentStyleName !== 'Personalizzato'){ const pr = att(); if (pr && pr.via === 'pers'){ partiDa(''); } }
+    const sc = ruoliScelti(), quanti = Object.keys(sc).length;
+    let h = '<div class="sc-gin"><div class="sc-gin-t">🍸 Il tuo gin finora · ' + quanti + ' botaniche</div>' + radarGin() + '<div id="sc-avvisi"></div></div>';
+    RUOLI.forEach(r => {
+      const [desc, dom] = (RUOLI_DESC[r] || '').split('Domanda guida:'), lista = candidati(r), liv = livScelta[r] || 1;
+      const vis = lista.filter(d => d.uso === 'comune' || (liv >= 2 && d.uso === 'firma') || liv >= 3 || sc[d.botanica]);
+      const nF = lista.filter(d => d.uso === 'firma').length, nA = lista.filter(d => d.uso === 'altra').length;
+      h += '<section class="sc-ruolo"><h3>' + RUOLI_IC[r] + ' ' + r + '</h3><p class="sc-desc">' + desc.trim() + (dom ? ' <i>' + dom.trim() + '</i>' : '') + '</p><div class="sc-chips">' +
+        vis.map(d => { const s = sc[d.botanica], qui = s && s.ruolo === r, altrove = s && s.ruolo !== r;
+          return '<span class="sc-chip' + (qui ? ' on' : '') + (altrove ? ' altrove' : '') + (s && s.protetta ? ' fissa' : '') + '" data-n="' + d.botanica.replace(/"/g, '&quot;') + '" data-r="' + r + '" role="button" tabindex="0">' +
+            (d.icona || '🌿') + ' ' + d.botanica + '<i class="sc-pot" title="potenza ' + (d.potenza10 ?? '') + '/10">' + '●'.repeat(Math.round((d.potenza10 || 0) / 2)) + '</i>' +
+            (altrove ? '<em>in ' + s.ruolo + '</em>' : '') + '<button type="button" class="sc-i" aria-label="Profilo di ' + d.botanica.replace(/"/g, '') + '">i</button></span>'; }).join('') + '</div>' +
+        '<div class="sc-liv">' + (liv < 2 && nF ? '<button type="button" data-r="' + r + '" data-l="2">✨ + le più originali (' + nF + ')</button>' : '') + (liv < 3 && nA ? '<button type="button" data-r="' + r + '" data-l="3">🔍 + tutte le altre (' + nA + ')</button>' : '') + '</div></section>';
+    });
+    h += '<p class="cond-hint">Tocca una botanica per aggiungerla o toglierla; la <strong>i</strong> mostra il suo radar. I pallini sono la potenza. Il ginepro non si toglie; l’angelica si cambia solo con una sostituta, nel Builder. <a href="#" onclick="event.preventDefault();showTab(\'builder\')">🎯 Apri il Builder completo</a></p>';
+    box.innerHTML = h;
+    // avvisi di ridondanza dal Builder
+    try { const w = ($('build-semafori') ? $('build-semafori').innerHTML : '') + ($('build-warnings') ? $('build-warnings').innerHTML : ''); $('sc-avvisi').innerHTML = w; } catch(e){}
+    box.querySelectorAll('.sc-chip').forEach(c => c.addEventListener('click', e => {
+      const n = c.dataset.n, r = c.dataset.r;
+      if (e.target.closest('.sc-i')){ e.stopPropagation(); const d = byName[n] || {};
+        mostraAvviso((d.icona || '🌿') + ' ' + n, '<p>' + (d.profilo || '') + ' · potenza ' + (d.potenza10 ?? '—') + '/10</p>' + mini(n, '#2F7259', 300) + (MOLECOLE[n] ? '<p class="cond-hint">' + MOLECOLE[n] + '</p>' : ''), '', null); return; }
+      const s = ruoliScelti()[n];
+      if (s && s.protetta){ mostraAvviso(n, '<p>È una botanica di base del progetto: ' + (n === 'Bacche di ginepro' ? 'senza ginepro non è gin.' : 'si cambia solo con una sua sostituta, dal Builder completo.') + '</p>', '', null); return; }
+      if (s){ // togli (o sposta di ruolo)
+        const row = [...roleList.querySelectorAll('.role-row-custom')].find(x => (x.querySelector('select:not(.role-label-input)') || {}).value === n);
+        if (row) row.remove();
+        if (s.ruolo !== r) addCustomRoleRow(r, n, false);
+      } else addCustomRoleRow(r, n, false);
+      renderSummary(); const y = window.scrollY; renderScelta(); window.scrollTo(0, y);
+    }));
+    box.querySelectorAll('.sc-liv button').forEach(b => b.onclick = () => { livScelta[b.dataset.r] = +b.dataset.l; const y = window.scrollY; renderScelta(); window.scrollTo(0, y); });
   }
 
   function scegliVia(via){
@@ -11856,6 +12089,8 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     if (name === 'grado') renderGrado();
     if (name === 'proporzioni') syncPP();
     if (name === 'ricetta') renderRicetta();
+    if (name === 'lezione') renderLezione();
+    if (name === 'scelta') renderScelta();
     if (name === 'servire'){ const g = $('servire-grid'); g.innerHTML = tessere(SERVIRE, 6);
       g.querySelectorAll('.mp-tile').forEach(b => b.addEventListener('click', () => showTab(b.dataset.tab))); }
     if (name === 'garnish' || name === 'toniche'){
