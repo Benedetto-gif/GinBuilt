@@ -2233,6 +2233,24 @@ html details.howto a{color:#5A3E1C;}
 .sp-tile .sp-i{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;border:0;background:rgba(255,255,255,.92);color:#3A2F27;
   font:italic 800 15px/28px Georgia,'Fraunces',serif;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.3);padding:0}
 .sp-tile.on{outline:3px solid var(--ink);outline-offset:2px}
+.mp-via{display:grid!important;grid-template-columns:auto 1fr;column-gap:14px;align-items:center}
+.mp-via > :not(.mv-tondo){grid-column:2}
+.mv-tondo{grid-row:1 / span 4;align-self:start;width:84px;height:84px;border-radius:50%;display:grid;place-items:center;background:rgba(0,0,0,.18);box-shadow:inset 0 0 0 3px rgba(255,255,255,.55),0 4px 12px rgba(0,0,0,.25)}
+.tondo-svg{width:64px;height:64px;overflow:visible}
+.td-cade{animation:td-cade 3.6s ease-in infinite;opacity:0}
+.td-c2{animation-delay:1.2s}.td-c3{animation-delay:2.4s}
+@keyframes td-cade{0%{transform:translateY(0);opacity:0}10%{opacity:1}55%{transform:translateY(38px);opacity:1}70%,100%{transform:translateY(40px);opacity:0}}
+.td-liq{animation:td-sale 3.6s ease-in-out infinite}
+.td-onda{animation:td-sale 3.6s ease-in-out infinite}
+@keyframes td-sale{0%,100%{transform:translateY(4px)}50%{transform:translateY(-3px)}}
+.td-bolla{animation:td-bolla 2.4s ease-in infinite;opacity:0}
+.td-b2{animation-delay:.8s}.td-b3{animation-delay:1.6s}
+@keyframes td-bolla{0%{transform:translateY(0);opacity:0}15%{opacity:1}100%{transform:translateY(-16px);opacity:0}}
+.td-goccia{animation:td-goccia 2.4s ease-in infinite;opacity:0}
+@keyframes td-goccia{0%,40%{transform:translateY(0);opacity:0}45%{opacity:1}80%{transform:translateY(20px);opacity:1}90%,100%{transform:translateY(22px);opacity:0}}
+.td-pip{animation:td-pip 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:center top}
+@keyframes td-pip{0%,30%,100%{transform:scaleY(1)}38%{transform:scaleY(.85)}}
+@media (prefers-reduced-motion:reduce){.td-cade,.td-liq,.td-onda,.td-bolla,.td-goccia,.td-pip{animation:none;opacity:1}}
 /* v2.1 · le due strade e la ricetta passo passo */
 html.in-mappa .menu-bar{display:none!important}
 .mp-via .mv-sub{font:italic 600 16px/1.2 'Fraunces',Georgia,serif;margin-top:-4px}
@@ -2348,7 +2366,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.5.1</div>
+  <div class="splash-ver" id="splash-ver">v2.6</div>
 </div>
 
 <div class="wrap">
@@ -2380,6 +2398,7 @@ html.in-mappa #nav-indietro{display:none!important}
     <button data-tab="tipo">🏷️ Che gin vuoi?</button>
     <button data-tab="grado">🌡️ Gradazione finale</button>
     <button data-tab="ricetta">📋 La ricetta passo passo</button>
+    <button data-tab="servire">🍸 Servire</button>
     <button data-tab="calcoli">🧮 I calcoli dell'alcol</button>
     <button data-tab="storia">📖 Storia del gin</button>
     <button data-tab="builder">🌿 Le botaniche (Gin Builder)</button>
@@ -2424,6 +2443,12 @@ html.in-mappa #nav-indietro{display:none!important}
       <label>Oppure scrivi la tua gradazione (% vol)<input type="number" id="grado-abv" min="37.5" max="70" step="0.5" inputmode="decimal"></label>
     </div>
     <p class="cond-hint" id="grado-nota">Più alta è la gradazione, più oli aromatici restano sciolti: meno rischio di velatura (effetto louche) e più profumo, ma anche più calore in bocca. Un infuso che va estratto sotto questa gradazione non si può diluire fino a qui: la tappa 4 lo segnala.</p>
+  </section>
+
+  <section class="panel" id="panel-servire">
+    <h2 class="tappa-h"><span>🍸</span>Servire</h2>
+    <p class="tappa-intro">Il gin è pronto: ora si porta in tavola. La garnish e la tonica consigliate per il tuo gin, i cocktail classici e i tuoi esperimenti, e qualche strumento speciale.</p>
+    <div class="mp-grid" id="servire-grid"></div>
   </section>
 
   <section class="panel" id="panel-ricetta">
@@ -4078,7 +4103,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.5.1 · 29 ottobre 2026 · riordino: cocktail, calcoli, taratura</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.6 · 29 ottobre 2026 · riordino: cocktail, calcoli, taratura</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -5159,7 +5184,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.5.1</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.6</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -11280,14 +11305,15 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const PK = 'gb-progetti';
   const VIE = {
-    chiavi: { e:'👌', t:'Gin no problem!', st:'Crealo passo passo', c:'#C4803A',
-      d:'Scegli uno stile e quanto gin vuoi, poi segui la ricetta: la spesa, gli infusi, l’unione, la bottiglia. Niente da studiare.',
+    chiavi: { e:'👌', t:'Gin no problem!', st:'Seguimi passo passo', c:'#C4803A',
+      d:'Scegli uno stile e quanto gin vuoi, poi segui la ricetta: la spesa, gli infusi, l’unione, la bottiglia e come servirlo. Niente da studiare.',
       tappe: [
         { id:'tipo',   tab:'tipo',    e:'🏷️', t:'Scegli lo stile',            c:'#2F7259' },
         { id:'quanto', tab:'grado',   e:'📏',       t:'Quanto e che grado',          c:'#C4803A' },
         { id:'spesa',  tab:'ricetta',  e:'🛒', t:'La spesa',          c:'#4C7BB5' },
         { id:'infusi', tab:'ricetta', e:'🫙', t:'Gli infusi passo passo', c:'#8A63B0' },
-        { id:'unisci', tab:'ricetta', e:'🍾', t:'Unisci e imbottiglia', c:'#2F8F8F' }
+        { id:'unisci', tab:'ricetta', e:'🍾', t:'Unisci e imbottiglia', c:'#2F8F8F' },
+        { id:'servire', tab:'servire', e:'🍸', t:'Servire', c:'#C0583E', d:'garnish, tonica, cocktail' }
       ] },
     pers: { e:'🧪', t:'Il gin personalizzato', c:'#4C7BB5',
       d:'Prima capisci la ragione di ogni passo — cosa si estrae, a che grado, come si calcola, come si filtra e si assaggia — poi progetti tu il tuo gin.',
@@ -11303,8 +11329,35 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         { id:'quote',    tab:'proporzioni',e:'⚖️', t:'Quanto gin e le quote',    c:'#B04A6B' },
         { id:'infusi',   tab:'diario',     e:'🫙', t:'Gli infusi',               c:'#8A63B0' },
         { id:'assaggio', tab:'prove',      e:'👅', t:'Assaggio e correzioni',    c:'#B8921F' },
-        { id:'bottiglia',tab:'manuale',    e:'🍾', t:'In bottiglia',             c:'#2F8F8F' }
+        { id:'bottiglia',tab:'manuale',    e:'🍾', t:'In bottiglia',             c:'#2F8F8F' },
+        { id:'servire',  tab:'servire',    e:'🍸', t:'Servire',                  c:'#C0583E', d:'garnish, tonica, cocktail' }
       ] }
+  };
+  // I due tondi animati del bivio
+  const TONDI = {
+    // Gin no problem: il barattolo dove cadono, una dopo l'altra, le botaniche della ricetta (bacca, foglia, scorza) e il liquido sale
+    chiavi: '<svg viewBox="0 0 64 64" class="tondo-svg" aria-hidden="true">' +
+      '<defs><clipPath id="td-vaso"><path d="M20 26 h24 v26 a5 5 0 0 1 -5 5 h-14 a5 5 0 0 1 -5 -5 z"/></clipPath></defs>' +
+      '<g clip-path="url(#td-vaso)"><rect class="td-liq" x="16" y="40" width="32" height="24" fill="#F4E3B0" opacity=".85"/>' +
+      '<path class="td-onda" d="M16 40 q4 -2 8 0 t8 0 t8 0 t8 0 v4 h-32z" fill="#F4E3B0" opacity=".85"/></g>' +
+      '<path d="M20 26 h24 v26 a5 5 0 0 1 -5 5 h-14 a5 5 0 0 1 -5 -5 z" fill="none" stroke="#fff" stroke-width="2.6" stroke-linejoin="round"/>' +
+      '<rect x="18" y="20" width="28" height="6" rx="2" fill="#fff"/>' +
+      '<circle class="td-cade td-c1" cx="27" cy="6" r="3.2" fill="#3B4C8C"/>' +
+      '<path class="td-cade td-c2" d="M34 2 c5 1 6 6 2 9 c-4 -1 -5 -6 -2 -9z" fill="#5FAE52"/>' +
+      '<path class="td-cade td-c3" d="M38 4 q6 2 4 8" fill="none" stroke="#F2B233" stroke-width="3" stroke-linecap="round"/>' +
+      '</svg>',
+    // Il gin personalizzato: la beuta che ribolle, la pipetta che lascia cadere la goccia, la provetta graduata
+    pers: '<svg viewBox="0 0 64 64" class="tondo-svg" aria-hidden="true">' +
+      '<defs><clipPath id="td-beuta"><path d="M27 18 v12 l-11 20 a4 4 0 0 0 3.5 6 h25 a4 4 0 0 0 3.5 -6 l-11 -20 v-12 z"/></clipPath></defs>' +
+      '<g clip-path="url(#td-beuta)"><rect x="10" y="40" width="44" height="20" fill="#7FD3C4" opacity=".9"/>' +
+      '<circle class="td-bolla td-b1" cx="28" cy="52" r="1.9" fill="#fff"/><circle class="td-bolla td-b2" cx="34" cy="54" r="1.5" fill="#fff"/><circle class="td-bolla td-b3" cx="38" cy="51" r="1.7" fill="#fff"/></g>' +
+      '<path d="M27 18 v12 l-11 20 a4 4 0 0 0 3.5 6 h25 a4 4 0 0 0 3.5 -6 l-11 -20 v-12 z" fill="none" stroke="#fff" stroke-width="2.6" stroke-linejoin="round"/>' +
+      '<path d="M25 18 h14" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>' +
+      '<g class="td-pip"><ellipse cx="46" cy="5" rx="3.6" ry="4.2" fill="#F2B233"/><path d="M44.6 8.5 h2.8 v10 l-1.4 3 l-1.4 -3z" fill="#fff"/></g>' +
+      '<circle class="td-goccia" cx="46" cy="23" r="1.6" fill="#7FD3C4"/>' +
+      '<g class="td-prov"><rect x="5" y="22" width="7" height="28" rx="3.5" fill="none" stroke="#fff" stroke-width="2"/><rect x="6.2" y="36" width="4.6" height="12.6" rx="2.3" fill="#F28B82"/>' +
+      '<path d="M12 28 h2 M12 33 h2 M12 38 h2 M12 43 h2" stroke="#fff" stroke-width="1.2"/></g>' +
+      '</svg>'
   };
   const CAPIRE = ['libreria','calcoli','ridondanza','matrice','nozioni','analisi','leggi','storia','altrigin'];
   const SERVIRE = ['garnish','toniche','cocktail','special'];
@@ -11569,7 +11622,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     const cur = T.find(t => t.id === window._tappa && t.tab === tab);
     if (cur) return cur;
     // le pagine di progetto mostrano la barra anche se aperte dal menu; diario, schede, manuale e teoria solo dal percorso
-    return T.find(t => t.tab === tab && ['tipo','grado','builder','proporzioni','ricetta'].includes(tab)) || null;
+    return T.find(t => t.tab === tab && ['tipo','grado','builder','proporzioni','ricetta','servire'].includes(tab)) || null;
   }
   function barra(tab){
     document.querySelectorAll('.tappa-bar').forEach(b => { b.hidden = true; });
@@ -11664,8 +11717,8 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       '<button type="button" class="mp-diario" id="mp-diario">📓 Diario</button></div>';
     if (!V){
       h += '<h2 class="mp-tit">Come vuoi fare il tuo gin?</h2><p class="mp-sub">Due strade, secondo quanto vuoi metterci le mani. Puoi cambiarla in ogni momento.</p>' +
-        '<div class="mp-bivio">' + Object.keys(VIE).map(k => '<button type="button" class="mp-via" data-via="' + k + '" style="--c:' + VIE[k].c + '"><span class="mv-e">' + VIE[k].e + '</span><b>' + VIE[k].t + '</b>' + (VIE[k].st ? '<i class="mv-sub">' + VIE[k].st + '</i>' : '') + '<span>' + VIE[k].d + '</span>' +
-          '<small>' + VIE[k].tappe.length + ' tappe' + (k === 'pers' ? ' · 6 per capire, 6 per fare' : '') + '</small></button>').join('') + '</div>';
+        '<div class="mp-bivio">' + Object.keys(VIE).map(k => '<button type="button" class="mp-via" data-via="' + k + '" style="--c:' + VIE[k].c + '"><span class="mv-tondo">' + TONDI[k] + '</span><b>' + VIE[k].t + '</b>' + (VIE[k].st ? '<i class="mv-sub">' + VIE[k].st + '</i>' : '') + '<span>' + VIE[k].d + '</span>' +
+          '<small>' + VIE[k].tappe.length + ' tappe' + (k === 'pers' ? ' · 6 per capire, 7 per fare' : '') + '</small></button>').join('') + '</div>';
     } else {
       h += '<h2 class="mp-tit">' + V.e + ' ' + V.t + '</h2>' + (V.st ? '<p class="mp-st-sub">' + V.st + '</p>' : '') +
         '<p class="mp-sub">' + (pr.via === 'chiavi' ? 'Una ricetta codificata da seguire passo passo.' : 'Prima le sei tappe per capire, poi il progetto.') + ' Tocca una tappa: quella che pulsa è la prossima.</p>' +
@@ -11675,7 +11728,6 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     // la teoria appartiene solo alla strada del gin personalizzato: con il Gin no problem! si gioca, non si studia
     if (pr.via === 'pers') h += '<div class="mp-sez"><h3>📚 Capire perché</h3><p>La parte teorica, da consultare quando vuoi: le botaniche e la loro potenza, cosa si estrae e a che gradazione, i ruoli, le ridondanze, le leggi.</p>' +
         '<div class="mp-grid">' + tessere(CAPIRE, 2) + '</div></div>';
-    h += '<div class="mp-sez"><h3>🍸 Servire</h3><div class="mp-grid">' + tessere(SERVIRE, 6) + '</div></div>';
     box.innerHTML = h;
     try { renderDati(); } catch(e){}
     let piede = $('mp-piede');
@@ -11762,6 +11814,8 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     if (name === 'grado') renderGrado();
     if (name === 'proporzioni') syncPP();
     if (name === 'ricetta') renderRicetta();
+    if (name === 'servire'){ const g = $('servire-grid'); g.innerHTML = tessere(SERVIRE, 6);
+      g.querySelectorAll('.mp-tile').forEach(b => b.addEventListener('click', () => showTab(b.dataset.tab))); }
     if (name === 'garnish' || name === 'toniche'){
       const r = window._ricettaBuilder, el = $(name === 'garnish' ? 'gar-progetto' : 'ton-progetto'), fn = name === 'garnish' ? window.garnishBoxRicetta : window.tonicaBoxRicetta;
       if (el){ try {
