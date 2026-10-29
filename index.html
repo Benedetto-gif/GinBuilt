@@ -2222,6 +2222,10 @@ html details.howto a{color:#5A3E1C;}
 .ar-vai{flex:1 1 150px;text-align:center;padding:10px 12px;border-radius:14px;background:var(--juniper);color:#fff!important;font:700 14px/1.2 'Inter',system-ui,sans-serif;text-decoration:none}
 .ar-vai + .ar-vai{background:#8A63B0}
 .ar-tit{margin:22px 0 10px;padding-top:12px;border-top:2px solid var(--line-strong);font-size:19px}
+.ck-schede{display:flex;gap:8px;margin:0 0 14px}
+.ck-scheda{flex:1;padding:11px 10px;border-radius:14px;border:2px solid var(--line-strong);background:var(--card);color:var(--ink);font:700 14.5px/1.2 'Inter',system-ui,sans-serif;cursor:pointer}
+.ck-scheda.on{background:#C0583E;border-color:#C0583E;color:#fff}
+.ck-scheda.on + .ck-scheda.on,.ck-scheda[data-ck="ck-lab"].on{background:#8A63B0;border-color:#8A63B0}
 /* v2.1 · le due strade e la ricetta passo passo */
 html.in-mappa .menu-bar{display:none!important}
 .mp-via .mv-sub{font:italic 600 16px/1.2 'Fraunces',Georgia,serif;margin-top:-4px}
@@ -2337,7 +2341,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.4</div>
+  <div class="splash-ver" id="splash-ver">v2.5</div>
 </div>
 
 <div class="wrap">
@@ -2369,6 +2373,7 @@ html.in-mappa #nav-indietro{display:none!important}
     <button data-tab="tipo">🏷️ Che gin vuoi?</button>
     <button data-tab="grado">🌡️ Gradazione finale</button>
     <button data-tab="ricetta">📋 La ricetta passo passo</button>
+    <button data-tab="calcoli">🧮 I calcoli dell'alcol</button>
     <button data-tab="storia">📖 Storia del gin</button>
     <button data-tab="builder">🌿 Le botaniche (Gin Builder)</button>
     <button data-tab="proporzioni">⚖️ Quanto gin e le quote</button>
@@ -2380,11 +2385,10 @@ html.in-mappa #nav-indietro{display:none!important}
     <button data-tab="analisi">👃 Analisi sensoriale</button>
     <button data-tab="matrice">🎡 Aromi e sentori</button>
     <button data-tab="altrigin">🥃 Gli altri gin</button>
-    <button data-tab="cocktail">🍸 Cocktail</button>
+    <button data-tab="cocktail">🍸 Cocktail ed esperimenti</button>
     <button data-tab="garnish">🍋 Garnish</button>
     <button data-tab="toniche">🫧 Acque toniche</button>
     <button data-tab="special">✨ Special</button>
-    <button data-tab="laboratorio">🧪 Laboratorio cocktail</button>
     <button data-tab="manuale">📘 Dal macerato alla bottiglia</button>
     <button data-tab="leggi">⚖️ Leggi e regole</button>
   </nav>
@@ -2795,6 +2799,7 @@ html.in-mappa #nav-indietro{display:none!important}
           <p><strong>Persistenza retronasale.</strong> Dopo l'assaggio, attendi 2–3 minuti senza mangiare né bere, poi valuta: durata (breve / media / lunga), cosa rimane, se il finale migliora o peggiora, eventuale comparsa di note amare, legnose, medicinali o astringenti. Una botanica con un profumo straordinario all'inizio ma un finale amaro o medicinale non va necessariamente eliminata: può bastare ridurne molto la dose.</p>
         </div>
       </details>
+      <div id="tf-taratura-palato"></div>
 
       <details class="howto">
         <summary>I sei ruoli durante l'assaggio (promemoria)</summary>
@@ -3359,24 +3364,17 @@ html.in-mappa #nav-indietro{display:none!important}
   <!-- INFUSI -->
   
 
-  <!-- SCHEDE DI PROVA -->
-  <section class="panel" id="panel-prove">
+  <section class="panel" id="panel-calcoli">
     <details class="howto">
       <summary>Come si usa</summary>
       <div class="howto-body">
-        <p>Il banco di lavoro. Qui si parte da <strong>infusi già pronti</strong> — una botanica per volta, preparata con la
-          dose e il tempo indicati nelle schede Botaniche — e si compone la miscela.</p>
-        <ol>
-          <li>Il calcolatore in alto ti dice quanta acqua aggiungere per portare l'alcol al grado di lavoro.</li>
-          <li>Apri una scheda e indica per ogni infuso la <strong>percentuale sul volume finale</strong>. Accanto compaiono
-            i millilitri corrispondenti e i grammi di botanica che finiscono davvero nel bicchiere.</li>
-          <li>Il riepilogo mostra il totale degli infusi e quanta base neutra serve per arrivare a 100. Il pulsante
-            <em>Bilancia al 100%</em> normalizza le percentuali mantenendo i rapporti fra loro.</li>
-          <li>Dopo l'assaggio compila la valutazione e, soprattutto, le correzioni per il test successivo.</li>
-          <li><em>Duplica come nuova versione</em> crea la v2 conservando la ricetta e azzerando i giudizi: è così che si
-            costruisce una serie confrontabile.</li>
-        </ol>
-        <p>Le schede restano su questo dispositivo: non vengono inviate da nessuna parte.</p>
+        <p>L'unico calcolatore dell'app in cui si scrivono gradi e volumi a mano: nelle altre pagine (scheda della botanica, quote, ricetta passo passo) i conti si fanno da soli.</p>
+        <ul>
+          <li><strong>Diluire</strong>: grado di partenza più alto di quello desiderato. Il risultato dice quanto alcol e quanta acqua demineralizzata servono, in ml e in grammi.</li>
+          <li><strong>Rinforzare</strong>: grado desiderato più alto di quello di partenza. L'acqua non si toglie: compare la casella dell'alcol più forte da aggiungere (di solito 96%).</li>
+          <li>Se hai già una quantità di alcol, scrivila in «Oppure: alcol che ho già»: il calcolo parte da lì invece che dal volume finale.</li>
+          <li>Il grado si intende a 20 °C, ma non serve portare la soluzione a 20 °C: basta misurarne la temperatura. I conti sono sul peso dell'alcol puro, con le densità alla temperatura indicata (formula internazionale OIML), perché alcol e acqua mescolandosi si contraggono.</li>
+        </ul>
       </div>
     </details>
     <div class="calc-box" id="calc-box">
@@ -3403,13 +3401,34 @@ html.in-mappa #nav-indietro{display:none!important}
 
     <p class="noz-rimando">🔬 Torbidità, colore e filtrazione: <a href="#" class="noz-link" data-noz="Dopo la diluizione: torbidità">effetto louche</a> · <a href="#" class="noz-link" data-noz="Come intervenire su torbidità e colore">torbidità e colore</a> · <a href="#" class="noz-link" data-noz="Filtrazione a freddo">filtrazione a freddo</a> <span class="cond-hint">(in Nozioni tecniche)</span></p>
 
+  </section>
+
+  <!-- SCHEDE DI PROVA -->
+  <section class="panel" id="panel-prove">
+    <details class="howto">
+      <summary>Come si usa</summary>
+      <div class="howto-body">
+        <p>Il banco di lavoro. Qui si parte da <strong>infusi già pronti</strong> — una botanica per volta, preparata con la
+          dose e il tempo indicati nelle schede Botaniche — e si compone la miscela.</p>
+        <ol>
+          <li>Apri una scheda e indica per ogni infuso la <strong>percentuale sul volume finale</strong>. Accanto compaiono
+            i millilitri corrispondenti e i grammi di botanica che finiscono davvero nel bicchiere.</li>
+          <li>Il riepilogo mostra il totale degli infusi e quanta base neutra serve per arrivare a 100. Il pulsante
+            <em>Bilancia al 100%</em> normalizza le percentuali mantenendo i rapporti fra loro.</li>
+          <li>Dopo l'assaggio compila la valutazione e, soprattutto, le correzioni per il test successivo.</li>
+          <li><em>Duplica come nuova versione</em> crea la v2 conservando la ricetta e azzerando i giudizi: è così che si
+            costruisce una serie confrontabile.</li>
+        </ol>
+        <p>Per diluire o rinforzare l'alcol c'è la pagina <a href="#" onclick="event.preventDefault();showTab('calcoli')">🧮 I calcoli dell'alcol</a>. Le schede restano su questo dispositivo: non vengono inviate da nessuna parte.</p>
+      </div>
+    </details>
     <div class="prove-head">
       <h2>Le tue schede</h2>
       <button class="primary-btn" id="new-test-btn">+ Nuova scheda</button>
     </div>
     <div class="backup-box" id="backup-box">
-      <button class="ghost-btn" id="bk-export" type="button">⬇ Salva tutto (Drive o file)</button>
-      <button class="ghost-btn" id="bk-import" type="button">⬆ Ripristina da file</button>
+      <button class="ghost-btn" id="bk-export" type="button" hidden>⬇ Salva tutto</button>
+      <button class="ghost-btn" id="bk-import" type="button" hidden>⬆ Ripristina</button>
       <button class="ghost-btn" id="bk-confronta" type="button">⇄ Confronta versioni</button>
       <input type="file" id="bk-file" accept="application/json,.json,text/plain,.txt" hidden>
       <span class="bk-info" id="bk-info"></span>
@@ -3470,7 +3489,7 @@ html.in-mappa #nav-indietro{display:none!important}
         </div>
         <h4>Profilo assaggiato</h4>
         <p class="cond-hint" style="margin:0 0 8px;">Quanto senti ogni nota, da 0 (assente) a 5 (dominante). Le prime quattro si colgono con la lingua, le altre con il naso: assaggia, poi annusa il bicchiere vuoto. Serve a confrontare ciò che hai sentito con ciò che l'app prevedeva.</p>
-        <div id="tf-taratura-palato"></div>
+        <p class="cond-hint tar-rimando">📏 Prima di votare ripassa le soluzioni di riferimento: <a href="#" onclick="event.preventDefault();apriTaratura()">Taratura del palato</a>, in Analisi sensoriale.</p>
         <div class="tf-grid tf-eval" id="tf-profilo-grid"></div>
         <label class="tf-tarato"><input type="checkbox" id="tf-tarato"> Ho dato questi voti dopo aver ripassato le soluzioni di riferimento</label>
         <div id="tf-prof-cmp"></div>
@@ -3503,41 +3522,24 @@ html.in-mappa #nav-indietro{display:none!important}
     <details class="howto">
       <summary>Come si usa</summary>
       <div class="howto-body">
-        <p>Venti classici in cui il gin è protagonista, con le dosi standard per un drink. Servono a due cose: avere un
-          riferimento affidabile al banco e capire come si comporta il proprio gin una volta messo in ricetta.</p>
+        <p>Due schede: <strong>🍸 I classici</strong>, venti drink in cui il gin è protagonista, con le dosi standard; e <strong>🧪 I tuoi esperimenti</strong>, cocktail sperimentali che mettono alla prova una tecnica alla volta (soluzione salina, cordiale con acidi in polvere, sciroppo infuso, chiarificazione al latte…) con le botaniche dell'app.</p>
         <ul>
-          <li>Usa i pulsanti per filtrare per famiglia: i mescolati, gli amari da aperitivo, i sour e i long drink.</li>
-          <li>In fondo a ogni scheda trovi lo <strong>stile di gin consigliato</strong>: ritrova lo stesso nome fra gli stili del percorso
-            se vuoi costruire una ricetta pensata per quel cocktail.</li>
-          <li>I cocktail sperimentali hanno una pagina a parte, il <strong>Laboratorio cocktail</strong> (pulsante in fondo a questa pagina).</li>
-          <li>Un gin si giudica davvero in tre prove: liscio a temperatura di cantina, in gin tonic e in un mescolato secco
-            come il Martini. Il primo racconta la materia, il secondo l'apertura aromatica, il terzo la struttura.</li>
-        </ul>
-      </div>
-    </details>
-
-    <div class="ck-filters" id="ck-filters"></div>
-    <div class="ck-grid" id="ck-grid"></div>
-    
-    <p class="home-note">Le dosi sono quelle consolidate nella letteratura di bar: sono un punto di partenza, non un dogma.
-      Il rapporto fra gin e vermouth nel Martini, per dire, è cambiato di dieci volte in un secolo.</p>
-  </section>
-
-  <!-- ============ LABORATORIO ============ -->
-  <section class="panel" id="panel-laboratorio">
-    <details class="howto">
-      <summary>Come si usa</summary>
-      <div class="howto-body">
-        <p>Cocktail sperimentali, separati dai classici: ognuno mette alla prova una tecnica (soluzione salina, cordiale con acidi in polvere, sciroppo infuso, chiarificazione al latte…) con le botaniche dell'app.</p>
-        <ul>
-          <li>Leggi l'<strong>ipotesi</strong>: è quello che l'assaggio deve confermare o smentire.</li>
-          <li>Il <strong>radar previsto</strong> è una stima dai profili degli ingredienti; dopo il primo assaggio compare in arancione quello che hai sentito.</li>
-          <li>In <em>Assaggia e annota</em> dai i dieci voti (stessa scala tarata delle Schede di prova), il giudizio, se l'ipotesi è verificata, e le correzioni: ogni salvataggio diventa una versione (v1, v2…).</li>
-          <li>Con <em>Aggiungi un tuo esperimento</em> crei schede tue; le trovi nel filtro «I miei».</li>
+          <li><strong>Classici.</strong> Filtra per famiglia: mescolati, amari da aperitivo, sour, long drink. In fondo a ogni scheda trovi lo <strong>stile di gin consigliato</strong>, lo stesso nome che trovi fra gli stili del percorso.</li>
+          <li><strong>Esperimenti.</strong> Ogni scheda ha un'<strong>ipotesi</strong> da confermare o smentire e un <strong>radar previsto</strong>, stimato dai profili degli ingredienti; dopo il primo assaggio compare in arancione quello che hai sentito. In <em>Assaggia e annota</em> dai i dieci voti (stessa scala tarata delle Schede di prova), il giudizio e le correzioni: ogni salvataggio diventa una versione (v1, v2…). Con <em>Aggiungi un tuo esperimento</em> crei schede tue, nel filtro «I miei».</li>
+          <li>Un gin si giudica davvero in tre prove: liscio a temperatura di cantina, in gin tonic e in un mescolato secco come il Martini. Il primo racconta la materia, il secondo l'apertura aromatica, il terzo la struttura.</li>
         </ul>
         <p>Gli assaggi restano salvati su questo dispositivo.</p>
       </div>
     </details>
+    <div class="ck-schede" role="tablist"><button type="button" class="ck-scheda on" data-ck="ck-classici" role="tab">🍸 I classici</button><button type="button" class="ck-scheda" data-ck="ck-lab" role="tab">🧪 I tuoi esperimenti</button></div>
+    <div id="ck-classici">
+    <div class="ck-filters" id="ck-filters"></div>
+      <div class="ck-grid" id="ck-grid"></div>
+      
+      <p class="home-note">Le dosi sono quelle consolidate nella letteratura di bar: sono un punto di partenza, non un dogma.
+        Il rapporto fra gin e vermouth nel Martini, per dire, è cambiato di dieci volte in un secolo.</p>
+    </div>
+    <div id="ck-lab" hidden>
     <div class="lab-wrap" id="lab" style="margin-top:0">
             <p class="lab-intro">Ricette nuove, pensate per mettere alla prova una tecnica alla volta con le botaniche dell'app. Ogni scheda ha un'<strong>ipotesi</strong> da verificare, il <strong>radar previsto</strong> (stima dai profili degli ingredienti) e lo spazio per annotare gli assaggi: dopo il primo assaggio sul radar compare anche quello che hai sentito. Le dosi sono un punto di partenza, non ancora provate.</p>
       <div class="ck-filters" id="lab-filters"></div>
@@ -3557,8 +3559,10 @@ html.in-mappa #nav-indietro{display:none!important}
         </div>
       </details>
     </div>
+    </div>
   </section>
 
+  <!-- ============ LABORATORIO ============ -->
   <!-- ============ GARNISH ============ -->
   <section class="panel" id="panel-garnish">
     <details class="howto">
@@ -4067,7 +4071,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.4 · 29 ottobre 2026 · Aromi e sentori in una pagina</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.5 · 29 ottobre 2026 · riordino: cocktail, calcoli, taratura</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -5148,7 +5152,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.4</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.5</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -5327,6 +5331,13 @@ function apriTecnicaAssaggio(){
   setTimeout(v, 60); setTimeout(v, 420);
 }
 window.apriTecnicaAssaggio = apriTecnicaAssaggio;
+// Dalla scheda di prova: apre Analisi sensoriale sulla taratura del palato.
+window.apriTaratura = function(){
+  showTab('analisi');
+  const d = document.querySelector('#tf-taratura-palato .tar-box'); if (!d) return;
+  d.open = true; d.style.scrollMarginTop = '84px';
+  const v = () => d.scrollIntoView({ behavior: 'smooth', block: 'start' }); setTimeout(v, 60); setTimeout(v, 420);
+};
 // Apre la pagina del Diario degli infusi (solo il diario, senza le schede delle botaniche).
 function apriDiario(){ showTab('diario'); }
 window.apriDiario = apriDiario;
@@ -11007,35 +11018,34 @@ if ("serviceWorker" in navigator) {
 // e i suoi riquadri prendono tinte diverse, a giro, partendo dal colore della pagina.
 (function(){
   const PAGINE = {
-    storia:      { c:'--c-mediterraneo', k:'Per cominciare' },
-    leggi:       { c:'--c-secco',        k:'Per approfondire' },
+    storia:      { c:'--c-mediterraneo', k:'Capire perché' },
+    leggi:       { c:'--c-secco',        k:'Capire perché' },
     diario:      { c:'--yellow-sym',     k:'Il lavoro in corso',
                    s:'Gli infusi in macerazione, con i promemoria per controllarli e filtrarli al momento giusto.' },
-    libreria:    { c:'--c-erbaceo',      k:'Passo 1 di 3',
-                   s:'Le schede delle botaniche, con profilo aromatico, radar e zone italiane, e per ognuna la preparazione dell’infuso: gradazione, diluizione, grammi e tempo.' },
-    proporzioni: { c:'--c-mediterraneo', k:'La ricetta',
-                   s:'Sposta i cursori delle botaniche: la torta, il radar di gusto e aroma e quello delle sensazioni cambiano insieme, con i millilitri per il tuo gin.' },
-    builder:     { c:'--c-secco',        k:'Passo 2 di 3',
-                   s:'Scegli uno stile e assegna le botaniche ai sei ruoli: base, freschezza, identità, cuore, firma, rifinitura.' },
-    prove:       { c:'--c-siciliano',    k:'Passo 3 di 3',
-                   s:'Registra le miscele, valutale all’assaggio e porta il gin alla gradazione finale con il calcolatore della diluizione.' },
-    ridondanza:  { c:'--c-agrumato',     k:'Prima di costruire',
+    libreria:    { c:'--c-erbaceo',      k:'Capire perché',
+                   s:'Le schede delle botaniche, dalle più usate alle più originali: profilo aromatico, radar, molecole da estrarre e la preparazione dell’infuso.' },
+    calcoli:     { c:'--c-siciliano',    k:'Capire perché',
+                   s:'Diluire o rinforzare l’alcol fino al grado voluto, in millilitri e in grammi, alla temperatura della soluzione.' },
+    proporzioni: { c:'--c-mediterraneo', k:'Il progetto',
+                   s:'Quanto gin vuoi fare e la quota di ogni infuso: la torta, il radar di gusto e aroma e quello delle sensazioni cambiano insieme.' },
+    builder:     { c:'--c-secco',        k:'Il progetto',
+                   s:'Assegna le botaniche ai sei ruoli: base, freschezza, identità, cuore, firma, rifinitura.' },
+    prove:       { c:'--c-siciliano',    k:'Il progetto',
+                   s:'Il registro delle miscele: percentuali degli infusi, valutazione all’assaggio e correzioni per la volta successiva.' },
+    ridondanza:  { c:'--c-agrumato',     k:'Capire perché',
                    s:'Il tavolo di lavoro per combinare tre o quattro botaniche e vedere dove i profili si sommano e dove si completano.' },
-    nozioni:     { c:'--c-marino',       k:'Per approfondire' },
-    analisi:     { c:'--c-speziato',     k:'Per approfondire' },
-    ruota:       { c:'--c-viola',        k:'Per approfondire' },
-    altrigin:    { c:'--c-dolce',        k:'Per approfondire' },
-    cocktail:    { c:'--c-floreale',     k:'Il banco di prova',
-                   s:'Venti classici a base gin con le dosi standard, per vedere la tua ricetta all’opera.' },
-    laboratorio: { c:'--ochre',          k:'Il banco di prova',
-                   s:'Cocktail sperimentali con un’ipotesi da verificare, il radar previsto e gli assaggi annotati versione dopo versione.' },
-    garnish:     { c:'--c-agrumato',     k:'Il servizio',
+    nozioni:     { c:'--c-marino',       k:'Capire perché' },
+    analisi:     { c:'--c-speziato',     k:'Capire perché' },
+    altrigin:    { c:'--c-dolce',        k:'Capire perché' },
+    cocktail:    { c:'--c-floreale',     k:'Servire',
+                   s:'Venti classici a base gin con le dosi standard, e i tuoi cocktail sperimentali con un’ipotesi da verificare all’assaggio.' },
+    garnish:     { c:'--c-agrumato',     k:'Servire',
                    s:'Quale guarnizione mettere in base allo stile del gin, e perché: rinforzo di una nota o contrasto a un eccesso.' },
-    toniche:     { c:'--c-marino',       k:'Il servizio',
+    toniche:     { c:'--c-marino',       k:'Servire',
                    s:'Le acque toniche in commercio, le loro caratteristiche e con quali gin abbinarle, e perché.' },
-    matrice:     { c:'--c-marino',       k:'Per approfondire',
-                   s:'Per ogni sentore, le molecole responsabili, le botaniche che le portano e i recettori sensoriali che le leggono.' },
-    special:     { c:'--c-viola',        k:'Special',
+    matrice:     { c:'--c-marino',       k:'Capire perché',
+                   s:'Che cosa si sente e perché: la ruota degli aromi e, per ogni sentore, le molecole, le botaniche che le portano e i recettori che le leggono.' },
+    special:     { c:'--c-viola',        k:'Servire',
                    s:'Ricetta inversa, gemello commerciale, gin alla cieca, gin di un paesaggio, calendario delle raccolte, etichetta e gin a tavola.' }
   };
   // Tinte a giro per i riquadri: dopo il colore della pagina, le caratteristiche aromatiche.
@@ -11257,7 +11267,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       tappe: [
         { id:'s-bot',    tab:'libreria',   e:'🌿', t:'Cosa si estrae',          c:'#6F8A2E', studio:1, d:'le botaniche e le loro molecole' },
         { id:'s-grado',  tab:'nozioni',    apri:'La solubilità selettiva', e:'⚗️', t:'Il grado per ogni molecola', c:'#2F8F8F', studio:1, d:'perché non è uguale per tutte' },
-        { id:'s-calc',   tab:'prove',      sez:'calc-box', e:'🧮', t:'I calcoli dell’alcol',  c:'#C0583E', studio:1, d:'diluire e rinforzare' },
+        { id:'s-calc',   tab:'calcoli',    e:'🧮', t:'I calcoli dell’alcol',  c:'#C0583E', studio:1, d:'diluire e rinforzare' },
         { id:'s-filtri', tab:'nozioni',    apri:'Filtrazione a freddo', e:'🧻', t:'Le filtrazioni',  c:'#5D6F8C', studio:1, d:'limpidezza, velature, metodi' },
         { id:'s-degusta',tab:'analisi',    e:'👅', t:'Degustare gli infusi',     c:'#B04A6B', studio:1, d:'la potenza di un infuso' },
         { id:'s-radar',  tab:'ridondanza', e:'📡', t:'I radar della miscela',    c:'#8A63B0', studio:1, d:'cosa succede unendo gli infusi' },
@@ -11269,8 +11279,8 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         { id:'bottiglia',tab:'manuale',    e:'🍾', t:'In bottiglia',             c:'#2F8F8F' }
       ] }
   };
-  const CAPIRE = ['libreria','ridondanza','matrice','nozioni','analisi','leggi','storia','altrigin'];
-  const SERVIRE = ['garnish','toniche','cocktail','laboratorio','special'];
+  const CAPIRE = ['libreria','calcoli','ridondanza','matrice','nozioni','analisi','leggi','storia','altrigin'];
+  const SERVIRE = ['garnish','toniche','cocktail','special'];
   const HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
 
   // ---------- progetti ----------
@@ -11716,6 +11726,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
   window.showTab = function(name){
     if (name === 'home') name = 'mappa';
     if (name === 'ruota') name = 'matrice';   // la ruota ora è la prima parte di «Aromi e sentori»
+    if (name === 'laboratorio'){ name = 'cocktail'; setTimeout(() => schedaCk('ck-lab'), 0); }   // il laboratorio è la seconda scheda dei cocktail
     if (window._navDaMenu) window._tappa = null;   // dal menu si esce dal percorso
     const r = prevShow(name);
     document.documentElement.classList.toggle('in-mappa', name === 'mappa');
@@ -11738,6 +11749,11 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
   };
   $('dosi-abv').addEventListener('input', () => { if ($('panel-proporzioni').classList.contains('active')) syncPP(); });
   $('cambia-tipo').addEventListener('click', () => vaiTappa('tipo'));
+  function schedaCk(id){
+    document.querySelectorAll('.ck-scheda').forEach(b => b.classList.toggle('on', b.dataset.ck === id));
+    ['ck-classici','ck-lab'].forEach(x => { const e = $(x); if (e) e.hidden = x !== id; });
+  }
+  document.querySelectorAll('.ck-scheda').forEach(b => b.addEventListener('click', () => schedaCk(b.dataset.ck)));
   document.querySelectorAll('.ar-vai').forEach(a => a.addEventListener('click', e => { e.preventDefault(); const t = $(a.dataset.ar); if (t){ t.style.scrollMarginTop = '84px'; t.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }));
 
   // all'avvio: dopo il ripristino della ricetta, il progetto attivo e la mappa
