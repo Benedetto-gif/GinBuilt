@@ -2204,6 +2204,20 @@ html details.howto a{color:#5A3E1C;}
 .pj-in input{flex:1;min-width:0}
 
 
+
+.liv-bot{display:grid;grid-template-columns:1fr;gap:9px;margin:8px 0 10px}
+.liv-btn{position:relative;display:grid;grid-template-columns:auto 1fr;column-gap:10px;align-items:center;padding:11px 44px 11px 12px;border:0;border-radius:14px;cursor:pointer;text-align:left;
+  background:var(--c);color:#fff;font:inherit;box-shadow:0 3px 10px rgba(0,0,0,.18)}
+.liv-btn .lv-e{grid-row:span 2;font-size:26px}
+.liv-btn b{font:800 16px/1.2 'Inter',system-ui,sans-serif}
+.liv-btn small{font-size:12.5px;line-height:1.3;opacity:.93}
+.liv-btn .lv-n{position:absolute;right:12px;top:50%;transform:translateY(-50%);font:800 15px/1 'Inter',system-ui,sans-serif;font-style:normal;padding:5px 8px;border-radius:999px;background:rgba(255,255,255,.22)}
+.liv-btn.on{outline:4px solid var(--ink);outline-offset:2px}
+.erb-liv{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:4px 0 4px}
+.erb-liv span{font-weight:650;font-size:13.5px;margin-right:2px}
+.erb-liv button{padding:7px 11px;border-radius:999px;border:1px solid var(--line-strong);background:var(--card);color:var(--ink);font:650 13px/1.1 'Inter',system-ui,sans-serif;cursor:pointer}
+.erb-liv button.on{background:var(--juniper);border-color:var(--juniper);color:#fff}
+.prog-h{margin:10px 0 6px;font-size:16px}
 /* v2.1 · le due strade e la ricetta passo passo */
 html.in-mappa .menu-bar{display:none!important}
 .mp-via .mv-sub{font:italic 600 16px/1.2 'Fraunces',Georgia,serif;margin-top:-4px}
@@ -2319,7 +2333,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.2.5</div>
+  <div class="splash-ver" id="splash-ver">v2.3</div>
 </div>
 
 <div class="wrap">
@@ -2494,10 +2508,6 @@ html.in-mappa #nav-indietro{display:none!important}
         botaniche: sono quelli in cui, bevendo, se ne riconoscono due o tre e si capisce da dove vengono.</p>
       <div class="pull">La creatività, in questo mestiere, si misura più in sottrazioni che in aggiunte.</div>
 
-      <div class="storia-actions">
-        <button class="ghost-btn" data-goto="home">← Torna al menù</button>
-        <button class="primary-btn" data-goto="builder">🎯 Vai al Gin Builder</button>
-      </div>
     </div>
   </section>
 
@@ -2509,7 +2519,6 @@ html.in-mappa #nav-indietro{display:none!important}
       <div class="howto-body" id="diario-body"></div>
     </details>
     </div>
-    <div style="margin-top:14px;"><button class="ghost-btn" type="button" data-goto="libreria">🌿 Vai a Botaniche e infusi</button></div>
   </section>
 
   <section class="panel" id="panel-libreria">
@@ -2518,7 +2527,7 @@ html.in-mappa #nav-indietro{display:none!important}
       <div class="howto-body">
         <p>Le botaniche e la preparazione degli infusi in una sola pagina: <span class="bot-count">84</span> botaniche con profilo aromatico, funzione nel gin, potenza e, per ognuna, la scheda per metterla in infusione.</p>
         <ol>
-          <li><strong>Scegli per caratteristiche o mostra tutte le botaniche</strong>, se non sai ancora quale analizzare. Tocca «Filtri» e scegli famiglia, carattere, uso nella miscela, stile e potenza; con «Ordina per» decidi come metterle in fila o raggrupparle; poi tocca «Botaniche selezionate (n)»: compaiono filtrate e ordinate così. Lo stesso tasto le nasconde. Con dei filtri attivi compare «Stampa elenco», che stampa l'elenco filtrato.</li>
+          <li><strong>Scegli da dove partire</strong>: le più usate, le più originali o tutte le altre, se cerchi qualcosa di mai usato per una firma unica. Oppure tocca «Filtri» e scegli famiglia, carattere, uso nella miscela, stile e potenza; con «Ordina per» decidi come metterle in fila o raggrupparle; poi tocca «Botaniche selezionate (n)»: compaiono filtrate e ordinate così. Lo stesso tasto le nasconde. Con dei filtri attivi compare «Stampa elenco», che stampa l'elenco filtrato.</li>
           <li><strong>Cerca per nome</strong>, se sai già quale botanica vuoi: scrivi le prime lettere del nome o usa il microfono, e restano solo le schede che corrispondono.</li>
           <li><strong>La scheda della botanica.</strong> Toccando una scheda si apre solo quella e le altre si chiudono. Studia la botanica: il <strong>profilo sensoriale</strong> (il radar, con il confronto con simili, sostitutive e complementari), i dati della botanica e il riquadro <em>Da non accumulare con</em>, da leggere sempre prima di portarla in ricetta. «← Torna all'elenco» la richiude.</li>
           <li><strong>Prepara l'infuso.</strong> Sotto la scheda compare il quadro delle variabili: temperatura di conservazione (al buio), alcol di partenza, grado di estrazione e volume da ottenere. Diluizione (alcol + acqua), grammi, tempo, primo assaggio e avvisi si ricalcolano subito; il grado parte dal minimo consigliato.</li>
@@ -2531,8 +2540,13 @@ html.in-mappa #nav-indietro{display:none!important}
     </details>
     <!-- passi: 1 filtri e botaniche → 2 ricerca → 3 scheda → 4 preparazione → diario -->
     <div class="filtri-box passo" id="filtri-box">
-    <h3 class="passo-tit"><span class="passo-n">1</span> Scegli per caratteristiche o mostra tutte le botaniche</h3>
-    <div class="passo-btns"><button type="button" class="min-btn" id="filtri-btn" aria-expanded="false">Filtri <span id="filtri-sum"></span> ▾</button><button type="button" class="min-btn" id="mostra-tutte">Mostra tutte le botaniche</button><button class="min-btn" id="lib-print" type="button" hidden>Stampa elenco</button></div>
+    <h3 class="passo-tit"><span class="passo-n">1</span> Scegli da dove partire</h3>
+    <div class="liv-bot" id="liv-bot">
+      <button type="button" class="liv-btn" data-uso="comune" style="--c:#2F7259"><span class="lv-e">🌿</span><b>Le più usate</b><small>il nucleo dei gin: si trovano in molti gin e stili</small><i class="lv-n"></i></button>
+      <button type="button" class="liv-btn" data-uso="firma" style="--c:#B04A6B"><span class="lv-e">✨</span><b>Le più originali</b><small>botaniche di firma, rifinitura o territorio</small><i class="lv-n"></i></button>
+      <button type="button" class="liv-btn" data-uso="altra" style="--c:#5D6F8C"><span class="lv-e">🔍</span><b>Tutte le altre</b><small>mai o quasi mai usate: per una firma unica, ma ragionata. Guarda potenza, cautele e ridondanze</small><i class="lv-n"></i></button>
+    </div>
+    <div class="passo-btns"><button type="button" class="min-btn" id="filtri-btn" aria-expanded="false">Filtri <span id="filtri-sum"></span> ▾</button><button type="button" class="min-btn" id="mostra-tutte" hidden>Mostra tutte le botaniche</button><button class="min-btn" id="lib-print" type="button" hidden>Stampa elenco</button></div>
     <div class="cond-box cond-compact" id="filtri-pannello" hidden>
       <label>Famiglia
         <select id="f-categoria"><option value="">Tutte</option></select>
@@ -2554,7 +2568,7 @@ html.in-mappa #nav-indietro{display:none!important}
         </select>
       </label>
       <label>Uso nella miscela
-        <select id="f-uso"><option value="">Tutte</option><option value="comune">Più usate</option><option value="firma">Di firma o rare</option><option value="altra">Altre</option><option value="sconsigliata">Poco utili o pericolose</option></select>
+        <select id="f-uso"><option value="">Tutte</option><option value="comune">Più usate</option><option value="firma">Più originali</option><option value="altra">Tutte le altre</option><option value="sconsigliata">Poco utili o pericolose</option></select>
       </label>
       <label>Stile
         <select id="f-stile"><option value="">Tutti</option></select>
@@ -3295,8 +3309,10 @@ html.in-mappa #nav-indietro{display:none!important}
         <p>Sotto la combinazione compaiono i semafori: <strong>rosso</strong> ridondanza, <strong>arancio</strong> rischio se messe insieme (o da dosare), <strong>verde</strong> complementari.</p>
       </div>
     </details>
-    <label class="erb-tutto"><input type="checkbox" id="erb-tutto"> 🌿 Mostra tutto l'erbario nei menu (<span id="erb-n"></span> botaniche)</label>
-    <p class="cond-hint erb-nota">Nei menu trovi le botaniche proposte dallo stile e le più usate (nel nucleo dell'app, in almeno due gin di riferimento o due stili). Le base restano sempre.</p>
+    <div class="erb-liv" id="erb-liv" role="group" aria-label="Botaniche nei menu"><span>Nei menu:</span>
+      <button type="button" data-l="1" class="on">🌿 Le più usate</button><button type="button" data-l="2">✨ + le più originali</button><button type="button" data-l="3">🔍 Tutto l'erbario</button></div>
+    <input type="checkbox" id="erb-tutto" hidden><span id="erb-n" hidden></span>
+    <p class="cond-hint erb-nota">Le proposte dello stile e le botaniche base ci sono sempre. «Tutto l'erbario» aggiunge quelle mai o quasi mai usate: per una firma unica, ma ragionata.</p>
     <div id="role-list"></div>
     <button class="ghost-btn" id="add-role-btn" style="display:none;margin-top:8px;">+ Aggiungi ruolo</button>
     <div class="build-summary">
@@ -3341,7 +3357,7 @@ html.in-mappa #nav-indietro{display:none!important}
     <div class="pp-head">
       <div class="pp-tit" id="pp-tit">—</div>
       <div class="pp-azioni">
-        <button type="button" class="ghost-btn" id="pp-ricarica">↻ Ricarica dal Builder</button>
+        <button type="button" class="ghost-btn" id="pp-ricarica" hidden>↻ Ricarica</button>
         <button type="button" class="ghost-btn" id="pp-reset">↺ Quote di partenza</button>
       </div>
     </div>
@@ -3358,7 +3374,6 @@ html.in-mappa #nav-indietro{display:none!important}
     <div class="pp-totali" id="pp-totali"></div>
     <div class="pp-azioni" style="margin-top:12px;">
       <button type="button" class="primary-btn" id="pp-banco">🧪 Invia al banco di prova con queste quote</button>
-      <button type="button" class="ghost-btn" onclick="showTab('builder')">← Torna al Gin Builder</button>
     </div>
   </section>
 
@@ -3513,7 +3528,7 @@ html.in-mappa #nav-indietro{display:none!important}
           riferimento affidabile al banco e capire come si comporta il proprio gin una volta messo in ricetta.</p>
         <ul>
           <li>Usa i pulsanti per filtrare per famiglia: i mescolati, gli amari da aperitivo, i sour e i long drink.</li>
-          <li>In fondo a ogni scheda trovi lo <strong>stile di gin consigliato</strong>: ritrova lo stesso nome nel Gin Builder
+          <li>In fondo a ogni scheda trovi lo <strong>stile di gin consigliato</strong>: ritrova lo stesso nome fra gli stili del percorso
             se vuoi costruire una ricetta pensata per quel cocktail.</li>
           <li>I cocktail sperimentali hanno una pagina a parte, il <strong>Laboratorio cocktail</strong> (pulsante in fondo a questa pagina).</li>
           <li>Un gin si giudica davvero in tre prove: liscio a temperatura di cantina, in gin tonic e in un mescolato secco
@@ -3524,7 +3539,7 @@ html.in-mappa #nav-indietro{display:none!important}
 
     <div class="ck-filters" id="ck-filters"></div>
     <div class="ck-grid" id="ck-grid"></div>
-    <p style="margin:18px 0 0;display:flex;gap:10px;flex-wrap:wrap;"><button type="button" class="ghost-btn" onclick="showTab('laboratorio')">🧪 Vai al Laboratorio: cocktail sperimentali →</button> <button type="button" class="ghost-btn" onclick="showTab('garnish')">🍋 Quale garnish per il tuo gin →</button> <button type="button" class="ghost-btn" onclick="showTab('toniche')">🫧 Quale tonica per il tuo gin →</button></p>
+    
     <p class="home-note">Le dosi sono quelle consolidate nella letteratura di bar: sono un punto di partenza, non un dogma.
       Il rapporto fra gin e vermouth nel Martini, per dire, è cambiato di dieci volte in un secolo.</p>
   </section>
@@ -3563,7 +3578,6 @@ html.in-mappa #nav-indietro{display:none!important}
         </div>
       </details>
     </div>
-    <p style="margin:18px 0 0;"><button type="button" class="ghost-btn" onclick="showTab('cocktail')">← I cocktail classici</button></p>
   </section>
 
   <!-- ============ GARNISH ============ -->
@@ -3605,8 +3619,7 @@ html.in-mappa #nav-indietro{display:none!important}
     <h3 class="gar-sez">Altri stili di gin</h3>
     <div class="ck-grid" id="gar-grid-altri"></div>
     <p style="margin:18px 0 0;display:flex;gap:10px;flex-wrap:wrap;">
-      <button type="button" class="ghost-btn" onclick="showTab('builder')">🎯 Garnish della tua ricetta, nel Gin Builder →</button>
-      <button type="button" class="ghost-btn" onclick="showTab('cocktail')">🍸 I cocktail classici</button>
+      <div id="gar-progetto"></div>
     </p>
     <p class="home-note">Le garnish sono punti di partenza, non regole: la prova vera è annusare il bicchiere prima e dopo averla messa.</p>
   </section>
@@ -3643,8 +3656,7 @@ html.in-mappa #nav-indietro{display:none!important}
     <h3 class="gar-sez">Per i gin commerciali</h3>
     <div class="ck-grid" id="ton-gin"></div>
     <p style="margin:18px 0 0;display:flex;gap:10px;flex-wrap:wrap;">
-      <button type="button" class="ghost-btn" onclick="showTab('builder')">🎯 Tonica della tua ricetta, nel Gin Builder →</button>
-      <button type="button" class="ghost-btn" onclick="showTab('garnish')">🍋 Le garnish</button>
+      <div id="ton-progetto"></div>
     </p>
     <p class="home-note">Gli abbinamenti sono punti di partenza: la prova vera è lo stesso gin con due toniche diverse, assaggiate una accanto all'altra.</p>
   </section>
@@ -3750,8 +3762,8 @@ html.in-mappa #nav-indietro{display:none!important}
       <div class="howto-body">
         <p>Sette strumenti speciali che usano il radar e la libreria in modi diversi. Tocca un riquadro per aprire lo strumento; ognuno si richiude con ▲ Chiudi.</p>
         <ul>
-          <li>Il <strong>gemello commerciale</strong>, l'<strong>etichetta</strong> e il <strong>gin a tavola</strong> lavorano sulla ricetta che hai in quel momento nel Gin Builder (o su una scheda di prova).</li>
-          <li>La <strong>ricetta inversa</strong> e il <strong>gin di un paesaggio</strong> possono portare la loro ricetta nel Gin Builder, nello stile Personalizzato.</li>
+          <li>Il <strong>gemello commerciale</strong>, l'<strong>etichetta</strong> e il <strong>gin a tavola</strong> lavorano sulla ricetta del progetto aperto (o su una scheda di prova).</li>
+          <li>La <strong>ricetta inversa</strong> e il <strong>gin di un paesaggio</strong> possono diventare le botaniche del tuo progetto, nello stile Personalizzato.</li>
           <li>Come in tutta l'app, i profili sono stime orientative da verificare all'assaggio.</li>
         </ul>
       </div>
@@ -4064,7 +4076,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.2.5 · 29 ottobre 2026 · riordino, passo 1</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.3 · 29 ottobre 2026 · botaniche a tre livelli</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -5145,7 +5157,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.2.5</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.3</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -5540,7 +5552,7 @@ function notaGinTag(d){ const x = NOTA_GIN[d.botanica]; if (!x) return '';
 function notaGinBox(d){ const x = NOTA_GIN[d.botanica]; if (!x) return '';
   return x.t === 'p' ? '<div class="warn-box">☠️ <strong>Pericolosa.</strong> ' + x.n + ' La scheda resta solo per sapere che esiste.</div>'
     : '<div class="adj-box">🚫 <strong>Poco utile nel gin.</strong> ' + x.n + ' La scheda resta solo per sapere che esiste.</div>'; }
-const USO_NOMI = {comune:'1 · Più usate', firma:'2 · Di firma o rare', altra:'3 · Altre'};
+const USO_NOMI = {comune:'1 · Più usate', firma:'2 · Più originali', altra:'3 · Tutte le altre'};
 function assegnaUso(){
   if (MASTER._uso || !window.GIN_RIF || !window.STILI_RIF) return;
   const S = {}, add = (n, k) => { (S[n] = S[n] || {gin:0, stile:0, tracce:0})[k]++; };
@@ -5600,7 +5612,7 @@ function renderGrid(){
       <div class="tagrow">
         <span class="tag carattere" style="--c:${coloreCarattere(d.carattere)}">${d.carattere || ''}</span>
         <span class="tag potenza">Potenza ${d.potenza10 ?? '—'}/10</span>
-        <span class="tag uso-${d.uso}" title="${d.usoWhy || ''}">${d.uso === 'comune' ? 'Più usata' : d.uso === 'firma' ? 'Firma / rara' : 'Altra'}</span>
+        <span class="tag uso-${d.uso}" title="${d.usoWhy || ''}">${d.uso === 'comune' ? 'Più usata' : d.uso === 'firma' ? 'Più originale' : 'Altra'}</span>
         ${d.edibile === 'Sì, con cautela' && !(NOTA_GIN[d.botanica] && NOTA_GIN[d.botanica].t === 'p') ? '<span class="tag cautela">⚠️ Con cautela</span>' : ''}
         ${notaGinTag(d)}
       </div>`;
@@ -5643,6 +5655,23 @@ tutteBtn.addEventListener('click', () => {
 });
 window.aggiornaTutteBtn = aggiornaTutteBtn;
 aggiornaTutteBtn();
+// I tre livelli: un tocco mostra quel gruppo, un secondo tocco lo richiude.
+(function(){
+  const box = document.getElementById('liv-bot'); if (!box) return;
+  const conta = () => { assegnaUso(); box.querySelectorAll('.liv-btn').forEach(b => {
+    b.querySelector('.lv-n').textContent = MASTER.filter(d => d.uso === b.dataset.uso).length;
+    b.classList.toggle('on', !!window.mostraTutteBot && fUso.value === b.dataset.uso); }); };
+  box.querySelectorAll('.liv-btn').forEach(b => b.addEventListener('click', () => {
+    const giaAperto = window.mostraTutteBot && fUso.value === b.dataset.uso;
+    fUso.value = giaAperto ? '' : b.dataset.uso; window.mostraTutteBot = !giaAperto;
+    if (searchInput.value){ searchInput.value = ''; }
+    if (currentDetailName) chiudiDetailMuto();
+    fUso.dispatchEvent(new Event('input')); renderGrid(); conta();
+    if (!giaAperto) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }));
+  fUso.addEventListener('input', conta); searchInput.addEventListener('input', () => setTimeout(conta, 0));
+  setTimeout(conta, 300);
+})();
 const libAbvInput = document.getElementById('inf-abv');
 const libTempInput = document.getElementById('inf-temp');
 const libVolInput = document.getElementById('inf-vol');
@@ -10586,7 +10615,7 @@ if ("serviceWorker" in navigator) {
         '<div class="radar-nota">Somiglianza di forma con il profilo desiderato: <strong>' + sim + '%</strong>.</div>' +
         '<ol class="inv-lista">' + found.map((x, j) => '<li><strong>' + esc(x.n) + '</strong> · ' + Math.round(x.w / tot * 100) + '% della parte di carattere · ruolo ' + RUOLI_RANGO[j] + '</li>').join('') + '</ol>' +
         '<div class="radar-nota">A queste si aggiungono le botaniche base: ginepro e angelica (Base) e coriandolo (Freschezza). Le percentuali dicono quanto pesa ciascuna nel profilo, non i grammi: nel Builder il ruolo assegna la dose.</div>' +
-        '<button type="button" class="primary-btn inv-porta" style="margin-top:8px;">🎯 Porta nel Gin Builder</button>';
+        '<button type="button" class="primary-btn inv-porta" style="margin-top:8px;">🎯 Usala nel tuo progetto</button>';
       box.innerHTML = h; aggancia(found);
     }
     function aggancia(found){
@@ -10609,7 +10638,7 @@ if ("serviceWorker" in navigator) {
     const r = ricettaBuilder();
     const firma = r ? r.el.filter(x => !isBase(x.n)) : [];
     const v = firma.length ? profilo(firma) : null;
-    if (!v){ box.innerHTML = '<div class="radar-nota">Nel Gin Builder non ci sono ancora botaniche oltre alle base: scegli uno stile o componi una ricetta, poi torna qui.</div><button type="button" class="ghost-btn" onclick="showTab(\'builder\')">🎯 Vai al Gin Builder</button>'; return; }
+    if (!v){ box.innerHTML = '<div class="radar-nota">Nel progetto non ci sono ancora botaniche oltre alle base: scegli lo stile o le botaniche nel percorso, poi torna qui.</div><button type="button" class="ghost-btn" onclick="vaiMappa()">🧭 Torna alla mappa</button>'; return; }
     const m = ginMedio(), x = v.map((a, i) => a - m[i]);
     const lista = Object.keys(GIN_LISTE).map(n => { const p = profiloGin(n, false); if (!p) return null;
       const y = p.vals.map((a, i) => a - m[i]); return {n, p, c: Math.round((coseno(x, y) + 1) / 2 * 100)}; }).filter(Boolean).sort((a, b) => b.c - a.c);
@@ -10695,7 +10724,7 @@ if ("serviceWorker" in navigator) {
         (v ? radarSVG([{vals: v.map(r1), color: 'var(--juniper)', label: scelto}], 280, {eq: [eqConBase(unitaFirma(firma), 'tutto')]}) : '') +
         '<ul class="inv-lista">' + righe.map(([r, n]) => '<li><strong>' + r + '</strong> · ' + esc(n) + (zona(n) ? ' <span class="cond-hint">(' + esc(zona(n)) + ')</span>' : '') + '</li>').join('') + '</ul>' +
         '<div class="radar-nota">' + esc(P.p) + '</div>' +
-        '<button type="button" class="primary-btn pae-porta" style="margin-top:8px;">🏞️ Porta nel Gin Builder</button>';
+        '<button type="button" class="primary-btn pae-porta" style="margin-top:8px;">🏞️ Usala nel tuo progetto</button>';
       box.querySelectorAll('[data-p]').forEach(b => b.onclick = () => { scelto = b.dataset.p; disegna(); });
       box.querySelector('.pae-porta').onclick = () => portaNelBuilder(righe.filter(([r]) => r !== 'Base' || true));
     }
@@ -10757,7 +10786,7 @@ if ("serviceWorker" in navigator) {
       '<label>Nome<input class="eti-nome" value="' + esc(nome) + '"></label><label>Gradazione % vol.<input class="eti-abv" inputmode="decimal" value="' + virg(abv) + '"></label>' +
       '<label>Lotto / data<input class="eti-lotto" value="' + esc(lotto) + '"></label><label>Bottiglia (cl)<select class="eti-cl">' + ['20','35','50','70','100'].map(x => '<option' + (x === cl ? ' selected' : '') + '>' + x + '</option>').join('') + '</select></label></div>';
     let lab = '';
-    if (!el.length) h += '<div class="radar-nota">Nessuna ricetta: componi una ricetta nel Gin Builder o salva una scheda di prova.</div>';
+    if (!el.length) h += '<div class="radar-nota">Nessuna ricetta: scegli le botaniche del progetto nel percorso o salva una scheda di prova.</div>';
     else {
       const firma = el.filter(x => !isBase(x.n)), v = profilo(firma.length ? firma : el);
       const ordinate = el.slice().sort((a, b) => b.w - a.w).map(x => x.n);
@@ -11317,14 +11346,15 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
   function filtraSelect(sel){
     if (!sel || sel.disabled || sel._bloccata || sel.options.length < 20) return;   // ginepro e sostitute protette restano come sono
     assegnaUso(); if (!MASTER._uso) return;
-    const tutto = $('erb-tutto') && $('erb-tutto').checked;
+    const liv = window._erbLiv || 1;
     const v = sel.value, ord = (a, b) => a.localeCompare(b, 'it');
     const di = u => [...new Set(MASTER.filter(d => d.uso === u).map(d => d.botanica))];
     const cand = [...new Set((sel.dataset.cand || '').split('|').filter(n => byName[n]))];
     const g = [];
     if (cand.length) g.push(['Proposte dallo stile', cand]);
     g.push(['Le più usate', di('comune').filter(n => !cand.includes(n)).sort(ord)]);
-    if (tutto){ g.push(['Di firma o rare', di('firma').filter(n => !cand.includes(n)).sort(ord)]); g.push(['Altre dell’erbario', di('altra').filter(n => !cand.includes(n)).sort(ord)]); }
+    if (liv >= 2) g.push(['Le più originali', di('firma').filter(n => !cand.includes(n)).sort(ord)]);
+    if (liv >= 3) g.push(['Tutte le altre', di('altra').filter(n => !cand.includes(n)).sort(ord)]);
     const ci = new Set(g.flatMap(x => x[1]));
     if (v && !ci.has(v)) g.unshift(['Scelta attuale', [v]]);
     sel.innerHTML = g.filter(x => x[1].length).map(x => '<optgroup label="' + esc(x[0]) + '">' + x[1].map(n => '<option value="' + esc(n) + '">' + esc(n) + '</option>').join('') + '</optgroup>').join('');
@@ -11332,7 +11362,11 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
   }
   const tutteSel = () => [...roleList.querySelectorAll('select:not(.role-label-input)')];
   new MutationObserver(() => tutteSel().forEach(s => { if (!s._filtrato){ s._filtrato = true; filtraSelect(s); } })).observe(roleList, { childList: true, subtree: true });
-  $('erb-tutto').addEventListener('change', () => tutteSel().forEach(s => { s._filtrato = true; filtraSelect(s); }));
+  document.querySelectorAll('#erb-liv button').forEach(b => b.addEventListener('click', () => {
+    window._erbLiv = +b.dataset.l;
+    document.querySelectorAll('#erb-liv button').forEach(x => x.classList.toggle('on', x === b));
+    tutteSel().forEach(s => { s._filtrato = true; filtraSelect(s); });
+  }));
   try { assegnaUso(); $('erb-n').textContent = MASTER.length; } catch(e){}
 
   // ---------- Che gin vuoi? (Gin no problem!: solo gli stili codificati) ----------
@@ -11682,6 +11716,14 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     if (name === 'grado') renderGrado();
     if (name === 'proporzioni') syncPP();
     if (name === 'ricetta') renderRicetta();
+    if (name === 'garnish' || name === 'toniche'){
+      const r = window._ricettaBuilder, el = $(name === 'garnish' ? 'gar-progetto' : 'ton-progetto'), fn = name === 'garnish' ? window.garnishBoxRicetta : window.tonicaBoxRicetta;
+      if (el){ try {
+        const rif = window._rifStile && window._rifStile.nome === (r && r.stile) ? window._rifStile.elenco.map(x => x.n) : null;
+        const inv = !!(r && rif) && rif.length === r.nomi.filter(n => PROFILO8[n]).length && rif.every(n => r.nomi.indexOf(n) >= 0);
+        el.innerHTML = r && r.nomi.length && fn ? '<h3 class="prog-h">Per il tuo progetto · ' + esc((att() || {}).nome || '') + '</h3>' + fn(r.nomi, r.pesi, r.stile, inv) : '';
+      } catch(e){ el.innerHTML = ''; } }
+    }
     const pr = att(); $('cambia-tipo').hidden = !!(pr && pr.via === 'pers');
     barra(name);
     return r;
