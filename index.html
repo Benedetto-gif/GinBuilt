@@ -2218,6 +2218,10 @@ html details.howto a{color:#5A3E1C;}
 .erb-liv button{padding:7px 11px;border-radius:999px;border:1px solid var(--line-strong);background:var(--card);color:var(--ink);font:650 13px/1.1 'Inter',system-ui,sans-serif;cursor:pointer}
 .erb-liv button.on{background:var(--juniper);border-color:var(--juniper);color:#fff}
 .prog-h{margin:10px 0 6px;font-size:16px}
+.ar-sezioni{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.ar-vai{flex:1 1 150px;text-align:center;padding:10px 12px;border-radius:14px;background:var(--juniper);color:#fff!important;font:700 14px/1.2 'Inter',system-ui,sans-serif;text-decoration:none}
+.ar-vai + .ar-vai{background:#8A63B0}
+.ar-tit{margin:22px 0 10px;padding-top:12px;border-top:2px solid var(--line-strong);font-size:19px}
 /* v2.1 · le due strade e la ricetta passo passo */
 html.in-mappa .menu-bar{display:none!important}
 .mp-via .mv-sub{font:italic 600 16px/1.2 'Fraunces',Georgia,serif;margin-top:-4px}
@@ -2333,7 +2337,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.3.1</div>
+  <div class="splash-ver" id="splash-ver">v2.4</div>
 </div>
 
 <div class="wrap">
@@ -2374,8 +2378,7 @@ html.in-mappa #nav-indietro{display:none!important}
     <button data-tab="diario">📓 Diario degli infusi</button>
     <button data-tab="nozioni">🔬 Nozioni e vocabolario</button>
     <button data-tab="analisi">👃 Analisi sensoriale</button>
-    <button data-tab="ruota">🎡 Ruota degli aromi</button>
-    <button data-tab="matrice">🧬 Matrice dei sentori</button>
+    <button data-tab="matrice">🎡 Aromi e sentori</button>
     <button data-tab="altrigin">🥃 Gli altri gin</button>
     <button data-tab="cocktail">🍸 Cocktail</button>
     <button data-tab="garnish">🍋 Garnish</button>
@@ -2768,7 +2771,7 @@ html.in-mappa #nav-indietro{display:none!important}
     <details class="howto"><summary>Rifinitura</summary><div class="howto-body"><p>È il tocco finale, in dose minima («tracce»), che chiude il sorso e rifinisce la coda del gusto. Facoltativa. Peso: 15%.</p><p><em>Esempi:</em> timo o rosmarino in tracce, alloro, cannella, cardamomo, mandorla.</p><p>Il ruolo non è fisso: la stessa botanica cambia ruolo da uno stile all'altro (bergamotto: Freschezza nel Mediterraneo, Identità nell'Agrumato).</p><p><em>Domanda guida:</em> se la tolgo, il finale perde la sua coda o la sua memoria aromatica?</p></div></details>
 <details class="howto"><summary>Il ginepro deve superare il 50% in peso?</summary><div class="howto-body"><p><strong>Il ginepro deve superare il 50%?</strong> No: il 50% non è una regola. La normativa europea sul gin chiede che il sapore di ginepro sia <em>predominante</em>, senza indicare nessuna percentuale in peso: il criterio è sensoriale. Il peso dice poco su cosa si sente, perché una botanica potente (cedro, chiodo di garofano) pesa pochissimo ma si fa notare molto. Per questo molti gin moderni hanno una quota di ginepro ben sotto il 50% e restano riconoscibili come gin. Nel Builder la quota di ginepro sul totale è verde da 45% in su, arancio tra 30% e 44%, rossa sotto il 30%: sono soglie pratiche di lavoro, non di legge. Se all'assaggio il ginepro è la prima nota riconoscibile, la miscela è a posto; se è coperto, alza il ginepro o riduci le botaniche potenti. Se il gin è destinato alla vendita, verifica la definizione legale e l'etichetta con le autorità competenti.</p></div></details>
       <h3>La percezione: sigle e domande</h3>
-      <p class="noz-rimando">🔬 Nella pagina «Matrice dei sentori»: <a href="#" onclick="showTab('matrice');var d=document.getElementById('mat-sigle');if(d){d.open=true;setTimeout(function(){d.scrollIntoView({block:'start'})},80);}return false;">che cosa vogliono dire le sigle</a> (TRP, TAS2R, OTOP1, ENaC, KCNK e le altre) e <a href="#" onclick="showTab('matrice');var d=document.getElementById('mat-curioso');if(d){d.open=true;setTimeout(function(){d.scrollIntoView({block:'start'})},80);}return false;">le domande del curioso</a> (perché la menta è fredda, perché il gin scalda, la mappa della lingua…).</p>
+      <p class="noz-rimando">🔬 Nella pagina «Aromi e sentori»: <a href="#" onclick="showTab('matrice');var d=document.getElementById('mat-sigle');if(d){d.open=true;setTimeout(function(){d.scrollIntoView({block:'start'})},80);}return false;">che cosa vogliono dire le sigle</a> (TRP, TAS2R, OTOP1, ENaC, KCNK e le altre) e <a href="#" onclick="showTab('matrice');var d=document.getElementById('mat-curioso');if(d){d.open=true;setTimeout(function(){d.scrollIntoView({block:'start'})},80);}return false;">le domande del curioso</a> (perché la menta è fredda, perché il gin scalda, la mappa della lingua…).</p>
       <h3>Glossario A–Z</h3>
     <details class="howto"><summary>Glossario A–Z</summary><div class="howto-body"><dl class="voc-dl"><dt id="g-albedo">Albedo</dt><dd>parte bianca sotto la scorza degli agrumi, amara; da evitare.</dd><dt id="g-alcaloidi">Alcaloidi</dt><dd>molecole vegetali che contengono azoto, spesso amare e attive sull'organismo: il chinino della china, la caffeina, la piperina del pepe.</dd><dt id="g-alcol-di-partenza">Alcol di partenza</dt><dd>l'alcol alimentare da cui si parte (96% vol qui), poi diluito con acqua.</dd><dt id="g-aldeidi">Aldeidi</dt><dd>molecole con un gruppo –CHO, spesso molto odorose: il citrale del limone, la cinnamaldeide della cannella, il decanale del coriandolo fresco. Si ossidano facilmente: per questo gli infusi di agrumi invecchiano in fretta.</dd><dt id="g-anetolo">Anetolo</dt><dd>la molecola dell'anice (anice verde, stellato, finocchio). Poco solubile in acqua: è la principale responsabile dell'effetto louche, come nell'ouzo e nel pastis.</dd><dt id="g-antociani">Antociani</dt><dd>pigmenti rossi, viola e blu di ibisco, mirtillo, ribes, mora. Si sciolgono in acqua e cambiano colore con il pH: rossi in ambiente acido, verso il blu in ambiente meno acido.</dd><dt id="g-astringenza">Astringenza</dt><dd>la sensazione di bocca che si asciuga e diventa ruvida. Non è un gusto ma un fatto tattile: tannini e altri polifenoli si legano alle proteine lubrificanti della saliva e le fanno precipitare.</dd><dt id="g-base-neutra">Base neutra</dt><dd>alcol e acqua alla gradazione di lavoro, senza botaniche.</dd><dt id="g-botanica">Botanica</dt><dd>qualsiasi parte vegetale usata per aromatizzare.</dd><dt id="g-bottone-gustativo">Bottone gustativo</dt><dd>un gruppo di 50–100 cellule a forma di bocciolo, dentro le papille, che contiene le cellule del gusto. Ogni bottone sente tutti e cinque i gusti.</dd><dt id="g-canale-ionico">Canale ionico</dt><dd>una proteina a forma di poro nella membrana di una cellula: quando una molecola o una temperatura la fa aprire, gli ioni passano e parte un segnale nervoso. Sono canali quelli dell'acido, del salato, del caldo e del freddo.</dd><dt id="g-canfora">Canfora</dt><dd>molecola balsamica e fresca di rosmarino, salvia, lavanda e alloro. In dose alta sa di medicinale.</dd><dt id="g-capsaicina">Capsaicina</dt><dd>la molecola che fa bruciare il peperoncino: attiva il canale TRPV1, lo stesso del calore. Contiene un gruppo «vanillile» come la vanillina, da cui il nome dei recettori «vanilloidi».</dd><dt id="g-chill-haze">Chill haze</dt><dd>velatura che compare quando il gin si raffredda.</dd><dt id="g-cineolo-eucaliptolo">Cineolo (eucaliptolo)</dt><dd>molecola fresca e balsamica di eucalipto, rosmarino, cardamomo, alloro. Attiva il canale del freddo TRPM8: per questo rinfresca.</dd><dt id="g-cinetica-del-primo-ordine">Cinetica del primo ordine</dt><dd>un modello in cui la velocità di un processo è proporzionale a quanto resta da fare. Nella macerazione: all'inizio le molecole passano in fretta, poi sempre più lentamente, fino a fermarsi vicino alla saturazione.</dd><dt id="g-cinnamaldeide">Cinnamaldeide</dt><dd>l'aldeide della cannella e della cassia: dolce, calda, pungente. Attiva il canale TRPA1.</dd><dt id="g-citrale">Citrale</dt><dd>miscela di due aldeidi (geraniale e nerale) dal profumo di limone, abbondante in verbena odorosa, citronella e melissa. Molto sensibile alla luce e all'ossigeno.</dd><dt id="g-compound-gin">Compound gin</dt><dd>gin ottenuto aromatizzando l'alcol con estratti e infusi, senza distillare le botaniche.</dd><dt id="g-contrazione-di-volume">Contrazione di volume</dt><dd>l'alcol mescolato con acqua occupa meno della somma dei volumi.</dd><dt id="g-cumarina">Cumarina</dt><dd>molecola dal profumo di fieno, mandorla e vaniglia, presente in fave di tonka, foglie di ciliegio e cassia. In dosi alte è dannosa per il fegato: la normativa europea ne vieta l'aggiunta allo stato puro e ne limita il contenuto negli alimenti.</dd><dt id="g-distillazione">Distillazione</dt><dd>separare le sostanze facendole evaporare e poi ricondensare. Il gin distillato ridistilla l'alcol con le botaniche; il gin compound non distilla, macera e miscela.</dd><dt id="g-dose-di-riferimento">Dose di riferimento</dt><dd>grammi di botanica per 100 ml di infuso dati dalla libreria.</dd><dt id="g-effetto-louche">Effetto louche</dt><dd>intorbidamento per oli che si separano quando si diluisce l'alcol.</dd><dt id="g-enantiomeri">Enantiomeri</dt><dd>molecole fatte degli stessi atomi ma l'una immagine speculare dell'altra, come la mano destra e la sinistra. Possono avere odori diversi: un carvone sa di menta, il suo «gemello» di carvi.</dd><dt id="g-esteri">Esteri</dt><dd>molecole che nascono da un acido e un alcol; danno spesso odori fruttati e floreali, come l'acetato di linalile del bergamotto e della lavanda.</dd><dt id="g-estratto-infuso">Estratto / infuso</dt><dd>liquido aromatico ottenuto dalla macerazione di una botanica.</dd><dt id="g-eugenolo">Eugenolo</dt><dd>la molecola del chiodo di garofano, presente anche in alloro, cannella e basilico. È un fenolo: calda, speziata, un po' medicinale.</dd><dt id="g-fenoli">Fenoli</dt><dd>molecole con un anello aromatico e un gruppo –OH: odori speziati, medicinali o affumicati (eugenolo, timolo, carvacrolo). Molti sono antiossidanti.</dd><dt id="g-flavedo">Flavedo</dt><dd>parte colorata della scorza, ricca di oli essenziali.</dd><dt id="g-flavonoidi">Flavonoidi</dt><dd>polifenoli gialli o incolori di agrumi, tè, camomilla. Danno colore e a volte un amaro leggero, come la naringina del pompelmo.</dd><dt id="g-ftalidi">Ftalidi</dt><dd>molecole di sedano e levistico che danno una nota «brodosa» e rinforzano la sensazione di sapidità.</dd><dt id="g-gestalt-chiusura">Gestalt (chiusura)</dt><dd>la psicologia della forma: il cervello tende a vedere figure intere anche dove ci sono solo pezzi. Per la «chiusura», punti uniti da un contorno diventano un'unica figura.</dd><dt id="g-gingeroli">Gingeroli</dt><dd>le molecole pungenti dello zenzero fresco. Essiccando o scaldando diventano shogaoli, ancora più piccanti. Attivano TRPV1.</dd><dt id="g-glicirrizina">Glicirrizina</dt><dd>la sostanza dolce della liquirizia, decine di volte più dolce dello zucchero. La sua dolcezza arriva tardi e dura a lungo.</dd><dt id="g-glicosidi">Glicosidi</dt><dd>molecole legate a uno zucchero, spesso inodori finché lo zucchero non si stacca. L'amigdalina della mandorla amara, staccandosi, libera la benzaldeide che dà il suo profumo.</dd><dt id="g-glutammato">Glutammato</dt><dd>la forma dell'acido glutammico, un amminoacido, che dà il gusto umami. Non è volatile e si scioglie bene in acqua, poco quando il grado alcolico è alto.</dd><dt id="g-gradazione-vol">Gradazione (% vol)</dt><dd>percentuale di alcol in volume.</dd><dt id="g-idrofilo-idrofobo-lipofilo">Idrofilo / idrofobo (lipofilo)</dt><dd>che si scioglie in acqua, oppure in alcol e grassi.</dd><dt id="g-isotiocianati">Isotiocianati</dt><dd>molecole pungenti di senape, rafano, wasabi e cappero. Si formano quando la pianta viene tagliata o masticata e un enzima libera i glucosinolati. Attivano TRPA1.</dd><dt id="g-lattoni">Lattoni</dt><dd>esteri chiusi ad anello, con odori di pesca, cocco, crema e latte (γ-decalattone, γ-nonalattone). Anche la cumarina è un lattone.</dd><dt id="g-legante-fissativo">Legante / fissativo</dt><dd>botanica che trattiene gli aromi volatili e allunga il finale.</dd><dt id="g-limonene">Limonene</dt><dd>il terpene più abbondante nell'olio delle scorze di agrumi: fresco, di arancia. Volatile e ossidabile: è la prima nota a svanire.</dd><dt id="g-linalolo">Linalolo</dt><dd>terpene floreale e morbido, protagonista dei semi di coriandolo, della lavanda e del bergamotto.</dd><dt id="g-macerazione">Macerazione</dt><dd>contatto della botanica con il solvente per estrarne le sostanze.</dd><dt id="g-meccanorecettori">Meccanorecettori</dt><dd>terminazioni nervose che sentono il tatto: pressione, attrito, vibrazione. In bocca leggono astringenza, corpo e il formicolio del pepe di Sichuan.</dd><dt id="g-memoria-di-lavoro">Memoria di lavoro</dt><dd>la memoria a breve termine che tiene a mente le cose mentre ci si ragiona. Regge circa quattro elementi alla volta.</dd><dt id="g-mentolo">Mentolo</dt><dd>la molecola della menta piperita: attiva il canale del freddo TRPM8 e dà freschezza anche a temperatura ambiente.</dd><dt id="g-micro-emulsione">Micro-emulsione</dt><dd>oli dispersi in goccioline finissime: il velo bianco della torbidità.</dd><dt id="g-monoterpeni-e-sesquiterpeni">Monoterpeni e sesquiterpeni</dt><dd>terpeni a 10 e a 15 atomi di carbonio. I monoterpeni (limonene, pinene, linalolo) sono leggeri e volatili: le note di testa. I sesquiterpeni (cariofillene del pepe, bisabololo della camomilla, zingiberene dello zenzero) sono più pesanti e durano: cuore e fondo.</dd><dt id="g-mouthfeel">Mouthfeel</dt><dd>sensazione in bocca: densità, oleosità, rotondità.</dd><dt id="g-mucillagini">Mucillagini</dt><dd>zuccheri complessi che in acqua formano un gel viscoso (malva, altea, semi di lino). Danno corpo, ma passano poco quando il grado alcolico è alto.</dd><dt id="g-note-di-testa-cuore-e-fondo">Note di testa, cuore e fondo</dt><dd>l'ordine in cui si percepiscono gli aromi: prima i volatili, poi i medi, infine i persistenti.</dd><dt id="g-nucleotidi">Nucleotidi</dt><dd>molecole come l'inosinato (carne, pesce) e il guanilato (funghi secchi) che moltiplicano l'umami del glutammato: insieme fanno molto più della somma.</dd><dt id="g-ossidazione">Ossidazione</dt><dd>reazione con l'ossigeno dell'aria, accelerata da luce e calore. Rovina terpeni e aldeidi: gli agrumi perdono freschezza e prendono odore di vernice. Per questo gli infusi si tengono al buio e in bottiglie piene.</dd><dt id="g-papille-gustative">Papille gustative</dt><dd>le piccole sporgenze della lingua (fungiformi, foliate, circumvallate) che contengono i bottoni gustativi.</dd><dt id="g-persistenza">Persistenza</dt><dd>quanto a lungo l'aroma resta in bocca dopo il sorso.</dd><dt id="g-ph">pH</dt><dd>la misura dell'acidità, da 0 a 14: 7 è neutro, sotto è acido. Il succo di limone è intorno a 2, l'acqua potabile intorno a 7.</dd><dt id="g-pinene">Pinene</dt><dd>il terpene resinoso del pino e del ginepro (alfa-pinene e beta-pinene): la spina dorsale aromatica del gin.</dd><dt id="g-piperina">Piperina</dt><dd>la molecola pungente del pepe nero: attiva i canali TRPV1 e TRPA1, quelli del bruciore.</dd><dt id="g-polarita">Polarità</dt><dd>quanto una molecola ha cariche elettriche separate. Le molecole polari (zuccheri, acidi, tannini) si sciolgono in acqua; quelle apolari (oli essenziali, cere) in alcol e grassi. L'etanolo sta a metà: per questo la gradazione decide che cosa si estrae.</dd><dt id="g-polifenoli">Polifenoli</dt><dd>famiglia di molecole con più gruppi fenolici: tannini, flavonoidi, antociani. Danno colore, astringenza e protezione dall'ossidazione.</dd><dt id="g-potenza">Potenza</dt><dd>forza aromatica di una botanica: più è alta, meno se ne usa.</dd><dt id="g-recettore">Recettore</dt><dd>una proteina che riconosce una molecola precisa, come una serratura con la sua chiave, e avvia un segnale nella cellula. Dolce, amaro, umami e odori passano da recettori.</dd><dt id="g-saturazione">Saturazione</dt><dd>il punto in cui un solvente non riesce più a sciogliere una sostanza: oltre, la macerazione non estrae più nulla di quella molecola.</dd><dt id="g-soglia-olfattiva">Soglia olfattiva</dt><dd>la concentrazione più bassa alla quale una molecola si sente. Cambia moltissimo da molecola a molecola e da persona a persona: alcune si sentono in tracce infinitesimali, altre solo in quantità.</dd><dt id="g-solvente">Solvente</dt><dd>il liquido che scioglie le sostanze. Nella macerazione è la miscela di alcol e acqua, che con la sua gradazione sceglie che cosa estrarre.</dd><dt id="g-tannini">Tannini</dt><dd>polifenoli che si legano alle proteine e danno astringenza: la bocca si asciuga e diventa ruvida. Abbondano in scorze, tè, foglie e cortecce; passano soprattutto con l'acqua della miscela.</dd><dt id="g-terpeni">Terpeni</dt><dd>la grande famiglia di molecole aromatiche degli oli essenziali (limonene, pinene, linalolo). Sono apolari: si sciolgono bene in alcol, poco in acqua.</dd><dt id="g-timolo-e-carvacrolo">Timolo e carvacrolo</dt><dd>i fenoli di timo, origano e santoreggia: caldi, speziati, un po' medicinali. Attivano i canali TRPV3 e TRPA1.</dd><dt id="g-tracce">Tracce</dt><dd>dose ridotta (circa il 15%) per le botaniche di rifinitura.</dd><dt id="g-tujone">Tujone</dt><dd>composto di artemisia, abrotano e salvia, da dosare con cautela.</dd><dt id="g-umami">Umami</dt><dd>il quinto gusto, il «saporito»: lo individuò il chimico giapponese Kikunae Ikeda nel 1908 nel brodo di alga kombu. Lo danno glutammato e nucleotidi, letti dal recettore T1R1 + T1R3.</dd><dt id="g-vanillina">Vanillina</dt><dd>l'aldeide della vaniglia: dolce, cremosa. Il cervello la associa al dolce anche se non tocca i recettori del gusto.</dd><dt id="g-volatilita">Volatilità</dt><dd>la tendenza di una molecola a evaporare. Solo le molecole volatili arrivano al naso: quelle leggere evaporano subito (note di testa), quelle pesanti lentamente (note di fondo).</dd></dl></div></details>
 
@@ -3009,30 +3012,6 @@ html.in-mappa #nav-indietro{display:none!important}
           <button class="ghost-btn" type="button" onclick="stampaHtml(document.getElementById('scheda-c-corpo').innerHTML, 'Scheda finale — Valutazione sensoriale del gin compound')">🖨️ Stampa scheda C</button>
         </div>
       </details>
-    </div>
-  </section>
-
-  <section class="panel" id="panel-ruota">
-    <div class="storia">
-      <h2>Ruota degli aromi</h2>
-      <p class="storia-sub">Le famiglie aromatiche del gin al centro, i descrittori sul giro esterno. Tocca un settore per vedere quali botaniche dell'app portano quella nota; tocca una botanica per aprirne la scheda.</p>
-      <details class="howto">
-        <summary>Come si usa e da dove viene</summary>
-        <div class="howto-body">
-          <p><strong>Dal centro verso l'esterno.</strong> Quando annusi, parti dalla famiglia (è agrumato? è floreale?) e solo dopo scendi al descrittore preciso (limone o pompelmo? rosa o violetta?). È il modo in cui lavorano i panel di assaggio: prima la categoria larga, poi la nota fine.</p>
-          <p><strong>Le botaniche nei settori</strong> sono collegate automaticamente ai profili aromatici della pagina Botaniche e infusi. La ruota orienta, non dà verdetti: se all'assaggio senti altro, vale l'assaggio.</p>
-          <p><strong>I difetti</strong> (settore grigio) non sono botaniche ma note sbagliate dell'infuso: per ognuno trovi la causa più probabile e il rimedio.</p>
-          <p><strong>Rapporto con il radar.</strong> Il radar a dieci assi misura <em>quanto</em>; la ruota serve a dire <em>che cosa</em>. Dolce, amaro, acido e salino sono gusti in bocca e stanno sul radar; sulla ruota compaiono solo come note aromatiche (il miele, il salmastro).</p>
-          <p><strong>Fonte.</strong> Ruota originale costruita per questa app sulle famiglie aromatiche comunemente usate per descrivere il gin; non riproduce una ruota pubblicata.</p>
-        </div>
-      </details>
-      <label class="inf-q-label" for="ruota-q">Dove sta una botanica sulla ruota?</label>
-      <input type="search" id="ruota-q" class="ruota-q" placeholder="es. Bergamotto" list="ruota-dl" autocomplete="off">
-      <datalist id="ruota-dl"></datalist>
-      <div class="ruota-wrap"><svg id="ruota-svg" viewBox="-200 -200 400 400" role="img" aria-label="Ruota degli aromi del gin"></svg></div>
-      <div id="ruota-info" class="ruota-info"></div>
-      <h3 class="ruota-h3">Tutte le famiglie</h3>
-      <div id="ruota-lista"></div>
     </div>
   </section>
 
@@ -3780,17 +3759,29 @@ html.in-mappa #nav-indietro{display:none!important}
 
   <!-- ============ MATRICE DEI SENTORI ============ -->
   <section class="panel" id="panel-matrice">
+    <div class="storia">
+      <h2>Aromi e sentori</h2>
+      <p class="storia-sub">Due domande sulla stessa cosa: <strong>che cosa</strong> si sente (la ruota) e <strong>perché</strong> si sente (molecole e recettori).</p>
+    </div>
+    <div class="ar-sezioni"><a href="#" class="ar-vai" data-ar="ar-ruota">🎡 Che cosa si sente</a><a href="#" class="ar-vai" data-ar="ar-matrice">🧬 Perché si sente</a></div>
     <details class="howto">
-      <summary>Come si usa</summary>
+      <summary>Come si usa e da dove viene</summary>
       <div class="howto-body">
-        <p>Per ogni sentore la matrice indica le molecole responsabili, le botaniche dell'app che le portano e i recettori sensoriali che le leggono.</p>
-        <ul>
-          <li>La griglia in alto incrocia i dieci assi del radar con i quattro sistemi sensoriali: tocca una casella per vedere solo quei sentori.</li>
-          <li>Puoi anche filtrare per sistema sensoriale o cercare una botanica: compaiono i sentori a cui contribuisce.</li>
-          <li>Il nome della botanica nelle schede apre la sua pagina nella libreria.</li>
-        </ul>
+        <p><strong>🎡 La ruota: che cosa si sente.</strong> Le famiglie aromatiche al centro, i descrittori sul giro esterno. Quando annusi, parti dalla famiglia (è agrumato? è floreale?) e solo dopo scendi al descrittore preciso (limone o pompelmo? rosa o violetta?): è il modo in cui lavorano i panel di assaggio. Tocca un settore per vedere quali botaniche portano quella nota, tocca una botanica per aprirne la scheda. Il settore grigio raccoglie i difetti dell'infuso, con la causa più probabile e il rimedio.</p>
+        <p><strong>🧬 La matrice: perché si sente.</strong> Per ogni sentore indica le molecole responsabili, le botaniche che le portano e i recettori che le leggono. La griglia incrocia i dieci assi del radar con i quattro sistemi sensoriali: tocca una casella per vedere solo quei sentori, oppure filtra per sistema o cerca una botanica.</p>
+        <p><strong>Rapporto con il radar.</strong> Il radar a dieci assi misura <em>quanto</em>; la ruota dice <em>che cosa</em>; la matrice spiega <em>perché</em>. Dolce, amaro, acido e salino sono gusti in bocca e stanno sul radar; sulla ruota compaiono solo come note aromatiche (il miele, il salmastro).</p>
+        <p>La ruota orienta, non dà verdetti: se all'assaggio senti altro, vale l'assaggio. <strong>Fonte.</strong> Ruota originale costruita per questa app sulle famiglie aromatiche comunemente usate per descrivere il gin; non riproduce una ruota pubblicata. Le corrispondenze molecola–recettore sono quelle degli studi in 📚 Fonti scientifiche.</p>
       </div>
     </details>
+    <h3 class="ar-tit" id="ar-ruota">🎡 Che cosa si sente · la ruota degli aromi</h3>
+      <label class="inf-q-label" for="ruota-q">Dove sta una botanica sulla ruota?</label>
+      <input type="search" id="ruota-q" class="ruota-q" placeholder="es. Bergamotto" list="ruota-dl" autocomplete="off">
+      <datalist id="ruota-dl"></datalist>
+      <div class="ruota-wrap"><svg id="ruota-svg" viewBox="-200 -200 400 400" role="img" aria-label="Ruota degli aromi del gin"></svg></div>
+      <div id="ruota-info" class="ruota-info"></div>
+      <h4 class="ruota-h3">Tutte le famiglie</h4>
+      <div id="ruota-lista"></div>
+    <h3 class="ar-tit" id="ar-matrice">🧬 Perché si sente · molecole e recettori</h3>
     <details class="howto">
       <summary>Quattro sistemi, un solo sapore</summary>
       <div class="howto-body">
@@ -4076,7 +4067,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.3.1 · 29 ottobre 2026 · botaniche a tre livelli</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.4 · 29 ottobre 2026 · Aromi e sentori in una pagina</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -5157,7 +5148,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.3.1</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.4</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -11159,7 +11150,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     if (tipo === 's'){
       const li = document.getElementById('sig-' + id); if (!li) return null;
       const c = li.cloneNode(true), st = c.querySelector('strong'); const tit = st ? st.textContent : id; if (st) st.remove();
-      return { tit, html: '<p>' + c.innerHTML.replace(/^\s*[:=]\s*/, '') + '</p><p class="cond-hint">Dal riquadro «Che cosa vogliono dire le sigle» nella Matrice dei sentori.</p>' };
+      return { tit, html: '<p>' + c.innerHTML.replace(/^\s*[:=]\s*/, '') + '</p><p class="cond-hint">Dal riquadro «Che cosa vogliono dire le sigle» nella Aromi e sentori.</p>' };
     }
     const dt = document.getElementById('g-' + id); if (!dt) return null;
     const dd = dt.nextElementSibling;
@@ -11278,7 +11269,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         { id:'bottiglia',tab:'manuale',    e:'🍾', t:'In bottiglia',             c:'#2F8F8F' }
       ] }
   };
-  const CAPIRE = ['libreria','ridondanza','matrice','ruota','nozioni','analisi','leggi','storia','altrigin'];
+  const CAPIRE = ['libreria','ridondanza','matrice','nozioni','analisi','leggi','storia','altrigin'];
   const SERVIRE = ['garnish','toniche','cocktail','laboratorio','special'];
   const HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
 
@@ -11724,6 +11715,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
   const prevShow = window.showTab;
   window.showTab = function(name){
     if (name === 'home') name = 'mappa';
+    if (name === 'ruota') name = 'matrice';   // la ruota ora è la prima parte di «Aromi e sentori»
     if (window._navDaMenu) window._tappa = null;   // dal menu si esce dal percorso
     const r = prevShow(name);
     document.documentElement.classList.toggle('in-mappa', name === 'mappa');
@@ -11746,6 +11738,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
   };
   $('dosi-abv').addEventListener('input', () => { if ($('panel-proporzioni').classList.contains('active')) syncPP(); });
   $('cambia-tipo').addEventListener('click', () => vaiTappa('tipo'));
+  document.querySelectorAll('.ar-vai').forEach(a => a.addEventListener('click', e => { e.preventDefault(); const t = $(a.dataset.ar); if (t){ t.style.scrollMarginTop = '84px'; t.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }));
 
   // all'avvio: dopo il ripristino della ricetta, il progetto attivo e la mappa
   setTimeout(() => {
