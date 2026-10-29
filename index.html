@@ -2226,6 +2226,13 @@ html details.howto a{color:#5A3E1C;}
 .ck-scheda{flex:1;padding:11px 10px;border-radius:14px;border:2px solid var(--line-strong);background:var(--card);color:var(--ink);font:700 14.5px/1.2 'Inter',system-ui,sans-serif;cursor:pointer}
 .ck-scheda.on{background:#C0583E;border-color:#C0583E;color:#fff}
 .ck-scheda.on + .ck-scheda.on,.ck-scheda[data-ck="ck-lab"].on{background:#8A63B0;border-color:#8A63B0}
+#panel-special .sp-item > summary{display:none}
+#panel-special .sp-item:not([open]){display:none}
+#panel-special .sp-item[open]{margin-top:12px}
+.sp-tile{position:relative;cursor:pointer}
+.sp-tile .sp-i{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;border:0;background:rgba(255,255,255,.92);color:#3A2F27;
+  font:italic 800 15px/28px Georgia,'Fraunces',serif;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.3);padding:0}
+.sp-tile.on{outline:3px solid var(--ink);outline-offset:2px}
 /* v2.1 · le due strade e la ricetta passo passo */
 html.in-mappa .menu-bar{display:none!important}
 .mp-via .mv-sub{font:italic 600 16px/1.2 'Fraunces',Georgia,serif;margin-top:-4px}
@@ -2341,7 +2348,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.5</div>
+  <div class="splash-ver" id="splash-ver">v2.5.1</div>
 </div>
 
 <div class="wrap">
@@ -3571,7 +3578,7 @@ html.in-mappa #nav-indietro{display:none!important}
         <p>La mappa abbina a ogni stile di gin la guarnizione che lo serve meglio, con il perché. Le schede dell'app vengono prima; in fondo ci sono gli stili commerciali che l'app non costruisce (Old Tom, Navy Strength, Sloe gin).</p>
         <ul>
           <li>Ogni scheda dice se la garnish è un <strong>rinforzo</strong> (ripete un'aromatica già presente nel gin) o un <strong>contrasto</strong> (corregge un eccesso, come la dolcezza o un profumo troppo carico).</li>
-          <li>Nel <strong>Gin Builder</strong>, sotto il radar, trovi la garnish suggerita per la tua ricetta: è calcolata dal profilo delle botaniche scelte, oltre che dallo stile.</li>
+          <li>In cima alla pagina, <strong>Per il tuo progetto</strong>: la garnish suggerita per la tua ricetta, calcolata dal profilo delle botaniche scelte oltre che dallo stile.</li>
           <li>Le regole generali (scorza o fetta, quante garnish, come preparare le erbe) sono nel riquadro qui sotto.</li>
         </ul>
       </div>
@@ -3614,7 +3621,7 @@ html.in-mappa #nav-indietro{display:none!important}
       <div class="howto-body">
         <p>Le acque toniche in commercio raccolte in cinque famiglie, con le caratteristiche e i gin con cui stanno meglio, e il perché. Sotto trovi gli abbinamenti per gli stili dell'app e per i gin commerciali più diffusi.</p>
         <ul>
-          <li>Nel <strong>Gin Builder</strong>, sotto la garnish, trovi la tonica consigliata per la tua ricetta, calcolata dal profilo delle botaniche scelte.</li>
+          <li>In cima alla pagina, <strong>Per il tuo progetto</strong>: la tonica consigliata per la tua ricetta, calcolata dal profilo delle botaniche scelte.</li>
           <li>Dolcezza, amaro e bollicina sono indicati a livelli (bassa, media, alta): sono stime orientative, la ricetta di una tonica può cambiare da un paese all'altro e nel tempo.</li>
         </ul>
       </div>
@@ -3743,7 +3750,7 @@ html.in-mappa #nav-indietro{display:none!important}
     <details class="howto">
       <summary>Come si usa</summary>
       <div class="howto-body">
-        <p>Sette strumenti speciali che usano il radar e la libreria in modi diversi. Tocca un riquadro per aprire lo strumento; ognuno si richiude con ▲ Chiudi.</p>
+        <p>Sette strumenti speciali che usano il radar e la libreria in modi diversi. Tocca un riquadro per aprire lo strumento (uno alla volta); la <strong>i</strong> nel riquadro dice a cosa serve. Si richiude toccando di nuovo il riquadro o con ▲ Chiudi.</p>
         <ul>
           <li>Il <strong>gemello commerciale</strong>, l'<strong>etichetta</strong> e il <strong>gin a tavola</strong> lavorano sulla ricetta del progetto aperto (o su una scheda di prova).</li>
           <li>La <strong>ricetta inversa</strong> e il <strong>gin di un paesaggio</strong> possono diventare le botaniche del tuo progetto, nello stile Personalizzato.</li>
@@ -3753,7 +3760,7 @@ html.in-mappa #nav-indietro{display:none!important}
     </details>
     <div class="sp-tiles" id="sp-tiles"></div>
     <details class="howto sp-item" id="sp-inversa"><summary>🎯 Ricetta inversa</summary><div class="howto-body"><p>Disegna il profilo che vorresti con i cursori dei dieci assi: l'app cerca nella libreria la combinazione di botaniche che ci si avvicina di più. È il Builder al contrario, dal gusto alla ricetta.</p><div id="sp-inv"></div></div></details>
-    <details class="howto sp-item" id="sp-gemello"><summary>👯 Il tuo gemello commerciale</summary><div class="howto-body"><p>Il gin in commercio di carattere più vicino alla ricetta del Gin Builder, e cosa ti distingue da lui.</p><div id="sp-gem"></div></div></details>
+    <details class="howto sp-item" id="sp-gemello"><summary>👯 Il tuo gemello commerciale</summary><div class="howto-body"><p>Il gin in commercio di carattere più vicino alla ricetta del tuo progetto, e cosa ti distingue da lui.</p><div id="sp-gem"></div></div></details>
     <details class="howto sp-item" id="sp-cieca"><summary>🙈 Gin alla cieca</summary><div class="howto-body"><p>Allena l'occhio al radar: riconosci un gin dal suo profilo, o il profilo giusto dal nome. Utile anche per preparare il panel di assaggio.</p><div id="sp-cie"></div></div></details>
     <details class="howto sp-item" id="sp-paesaggio"><summary>🏞️ Il gin di un paesaggio</summary><div class="howto-body"><p>Scegli un luogo: l'app compone una ricetta con le sue botaniche, già assegnate ai sei ruoli.</p><div id="sp-pae"></div></div></details>
     <details class="howto sp-item" id="sp-calendario"><summary>🗓️ Calendario delle raccolte</summary><div class="howto-body"><p>Le botaniche che si raccolgono in Italia mese per mese, dal periodo di raccolta della libreria. Le botaniche solo importate sono escluse.</p><div id="sp-cal"></div></div></details>
@@ -4071,7 +4078,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.5 · 29 ottobre 2026 · riordino: cocktail, calcoli, taratura</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.5.1 · 29 ottobre 2026 · riordino: cocktail, calcoli, taratura</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -5152,7 +5159,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.5</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.5.1</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -7309,7 +7316,7 @@ function renderTestList(){
   const filtered = tests.filter(t => !q || (t.name||'').toLowerCase().includes(q) || (t.style||'').toLowerCase().includes(q));
   testCount.textContent = filtered.length + ' / ' + tests.length + ' schede';
   if (filtered.length === 0){
-    testListEl.innerHTML = '<div class="test-empty">Nessuna scheda salvata. Crea la prima con "+ Nuova scheda" oppure invia una selezione dal Gin Builder.</div>';
+    testListEl.innerHTML = '<div class="test-empty">Nessuna scheda salvata. Crea la prima con "+ Nuova scheda" oppure dalla tappa «Assaggio e correzioni» del percorso.</div>';
     return;
   }
   testListEl.innerHTML = filtered.slice().reverse().map(t => `
@@ -10571,11 +10578,31 @@ if ("serviceWorker" in navigator) {
   const TILES = [['sp-inversa','🎯','Ricetta inversa','#4C7BB5'],['sp-gemello','👯','Gemello commerciale','#2F7259'],['sp-cieca','🙈','Gin alla cieca','#8A63B0'],
     ['sp-paesaggio','🏞️','Gin di un paesaggio','#6F8A2E'],['sp-calendario','🗓️','Calendario raccolte','#B8921F'],['sp-etichetta','🏷️','Etichetta','#C0583E'],['sp-tavola','🍽️','Gin a tavola','#B04A6B']];
   const tiles = document.getElementById('sp-tiles');
-  tiles.innerHTML = TILES.map(([id, ic, t, c]) => '<button type="button" class="menu-tile" data-sp="' + id + '" style="--h:' + c + '"><span class="mt-ic">' + ic + '</span><span class="mt-l">' + t + '</span></button>').join('');
-  tiles.querySelectorAll('[data-sp]').forEach(b => b.onclick = () => {
+  // Le sette tessere sono l'unico ingresso: niente barre grigie sotto. La «i» dentro la tessera dice a cosa serve;
+  // toccando la tessera si apre lo strumento (uno alla volta) e un secondo tocco lo richiude.
+  tiles.innerHTML = TILES.map(([id, ic, t, c]) => '<div class="menu-tile sp-tile" role="button" tabindex="0" data-sp="' + id + '" style="--h:' + c + '"><span class="mt-ic">' + ic + '</span><span class="mt-l">' + t + '</span><button type="button" class="sp-i" aria-label="A cosa serve: ' + t + '">i</button></div>').join('');
+  const apriSp = b => {
     const d = document.getElementById(b.dataset.sp); if (!d) return;
-    d.open = true; const sm = d.querySelector('summary'); if (sm){ sm.style.scrollMarginTop = '84px'; sm.scrollIntoView({behavior:'smooth', block:'start'}); }
+    const giaAperto = d.open;
+    document.querySelectorAll('#panel-special .sp-item').forEach(x => { x.open = false; });
+    tiles.querySelectorAll('.sp-tile').forEach(x => x.classList.remove('on'));
+    if (giaAperto) return;
+    d.open = true; b.classList.add('on');
+    d.style.scrollMarginTop = '84px'; setTimeout(() => d.scrollIntoView({behavior:'smooth', block:'start'}), 30);
+  };
+  tiles.querySelectorAll('.sp-tile').forEach(b => {
+    b.addEventListener('click', e => { if (e.target.closest('.sp-i')) return; apriSp(b); });
+    b.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); apriSp(b); } });
+    b.querySelector('.sp-i').addEventListener('click', e => {
+      e.stopPropagation();
+      const d = document.getElementById(b.dataset.sp), p = d && d.querySelector('.howto-body > p');
+      mostraAvviso(d.querySelector('summary').textContent, p ? '<p>' + p.innerHTML + '</p>' : '', '', null);
+    });
   });
+  // chiudendo lo strumento con «▲ Chiudi» si spegne anche la sua tessera
+  document.querySelectorAll('#panel-special .sp-item').forEach(d => d.addEventListener('toggle', () => {
+    if (!d.open){ const t = tiles.querySelector('[data-sp="' + d.id + '"]'); if (t) t.classList.remove('on'); }
+  }));
 
   // ===== 1. Ricetta inversa =====
   (function(){
@@ -10776,7 +10803,7 @@ if ("serviceWorker" in navigator) {
     const box = document.getElementById('sp-eti'); if (!box) return;
     const tests = (typeof loadTests === 'function' ? loadTests() : []).filter(t => (t.botaniche || []).length);
     if (eti.src === null || (eti.src !== 'b' && !tests[+eti.src.slice(1)])) eti.src = tests.length ? 't' + (tests.length - 1) : 'b';
-    const fonti = '<option value="b"' + (eti.src === 'b' ? ' selected' : '') + '>Ricetta del Gin Builder</option>' + tests.map((t, k) => '<option value="t' + k + '"' + (eti.src === 't' + k ? ' selected' : '') + '>Scheda: ' + esc(t.name || 'Senza nome') + (t.date ? ' · ' + esc(t.date) : '') + '</option>').join('');
+    const fonti = '<option value="b"' + (eti.src === 'b' ? ' selected' : '') + '>Ricetta del progetto</option>' + tests.map((t, k) => '<option value="t' + k + '"' + (eti.src === 't' + k ? ' selected' : '') + '>Scheda: ' + esc(t.name || 'Senza nome') + (t.date ? ' · ' + esc(t.date) : '') + '</option>').join('');
     let el = [], nome = '', abv = 40, stile = '';
     if (eti.src !== 'b'){ const t = tests[+eti.src.slice(1)]; el = t.botaniche.filter(b => b.botanica).map(b => ({n: b.botanica, w: b.perc || 1})); nome = t.name || ''; abv = t.abv || 40; stile = t.style || ''; }
     else { const r = ricettaBuilder(); if (r){ el = r.el; nome = r.nome; stile = r.stile || ''; } }
@@ -10827,12 +10854,12 @@ if ("serviceWorker" in navigator) {
   function tavola(){
     const box = document.getElementById('sp-tav'); if (!box) return;
     const prec = box.querySelector('.tav-src'), src = prec ? prec.value : 'b';
-    const opz = '<option value="b">Ricetta del Gin Builder</option>' + Object.keys(GIN_LISTE).filter(n => profiloGin(n, false)).map(n => '<option value="' + esc(n) + '"' + (n === src ? ' selected' : '') + '>' + esc(breveGin(n)) + '</option>').join('');
+    const opz = '<option value="b">Ricetta del progetto</option>' + Object.keys(GIN_LISTE).filter(n => profiloGin(n, false)).map(n => '<option value="' + esc(n) + '"' + (n === src ? ' selected' : '') + '>' + esc(breveGin(n)) + '</option>').join('');
     let v = null, nome = '';
     if (src === 'b'){ const r = ricettaBuilder(); const f = r ? r.el.filter(x => !isBase(x.n)) : []; v = f.length ? profilo(f) : null; nome = r ? r.nome : ''; }
     else { const p = profiloGin(src, false); v = p ? p.vals : null; nome = breveGin(src); }
     let h = '<div class="mix-ctrl"><label style="grid-column:1/-1">Gin<select class="tav-src">' + opz + '</select></label></div>';
-    if (!v){ box.innerHTML = h + '<div class="radar-nota">Nel Gin Builder non ci sono botaniche oltre alle base: componi una ricetta o scegli un gin commerciale.</div>'; box.querySelector('.tav-src').onchange = tavola; return; }
+    if (!v){ box.innerHTML = h + '<div class="radar-nota">Nel progetto non ci sono botaniche oltre alle base: componi una ricetta o scegli un gin commerciale.</div>'; box.querySelector('.tav-src').onchange = tavola; return; }
     const CIBO = {
       Salino: ['Crudi di mare, ostriche, ricci, tartare di tonno', 'La sapidità del gin incontra lo iodio; il ginepro pulisce il palato fra un boccone e l’altro.'],
       Agrumato: ['Frittura di paranza, pesce alla griglia, sushi e sashimi', 'Gli oli agrumati e l’alcol sgrassano il fritto come una spruzzata di limone.'],
