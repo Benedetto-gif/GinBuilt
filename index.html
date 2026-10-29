@@ -2309,7 +2309,7 @@ html details.howto a{color:#5A3E1C;}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.1.2</div>
+  <div class="splash-ver" id="splash-ver">v2.2</div>
 </div>
 
 <div class="wrap">
@@ -2366,7 +2366,7 @@ html details.howto a{color:#5A3E1C;}
   </div>
 
   <!-- HOME -->
-  <section class="panel active" id="panel-mappa"><div id="mappa-box"></div></section>
+  <section class="panel active" id="panel-mappa"><div id="mappa-box"></div><div class="home-dati" id="home-dati"></div></section>
 
   <section class="panel" id="panel-tipo">
     <h2 class="tappa-h"><span>1</span>Che gin vuoi?</h2>
@@ -2393,105 +2393,6 @@ html details.howto a{color:#5A3E1C;}
   <section class="panel" id="panel-ricetta">
     <h2 class="tappa-h" id="ricetta-h"><span>📋</span>La ricetta passo passo</h2>
     <div id="ricetta-box"></div>
-  </section>
-
-  <section class="panel" id="panel-home">
-    <div class="home-hero" data-goto="storia">
-      <div class="hero-art" aria-hidden="true">
-        <svg viewBox="0 0 64 64" class="anim anim-still" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M14 48 C14 34 20 27 27 27 C34 27 40 34 40 48 Z"/>
-          <path d="M10 48 H44"/>
-          <path d="M27 27 V21 C27 15 36 13 42 18 C48 23 50 31 50 39"/>
-          <path d="M44 45 H58 L56 58 H46 Z"/>
-          <g class="vapor" fill="currentColor" stroke="none">
-            <circle class="v1" cx="25" cy="42" r="1.9"/>
-            <circle class="v2" cx="31" cy="44" r="1.5"/>
-            <circle class="v3" cx="28" cy="40" r="1.7"/>
-          </g>
-          <circle class="still-drop" cx="50" cy="41" r="2.3" fill="currentColor" stroke="none"/>
-        </svg>
-      </div>
-      <p class="hero-kicker">Per cominciare</p>
-      <h2>Piccola storia del gin</h2>
-      <p>Dal jenever dei Paesi Bassi alla Gin Craze londinese, fino al London Dry e al gin italiano.
-        Gli ingredienti che non possono mancare, la differenza fra distillato e compound, e il lavoro
-        paziente di chi cerca l'equilibrio fra le botaniche.</p>
-      <span class="hero-go">Leggi →</span>
-    </div>
-
-    <details class="home-diario" id="home-diario" hidden></details>
-
-    <p class="home-path-label">Il percorso in 3 passi, dalla botanica al bicchiere:</p>
-    <div class="home-grid">
-      <div class="home-card" data-goto="libreria" style="--c:var(--c-erbaceo)">
-        <span class="hc-step">1</span>
-        <div class="hc-icon"><svg viewBox="0 0 48 48" class="anim anim-sprig" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-        <path class="stem" d="M24 42 V13"/>
-        <path class="leaf l1" d="M24 31 C16 30 12.5 25 12.5 19.5 C20 19.5 24 25 24 31 Z"/>
-        <path class="leaf l2" d="M24 24 C32 23 35.5 18 35.5 12.5 C28 12.5 24 18 24 24 Z"/>
-        <circle class="berry" cx="24" cy="9" r="3.2" fill="currentColor" stroke="none"/>
-      </svg></div>
-        <h3>Botaniche e infusi</h3>
-        <p>Parti da qui: le <span class="bot-count">84</span> schede delle botaniche, con profilo aromatico, potenza,
-          raccolta e zone italiane, e per ognuna la preparazione dell'infuso: gradazione, diluizione, grammi e tempo.</p>
-      </div>
-      <div class="home-card" data-goto="builder" style="--c:var(--c-secco)">
-        <span class="hc-step">2</span>
-        <div class="hc-icon"><svg viewBox="0 0 48 48" class="anim anim-bars" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-        <rect class="b b1" x="9" y="32" width="30" height="4.4" rx="2.2" fill="currentColor" stroke="none"/>
-        <rect class="b b2" x="9" y="23" width="30" height="4.4" rx="2.2" fill="currentColor" stroke="none" opacity=".75"/>
-        <rect class="b b3" x="9" y="14" width="30" height="4.4" rx="2.2" fill="currentColor" stroke="none" opacity=".5"/>
-        <circle class="dot" cx="24" cy="7" r="2.8" fill="currentColor" stroke="none"/>
-      </svg></div>
-        <h3>Gin Builder</h3>
-        <p>Poi componi la struttura: scegli uno stile e assegna le botaniche ai ruoli (base, freschezza, identità,
-          cuore, firma, rifinitura). Ridondanze e complementari ti vengono segnalati qui.</p>
-      </div>
-      <div class="home-card" data-goto="prove" style="--c:var(--c-siciliano)">
-        <span class="hc-step">3</span>
-        <div class="hc-icon"><svg viewBox="0 0 48 48" class="anim anim-beaker" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-        <defs><clipPath id="beakerClip">
-          <path d="M18 20 L11 36 A3 3 0 0 0 14 40 H34 A3 3 0 0 0 37 36 L30 20 Z"/>
-        </clipPath></defs>
-        <g clip-path="url(#beakerClip)">
-          <rect class="liquid" x="6" y="16" width="36" height="25" fill="currentColor" stroke="none" opacity=".32"/>
-          <circle class="bub b1" cx="19" cy="37" r="1.7" fill="currentColor" stroke="none"/>
-          <circle class="bub b2" cx="26" cy="38" r="1.3" fill="currentColor" stroke="none"/>
-          <circle class="bub b3" cx="31" cy="36" r="1.5" fill="currentColor" stroke="none"/>
-        </g>
-        <path d="M18 8 V20 L11 36 A3 3 0 0 0 14 40 H34 A3 3 0 0 0 37 36 L30 20 V8"/>
-        <path d="M16 8 H32"/>
-      </svg></div>
-        <h3>Schede di prova e diluizione</h3>
-        <p>Registra tutto: percentuali degli infusi, valutazione all'assaggio e correzioni per la volta
-          successiva. Nella stessa pagina il calcolatore porta il gin alla gradazione finale: alcol e acqua in ml e in grammi.</p>
-      </div>
-      <div class="home-card" data-goto="cocktail" style="--c:var(--c-floreale)">
-        <div class="hc-icon"><svg viewBox="0 0 48 48" class="anim anim-coupe" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-        <circle class="drop" cx="24" cy="6" r="2.4" fill="currentColor" stroke="none"/>
-        <path d="M10 13 H38 C38 25 32 29 24 29 C16 29 10 25 10 13 Z"/>
-        <ellipse class="ripple" cx="24" cy="15" rx="8" ry="2.4" fill="none" stroke="currentColor" stroke-width="1.8" opacity="0"/>
-        <path d="M24 29 V39"/>
-        <path d="M16 41 H32"/>
-      </svg></div>
-        <h3>I cocktail classici</h3>
-        <p>Infine, il banco di prova: venti grandi drink a base gin con le dosi standard,
-          dal Martini al Negroni, per vedere la tua ricetta all'opera.</p>
-      </div>
-      <div class="home-card" data-goto="laboratorio" style="--c:var(--ochre)">
-        <div class="hc-icon"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M19 7 H29 M21 7 V19 L11 37 A3 3 0 0 0 14 41 H34 A3 3 0 0 0 37 37 L27 19 V7"/>
-          <path d="M15 31 H33" opacity=".6"/><circle cx="21" cy="35" r="1.6" fill="currentColor" stroke="none"/><circle cx="28" cy="34" r="1.2" fill="currentColor" stroke="none"/>
-        </svg></div>
-        <h3>Laboratorio cocktail</h3>
-        <p>Cocktail sperimentali con un'ipotesi da verificare, il radar previsto e gli assaggi annotati versione dopo versione.</p>
-      </div>
-    </div>
-
-    <div class="home-dati" id="home-dati"></div>
-
-    <p class="home-note">Non è un percorso obbligato: ogni pagina si usa anche da sola, e si può sempre tornare
-      indietro a correggere un passo precedente dopo aver assaggiato.</p>
   </section>
 
   <!-- STORIA DEL GIN -->
@@ -3402,14 +3303,10 @@ html details.howto a{color:#5A3E1C;}
         <button type="button" class="primary-btn" style="margin-top:10px;width:100%;" onclick="showTab('proporzioni')">⚖️ Varia le proporzioni con i cursori</button>
       </div>
       <div id="build-radar"></div>
-      <div id="build-garnish"></div>
-      <div id="build-tonica"></div>
       <div id="build-semafori"></div>
       <div class="build-warnings" id="build-warnings"></div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;">
-        <button class="primary-btn" id="send-to-test">🧪 Invia al banco di prova</button>
         <button class="ghost-btn" id="print-builder">🖨️ Stampa combinazione</button>
-        <button class="ghost-btn" id="prepara-infusi" type="button" onclick="preparaInfusiRicetta()">📓 Prepara gli infusi della ricetta</button>
       </div>
     </div>
   </section>
@@ -4159,7 +4056,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.1.2 · 29 ottobre 2026 · due strade: chiavi in mano e personalizzato</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.2 · 29 ottobre 2026 · riordino, passo 1</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -5240,7 +5137,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.1.2</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.2</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -6586,13 +6483,13 @@ function renderSummary(){
   // garnish consigliata: dal profilo delle botaniche scelte (senza le base) e dallo stile
   (function(){
     const box = document.getElementById('build-garnish');
-    if (!box || !window.garnishBoxRicetta) return;
     const visti = new Set(), nomi = [], pesi = [];
     [...selects].forEach(sel => {
       if (!sel.value || visti.has(sel.value)) return; visti.add(sel.value);
       nomi.push(sel.value); pesi.push(pesoRiga(sel, doseLibreria(sel.value) ?? 0));
     });
     window._ricettaBuilder = { nomi: nomi.slice(), pesi: pesi.slice(), stile: currentStyleName };
+    if (!box || !window.garnishBoxRicetta) return;
     const rif = window._rifStile && window._rifStile.nome === currentStyleName ? window._rifStile.elenco.map(x => x.n) : null;
     const invariata = !!rif && rif.length === nomi.filter(n => PROFILO8[n]).length && rif.every(n => nomi.indexOf(n) >= 0);
     try { box.innerHTML = nomi.length ? window.garnishBoxRicetta(nomi, pesi, currentStyleName, invariata) : ''; } catch(e){ box.innerHTML = ''; }
@@ -10213,7 +10110,7 @@ function renderDosiGin(selects){
   window.addEventListener('resize', ppTop);
 })();
 
-document.getElementById('send-to-test').addEventListener('click', () => {
+(document.getElementById('send-to-test') || document.createElement('i')).addEventListener('click', () => {
   const selects = roleList.querySelectorAll('select:not(.role-label-input)');
   const styleName = builderTitle.textContent;
   // Il peso relativo suggerito dalla Libreria diventa la percentuale di partenza
@@ -11691,7 +11588,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         '<div class="mp-grid">' + tessere(CAPIRE, 2) + '</div></div>' +
       '<div class="mp-sez"><h3>🍸 Servire</h3><div class="mp-grid">' + tessere(SERVIRE, 6) + '</div></div>';
     box.innerHTML = h;
-    const dati = $('home-dati'); if (dati){ box.appendChild(dati); try { renderDati(); } catch(e){} }
+    try { renderDati(); } catch(e){}
     box.querySelectorAll('.mp-st').forEach(b => b.addEventListener('click', () => vaiTappa(b.dataset.id)));
     box.querySelectorAll('.mp-tile').forEach(b => b.addEventListener('click', () => { window._tappa = null; showTab(b.dataset.tab); }));
     box.querySelectorAll('.mp-via').forEach(b => b.addEventListener('click', () => scegliVia(b.dataset.via)));
