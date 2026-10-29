@@ -2204,6 +2204,8 @@ html details.howto a{color:#5A3E1C;}
 
 
 /* v2.1 · le due strade e la ricetta passo passo */
+.mp-bivio-btn{display:block;margin:4px auto 2px;padding:9px 16px;border-radius:999px;border:2px solid var(--juniper);background:var(--card);color:var(--ink);font:700 14px/1.1 'Inter',system-ui,sans-serif;cursor:pointer}
+
 .mp-bivio{display:grid;grid-template-columns:1fr;gap:12px;margin:10px 0 4px}
 .mp-via{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:16px;border:0;border-radius:18px;cursor:pointer;text-align:left;
   background:var(--c);color:#fff;font:inherit;box-shadow:0 4px 14px rgba(0,0,0,.22)}
@@ -2307,7 +2309,7 @@ html details.howto a{color:#5A3E1C;}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.1</div>
+  <div class="splash-ver" id="splash-ver">v2.1.1</div>
 </div>
 
 <div class="wrap">
@@ -4157,7 +4159,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.1 · 29 ottobre 2026 · due strade: chiavi in mano e personalizzato</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.1.1 · 29 ottobre 2026 · due strade: chiavi in mano e personalizzato</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -5238,7 +5240,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.1</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.1.1</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -11615,7 +11617,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
   }
   function vaiTappa(id){
     const tp = tappeDi(att()).find(t => t.id === id); if (!tp) return;
-    window._tappa = id; window._navDaMenu = true; showTab(tp.tab); apriSezione(tp);
+    window._tappa = id; showTab(tp.tab); apriSezione(tp);
   }
   function vaiMappa(){ window._tappa = null; window._navDaMenu = true; showTab('mappa'); }
   window.vaiMappa = vaiMappa;
@@ -11677,7 +11679,8 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
           '<small>' + VIE[k].tappe.length + ' tappe' + (k === 'pers' ? ' · 6 per capire, 6 per fare' : '') + '</small></button>').join('') + '</div>';
     } else {
       h += '<h2 class="mp-tit">' + V.e + ' ' + V.t + '</h2>' +
-        '<p class="mp-sub">' + (pr.via === 'chiavi' ? 'Una ricetta codificata da seguire passo passo.' : 'Prima le sei tappe per capire, poi il progetto.') + ' Tocca una tappa: quella che pulsa è la prossima. <a href="#" id="mp-cambia">Cambia strada</a></p>' +
+        '<p class="mp-sub">' + (pr.via === 'chiavi' ? 'Una ricetta codificata da seguire passo passo.' : 'Prima le sei tappe per capire, poi il progetto.') + ' Tocca una tappa: quella che pulsa è la prossima.</p>' +
+        '<button type="button" class="mp-bivio-btn" id="mp-cambia">\u21a9\ufe0f Torna al bivio \u00b7 cambia strada</button>' +
         strada(V.tappe, pr.fatte);
     }
     h += '<div class="mp-sez"><h3>📚 Capire perché</h3><p>La parte teorica, da consultare quando vuoi: le botaniche e la loro potenza, cosa si estrae e a che gradazione, i ruoli, le ridondanze, le leggi.</p>' +
@@ -11688,7 +11691,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     box.querySelectorAll('.mp-st').forEach(b => b.addEventListener('click', () => vaiTappa(b.dataset.id)));
     box.querySelectorAll('.mp-tile').forEach(b => b.addEventListener('click', () => { window._tappa = null; showTab(b.dataset.tab); }));
     box.querySelectorAll('.mp-via').forEach(b => b.addEventListener('click', () => scegliVia(b.dataset.via)));
-    const cb = $('mp-cambia'); if (cb) cb.onclick = e => { e.preventDefault(); cambiaVia(); };
+    const cb = $('mp-cambia'); if (cb) cb.onclick = e => { e.preventDefault(); tornaBivio(); };
     $('mp-prog').onclick = apriProgetti;
     $('mp-diario').onclick = () => { window._tappa = null; showTab('diario'); };
   }
@@ -11698,6 +11701,13 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     if (via === 'pers' && currentStyleName !== 'Personalizzato'){ const i = idxPers(); if (i >= 0) scegliStile(i); }
     if (via === 'chiavi' && currentStyleName === 'Personalizzato') scegliStile(0);
     cattura(pr); scriviP(); renderMappa();
+  }
+  function tornaBivio(){
+    const pr = att(); if (!pr) return;
+    const fatto = Object.keys(pr.fatte).length || Object.keys(pr.passi).length;
+    const vai = () => { pr.fatte = {}; pr.passi = {}; pr.pp = null; pr.via = null; scriviP(); renderMappa(); window.scrollTo(0, 0); };
+    if (!fatto) { vai(); return; }
+    mostraAvviso('Torni al bivio?', '<p>Puoi scegliere di nuovo fra <strong>Chiavi in mano</strong> e <strong>Personalizzato</strong>. Le spunte di questa strada si azzerano; stile, botaniche e quantità restano. Se vuoi tenere anche le spunte, crea invece un nuovo progetto (📁).</p>', 'Torna al bivio', vai);
   }
   function cambiaVia(){
     const pr = att(), altra = pr.via === 'chiavi' ? 'pers' : 'chiavi';
