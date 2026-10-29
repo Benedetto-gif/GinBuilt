@@ -88,7 +88,7 @@ FONTI = '''<section epub:type="bibliography"><h1>Fonti e bibliografia</h1>
 <p class="nota">Titoli, riviste e anni sono stati controllati; prima di un'eventuale pubblicazione conviene verificare anche pagine e DOI di ogni voce.</p>
 <p class="nota">Le soglie di temperatura dei canali (circa 43 °C per TRPV1, sotto circa 25 °C per TRPM8, fra circa 33 e 39 °C per TRPV3) sono valori misurati in laboratorio su cellule; nella bocca cambiano con la concentrazione delle molecole e con la persona.</p></section>'''
 
-RIDONDANZE = '''<section><h1>Ridondanze e complementari</h1>
+RIDONDANZE = '''<section><h1>Ridondanza e complementarietà</h1>
 <p>Quando due botaniche entrano nella stessa ricetta, il loro incontro ha tre esiti possibili. Il criterio è uno solo: <strong>le molecole che portano</strong>.</p>
 <h2>Ridondanti: si sommano</h2>
 <p>Due botaniche con lo stesso principio aromatico, cioè le stesse molecole prevalenti, non si affiancano: si sommano. È come zuccherare una bevanda con il saccarosio e poi aggiungere glucosio: ognuno dei due da solo andrebbe bene, insieme superano la soglia e la bevanda diventa stucchevole. Due agrumi ricchi di limonene, due erbe cariche di cineolo, due spezie con la stessa cinnamaldeide occupano lo stesso spazio aromatico. È l'unico caso che merita un avviso: le dosi vanno ridotte, oppure una delle due va tolta.</p>

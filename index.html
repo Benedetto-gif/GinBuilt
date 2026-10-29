@@ -1908,7 +1908,7 @@ footer.note{
 /* Etichette (carattere, potenza…) su fondo colorato: pillola scura, testo bianco */
 :root[data-theme="dark"] :is(.bot-card, .pg-bento .detail, .test-card, .ck-card) .tag{background:rgba(6,10,8,.38) !important;color:#fff !important;border-color:rgba(255,255,255,.28) !important;}
 /* Pulsanti dentro un riquadro: bordo chiaro, testo bianco */
-:root[data-theme="dark"] .pg-bento :is(.cond-box, .calc-box, .detail, details.howto) .num-step-btn{color:#fff;}
+:root[data-theme="dark"] .pg-bento :is(.cond-box, .calc-box, .detail) .num-step-btn{color:#fff;}
 }
 
 /* ============================================================
@@ -1950,20 +1950,21 @@ html details.howto a{color:#5A3E1C;}
 :root[data-theme="dark"] details.howto,
 :root[data-theme="dark"] .pg-bento details.howto,
 :root[data-theme="dark"] .pg-sez details.howto{
-  --ink:#FFFFFF; --ink-soft:rgba(255,255,255,.93); --ink-faint:rgba(255,255,255,.8);
-  --juniper:#FFFFFF; --juniper-deep:#FFFFFF; --ochre:#FFE3A6;
-  --surface:rgba(0,0,0,.18); --surface-2:rgba(0,0,0,.12);
-  --line:rgba(255,255,255,.22); --line-strong:rgba(255,255,255,.38);
-  background:linear-gradient(155deg,#857A6F,#6C6258) !important;
-  border:1px solid #B3A799 !important;
-  border-left:5px solid #D8CCBD !important;
+  /* tortora chiaro con testo scuro: il bianco sul tortora si leggeva male */
+  --ink:#211C17; --ink-soft:#2E2822; --ink-faint:#4A4139;
+  --juniper:#3F352B; --juniper-deep:#2E261F; --ochre:#6B4A1E;
+  --surface:rgba(255,255,255,.35); --surface-2:rgba(255,255,255,.25);
+  --line:rgba(40,30,20,.2); --line-strong:rgba(40,30,20,.32);
+  background:linear-gradient(155deg,#D6CCBF,#C3B6A6) !important;
+  border:1px solid #A89A89 !important;
+  border-left:5px solid #7D7064 !important;
   box-shadow:0 2px 6px rgba(0,0,0,.35) !important;
-  color:#fff;
+  color:#211C17;
 }
 :root[data-theme="dark"] details.howto summary,
-:root[data-theme="dark"] .pg-bento details.howto summary{color:#fff !important;}
-:root[data-theme="dark"] details.howto summary::after{background:#F3ECE2;color:#5A4E43;}
-:root[data-theme="dark"] details.howto a{color:#FFE3A6;}
+:root[data-theme="dark"] .pg-bento details.howto summary{color:#2E2822 !important;}
+:root[data-theme="dark"] details.howto summary::after{background:#5A4E43;color:#fff;}
+:root[data-theme="dark"] details.howto a{color:#5A3E1C;}
 @media print{ html details.howto{background:#fff !important;box-shadow:none !important;} html details.howto summary::after{display:none;} }
 
 /* ---------------- Garnish ---------------- */
@@ -2318,7 +2319,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.2.4</div>
+  <div class="splash-ver" id="splash-ver">v2.2.5</div>
 </div>
 
 <div class="wrap">
@@ -2353,7 +2354,7 @@ html.in-mappa #nav-indietro{display:none!important}
     <button data-tab="storia">📖 Storia del gin</button>
     <button data-tab="builder">🌿 Le botaniche (Gin Builder)</button>
     <button data-tab="proporzioni">⚖️ Quanto gin e le quote</button>
-    <button data-tab="ridondanza">🧬 Ridondanze e complementari</button>
+    <button data-tab="ridondanza">🧬 Ridondanza e complementarietà</button>
     <button data-tab="prove">🧪 Schede di prova</button>
     <button data-tab="libreria">🌿 Botaniche e infusi</button>
     <button data-tab="diario">📓 Diario degli infusi</button>
@@ -4063,7 +4064,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.2.4 · 29 ottobre 2026 · riordino, passo 1</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.2.5 · 29 ottobre 2026 · riordino, passo 1</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -5144,7 +5145,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.2.4</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.2.5</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina

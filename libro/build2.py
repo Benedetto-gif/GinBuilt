@@ -443,7 +443,7 @@ for i, t in enumerate(ESTR):
 # ---------- 4. Costruire un gin ----------
 add('cap4.xhtml', 'Capitolo 4 · Costruire un gin', '''<section epub:type="chapter"><h1>Capitolo 4<br/>Costruire un gin</h1>
 <p>Una ricetta non è un elenco di botaniche: ogni botanica ha un compito. Il capitolo presenta i sei ruoli, gli stili di partenza dell'app con il loro profilo, il criterio con cui due botaniche si sommano (ridondanza) o si completano, e come dagli infusi filtrati si arriva al gin: diluire ciascuno alla gradazione finale e poi miscelare.</p>
-<ol class="indice"><li><a href="cap4-ruoli.xhtml">I ruoli delle botaniche</a></li><li><a href="cap4-stili.xhtml">Gli stili</a></li><li><a href="cap4-ridondanze.xhtml">Ridondanze e complementari</a></li><li><a href="cap4-miscela.xhtml">Dagli infusi al gin: diluire e miscelare</a></li><li><a href="cap4-diluizione.xhtml">Il calcolatore della diluizione</a></li><li><a href="cap4-proporzioni.xhtml">Prova le proporzioni</a></li></ol></section>''', 1)
+<ol class="indice"><li><a href="cap4-ruoli.xhtml">I ruoli delle botaniche</a></li><li><a href="cap4-stili.xhtml">Gli stili</a></li><li><a href="cap4-ridondanze.xhtml">Ridondanza e complementarietà</a></li><li><a href="cap4-miscela.xhtml">Dagli infusi al gin: diluire e miscelare</a></li><li><a href="cap4-diluizione.xhtml">Il calcolatore della diluizione</a></li><li><a href="cap4-proporzioni.xhtml">Prova le proporzioni</a></li></ol></section>''', 1)
 add('cap4-ruoli.xhtml', 'I ruoli delle botaniche', '<section><h1>I ruoli delle botaniche nella ricetta</h1>%s</section>' % sez('nozioni', 'I ruoli delle botaniche nella ricetta'), 2)
 FRAZ = {'Base': 1, 'Freschezza': 1, 'Identità': .8, 'Cuore': .7, 'Botanica firma': .3, 'Firma': .3, 'Rifinitura': .15}
 BASE = set(D['GIN_BASE'])
@@ -473,7 +473,7 @@ for nome, inten, maxb, ruoli in D['STYLES']:
     if g: stili += '<p class="nota">Garnish: %s (%s). <a href="cap7-garnish.xhtml">Il servizio →</a></p>' % (e(g['g'].lower()), e(g['tipo']))
     stili += '</article>'
 add('cap4-stili.xhtml', 'Gli stili', stili + '</section>', 2)
-add('cap4-ridondanze.xhtml', 'Ridondanze e complementari', RIDONDANZE, 2)
+add('cap4-ridondanze.xhtml', 'Ridondanza e complementarietà', RIDONDANZE, 2)
 add('cap4-miscela.xhtml', 'Dagli infusi al gin: diluire e miscelare', MISCELA, 2)
 # ---------- pagina interattiva: calcolatore della diluizione ----------
 # Stesse densità alcol-acqua a 20 °C dell'app (W_GRID/RHO_GRID in index.html), con la contrazione di volume.
