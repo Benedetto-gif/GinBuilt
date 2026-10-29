@@ -2204,6 +2204,13 @@ html details.howto a{color:#5A3E1C;}
 
 
 /* v2.1 · le due strade e la ricetta passo passo */
+html.in-mappa .menu-bar{display:none!important}
+html.in-mappa header.top{padding-bottom:2px}
+html.in-mappa #panel-mappa{padding-top:0;margin-top:0}
+html.in-mappa #nav-indietro{display:none!important}
+.mp-piede{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:18px 0 8px}
+.mp-piede button{padding:8px 13px;border-radius:999px;border:1px solid var(--line-strong);background:var(--card);color:var(--ink);font:700 13px/1.1 'Inter',system-ui,sans-serif;cursor:pointer}
+.mp-ver{font:700 12px/1 'Inter',system-ui,sans-serif;color:var(--ink-faint);letter-spacing:.04em}
 .mp-bivio-btn{display:block;margin:4px auto 2px;padding:9px 16px;border-radius:999px;border:2px solid var(--juniper);background:var(--card);color:var(--ink);font:700 14px/1.1 'Inter',system-ui,sans-serif;cursor:pointer}
 
 .mp-bivio{display:grid;grid-template-columns:1fr;gap:12px;margin:10px 0 4px}
@@ -2309,7 +2316,7 @@ html details.howto a{color:#5A3E1C;}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.2</div>
+  <div class="splash-ver" id="splash-ver">v2.2.1</div>
 </div>
 
 <div class="wrap">
@@ -2332,10 +2339,8 @@ html details.howto a{color:#5A3E1C;}
     <button type="button" class="tp-zero" id="tp-zero">↺ Valori iniziali</button>
   </div>
   <header class="top">
-    <p class="kicker">Compound gin · libreria botanica interattiva</p>
     <div class="h1-riga"><h1>GinBuilder</h1><button type="button" class="cond-app-btn" onclick="condividiApp()" aria-label="Condividi l'app con un amico">📤 Condividi</button></div>
     <p class="autore-app">di Benedetto Daniele Sgroi</p>
-    <p>Filtra, confronta e costruisci: <span class="bot-count">84</span> botaniche, funzione aromatica, rischio di ridondanza e strutture di partenza per stile.</p>
   </header>
 
   <nav class="tabs">
@@ -2370,7 +2375,7 @@ html details.howto a{color:#5A3E1C;}
 
   <section class="panel" id="panel-tipo">
     <h2 class="tappa-h"><span>1</span>Che gin vuoi?</h2>
-    <p class="tappa-intro">Il progetto parte da qui. Ogni stile propone già i ruoli e le botaniche di partenza: le confermi o le cambi nella tappa 3. Con <strong>Personalizzato</strong> parti dal solo ginepro e decidi tu.</p>
+    <p class="tappa-intro" id="tipo-intro">Il progetto parte da qui. Ogni stile propone già i ruoli e le botaniche di partenza: le confermi o le cambi nella tappa 3. Con <strong>Personalizzato</strong> parti dal solo ginepro e decidi tu.</p>
     <div class="tipo-grid" id="tipo-grid"></div>
   </section>
 
@@ -4056,7 +4061,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.2 · 29 ottobre 2026 · riordino, passo 1</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.2.1 · 29 ottobre 2026 · riordino, passo 1</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -5137,7 +5142,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.2</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.2.1</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -9393,7 +9398,7 @@ window.toggleAvanzati = function(){
   aggiornaTileAvanzati(); ridisegnaRadar();
   mostraAvviso(on ? '\ud83e\uddf0 Strumenti avanzati accesi' : 'Modalit\u00e0 semplice',
     on ? '<p>Sui radar compaiono di nuovo: <strong>Testa / Cuore / Coda</strong>, la <strong>soglia di somiglianza</strong> e, nel Builder, <strong>macerano tutte insieme</strong>.</p>'
-       : '<p>Sui radar restano il profilo, il confronto e le botaniche base. Gli strumenti avanzati si riaccendono dal menu, sotto Impostazioni.</p>', '', null);
+       : '<p>Sui radar restano il profilo, il confronto e le botaniche base. Gli strumenti avanzati si riaccendono in fondo alla mappa, o dal menu sotto Impostazioni.</p>', '', null);
 };
 try { if (localStorage.getItem('gb-avanzati')) document.documentElement.classList.add('avanzato'); else { window.radarFase = 'tutto'; window.radarInsieme = 0; } } catch(e){}
 aggiornaTileAvanzati(); ridisegnaRadar();
@@ -11331,6 +11336,8 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
   function renderTipo(){
     const box = $('tipo-grid'); if (!box) return;
     const pr = att(), chiavi = pr && pr.via === 'chiavi';
+    $('tipo-intro').innerHTML = chiavi ? 'Scegli il carattere del tuo gin. Ogni stile è una ricetta già codificata: botaniche, dosi e tempi li trovi pronti nelle tappe successive.'
+      : 'Il progetto parte da qui. Ogni stile propone i ruoli e le botaniche di partenza, che poi confermi o cambi. Con <strong>Personalizzato</strong> parti dal solo ginepro e decidi tu.';
     box.innerHTML = STYLES.map((s, i) => {
       const [nome, int, , ruoli] = s, col = (STYLE_COLORS[nome] || ['var(--c-neutro)', '#fff']);
       if (chiavi && !(ruoli && ruoli.length)) return '';
@@ -11589,6 +11596,11 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       '<div class="mp-sez"><h3>🍸 Servire</h3><div class="mp-grid">' + tessere(SERVIRE, 6) + '</div></div>';
     box.innerHTML = h;
     try { renderDati(); } catch(e){}
+    let piede = $('mp-piede');
+    if (!piede){ piede = document.createElement('div'); piede.id = 'mp-piede'; piede.className = 'mp-piede'; $('panel-mappa').appendChild(piede); }
+    const av = document.documentElement.classList.contains('avanzato');
+    piede.innerHTML = '<button type="button" id="mp-avanzati">\ud83e\uddf0 Strumenti avanzati: ' + (av ? 'accesi' : 'spenti') + '</button><span class="mp-ver">GinBuilder ' + (($('splash-ver') || {}).textContent || '') + '</span>';
+    $('mp-avanzati').onclick = () => { if (window.toggleAvanzati) window.toggleAvanzati(); renderMappa(); };
     box.querySelectorAll('.mp-st').forEach(b => b.addEventListener('click', () => vaiTappa(b.dataset.id)));
     box.querySelectorAll('.mp-tile').forEach(b => b.addEventListener('click', () => { window._tappa = null; showTab(b.dataset.tab); }));
     box.querySelectorAll('.mp-via').forEach(b => b.addEventListener('click', () => scegliVia(b.dataset.via)));
@@ -11660,6 +11672,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     if (name === 'home') name = 'mappa';
     if (window._navDaMenu) window._tappa = null;   // dal menu si esce dal percorso
     const r = prevShow(name);
+    document.documentElement.classList.toggle('in-mappa', name === 'mappa');
     if (name === 'mappa') renderMappa();
     if (name === 'tipo') renderTipo();
     if (name === 'grado') renderGrado();
