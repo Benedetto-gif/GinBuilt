@@ -2288,6 +2288,7 @@ details.lez-carta .lez-corpo{padding:0 14px 12px}
 #sc-avvisi{font-size:13px}
 .sc-ruolo{margin:14px 0;padding:12px;border-radius:16px;background:var(--card);box-shadow:0 0 0 1px var(--line-strong)}
 .sc-ruolo h3{margin:0 0 4px}
+.sc-prova{display:block;margin-top:6px;padding:6px 9px;border-radius:10px;background:color-mix(in srgb,var(--juniper) 10%,transparent);font-style:italic;color:var(--ink)}
 .sc-desc{margin:0 0 10px;font-size:13.5px;line-height:1.45;color:var(--ink-soft)}
 .sc-chips{display:flex;flex-wrap:wrap;gap:7px}
 .sc-chip{position:relative;display:inline-flex;align-items:center;gap:5px;padding:7px 34px 7px 11px;border-radius:999px;border:1.5px solid var(--line-strong);background:var(--paper);color:var(--ink);font-size:14px;cursor:pointer;user-select:none}
@@ -2414,7 +2415,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.7</div>
+  <div class="splash-ver" id="splash-ver">v2.7.1</div>
 </div>
 
 <div class="wrap">
@@ -4165,7 +4166,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.7 · 29 ottobre 2026 · riordino: cocktail, calcoli, taratura</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.7.1 · 29 ottobre 2026 · riordino: cocktail, calcoli, taratura</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -5246,7 +5247,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.7</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.7.1</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -11856,7 +11857,8 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         '<li><strong>Angelica</strong> (radice): terrosa e asciutta, profuma poco ma lega gli aromi e dà tenuta al finale.</li></ul>' +
         '<p>Nel tuo progetto queste tre ci sono già. Qui sotto, come «suona» ciascuna sul radar.</p>' + noz('il ginepro deve superare il 50%?', 'Il ginepro deve superare') },
     ruoli: { e:'🧭', t:'I sei ruoli delle botaniche',
-      html: '<p>In un gin ogni botanica ha un compito. Pensare per ruoli aiuta a non mettere tutto insieme: un gin riuscito si riconosce in due o tre note, non in venti.</p>' },
+      html: '<p>In un gin ogni botanica ha un compito. Pensare per ruoli aiuta a non mettere tutto insieme: un gin riuscito si riconosce in due o tre note, non in venti.</p>' +
+        '<p>Ogni ruolo ha una <strong>prova del ruolo</strong>: una domanda da farsi immaginando di <em>togliere</em> quella botanica dal gin. Se togliendola il gin perde qualcosa di importante, la botanica sta facendo il suo lavoro; se non cambierebbe niente, è superflua o è nel ruolo sbagliato. Si usa quando scegli le botaniche e di nuovo all\u2019assaggio.</p>' },
     radar: { e:'📡', t:'Leggere il radar e la potenza',
       html: '<p>Il radar disegna il profilo di una botanica su dieci assi: quattro <strong>gusti</strong> che si sentono in bocca (dolce, amaro, acido, salino) e sei famiglie di <strong>aromi</strong> che arrivano al naso (agrumato, floreale, fruttato, erbaceo, resinoso, speziato). Ogni asse va da 0, assente, a 5, dominante.</p>' +
         '<p>La <strong>potenza</strong>, da 1 a 10, dice quanto una botanica si fa sentire rispetto alle altre: il chiodo di garofano, a potenza 10, copre tutto anche in dosi minime; una botanica a potenza bassa va usata in quantità maggiore per farsi notare. Per questo il ruolo decide anche la dose.</p>' +
@@ -11923,7 +11925,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
   function renderRuoli(){
     const pr = att();
     return '<div class="lez-ruoli">' + RUOLI.map(r => { const [desc, dom] = (RUOLI_DESC[r] || '').split('Domanda guida:');
-      return '<div class="lez-ruolo"><b>' + RUOLI_IC[r] + ' ' + r + '</b><span>' + desc.trim() + '</span>' + (dom ? '<i>' + dom.trim() + '</i>' : '') + '</div>'; }).join('') + '</div>' +
+      return '<div class="lez-ruolo"><b>' + RUOLI_IC[r] + ' ' + r + '</b><span>' + desc.trim() + '</span>' + (dom ? '<i>\ud83e\udd14 <b>La prova del ruolo:</b> ' + dom.trim() + '</i>' : '') + '</div>'; }).join('') + '</div>' +
       '<h4 class="lez-sub">Da dove parti?</h4><div class="lez-partenza">' +
       '<button type="button" class="lez-part' + (pr && !pr.modello ? ' on' : '') + '" data-m="">🫐 Dalle sole tre basi<small>e scegli tu tutto il resto</small></button>' +
       STYLES.map((s, k) => (s[3] && s[3].length) ? '<button type="button" class="lez-part' + (pr && pr.modello === s[0] ? ' on' : '') + '" data-m="' + k + '" style="--c:' + (STYLE_COLORS[s[0]] || ['#5D6F8C'])[0] + '">' + s[0] + '<small>come modello</small></button>' : '').join('') + '</div>' +
@@ -11990,7 +11992,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       const [desc, dom] = (RUOLI_DESC[r] || '').split('Domanda guida:'), lista = candidati(r), liv = livScelta[r] || 1;
       const vis = lista.filter(d => d.uso === 'comune' || (liv >= 2 && d.uso === 'firma') || liv >= 3 || sc[d.botanica]);
       const nF = lista.filter(d => d.uso === 'firma').length, nA = lista.filter(d => d.uso === 'altra').length;
-      h += '<section class="sc-ruolo"><h3>' + RUOLI_IC[r] + ' ' + r + '</h3><p class="sc-desc">' + desc.trim() + (dom ? ' <i>' + dom.trim() + '</i>' : '') + '</p><div class="sc-chips">' +
+      h += '<section class="sc-ruolo"><h3>' + RUOLI_IC[r] + ' ' + r + '</h3><p class="sc-desc">' + desc.trim() + (dom ? '<span class="sc-prova">\ud83e\udd14 <b>La prova del ruolo:</b> ' + dom.trim() + '</span>' : '') + '</p><div class="sc-chips">' +
         vis.map(d => { const s = sc[d.botanica], qui = s && s.ruolo === r, altrove = s && s.ruolo !== r;
           return '<span class="sc-chip' + (qui ? ' on' : '') + (altrove ? ' altrove' : '') + (s && s.protetta ? ' fissa' : '') + '" data-n="' + d.botanica.replace(/"/g, '&quot;') + '" data-r="' + r + '" role="button" tabindex="0">' +
             (d.icona || '🌿') + ' ' + d.botanica + '<i class="sc-pot" title="potenza ' + (d.potenza10 ?? '') + '/10">' + '●'.repeat(Math.round((d.potenza10 || 0) / 2)) + '</i>' +
