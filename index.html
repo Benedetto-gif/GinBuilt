@@ -2206,7 +2206,7 @@ html details.howto a{color:#5A3E1C;}
 
 
 .liv-bot{display:grid;grid-template-columns:1fr;gap:9px;margin:8px 0 10px}
-.liv-btn{position:relative;display:grid;grid-template-columns:auto 1fr;column-gap:10px;align-items:center;padding:11px 44px 11px 12px;border:0;border-radius:14px;cursor:pointer;text-align:left;
+.liv-btn{position:relative;display:grid;grid-template-columns:auto 1fr;column-gap:10px;align-items:center;padding:11px 62px 11px 12px;border:0;border-radius:14px;cursor:pointer;text-align:left;
   background:var(--c);color:#fff;font:inherit;box-shadow:0 3px 10px rgba(0,0,0,.18)}
 .liv-btn .lv-e{grid-row:span 2;font-size:26px}
 .liv-btn b{font:800 16px/1.2 'Inter',system-ui,sans-serif}
@@ -2254,6 +2254,9 @@ html details.howto a{color:#5A3E1C;}
 .mv-tondo{cursor:pointer;-webkit-tap-highlight-color:transparent}
 .mv-tondo.tocco{animation:td-tocco .45s ease-out}
 @keyframes td-tocco{0%{transform:scale(1)}40%{transform:scale(1.12)}100%{transform:scale(1)}}
+.lib-testa{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.info-i{flex:none;width:32px;height:32px;border-radius:50%;border:0;background:#5A4E43;color:#fff;font:italic 800 17px/32px Georgia,'Fraunces',serif;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.3);padding:0}
+.lib-info-nota{margin:-2px 0 6px}
 /* v2.1 · le due strade e la ricetta passo passo */
 html.in-mappa .menu-bar{display:none!important}
 .mp-via .mv-sub{font:italic 600 16px/1.2 'Fraunces',Georgia,serif;margin-top:-4px}
@@ -2369,7 +2372,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.6.1</div>
+  <div class="splash-ver" id="splash-ver">v2.6.2</div>
 </div>
 
 <div class="wrap">
@@ -2564,7 +2567,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </section>
 
   <section class="panel" id="panel-libreria">
-    <details class="howto">
+    <details class="howto" id="lib-howto" hidden>
       <summary>Come si usa questa pagina</summary>
       <div class="howto-body">
         <p>Le botaniche e la preparazione degli infusi in una sola pagina: <span class="bot-count">84</span> botaniche con profilo aromatico, funzione nel gin, potenza e, per ognuna, la scheda per metterla in infusione.</p>
@@ -2582,7 +2585,8 @@ html.in-mappa #nav-indietro{display:none!important}
     </details>
     <!-- passi: 1 filtri e botaniche → 2 ricerca → 3 scheda → 4 preparazione → diario -->
     <div class="filtri-box passo" id="filtri-box">
-    <h3 class="passo-tit"><span class="passo-n">1</span> Scegli da dove partire</h3>
+    <div class="lib-testa"><h3 class="passo-tit"><span class="passo-n">1</span> Scegli da dove partire</h3><button type="button" class="info-i" id="lib-info" aria-label="Come si usa questa pagina">i</button></div>
+    <p class="cond-hint lib-info-nota">Tocca la <strong>i</strong> per sapere come usare la pagina.</p>
     <div class="liv-bot" id="liv-bot">
       <button type="button" class="liv-btn" data-uso="comune" style="--c:#2F7259"><span class="lv-e">🌿</span><b>Le più usate</b><small>il nucleo dei gin: si trovano in molti gin e stili</small><i class="lv-n"></i></button>
       <button type="button" class="liv-btn" data-uso="firma" style="--c:#B04A6B"><span class="lv-e">✨</span><b>Le più originali</b><small>botaniche di firma, rifinitura o territorio</small><i class="lv-n"></i></button>
@@ -4106,7 +4110,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.6.1 · 29 ottobre 2026 · riordino: cocktail, calcoli, taratura</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.6.2 · 29 ottobre 2026 · riordino: cocktail, calcoli, taratura</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -5187,7 +5191,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.6.1</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.6.2</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -5692,6 +5696,11 @@ tutteBtn.addEventListener('click', () => {
 });
 window.aggiornaTutteBtn = aggiornaTutteBtn;
 aggiornaTutteBtn();
+// «Come si usa» dentro il riquadro delle botaniche, dietro la i
+document.getElementById('lib-info').addEventListener('click', () => {
+  const b = document.querySelector('#lib-howto .howto-body');
+  mostraAvviso('Come si usa questa pagina', b ? b.innerHTML : '', '', null);
+});
 // I tre livelli: un tocco mostra quel gruppo, un secondo tocco lo richiude.
 (function(){
   const box = document.getElementById('liv-bot'); if (!box) return;
