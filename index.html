@@ -2309,7 +2309,7 @@ html details.howto a{color:#5A3E1C;}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.1.1</div>
+  <div class="splash-ver" id="splash-ver">v2.1.2</div>
 </div>
 
 <div class="wrap">
@@ -2391,7 +2391,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <section class="panel" id="panel-ricetta">
-    <h2 class="tappa-h"><span>📋</span>La ricetta passo passo</h2>
+    <h2 class="tappa-h" id="ricetta-h"><span>📋</span>La ricetta passo passo</h2>
     <div id="ricetta-box"></div>
   </section>
 
@@ -4159,7 +4159,7 @@ html details.howto a{color:#5A3E1C;}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.1.1 · 29 ottobre 2026 · due strade: chiavi in mano e personalizzato</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.1.2 · 29 ottobre 2026 · due strade: chiavi in mano e personalizzato</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -5240,7 +5240,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.1.1</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.1.2</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -11323,9 +11323,9 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       tappe: [
         { id:'tipo',   tab:'tipo',    e:'🏷️', t:'Scegli lo stile',            c:'#2F7259' },
         { id:'quanto', tab:'grado',   e:'📏',       t:'Quanto e che grado',          c:'#C4803A' },
-        { id:'spesa',  tab:'ricetta', sez:'rc-spesa',  e:'🛒', t:'La spesa',          c:'#4C7BB5' },
-        { id:'infusi', tab:'ricetta', sez:'rc-infusi', e:'🫙', t:'Gli infusi passo passo', c:'#8A63B0' },
-        { id:'unisci', tab:'ricetta', sez:'rc-unisci', e:'🍾', t:'Unisci e imbottiglia', c:'#2F8F8F' }
+        { id:'spesa',  tab:'ricetta',  e:'🛒', t:'La spesa',          c:'#4C7BB5' },
+        { id:'infusi', tab:'ricetta', e:'🫙', t:'Gli infusi passo passo', c:'#8A63B0' },
+        { id:'unisci', tab:'ricetta', e:'🍾', t:'Unisci e imbottiglia', c:'#2F8F8F' }
       ] },
     pers: { e:'🧪', t:'Il gin personalizzato', c:'#4C7BB5',
       d:'Prima capisci la ragione di ogni passo — cosa si estrae, a che grado, come si calcola, come si filtra e si assaggia — poi progetti tu il tuo gin.',
@@ -11529,21 +11529,25 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     const pr = att(), R = righeRicetta();
     if (!R){ box.innerHTML = '<p class="tappa-intro">Scegli prima lo stile (tappa 1).</p>'; return; }
     const A = nf(R.abvF, 1), ps = pr ? pr.passi : {};
+    // dentro il percorso ogni tappa mostra solo la sua parte; dal menu si vede la ricetta intera
+    const sez = ['spesa','infusi','unisci'].includes(window._tappa) ? window._tappa : null, mostra = k => !sez || sez === k;
+    const TIT = { spesa:['3','La spesa'], infusi:['4','Gli infusi passo passo'], unisci:['5','Unisci e imbottiglia'] };
+    $('ricetta-h').innerHTML = sez ? '<span>' + TIT[sez][0] + '</span>' + TIT[sez][1] : '<span>\ud83d\udccb</span>La ricetta passo passo';
     const chk = (k, html) => '<label class="rc-passo' + (ps[k] ? ' ok' : '') + '"><input type="checkbox" data-k="' + esc(k) + '"' + (ps[k] ? ' checked' : '') + '><span>' + html + '</span></label>';
     const alcTot = R.righe.reduce((a, r) => a + ((r.inf && r.inf.dil) ? r.inf.dil.alcMl : 0), 0);
     const acqInf = R.righe.reduce((a, r) => a + ((r.inf && r.inf.dil) ? r.inf.dil.acquaMl : 0), 0);
     const acqTot = acqInf + R.acqua;
-    let h = '<div class="rc-testa"><b>' + esc(currentStyleName) + '</b> · ' + f1(R.vol) + ' ml a ' + A + '% vol · ' + R.righe.length + ' botaniche</div>' +
+    let h = !mostra('spesa') ? '<div class="rc-testa"><b>' + esc(currentStyleName) + '</b> \u00b7 ' + f1(R.vol) + ' ml a ' + A + '% vol</div>' : '<div class="rc-testa"><b>' + esc(currentStyleName) + '</b> · ' + f1(R.vol) + ' ml a ' + A + '% vol · ' + R.righe.length + ' botaniche</div>' +
       '<p class="cond-hint">Ricetta codificata dallo stile, con le dosi e i tempi dell’erbario: sono punti di partenza, da confermare all’assaggio. Spunta ogni passo man mano che lo fai.</p>';
     if (R.sotto.length) h += '<div class="warn-box">' + R.sotto.map(esc).join(', ') + ': si estrae sotto ' + A + '% e non si può diluire fino alla gradazione finale. Con le chiavi in mano conviene scegliere una gradazione più bassa (tappa 2).</div>';
     // la spesa
-    h += '<section class="rc-sez" id="rc-spesa"><h3>🛒 La spesa</h3><p class="rc-sub">Quantità con un 20% di scorta per gli infusi.</p>' +
+    if (mostra('spesa')) h += '<section class="rc-sez" id="rc-spesa"><h3>🛒 La spesa</h3><p class="rc-sub">Quantità con un 20% di scorta per gli infusi.</p>' +
       R.righe.map(r => chk('sp-' + r.n, '🌿 <b>' + esc(r.n) + '</b> ' + (r.parte ? '<small>(' + esc(r.parte) + ', ' + r.stato + ')</small> ' : '') + '— ' + fg(r.inf ? r.inf.g : r.g) + ' g')).join('') +
       chk('sp-alcol', '🧴 <b>Alcol buongusto a 96%</b> — ' + f1(alcTot) + ' ml <small>(circa ' + f1(Math.ceil(alcTot * 1.1 / 50) * 50) + ' ml con un po’ di margine)</small>') +
       chk('sp-acqua', '💧 <b>Acqua demineralizzata potabile</b> — ' + f1(acqTot) + ' ml <small>(' + f1(acqInf) + ' per gli infusi, ' + f1(R.acqua) + ' per portarli a ' + A + '%)</small>') +
       '<h4>L’attrezzatura</h4>' + ATTREZZI.map(([ic, n, d], k) => chk('at-' + k, ic + ' <b>' + n + '</b> <small>— ' + d + '</small>')).join('') + '</section>';
     // gli infusi
-    h += '<section class="rc-sez" id="rc-infusi"><h3>🫙 Gli infusi, uno per botanica</h3><p class="rc-sub">Ogni botanica ha il suo barattolo, la sua gradazione e il suo tempo. Conserva tutto al buio, intorno ai 20 °C.</p>' +
+    if (mostra('infusi')) h += '<section class="rc-sez" id="rc-infusi"><h3>🫙 Gli infusi, uno per botanica</h3><p class="rc-sub">Ogni botanica ha il suo barattolo, la sua gradazione e il suo tempo. Conserva tutto al buio, intorno ai 20 °C.</p>' +
       R.righe.map((r, k) => { const x = r.inf || {}, dl = x.dil || {};
         return '<div class="rc-inf"><div class="rc-inf-t">' + (k + 1) + '. ' + esc(r.n) + (r.tracce ? ' <em>(tracce)</em>' : '') + '</div>' +
           chk('in-p-' + r.n, '⚖️ Pesa <b>' + fg(x.g != null ? x.g : r.g) + ' g</b> di ' + esc(r.n.toLowerCase()) + (r.parte && r.n.toLowerCase().indexOf(r.parte.split(/[\s\/]/)[0].toLowerCase()) < 0 ? ' (' + esc(r.parte) + ')' : '')) +
@@ -11552,7 +11556,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
           '</div>'; }).join('') +
       '<button type="button" class="primary-btn rc-diario">📓 Annota gli infusi nel diario, con i promemoria</button></section>';
     // unisci e imbottiglia
-    h += '<section class="rc-sez" id="rc-unisci"><h3>🍾 Unisci e imbottiglia</h3><p class="rc-sub">Quando tutti gli infusi sono pronti.</p>' +
+    if (mostra('unisci')) h += '<section class="rc-sez" id="rc-unisci"><h3>🍾 Unisci e imbottiglia</h3><p class="rc-sub">Quando tutti gli infusi sono pronti.</p>' +
       chk('un-filtra', '🧻 <b>Filtra ogni infuso</b> per togliere le botaniche e le particelle. <a href="#" class="noz-link" data-noz="Metodi di filtrazione">Come si filtra</a>') +
       '<h4>Porta ogni infuso a ' + A + '% e versalo nella miscela</h4>' +
       R.righe.map(r => chk('un-d-' + r.n, '🌿 <b>' + esc(r.n) + '</b>: ' + (r.sotto ? '<b>' + f1(r.mlFin) + ' ml</b> di infuso filtrato (è già sotto ' + A + '%)' : '<b>' + f1(r.mlConc) + ' ml</b> di infuso filtrato + <b>' + f1(r.acquaDil) + ' ml</b> d’acqua = ' + f1(r.mlFin) + ' ml a ' + A + '%'))).join('') +
@@ -11568,8 +11572,8 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       c.closest('.rc-passo').classList.toggle('ok', c.checked);
       ['spesa','infusi','unisci'].forEach(id => { const s = $('rc-' + id); if (s){ const tutti = [...s.querySelectorAll('.rc-passo input')]; if (tutti.length && tutti.every(x => x.checked)) fatta(id); } });
     }));
-    box.querySelector('.rc-diario').onclick = () => preparaInfusiRicetta();
-    box.querySelector('.rc-scheda').onclick = () => { window._navDaMenu = true; showTab('proporzioni'); window._tappa = null; $('pp-banco').click(); };
+    const bd = box.querySelector('.rc-diario'); if (bd) bd.onclick = () => preparaInfusiRicetta();
+    const bs = box.querySelector('.rc-scheda'); if (bs) bs.onclick = () => { window._navDaMenu = true; showTab('proporzioni'); window._tappa = null; $('pp-banco').click(); };
   }
 
   // ---------- la barra in fondo a ogni tappa ----------
@@ -11757,7 +11761,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
   const prevShow = window.showTab;
   window.showTab = function(name){
     if (name === 'home') name = 'mappa';
-    if (window._navDaMenu){ const tp = tappeDi(att()).find(t => t.id === window._tappa); if (!tp || tp.tab !== name) window._tappa = null; }
+    if (window._navDaMenu) window._tappa = null;   // dal menu si esce dal percorso
     const r = prevShow(name);
     if (name === 'mappa') renderMappa();
     if (name === 'tipo') renderTipo();
