@@ -2333,7 +2333,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.3</div>
+  <div class="splash-ver" id="splash-ver">v2.3.1</div>
 </div>
 
 <div class="wrap">
@@ -2409,7 +2409,7 @@ html.in-mappa #nav-indietro{display:none!important}
     <div class="cond-box cond-compact grado-box">
       <label>Oppure scrivi la tua gradazione (% vol)<input type="number" id="grado-abv" min="37.5" max="70" step="0.5" inputmode="decimal"></label>
     </div>
-    <p class="cond-hint">Più alta è la gradazione, più oli aromatici restano sciolti: meno rischio di velatura (effetto louche) e più profumo, ma anche più calore in bocca. Un infuso che va estratto sotto questa gradazione non si può diluire fino a qui: la tappa 4 lo segnala.</p>
+    <p class="cond-hint" id="grado-nota">Più alta è la gradazione, più oli aromatici restano sciolti: meno rischio di velatura (effetto louche) e più profumo, ma anche più calore in bocca. Un infuso che va estratto sotto questa gradazione non si può diluire fino a qui: la tappa 4 lo segnala.</p>
   </section>
 
   <section class="panel" id="panel-ricetta">
@@ -4076,7 +4076,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.3 · 29 ottobre 2026 · botaniche a tre livelli</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.3.1 · 29 ottobre 2026 · botaniche a tre livelli</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -5157,7 +5157,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.3</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.3.1</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -11419,6 +11419,8 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     $('grado-chips').querySelectorAll('.grado-chip').forEach(b => b.addEventListener('click', () => imposta(+b.dataset.g)));
     $('grado-h').innerHTML = chiavi ? '<span>2</span>Quanto e che grado' : '<span>' + (posTappa('grado') + 1) + '</span>Gradazione finale';
     $('grado-vol-box').hidden = !chiavi;
+    $('grado-nota').innerHTML = chiavi ? 'Se non sai cosa scegliere, <strong>40%</strong> è la gradazione più comune: un gin morbido, che va bene liscio e con la tonica.'
+      : 'Più alta è la gradazione, più oli aromatici restano sciolti: meno rischio di velatura (effetto louche) e più profumo, ma anche più calore in bocca. Un infuso che va estratto sotto questa gradazione non si può diluire fino a qui: la tappa delle quote lo segnala.';
     if (chiavi){
       const vv = parseFloat($('dosi-vol').value) || 700;
       $('grado-vol-chips').innerHTML = VOLUMI.map(([m, t], k) => '<button type="button" class="grado-chip' + (Math.abs(m - vv) < 1 ? ' on' : '') + '" data-v="' + m + '" style="--c:' + HUES[(k + 6) % HUES.length] + '"><b>' + (m >= 1000 ? '1 l' : m + ' ml') + '</b><small>' + t + '</small></button>').join('');
@@ -11495,15 +11497,15 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
           chk('in-a-' + r.n, '🧪 Nel barattolo: <b>' + f1(dl.alcMl || 0) + ' ml di alcol a 96%</b> + <b>' + f1(dl.acquaMl || 0) + ' ml d’acqua</b> = ' + f1(r.volInf) + ' ml a <b>' + r.abv + '%</b>') +
           chk('in-c-' + r.n, '🌑 Chiudi, scuoti ed etichetta; tieni al buio. Assaggia dopo <b>' + DUR(x.tmin) + '</b>' + (x.tmax != null ? ', filtra entro <b>' + DUR(x.tmax) + '</b>' : '')) +
           '</div>'; }).join('') +
-      '<button type="button" class="primary-btn rc-diario">📓 Annota gli infusi nel diario, con i promemoria</button></section>';
+      '<button type="button" class="primary-btn rc-diario">📓 Ricordami quando assaggiare</button></section>';
     // unisci e imbottiglia
     if (mostra('unisci')) h += '<section class="rc-sez" id="rc-unisci"><h3>🍾 Unisci e imbottiglia</h3><p class="rc-sub">Quando tutti gli infusi sono pronti.</p>' +
-      chk('un-filtra', '🧻 <b>Filtra ogni infuso</b> per togliere le botaniche e le particelle. <a href="#" class="noz-link" data-noz="Metodi di filtrazione">Come si filtra</a>') +
+      chk('un-filtra', '🧻 <b>Filtra ogni infuso</b>: versalo in un imbuto con un filtro di carta (va bene quello da caffè) e raccogli il liquido limpido.') +
       '<h4>Porta ogni infuso a ' + A + '% e versalo nella miscela</h4>' +
       R.righe.map(r => chk('un-d-' + r.n, '🌿 <b>' + esc(r.n) + '</b>: ' + (r.sotto ? '<b>' + f1(r.mlFin) + ' ml</b> di infuso filtrato (è già sotto ' + A + '%)' : '<b>' + f1(r.mlConc) + ' ml</b> di infuso filtrato + <b>' + f1(r.acquaDil) + ' ml</b> d’acqua = ' + f1(r.mlFin) + ' ml a ' + A + '%'))).join('') +
       chk('un-mix', '🥄 <b>Unisci</b> tutti gli infusi già a ' + A + '% in un solo contenitore: ' + f1(R.vol) + ' ml di gin.') +
       chk('un-riposo', '❄️ <b>Lascia riposare</b> la miscela al fresco e al buio per 24–48 ore, poi travasa solo la parte limpida senza smuovere il deposito.') +
-      chk('un-velo', '🌫️ Se resta una velatura, <b>filtra a freddo</b>. <a href="#" class="noz-link" data-noz="Filtrazione a freddo">Come si fa</a>') +
+      chk('un-velo', '🌫️ Se il gin resta un po’ velato, <b>mettilo in frigo per una notte</b> e filtralo di nuovo, ancora freddo, con un filtro di carta.') +
       chk('un-bott', '🍾 <b>Imbottiglia</b> nel vetro scuro ed etichetta con nome, data e ' + A + '% vol.') +
       chk('un-assaggio', '👅 <b>Assaggia e annota</b>: cosa togliere o aggiungere la prossima volta.') +
       '<button type="button" class="ghost-btn rc-scheda">🧪 Crea la scheda di prova di questa ricetta</button></section>';
@@ -11513,7 +11515,21 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       c.closest('.rc-passo').classList.toggle('ok', c.checked);
       ['spesa','infusi','unisci'].forEach(id => { const s = $('rc-' + id); if (s){ const tutti = [...s.querySelectorAll('.rc-passo input')]; if (tutti.length && tutti.every(x => x.checked)) fatta(id); } });
     }));
-    const bd = box.querySelector('.rc-diario'); if (bd) bd.onclick = () => preparaInfusiRicetta();
+    const bd = box.querySelector('.rc-diario'); if (bd) bd.onclick = () => {
+      // promemoria nel diario senza moduli da compilare: stessi volumi, gradi e tempi della ricetta
+      const ora = Date.now(), nuove = R.righe.map((r, k) => { const x = r.inf || {}, dl = x.dil || {};
+        return { id: (ora + k).toString(36), inizio: ora, botanica: r.n,
+          tipo: r.n + ' · ' + r.stato + ' · ' + r.abv + '% vol · ' + nf(r.volInf, 0) + ' ml',
+          note: 'Gin no problem! · ' + currentStyleName + ((att() || {}).nome ? ' · ' + att().nome : ''),
+          alcolG: dl.alcG != null ? dl.alcG : null, alcolMl: dl.alcMl != null ? dl.alcMl : null, abvS: ALCOL_PARTENZA,
+          acquaG: dl.acquaG != null ? dl.acquaG : null, botG: x.g, temp: REF_TEMP, tmin: x.tmin, tmax: x.tmax,
+          allarme: x.assaggio ? diaNonDiNotte(ora + x.assaggio * 3600000) : null, avvisato: false, finito: null }; });
+      mostraAvviso('📓 Ricordami quando assaggiare', '<p>Annoto nel diario i ' + nuove.length + ' infusi, iniziati adesso, con un promemoria per il primo assaggio di ciascuno (di notte slitta alle 7:30).</p>', 'Annota', () => {
+        diarioSalva(nuove.concat(diarioCarica())); try { diarioRender(); } catch(e){}
+        if ('Notification' in window && Notification.permission === 'default'){ try { Notification.requestPermission(); } catch(e){} }
+        setTimeout(() => mostraAvviso('✅ Fatto', '<p>Gli infusi sono nel 📓 Diario: lo apri dalla mappa, in alto.</p>', '', null), 50);
+      });
+    };
     const bs = box.querySelector('.rc-scheda'); if (bs) bs.onclick = () => { window._navDaMenu = true; showTab('proporzioni'); window._tappa = null; $('pp-banco').click(); };
   }
 
