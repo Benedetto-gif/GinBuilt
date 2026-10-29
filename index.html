@@ -2205,6 +2205,8 @@ html details.howto a{color:#5A3E1C;}
 
 /* v2.1 · le due strade e la ricetta passo passo */
 html.in-mappa .menu-bar{display:none!important}
+.mp-via .mv-sub{font:italic 600 16px/1.2 'Fraunces',Georgia,serif;margin-top:-4px}
+.mp-st-sub{text-align:center;margin:-2px 0 4px;font:italic 600 17px/1.2 'Fraunces',Georgia,serif;color:var(--ink-soft)}
 html.in-mappa header.top{padding-bottom:2px}
 html.in-mappa #panel-mappa{padding-top:0;margin-top:0}
 html.in-mappa #nav-indietro{display:none!important}
@@ -2316,7 +2318,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.2.3</div>
+  <div class="splash-ver" id="splash-ver">v2.2.4</div>
 </div>
 
 <div class="wrap">
@@ -4061,7 +4063,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.2.3 · 29 ottobre 2026 · riordino, passo 1</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.2.4 · 29 ottobre 2026 · riordino, passo 1</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -5142,7 +5144,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.2.3</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.2.4</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -11220,8 +11222,8 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const PK = 'gb-progetti';
   const VIE = {
-    chiavi: { e:'👌', t:'Gin no problem!', c:'#C4803A',
-      d:'Scegli uno stile e quanto gin vuoi, poi segui la ricetta passo passo: la spesa, gli infusi, l’unione, la bottiglia. Niente da studiare.',
+    chiavi: { e:'👌', t:'Gin no problem!', st:'Crealo passo passo', c:'#C4803A',
+      d:'Scegli uno stile e quanto gin vuoi, poi segui la ricetta: la spesa, gli infusi, l’unione, la bottiglia. Niente da studiare.',
       tappe: [
         { id:'tipo',   tab:'tipo',    e:'🏷️', t:'Scegli lo stile',            c:'#2F7259' },
         { id:'quanto', tab:'grado',   e:'📏',       t:'Quanto e che grado',          c:'#C4803A' },
@@ -11583,10 +11585,10 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       '<button type="button" class="mp-diario" id="mp-diario">📓 Diario</button></div>';
     if (!V){
       h += '<h2 class="mp-tit">Come vuoi fare il tuo gin?</h2><p class="mp-sub">Due strade, secondo quanto vuoi metterci le mani. Puoi cambiarla in ogni momento.</p>' +
-        '<div class="mp-bivio">' + Object.keys(VIE).map(k => '<button type="button" class="mp-via" data-via="' + k + '" style="--c:' + VIE[k].c + '"><span class="mv-e">' + VIE[k].e + '</span><b>' + VIE[k].t + '</b><span>' + VIE[k].d + '</span>' +
+        '<div class="mp-bivio">' + Object.keys(VIE).map(k => '<button type="button" class="mp-via" data-via="' + k + '" style="--c:' + VIE[k].c + '"><span class="mv-e">' + VIE[k].e + '</span><b>' + VIE[k].t + '</b>' + (VIE[k].st ? '<i class="mv-sub">' + VIE[k].st + '</i>' : '') + '<span>' + VIE[k].d + '</span>' +
           '<small>' + VIE[k].tappe.length + ' tappe' + (k === 'pers' ? ' · 6 per capire, 6 per fare' : '') + '</small></button>').join('') + '</div>';
     } else {
-      h += '<h2 class="mp-tit">' + V.e + ' ' + V.t + '</h2>' +
+      h += '<h2 class="mp-tit">' + V.e + ' ' + V.t + '</h2>' + (V.st ? '<p class="mp-st-sub">' + V.st + '</p>' : '') +
         '<p class="mp-sub">' + (pr.via === 'chiavi' ? 'Una ricetta codificata da seguire passo passo.' : 'Prima le sei tappe per capire, poi il progetto.') + ' Tocca una tappa: quella che pulsa è la prossima.</p>' +
         '<button type="button" class="mp-bivio-btn" id="mp-cambia">\u21a9\ufe0f Torna al bivio \u00b7 cambia strada</button>' +
         strada(V.tappe, pr.fatte);
