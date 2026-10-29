@@ -2251,6 +2251,9 @@ html details.howto a{color:#5A3E1C;}
 .td-pip{animation:td-pip 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:center top}
 @keyframes td-pip{0%,30%,100%{transform:scaleY(1)}38%{transform:scaleY(.85)}}
 @media (prefers-reduced-motion:reduce){.td-cade,.td-liq,.td-onda,.td-bolla,.td-goccia,.td-pip{animation:none;opacity:1}}
+.mv-tondo{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.mv-tondo.tocco{animation:td-tocco .45s ease-out}
+@keyframes td-tocco{0%{transform:scale(1)}40%{transform:scale(1.12)}100%{transform:scale(1)}}
 /* v2.1 · le due strade e la ricetta passo passo */
 html.in-mappa .menu-bar{display:none!important}
 .mp-via .mv-sub{font:italic 600 16px/1.2 'Fraunces',Georgia,serif;margin-top:-4px}
@@ -2366,7 +2369,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.6</div>
+  <div class="splash-ver" id="splash-ver">v2.6.1</div>
 </div>
 
 <div class="wrap">
@@ -4103,7 +4106,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.6 · 29 ottobre 2026 · riordino: cocktail, calcoli, taratura</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.6.1 · 29 ottobre 2026 · riordino: cocktail, calcoli, taratura</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -5184,7 +5187,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.6</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.6.1</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -11737,11 +11740,41 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     $('mp-avanzati').onclick = () => { if (window.toggleAvanzati) window.toggleAvanzati(); renderMappa(); };
     box.querySelectorAll('.mp-st').forEach(b => b.addEventListener('click', () => vaiTappa(b.dataset.id)));
     box.querySelectorAll('.mp-tile').forEach(b => b.addEventListener('click', () => { window._tappa = null; showTab(b.dataset.tab); }));
-    box.querySelectorAll('.mp-via').forEach(b => b.addEventListener('click', () => scegliVia(b.dataset.via)));
+    box.querySelectorAll('.mp-via').forEach(b => b.addEventListener('click', e => {
+      if (e.target.closest('.mv-tondo')){ e.stopPropagation(); const t = e.target.closest('.mv-tondo'); suonaTondo(b.dataset.via);
+        t.classList.remove('tocco'); void t.offsetWidth; t.classList.add('tocco'); return; }   // il tondo suona, la scheda sceglie
+      scegliVia(b.dataset.via);
+    }));
     const cb = $('mp-cambia'); if (cb) cb.onclick = e => { e.preventDefault(); tornaBivio(); };
     $('mp-prog').onclick = apriProgetti;
     $('mp-diario').onclick = () => { window._tappa = null; showTab('diario'); };
   }
+  // ---------- i suoni dei tondi: solo al tocco, generati qui (nessun file audio) ----------
+  let actx = null;
+  function audio(){ try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === 'suspended') actx.resume(); } catch(e){ actx = null; } return actx; }
+  // «plic»: la goccia della pipetta, un tono breve che sale di colpo e si spegne
+  function plic(t0, f0, vol){
+    const a = audio(); if (!a) return; const t = a.currentTime + (t0 || 0), o = a.createOscillator(), g = a.createGain();
+    o.type = 'sine'; o.frequency.setValueAtTime(f0 || 900, t); o.frequency.exponentialRampToValueAtTime((f0 || 900) * 2.1, t + 0.035);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol || 0.35, t + 0.008); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.16);
+    o.connect(g).connect(a.destination); o.start(t); o.stop(t + 0.18);
+  }
+  // «plop»: una botanica che cade nel liquido, un tono basso che scende con un piccolo spruzzo
+  function plop(t0){
+    const a = audio(); if (!a) return; const t = a.currentTime + (t0 || 0), o = a.createOscillator(), g = a.createGain();
+    o.type = 'sine'; o.frequency.setValueAtTime(420, t); o.frequency.exponentialRampToValueAtTime(140, t + 0.12);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.45, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
+    o.connect(g).connect(a.destination); o.start(t); o.stop(t + 0.24);
+    const n = a.createBufferSource(), b = a.createBuffer(1, Math.floor(a.sampleRate * 0.08), a.sampleRate), d = b.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d.length, 3);
+    const hp = a.createBiquadFilter(), gn = a.createGain(); hp.type = 'highpass'; hp.frequency.value = 2500; gn.gain.value = 0.08;
+    n.buffer = b; n.connect(hp).connect(gn).connect(a.destination); n.start(t + 0.015);
+  }
+  function suonaTondo(via){
+    if (via === 'chiavi'){ plop(0); plop(0.38); plop(0.76); }            // bacca, foglia, scorza nel barattolo
+    else { plic(0, 950, 0.38); plic(0.42, 520, 0.12); plic(0.62, 640, 0.10); }   // la goccia, poi due bollicine
+  }
+
   function scegliVia(via){
     const pr = att(); if (!pr) return;
     pr.via = via;
