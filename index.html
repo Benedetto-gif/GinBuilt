@@ -2300,6 +2300,12 @@ details.lez-carta .lez-corpo{padding:0 14px 12px}
 .sc-i{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:24px;height:24px;border-radius:50%;border:0;background:#5A4E43;color:#fff;font:italic 800 13px/24px Georgia,serif;padding:0;cursor:pointer}
 .sc-liv{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .sc-liv button{padding:6px 11px;border-radius:999px;border:1px solid var(--line-strong);background:var(--card);color:var(--ink);font:650 12.5px/1.1 'Inter',system-ui,sans-serif;cursor:pointer}
+.mp-altra{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:12px;row-gap:6px;align-items:center;width:100%;margin:8px 0 6px;padding:12px 14px;border:0;border-radius:16px;
+  background:var(--c);color:#fff;text-align:left;font:inherit;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.22)}
+.mp-altra .ma-e{grid-row:1 / span 2;font-size:30px}
+.mp-altra .ma-t b{display:block;font:800 15.5px/1.2 'Inter',system-ui,sans-serif}
+.mp-altra .ma-t small{display:block;font-size:13px;opacity:.92;line-height:1.3;margin-top:2px}
+.mp-altra .ma-go{grid-column:2;justify-self:start;padding:5px 12px;border-radius:999px;background:rgba(255,255,255,.95);color:#1B2A22;font:800 13px/1.1 'Inter',system-ui,sans-serif}
 /* v2.1 · le due strade e la ricetta passo passo */
 html.in-mappa .menu-bar{display:none!important}
 .mp-via .mv-sub{font:italic 600 16px/1.2 'Fraunces',Georgia,serif;margin-top:-4px}
@@ -2415,7 +2421,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.7.2</div>
+  <div class="splash-ver" id="splash-ver">v2.7.3</div>
 </div>
 
 <div class="wrap">
@@ -4166,7 +4172,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.7.2 · 29 ottobre 2026 · riordino: cocktail, calcoli, taratura</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.7.3 · 29 ottobre 2026 · riordino: cocktail, calcoli, taratura</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -5247,7 +5253,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.7.2</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.7.3</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -11535,7 +11541,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     box.querySelectorAll('.tipo-card').forEach(b => b.addEventListener('click', () => {
       const i = +b.dataset.i, pr = att();
       const vai = () => {
-        scegliStile(i); fatta('tipo');
+        scegliStile(i); fatta('tipo'); if (pr){ cattura(pr); aggiornaNome(pr); }
         if (pr){ ['bot','quote','spesa','infusi','unisci'].forEach(k => delete pr.fatte[k]); pr.passi = {}; pr.pp = null; scriviP(); }
         renderTipo(); barra('tipo');
         const tb = document.querySelector('#panel-tipo .tappa-bar'); if (tb) tb.scrollIntoView({ block: 'center', behavior: 'smooth' });
@@ -11703,7 +11709,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       : tp.id === 'assaggio' ? '<button type="button" class="primary-btn tb-x" data-x="scheda">🧪 Nuova scheda con le quote del progetto</button>' : '';
     b.style.setProperty('--tc', tp.c);
     b.innerHTML = '<div class="tb-tit"><span class="tb-e">' + tp.e + '</span>' + (tp.studio ? 'Per capire' : 'Tappa') + ' ' + (i + 1) + ' di ' + T.length + ' · ' + tp.t + (ok ? ' <span class="tb-ok">✓ ' + (tp.studio ? 'capito' : 'fatta') + '</span>' : '') +
-      '<small>' + VIE[pr.via].e + ' ' + VIE[pr.via].t + ' · progetto: ' + esc(pr.nome) + '</small></div>' + extra +
+      '<small>' + VIE[pr.via].e + ' ' + VIE[pr.via].t + ' \u00b7 ' + esc(pr.nome) + '</small></div>' + extra +
       '<button type="button" class="primary-btn tb-fatto">✓ ' + (ok ? 'Torna alla mappa' : (tp.studio ? 'Capito' : 'Fatto') + ' · torna alla mappa') + '</button>' +
       '<div class="tb-row">' + (prima ? '<button type="button" class="ghost-btn tb-prima">← ' + i + ' ' + prima.t + '</button>' : '<span></span>') +
       (dopo ? '<button type="button" class="ghost-btn tb-dopo">' + (i + 2) + ' ' + dopo.t + ' →</button>' : '') + '</div>';
@@ -11778,11 +11784,20 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         '<span class="mp-et"><b>' + t.t + '</b><small>' + esc(sotto(t)) + '</small></span></button>').join('') +
     '</div>';
   }
+  // Il nome del progetto nasce dalle scelte (stile o modello e data), finché l'utente non gliene dà uno suo.
+  function nomeAuto(pr){
+    const dt = new Date(pr.creato || Date.now()).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' });
+    if (pr.via === 'chiavi' && pr.fatte.tipo && pr.stile) return pr.stile + ' \u00b7 ' + dt;
+    if (pr.via === 'pers') return (pr.modello ? 'Su modello ' + pr.modello : 'Gin su misura') + ' \u00b7 ' + dt;
+    return 'Nuovo gin \u00b7 ' + dt;
+  }
+  function aggiornaNome(pr){ if (pr && !pr.nomeLibero){ const n = nomeAuto(pr); if (pr.nome !== n){ pr.nome = n; scriviP(); } } }
+  const haScelto = pr => !!pr && (pr.nomeLibero || (pr.via === 'chiavi' && pr.fatte.tipo) || pr.via === 'pers');
   function renderMappa(){
     const box = $('mappa-box'); if (!box) return;
     if (!att()){ const pr = nuovoProgetto(); P.lista.push(pr); P.att = pr.id; cattura(pr); scriviP(); }
-    const pr = att(), V = VIE[pr.via];
-    let h = '<div class="mp-barra"><button type="button" class="mp-prog" id="mp-prog">📁 <span>' + esc(pr.nome) + '</span> ▾</button>' +
+    const pr = att(), V = VIE[pr.via]; aggiornaNome(pr);
+    let h = '<div class="mp-barra"><button type="button" class="mp-prog" id="mp-prog">📁 <span>' + (haScelto(pr) ? esc(pr.nome) : 'I tuoi gin') + '</span> ▾</button>' +
       '<button type="button" class="mp-diario" id="mp-diario">📓 Diario</button></div>';
     if (!V){
       h += '<h2 class="mp-tit">Come vuoi fare il tuo gin?</h2><p class="mp-sub">Due strade, secondo quanto vuoi metterci le mani. Puoi cambiarla in ogni momento.</p>' +
@@ -11791,7 +11806,9 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     } else {
       h += '<h2 class="mp-tit">' + V.e + ' ' + V.t + '</h2>' + (V.st ? '<p class="mp-st-sub">' + V.st + '</p>' : '') +
         '<p class="mp-sub">' + (pr.via === 'chiavi' ? 'Una ricetta codificata da seguire passo passo.' : 'Ogni tappa: una breve lezione e una prova.') + ' Tocca una tappa: quella che pulsa è la prossima.</p>' +
-        '<button type="button" class="mp-bivio-btn" id="mp-cambia">\u21a9\ufe0f Torna al bivio \u00b7 cambia strada</button>' +
+        (() => { const A = VIE[pr.via === 'chiavi' ? 'pers' : 'chiavi'];
+          return '<button type="button" class="mp-altra" id="mp-cambia" style="--c:' + A.c + '"><span class="ma-e">' + A.e + '</span><span class="ma-t"><b>Preferisci \u00ab' + A.t + '\u00bb?</b><small>' +
+            (pr.via === 'chiavi' ? 'Se vuoi capire cosa fai e scegliere tu le botaniche' : 'Se vuoi solo seguire una ricetta già pronta') + '</small></span><span class="ma-go">Cambia strada \u2192</span></button>'; })() +
         strada(V.tappe, pr.fatte);
     }
     // la teoria appartiene solo alla strada del gin personalizzato: con il Gin no problem! si gioca, non si studia
@@ -11811,7 +11828,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         t.classList.remove('tocco'); void t.offsetWidth; t.classList.add('tocco'); return; }   // il tondo suona, la scheda sceglie
       scegliVia(b.dataset.via);
     }));
-    const cb = $('mp-cambia'); if (cb) cb.onclick = e => { e.preventDefault(); tornaBivio(); };
+    const cb = $('mp-cambia'); if (cb) cb.onclick = e => { e.preventDefault(); const p = att(); if (Object.keys(p.fatte).length || Object.keys(p.passi).length) cambiaVia(); else { p.pp = null; scegliVia(p.via === 'chiavi' ? 'pers' : 'chiavi'); window.scrollTo(0, 0); } };
     $('mp-prog').onclick = apriProgetti;
     $('mp-diario').onclick = () => { window._tappa = null; showTab('diario'); };
   }
@@ -11940,7 +11957,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     const gia = new Set(tutteSel().map(s => s.value));
     righe.forEach(([r, n]) => { if (!gia.has(n) && byName[n]){ addCustomRoleRow(r, n, false); gia.add(n); } });
     renderSummary();
-    pr.modello = k === '' ? null : STYLES[+k][0]; delete pr.fatte.scelta; scriviP();
+    pr.modello = k === '' ? null : STYLES[+k][0]; delete pr.fatte.scelta; aggiornaNome(pr); scriviP();
   }
   function agganciaRuoli(){
     document.querySelectorAll('.lez-part').forEach(b => b.onclick = () => {
@@ -12031,48 +12048,48 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     const fatto = Object.keys(pr.fatte).length || Object.keys(pr.passi).length;
     const vai = () => { pr.fatte = {}; pr.passi = {}; pr.pp = null; pr.via = null; scriviP(); renderMappa(); window.scrollTo(0, 0); };
     if (!fatto) { vai(); return; }
-    mostraAvviso('Torni al bivio?', '<p>Puoi scegliere di nuovo fra <strong>Gin no problem!</strong> e <strong>Fatti un gin</strong>. Le spunte di questa strada si azzerano; stile, botaniche e quantità restano. Se vuoi tenere anche le spunte, crea invece un nuovo progetto (📁).</p>', 'Torna al bivio', vai);
+    mostraAvviso('Cambi strada?', '<p>Torni alla scelta fra <strong>Gin no problem!</strong> e <strong>Fatti un gin</strong>. Le spunte di questa strada si azzerano; stile, botaniche e quantità restano. Se vuoi tenere anche le spunte, crea invece un nuovo progetto (📁).</p>', 'Cambia strada', vai);
   }
   function cambiaVia(){
     const pr = att(), altra = pr.via === 'chiavi' ? 'pers' : 'chiavi';
     mostraAvviso('Cambi strada?', '<p>Passi a <strong>' + VIE[altra].e + ' ' + VIE[altra].t + '</strong>. ' +
       (altra === 'pers' ? 'Le botaniche ripartono dal solo ginepro (stile Personalizzato).' : 'Si riparte da una ricetta codificata: scegli lo stile.') +
-      ' Le spunte della strada precedente si azzerano; se vuoi tenerle, crea invece un nuovo progetto (📁).</p>', 'Cambia strada', () => {
+      ' Le spunte della strada precedente si azzerano; se vuoi tenerle, inizia invece un nuovo gin (📁 in alto).</p>', 'Cambia strada', () => {
         pr.fatte = {}; pr.passi = {}; pr.pp = null; pr.builder = null; scegliVia(altra);
       });
   }
 
   // ---------- i progetti: elenco, nuovo, rinomina, elimina ----------
   function apriProgetti(){
-    const pr = att();
+    const pr = att(); P.lista.forEach(aggiornaNome);
     const lista = P.lista.slice().sort((a, b) => (b.agg || b.creato) - (a.agg || a.creato)).map(x => {
       const T = tappeDi(x), n = T.filter(t => x.fatte[t.id]).length;
       return '<div class="pj-riga' + (x.id === P.att ? ' on' : '') + '"><button type="button" class="pj-apri" data-id="' + x.id + '"><b>' + (VIE[x.via] ? VIE[x.via].e + ' ' : '') + esc(x.nome) + '</b><small>' +
         esc(x.stile || '—') + ' · ' + nf(parseFloat(x.abv) || 43, 1) + '% · ' + (T.length ? n + '/' + T.length + ' tappe' : 'strada da scegliere') + (x.id === P.att ? ' · aperto' : '') + '</small></button>' +
         '<button type="button" class="pj-del" data-id="' + x.id + '" aria-label="Elimina ' + esc(x.nome) + '">🗑️</button></div>';
     }).join('');
-    mostraAvviso('📁 I tuoi progetti',
+    mostraAvviso('📁 I tuoi gin',
       '<div class="pj-lista">' + lista + '</div>' +
-      '<label class="pj-lab">Rinomina il progetto aperto<span class="pj-in"><input type="text" id="pj-nome" value="' + esc(pr ? pr.nome : '') + '"><button type="button" class="ghost-btn" id="pj-rin">✏️ Rinomina</button></span></label>' +
-      '<label class="pj-lab">Nuovo progetto<span class="pj-in"><input type="text" id="pj-nuovo" placeholder="es. Thalassa · prova 4"><button type="button" class="primary-btn" id="pj-crea">＋ Crea</button></span></label>' +
-      '<p class="cond-hint">Ogni progetto tiene strada, stile, gradazione, botaniche, volume, quote e passi fatti. Schede di prova e diario degli infusi sono comuni a tutti.</p>', '', null);
+      '<label class="pj-lab">Dai un nome al gin aperto<span class="pj-in"><input type="text" id="pj-nome" value="' + esc(pr ? pr.nome : '') + '"><button type="button" class="ghost-btn" id="pj-rin">✏️ Rinomina</button></span></label>' +
+      '<label class="pj-lab">Inizia un nuovo gin<span class="pj-in"><input type="text" id="pj-nuovo" placeholder="un nome, se vuoi (es. Thalassa · prova 4)"><button type="button" class="primary-btn" id="pj-crea">＋ Crea</button></span></label>' +
+      '<p class="cond-hint">Ogni gin che prepari si ricorda la strada, lo stile, la gradazione, le botaniche, le quote e i passi fatti: puoi lavorare a più gin e riprenderli quando vuoi. Senza un nome, prende quello dello stile e la data. Schede di prova e diario degli infusi sono comuni a tutti.</p>', '', null);
     document.querySelectorAll('.pj-apri').forEach(b => b.onclick = () => {
       const x = P.lista.find(y => y.id === b.dataset.id); chiudiAvviso(); if (!x || x.id === P.att) return;
       cattura(att()); P.att = x.id; scriviP(); applica(x); renderMappa();
     });
     document.querySelectorAll('.pj-del').forEach(b => b.onclick = () => {
       const x = P.lista.find(y => y.id === b.dataset.id); if (!x) return;
-      mostraAvviso('Eliminare il progetto?', '<p>Il progetto <strong>' + esc(x.nome) + '</strong> verrà eliminato. Schede di prova e diario restano.</p>', 'Elimina', () => {
+      mostraAvviso('Eliminare questo gin?', '<p>Il gin <strong>' + esc(x.nome) + '</strong> verrà eliminato. Schede di prova e diario restano.</p>', 'Elimina', () => {
         P.lista = P.lista.filter(y => y.id !== x.id);
         if (P.att === x.id){ const altro = P.lista[0]; if (altro){ P.att = altro.id; scriviP(); applica(altro); } else { P.att = null; scriviP(); } }
         else scriviP();
         renderMappa();
       });
     });
-    $('pj-rin').onclick = () => { const v = $('pj-nome').value.trim(); if (!v || !pr) return; pr.nome = v; scriviP(); chiudiAvviso(); renderMappa(); };
+    $('pj-rin').onclick = () => { const v = $('pj-nome').value.trim(); if (!v || !pr) return; pr.nome = v; pr.nomeLibero = true; scriviP(); chiudiAvviso(); renderMappa(); };
     $('pj-crea').onclick = () => {
-      const v = $('pj-nuovo').value.trim() || ('Gin ' + new Date().toLocaleDateString('it-IT'));
-      cattura(att()); const x = nuovoProgetto(v); x.vol = $('dosi-vol').value; x.abv = $('dosi-abv').value;
+      const v = $('pj-nuovo').value.trim();
+      cattura(att()); const x = nuovoProgetto(v || 'Nuovo gin'); if (v) x.nomeLibero = true; x.vol = $('dosi-vol').value; x.abv = $('dosi-abv').value;
       P.lista.push(x); P.att = x.id; scriviP(); chiudiAvviso(); applica(x); vaiMappa();   // la mappa chiede subito quale strada
     };
   }
