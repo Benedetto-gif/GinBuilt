@@ -2310,6 +2310,14 @@ details.lez-carta .lez-corpo{padding:0 14px 12px}
 .mp-indietro{position:absolute;left:0;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;border:2px solid var(--line-strong);background:var(--card);color:var(--ink);
   font:700 22px/1 system-ui,sans-serif;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.2);padding:0}
 .mp-tit-riga .mp-tit{padding:0 44px}
+.cond-app-btn{position:relative}
+#theme-btn{display:none!important}   /* la luce si regola da ⚙️ Strumenti */
+.str-punto{position:absolute;top:-2px;right:-2px;width:12px;height:12px;border-radius:50%;background:#E0532F;box-shadow:0 0 0 2px var(--paper)}
+.str-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:9px;margin:4px 0 12px}
+.str-tile{display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:12px;border:0;border-radius:14px;background:var(--h);color:#fff;text-align:left;font:inherit;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.18)}
+.str-tile span{font-size:24px}.str-tile b{font:800 14.5px/1.2 'Inter',system-ui,sans-serif}.str-tile small{font-size:12px;opacity:.9;line-height:1.3}
+.avviso .home-dati{margin:0}
+.str-ver{margin:12px 0 0;text-align:center;font-size:12px;color:var(--ink-faint)}
 /* v2.1 · le due strade e la ricetta passo passo */
 html.in-mappa .menu-bar{display:none!important}
 .mp-via .mv-sub{font:italic 600 16px/1.2 'Fraunces',Georgia,serif;margin-top:-4px}
@@ -2425,7 +2433,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.7.4</div>
+  <div class="splash-ver" id="splash-ver">v2.8</div>
 </div>
 
 <div class="wrap">
@@ -2448,7 +2456,7 @@ html.in-mappa #nav-indietro{display:none!important}
     <button type="button" class="tp-zero" id="tp-zero">↺ Valori iniziali</button>
   </div>
   <header class="top">
-    <div class="h1-riga"><h1>GinBuilder</h1><button type="button" class="cond-app-btn" onclick="condividiApp()" aria-label="Condividi l'app con un amico">📤 Condividi</button></div>
+    <div class="h1-riga"><h1>GinBuilder</h1><button type="button" class="cond-app-btn" id="strumenti-btn" onclick="apriStrumenti()" aria-label="Strumenti: condividi, i tuoi dati, impostazioni">⚙️ Strumenti<i class="str-punto" id="str-punto" hidden></i></button></div>
     <p class="autore-app">di Benedetto Daniele Sgroi</p>
   </header>
 
@@ -2482,7 +2490,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </div>
 
   <!-- HOME -->
-  <section class="panel active" id="panel-mappa"><div id="mappa-box"></div><div class="home-dati" id="home-dati"></div></section>
+  <section class="panel active" id="panel-mappa"><div id="mappa-box"></div></section>
 
   <section class="panel" id="panel-tipo">
     <h2 class="tappa-h"><span>1</span>Che gin vuoi?</h2>
@@ -4176,7 +4184,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.7.4 · 29 ottobre 2026 · riordino: cocktail, calcoli, taratura</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.8 · 29 ottobre 2026 · riordino: cocktail, calcoli, taratura</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -5257,7 +5265,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.7.4</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.8</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -5290,16 +5298,14 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
     pop.appendChild(lbl);
     presenti.forEach(b => aggiungiTile(b, hue++));
   });
-  const lblImp = document.createElement('div'); lblImp.className = 'menu-group-label'; lblImp.textContent = 'Impostazioni';
+  const lblImp = document.createElement('div'); lblImp.className = 'menu-group-label'; lblImp.textContent = 'Uscita';
   pop.appendChild(lblImp);
   const tileImp = (id, ic, lab, col, fn) => {
     const el = document.createElement('button'); el.type = 'button'; el.className = 'menu-tile'; el.id = id; el.style.setProperty('--h', col);
     el.innerHTML = '<span class="mt-ic">' + ic + '</span><span class="mt-l">' + lab + '</span>';
     el.addEventListener('click', () => { chiudi(); fn(); }); pop.appendChild(el); return el;
   };
-  tileImp('menu-dati', '\ud83d\udcbe', 'I tuoi dati (backup)', '#4C7BB5', () => window.apriDati && window.apriDati());
   tileImp('menu-esci', '\u23cf\ufe0f', 'Ho finito \u00b7 esci', '#7A867F', () => window.esciApp && window.esciApp());
-  tileImp('menu-avanzati', '\ud83e\uddf0', 'Strumenti avanzati', '#5D6F8C', () => window.toggleAvanzati && window.toggleAvanzati());
   // Mentre il menu è aperto la pagina sotto resta ferma: scorre solo il riquadro del menu.
   const bloccaFuori = e => { if (!pop.hidden && !pop.contains(e.target)) e.preventDefault(); };
   let tY = 0;
@@ -9450,6 +9456,34 @@ function renderDati(){
     '<button type="button" class="ghost-btn" onclick="ripristinaTutto()">\u2b06 Ripristina da file</button></div>';
 }
 window.salvaTutto = salvaTutto; window.ripristinaTutto = ripristinaTutto;
+// ---------- Strumenti: condividere l'app, i tuoi dati, le impostazioni ----------
+// Un solo tasto in alto apre tutto quello che non fa parte del percorso.
+function datiInRitardo(){
+  const c = contaDati(), d = ultimoBackup(), ci = c.schede + c.diario + c.lab, giorni = d ? (Date.now() - Date.parse(d)) / 864e5 : null;
+  return ci > 0 && (!d || giorni > 14);
+}
+window.puntoStrumenti = function(){ const p = document.getElementById('str-punto'); if (p) p.hidden = !datiInRitardo(); };
+window.apriStrumenti = function(){
+  const av = document.documentElement.classList.contains('avanzato'), ver = ((document.getElementById('menu-ver') || document.querySelector('.menu-ver') || {}).textContent || '').trim();
+  mostraAvviso('\u2699\ufe0f Strumenti',
+    '<div class="str-grid">' +
+      '<button type="button" class="str-tile" id="str-cond" style="--h:#2E9D5B"><span>\ud83d\udce4</span><b>Condividi l\u2019app</b><small>manda GinBuilder a un amico</small></button>' +
+      '<button type="button" class="str-tile" id="str-luce" style="--h:#5D6F8C"><span>\ud83c\udf17</span><b>Luce e colori</b><small>sfondo chiaro o scuro</small></button>' +
+      '<button type="button" class="str-tile" id="str-av" style="--h:#8A63B0"><span>\ud83e\uddf0</span><b>Strumenti avanzati</b><small>' + (av ? 'accesi: tocca per spegnerli' : 'spenti: tocca per accenderli') + '</small></button>' +
+    '</div>' +
+    '<div class="home-dati" id="home-dati"></div>' +
+    '<p class="str-ver">GinBuilder ' + ver + ' \u00b7 di Benedetto Daniele Sgroi</p>', '', null);
+  renderDati();
+  const ic = document.querySelector('.avviso-icona'); if (ic){ ic.dataset.prima = ic.textContent; ic.style.display = 'none'; }
+  const an = document.getElementById('avviso-annulla'); if (an) an.textContent = 'Chiudi';
+  const ripr = () => { if (ic){ ic.style.display = ''; } };
+  ['avviso-annulla','avviso-ok'].forEach(id => document.getElementById(id).addEventListener('click', ripr, { once: true }));
+  const chiudi = () => { chiudiAvviso(); ripr(); };
+  document.getElementById('str-cond').onclick = () => { chiudi(); condividiApp(); };
+  document.getElementById('str-luce').onclick = () => { chiudi(); const t = document.getElementById('theme-btn'); if (t) setTimeout(() => t.click(), 30); };
+  document.getElementById('str-av').onclick = () => { chiudi(); if (window.toggleAvanzati) window.toggleAvanzati(); };
+};
+setTimeout(() => { try { window.puntoStrumenti(); } catch(e){} }, 600);
 
 // ---------- Riaprire dove eri rimasto ----------
 // Si ricordano l'ultima pagina, la botanica aperta e la ricetta del Builder (stile e scelte, anche nel Personalizzato).
@@ -9542,11 +9576,11 @@ window.toggleAvanzati = function(){
   aggiornaTileAvanzati(); ridisegnaRadar();
   mostraAvviso(on ? '\ud83e\uddf0 Strumenti avanzati accesi' : 'Modalit\u00e0 semplice',
     on ? '<p>Sui radar compaiono di nuovo: <strong>Testa / Cuore / Coda</strong>, la <strong>soglia di somiglianza</strong> e, nel Builder, <strong>macerano tutte insieme</strong>.</p>'
-       : '<p>Sui radar restano il profilo, il confronto e le botaniche base. Gli strumenti avanzati si riaccendono in fondo alla mappa, o dal menu sotto Impostazioni.</p>', '', null);
+       : '<p>Sui radar restano il profilo, il confronto e le botaniche base. Gli strumenti avanzati si riaccendono da \u2699\ufe0f Strumenti, in alto.</p>', '', null);
 };
 try { if (localStorage.getItem('gb-avanzati')) document.documentElement.classList.add('avanzato'); else { window.radarFase = 'tutto'; window.radarInsieme = 0; } } catch(e){}
 aggiornaTileAvanzati(); ridisegnaRadar();
-window.apriDati = function(){ showTab('home'); renderDati(); setTimeout(() => { const b = document.getElementById('home-dati'); if (b){ b.style.scrollMarginTop = '84px'; b.scrollIntoView({block: 'start'}); } }, 80); };
+window.apriDati = function(){ window.apriStrumenti(); return; showTab('home'); renderDati(); setTimeout(() => { const b = document.getElementById('home-dati'); if (b){ b.style.scrollMarginTop = '84px'; b.scrollIntoView({block: 'start'}); } }, 80); };
 renderDati();
 
 // ---------- Ricerca nei menù delle botaniche ----------
@@ -11816,12 +11850,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     if (pr.via === 'pers') h += '<div class="mp-sez"><h3>📚 Capire perché</h3><p>La parte teorica, da consultare quando vuoi: le botaniche e la loro potenza, cosa si estrae e a che gradazione, i ruoli, le ridondanze, le leggi.</p>' +
         '<div class="mp-grid">' + tessere(CAPIRE, 2) + '</div></div>';
     box.innerHTML = h;
-    try { renderDati(); } catch(e){}
-    let piede = $('mp-piede');
-    if (!piede){ piede = document.createElement('div'); piede.id = 'mp-piede'; piede.className = 'mp-piede'; $('panel-mappa').appendChild(piede); }
-    const av = document.documentElement.classList.contains('avanzato');
-    piede.innerHTML = '<button type="button" id="mp-avanzati">\ud83e\uddf0 Strumenti avanzati: ' + (av ? 'accesi' : 'spenti') + '</button><span class="mp-ver">GinBuilder ' + (($('splash-ver') || {}).textContent || '') + '</span>';
-    $('mp-avanzati').onclick = () => { if (window.toggleAvanzati) window.toggleAvanzati(); renderMappa(); };
+    try { if (window.puntoStrumenti) window.puntoStrumenti(); } catch(e){}
     box.querySelectorAll('.mp-st').forEach(b => b.addEventListener('click', () => vaiTappa(b.dataset.id)));
     box.querySelectorAll('.mp-tile').forEach(b => b.addEventListener('click', () => { window._tappa = null; showTab(b.dataset.tab); }));
     box.querySelectorAll('.mp-via').forEach(b => b.addEventListener('click', e => {
