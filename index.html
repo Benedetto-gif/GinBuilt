@@ -2306,6 +2306,10 @@ details.lez-carta .lez-corpo{padding:0 14px 12px}
 .mp-altra .ma-t b{display:block;font:800 15.5px/1.2 'Inter',system-ui,sans-serif}
 .mp-altra .ma-t small{display:block;font-size:13px;opacity:.92;line-height:1.3;margin-top:2px}
 .mp-altra .ma-go{grid-column:2;justify-self:start;padding:5px 12px;border-radius:999px;background:rgba(255,255,255,.95);color:#1B2A22;font:800 13px/1.1 'Inter',system-ui,sans-serif}
+.mp-tit-riga{position:relative;display:flex;align-items:center;justify-content:center}
+.mp-indietro{position:absolute;left:0;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;border:2px solid var(--line-strong);background:var(--card);color:var(--ink);
+  font:700 22px/1 system-ui,sans-serif;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.2);padding:0}
+.mp-tit-riga .mp-tit{padding:0 44px}
 /* v2.1 · le due strade e la ricetta passo passo */
 html.in-mappa .menu-bar{display:none!important}
 .mp-via .mv-sub{font:italic 600 16px/1.2 'Fraunces',Georgia,serif;margin-top:-4px}
@@ -2421,7 +2425,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.7.3</div>
+  <div class="splash-ver" id="splash-ver">v2.7.4</div>
 </div>
 
 <div class="wrap">
@@ -4172,7 +4176,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.7.3 · 29 ottobre 2026 · riordino: cocktail, calcoli, taratura</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.7.4 · 29 ottobre 2026 · riordino: cocktail, calcoli, taratura</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -5253,7 +5257,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.7.3</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.7.4</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -11804,11 +11808,8 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         '<div class="mp-bivio">' + Object.keys(VIE).map(k => '<button type="button" class="mp-via" data-via="' + k + '" style="--c:' + VIE[k].c + '"><span class="mv-tondo">' + TONDI[k] + '</span><b>' + VIE[k].t + '</b>' + (VIE[k].st ? '<i class="mv-sub">' + VIE[k].st + '</i>' : '') + '<span>' + VIE[k].d + '</span>' +
           '<small>' + VIE[k].tappe.length + ' tappe' + (k === 'pers' ? ' · teoria e pratica insieme' : '') + '</small></button>').join('') + '</div>';
     } else {
-      h += '<h2 class="mp-tit">' + V.e + ' ' + V.t + '</h2>' + (V.st ? '<p class="mp-st-sub">' + V.st + '</p>' : '') +
+      h += '<div class="mp-tit-riga"><button type="button" class="mp-indietro" id="mp-cambia" aria-label="Torna alla scelta della strada" title="Torna alla scelta della strada">\u21a9\ufe0e</button><h2 class="mp-tit">' + V.e + ' ' + V.t + '</h2></div>' + (V.st ? '<p class="mp-st-sub">' + V.st + '</p>' : '') +
         '<p class="mp-sub">' + (pr.via === 'chiavi' ? 'Una ricetta codificata da seguire passo passo.' : 'Ogni tappa: una breve lezione e una prova.') + ' Tocca una tappa: quella che pulsa è la prossima.</p>' +
-        (() => { const A = VIE[pr.via === 'chiavi' ? 'pers' : 'chiavi'];
-          return '<button type="button" class="mp-altra" id="mp-cambia" style="--c:' + A.c + '"><span class="ma-e">' + A.e + '</span><span class="ma-t"><b>Preferisci \u00ab' + A.t + '\u00bb?</b><small>' +
-            (pr.via === 'chiavi' ? 'Se vuoi capire cosa fai e scegliere tu le botaniche' : 'Se vuoi solo seguire una ricetta già pronta') + '</small></span><span class="ma-go">Cambia strada \u2192</span></button>'; })() +
         strada(V.tappe, pr.fatte);
     }
     // la teoria appartiene solo alla strada del gin personalizzato: con il Gin no problem! si gioca, non si studia
@@ -11828,7 +11829,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         t.classList.remove('tocco'); void t.offsetWidth; t.classList.add('tocco'); return; }   // il tondo suona, la scheda sceglie
       scegliVia(b.dataset.via);
     }));
-    const cb = $('mp-cambia'); if (cb) cb.onclick = e => { e.preventDefault(); const p = att(); if (Object.keys(p.fatte).length || Object.keys(p.passi).length) cambiaVia(); else { p.pp = null; scegliVia(p.via === 'chiavi' ? 'pers' : 'chiavi'); window.scrollTo(0, 0); } };
+    const cb = $('mp-cambia'); if (cb) cb.onclick = e => { e.preventDefault(); tornaBivio(); };
     $('mp-prog').onclick = apriProgetti;
     $('mp-diario').onclick = () => { window._tappa = null; showTab('diario'); };
   }
