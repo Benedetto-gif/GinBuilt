@@ -2440,7 +2440,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.8.1</div>
+  <div class="splash-ver" id="splash-ver">v2.8.2</div>
 </div>
 
 <div class="wrap">
@@ -5272,7 +5272,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.8.1</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.8.2</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -7866,7 +7866,7 @@ function renderLab(){
 // ---------- Come preparare e usare ogni botanica ----------
 // Indicazioni di pratica generale, non risultati sperimentali. Se non altrimenti indicato,
 // i pesi si intendono di botanica secca.
-const COME_AGRUME = `Solo la parte colorata, pelata a strisce sottili senza la parte bianca (amara). Il peso è della scorza pelata. Frutti non trattati.`;
+const COME_AGRUME = `Frutti non trattati, lavati e asciugati. Solo la parte colorata, pelata con il pelapatate a strisce sottili senza la parte bianca (amara). Pelare al momento e mettere subito nell'alcol: gli oli della scorza evaporano in fretta. Il peso è della scorza pelata.`;
 const COME_FRUTTA = `Tagliare o spezzare a pezzetti piccoli. Il peso è della polpa essiccata, senza noccioli né semi. Da fresco serve molto più peso e l'acqua abbassa la gradazione.`;
 const COME_FIORI = `Fiori o petali essiccati, interi o appena sbriciolati, senza gambi né parti verdi. Il peso è dei soli fiori.`;
 const COME_RADICE = `Radice secca tagliata in pezzetti o fettine sottili, non in polvere (intorbida). Il peso è a secco.`;
@@ -7920,7 +7920,6 @@ const COME = {
   'Salicornia': `Giovani cime, fresche o essiccate, spezzettate. Il peso è a secco.`,
   'Spirulina alimentare': `Polvere o scaglie, da dosare a bilancia di precisione. Colora molto.`,
   'Mandorla amara': `Un frammento minimo, con bilancia di precisione. Mai al posto della mandorla dolce.`,
-  'Mandorla dolce': `Spezzettare grossolanamente. Può lasciare un velo oleoso: filtrare a freddo.`,
   'Caffè': `Chicchi tostati interi o appena rotti. Infusione breve per non estrarre amaro.`,
   'Cacao': `Fave tostate rotte a pezzetti. Il peso è delle fave sgusciate.`,
   'Sesamo': `Semi appena tostati, non macinati.`,
@@ -7935,6 +7934,18 @@ const COME = {
   'Finger lime': `Scorza sottile senza parte bianca; le perle si possono aggiungere intere. Il peso è della scorza.`,
   'Corbezzolo': `Frutti molto maturi, schiacciati. Il peso è della polpa.`,
   'Sorbo': `Solo frutti bletti (molto maturi), schiacciati. Il peso è della polpa.`,
+  'Elicriso': `Sommità fiorite secche, sbriciolate a mano; scartare i fusti legnosi, che portano amaro. Il peso è a secco.`,
+  'Elicriso delle scogliere': `Sommità fiorite secche, sbriciolate a mano; scartare i fusti legnosi. Il peso è a secco. Più potente dell'elicriso comune: pesare con precisione.`,
+  'Lentisco': `Foglie secche staccate dal rametto e spezzate a mano; niente rametti, che sono tannici. Il peso è a secco.`,
+  'Rosmarino': `Aghi staccati dal rametto e appena spezzati fra le dita, senza il rametto legnoso (tannico e amaro). Il peso è a secco.`,
+  'Timo': `Foglioline e sommità sgranate dal rametto facendo scorrere le dita; scartare i rametti legnosi. Il peso è a secco.`,
+  'Alloro': `Foglie secche spezzate a mano in 3–4 pezzi, senza picciolo. Il peso è a secco. Potente: pesare con precisione.`,
+  'Levistico': `Foglie secche sbriciolate a mano, senza gambi. Il peso è a secco. Potente: pesare con precisione.`,
+  'Camomilla': `Capolini secchi interi, non sbriciolati: la polvere intorbida e porta amaro. Il peso è dei capolini.`,
+  'Rosa': `Petali secchi interi, senza calice né parti verdi (amare). Il peso è dei soli petali.`,
+  'Fico': `Fichi secchi senza picciolo, tagliati a pezzetti piccoli. Il peso è del fico secco. Gli zuccheri possono intorbidare: filtrare con cura.`,
+  'Mandorla dolce': `Mandorle pelate (la pellicina è tannica), spezzettate grossolanamente al coltello. Può lasciare un velo oleoso: filtrare a freddo.`,
+  'Cedro': `Frutto non trattato, lavato e asciugato. Solo la parte gialla esterna (flavedo), pelata a strisce sottili; l'albedo del cedro è spesso: lasciarlo sul frutto. Pelare al momento e mettere subito nell'alcol. Il peso è della scorza pelata.`,
   'Castagna': `Frutto secco spezzato, tostatura leggera facoltativa. Il peso è del frutto sgusciato.`,
   "Nepitella": "Foglie e sommità fiorite, senza fusti legnosi. Il peso è a secco; da fresca triplicare la dose.",
   "Datterino nero dell'Etna": "Frutti maturi senza picciolo né parti verdi, tagliati a metà o schiacciati appena. Il peso è a fresco: è quasi tutta acqua, che abbassa la gradazione, per questo si parte da un grado alcolico alto e si filtra con cura.",
@@ -11666,6 +11677,15 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     ['🍾', 'Bottiglia di vetro scuro con tappo', 'per il gin finito'],
     ['🏷️', 'Etichette e pennarello', 'nome, data, gradazione']
   ];
+  // come preparare la botanica nella ricetta: stato (fresca/secca) detto subito, poi il gesto
+  const MORTAIO = '<svg class="ic-svg" viewBox="0 0 32 32" width="1em" height="1em" aria-hidden="true"><path d="M17 4l9-2 1.6 2.6-8.6 6.4z" fill="#A0806A"/><path d="M4 14h24c0 7-5 12-12 12S4 21 4 14z" fill="#9AA3A8"/><path d="M4 14h24" stroke="#6E777C" stroke-width="2" stroke-linecap="round"/><rect x="10" y="26" width="12" height="3" rx="1.2" fill="#6E777C"/></svg>';
+  function prepRicetta(d, stato){
+    const t = comeUsare(d, stato, infK(d), 0).replace(/ ?Peso riferito a botanica [^.]*\.( L'acqua che porta[^.]*\.)?/, '');
+    const ag = d.categoria === 'Agrumi' && /scorza|flavedo/.test(d.parte || '');
+    const lab = stato === 'fresco' ? (ag ? 'Scorza fresca' : 'Botanica fresca') : (ag ? 'Scorza secca' : 'Botanica secca');
+    const ic = /schiacc|frantum|mortaio/i.test(t) ? MORTAIO : /pela|tagli|affett|incid|fettin|grattug|coltello/i.test(t) ? '🔪' : '✋';
+    return ic + ' Prepara · <b>' + lab + '</b>. ' + t;
+  }
   function righeRicetta(){
     const R = dosiRicetta(tutteSel()); if (!R) return null;
     R.righe.forEach(r => {
@@ -11696,15 +11716,16 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     if (R.sotto.length) h += '<div class="warn-box">' + R.sotto.map(esc).join(', ') + ': si estrae sotto ' + A + '% e non si può diluire fino alla gradazione finale. Con il Gin no problem! conviene scegliere una gradazione più bassa (tappa 2).</div>';
     // la spesa
     if (mostra('spesa')) h += '<section class="rc-sez" id="rc-spesa"><h3>🛒 La spesa</h3><p class="rc-sub">Quantità con un 20% di scorta per gli infusi.</p>' +
-      R.righe.map(r => chk('sp-' + r.n, '🌿 <b>' + esc(r.n) + '</b> ' + (r.parte ? '<small>(' + esc(r.parte) + ', ' + r.stato + ')</small> ' : '') + '— ' + fg(r.inf ? r.inf.g : r.g) + ' g')).join('') +
+      R.righe.map(r => chk('sp-' + r.n, iconaHtml(byName[r.n]) + ' <b>' + esc(r.n) + '</b> ' + (r.parte ? '<small>(' + esc(r.parte) + ', ' + r.stato + ')</small> ' : '') + '— ' + fg(r.inf ? r.inf.g : r.g) + ' g')).join('') +
       chk('sp-alcol', '🧴 <b>Alcol buongusto a 96%</b> — ' + f1(alcTot) + ' ml <small>(circa ' + f1(Math.ceil(alcTot * 1.1 / 50) * 50) + ' ml con un po’ di margine)</small>') +
       chk('sp-acqua', '💧 <b>Acqua demineralizzata potabile</b> — ' + f1(acqTot) + ' ml <small>(' + f1(acqInf) + ' per gli infusi, ' + f1(R.acqua) + ' per portarli a ' + A + '%)</small>') +
       '<h4>L’attrezzatura</h4>' + ATTREZZI.map(([ic, n, d], k) => chk('at-' + k, ic + ' <b>' + n + '</b> <small>— ' + d + '</small>')).join('') + '</section>';
     // gli infusi
     if (mostra('infusi')) h += '<section class="rc-sez" id="rc-infusi"><h3>🫙 Gli infusi, uno per botanica</h3><p class="rc-sub">Ogni botanica ha il suo barattolo, la sua gradazione e il suo tempo. Conserva tutto al buio, intorno ai 20 °C.</p>' +
       R.righe.map((r, k) => { const x = r.inf || {}, dl = x.dil || {};
-        return '<div class="rc-inf"><div class="rc-inf-t">' + (k + 1) + '. ' + esc(r.n) + (r.tracce ? ' <em>(tracce)</em>' : '') + '</div>' +
-          chk('in-p-' + r.n, '⚖️ Pesa <b>' + fg(x.g != null ? x.g : r.g) + ' g</b> di ' + esc(r.n.toLowerCase()) + (r.parte && r.n.toLowerCase().indexOf(r.parte.split(/[\s\/]/)[0].toLowerCase()) < 0 ? ' (' + esc(r.parte) + ')' : '')) +
+        return '<div class="rc-inf"><div class="rc-inf-t">' + (k + 1) + '. ' + iconaHtml(byName[r.n]) + ' ' + esc(r.n) + (r.tracce ? ' <em>(tracce)</em>' : '') + '</div>' +
+          chk('in-p-' + r.n, '⚖️ Pesa <b>' + fg(x.g != null ? x.g : r.g) + ' g</b> di ' + esc(r.n.toLowerCase()) + (r.parte && r.n.toLowerCase().indexOf(r.parte.split(/[\s\/]/)[0].toLowerCase()) < 0 ? ' (' + esc(r.parte) + (byName[r.n].categoria === 'Agrumi' && r.stato === 'fresca' ? ' fresca' : '') + ')' : '')) +
+          chk('in-x-' + r.n, prepRicetta(byName[r.n], x.stato || (r.stato === 'fresca' ? 'fresco' : 'secco'))) +
           chk('in-a-' + r.n, '🧪 Nel barattolo: <b>' + f1(dl.alcMl || 0) + ' ml di alcol a 96%</b> + <b>' + f1(dl.acquaMl || 0) + ' ml d’acqua</b> = ' + f1(r.volInf) + ' ml a <b>' + r.abv + '%</b>') +
           chk('in-c-' + r.n, '🌑 Chiudi, scuoti ed etichetta; tieni al buio. Assaggia dopo <b>' + DUR(x.tmin) + '</b>' + (x.tmax != null ? ', filtra entro <b>' + DUR(x.tmax) + '</b>' : '')) +
           '</div>'; }).join('') +
@@ -11713,7 +11734,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     if (mostra('unisci')) h += '<section class="rc-sez" id="rc-unisci"><h3>🍾 Unisci e imbottiglia</h3><p class="rc-sub">Quando tutti gli infusi sono pronti.</p>' +
       chk('un-filtra', '🧻 <b>Filtra ogni infuso</b>: versalo in un imbuto con un filtro di carta (va bene quello da caffè) e raccogli il liquido limpido.') +
       '<h4>Porta ogni infuso a ' + A + '% e versalo nella miscela</h4>' +
-      R.righe.map(r => chk('un-d-' + r.n, '🌿 <b>' + esc(r.n) + '</b>: ' + (r.sotto ? '<b>' + f1(r.mlFin) + ' ml</b> di infuso filtrato (è già sotto ' + A + '%)' : '<b>' + f1(r.mlConc) + ' ml</b> di infuso filtrato + <b>' + f1(r.acquaDil) + ' ml</b> d’acqua = ' + f1(r.mlFin) + ' ml a ' + A + '%'))).join('') +
+      R.righe.map(r => chk('un-d-' + r.n, iconaHtml(byName[r.n]) + ' <b>' + esc(r.n) + '</b>: ' + (r.sotto ? '<b>' + f1(r.mlFin) + ' ml</b> di infuso filtrato (è già sotto ' + A + '%)' : '<b>' + f1(r.mlConc) + ' ml</b> di infuso filtrato + <b>' + f1(r.acquaDil) + ' ml</b> d’acqua = ' + f1(r.mlFin) + ' ml a ' + A + '%'))).join('') +
       chk('un-mix', '🥄 <b>Unisci</b> tutti gli infusi già a ' + A + '% in un solo contenitore: ' + f1(R.vol) + ' ml di gin.') +
       chk('un-riposo', '❄️ <b>Lascia riposare</b> la miscela al fresco e al buio per 24–48 ore, poi travasa solo la parte limpida senza smuovere il deposito.') +
       chk('un-velo', '🌫️ Se il gin resta un po’ velato, <b>mettilo in frigo per una notte</b> e filtralo di nuovo, ancora freddo, con un filtro di carta.') +
