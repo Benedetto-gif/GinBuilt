@@ -376,7 +376,7 @@ nav.tabs{display:none !important;}
 .menu-btn{width:100%;display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:var(--r-pill);border:1px solid var(--line);
   background:var(--glass-strong);-webkit-backdrop-filter:saturate(160%) blur(14px);backdrop-filter:saturate(160%) blur(14px);box-shadow:var(--sh-1), var(--sh-inset);
   font-family:'Public Sans',sans-serif;font-size:15px;font-weight:650;color:var(--ink);cursor:pointer;text-align:left;}
-.menu-ic{font-size:18px;line-height:1;}.menu-cur{flex:1;}.menu-car{color:var(--ink-faint);transition:transform .2s;}
+.menu-ic{font-size:18px;line-height:1;}.menu-map{font-weight:700;}.menu-cur{flex:1;opacity:.7;font-size:.92em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}.menu-car{color:var(--ink-faint);transition:transform .2s;}
 .menu-ver{margin-left:auto;font:700 11px/1 'Inter',system-ui,sans-serif;letter-spacing:.04em;opacity:.65;}
 .menu-ver + .menu-car{margin-left:6px;}
 .menu-btn[aria-expanded="true"] .menu-car{transform:rotate(180deg);}
@@ -2440,7 +2440,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.8.2</div>
+  <div class="splash-ver" id="splash-ver">v2.8.3</div>
 </div>
 
 <div class="wrap">
@@ -5272,7 +5272,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.8.2</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.8.3</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -5341,12 +5341,13 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   if (window.visualViewport) window.visualViewport.addEventListener('resize', misura);
   window.addEventListener('scroll', () => { if (!pop.hidden) misura(); }, { passive: true });
   function chiudi(){ imposta(false); }
-  btn.addEventListener('click', e => { e.stopPropagation(); imposta(pop.hidden); });
+  // il tasto in alto ora riporta direttamente alla mappa (il vecchio menu a tendina non serve più)
+  btn.addEventListener('click', e => { e.stopPropagation(); chiudi(); if (window.vaiMappa) window.vaiMappa(); else { window._navDaMenu = true; showTab('mappa'); } });
   document.addEventListener('click', e => { if (!bar.contains(e.target)) chiudi(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') chiudi(); });
   function aggiorna(name){
     pop.querySelectorAll('.menu-tile').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
-    const b = btns.find(x => x.dataset.tab === name); if (b) cur.textContent = 'Menu · ' + b.textContent.trim();
+    const b = btns.find(x => x.dataset.tab === name); if (b) cur.textContent = '· sei in ' + b.textContent.trim();
   }
   const orig = showTab; window.showTab = function(name){ orig(name); aggiorna(name); };
   const att = btns.find(x => x.classList.contains('active')); aggiorna(att ? att.dataset.tab : 'home');
@@ -9500,6 +9501,7 @@ window.apriStrumenti = function(){
       '<button type="button" class="str-tile" id="str-cond" style="--h:#2E9D5B"><span>\ud83d\udce4</span><b>Condividi l\u2019app</b><small>manda GinBuilder a un amico</small></button>' +
       '<button type="button" class="str-tile" id="str-luce" style="--h:#5D6F8C"><span>\ud83c\udf17</span><b>Luce e colori</b><small>sfondo chiaro o scuro</small></button>' +
       '<button type="button" class="str-tile" id="str-av" style="--h:#8A63B0"><span>\ud83e\uddf0</span><b>Strumenti avanzati</b><small>' + (av ? 'accesi: tocca per spegnerli' : 'spenti: tocca per accenderli') + '</small></button>' +
+    '<button type="button" class="str-tile str-wide" id="str-esci" style="--h:#7A867F"><span>\u23cf\ufe0f</span><b>Ho finito · esci</b><small>chiude il lavoro in corso e torna alla pagina iniziale</small></button>' +
     '</div>' +
     '<div class="home-dati" id="home-dati"></div>' +
     '<p class="str-ver">GinBuilder ' + ver + ' \u00b7 di Benedetto Daniele Sgroi</p>', '', null);
@@ -9513,6 +9515,7 @@ window.apriStrumenti = function(){
   document.getElementById('str-cond').onclick = () => { chiudi(); condividiApp(); };
   document.getElementById('str-luce').onclick = () => { chiudi(); const t = document.getElementById('theme-btn'); if (t) setTimeout(() => t.click(), 30); };
   document.getElementById('str-av').onclick = () => { chiudi(); if (window.toggleAvanzati) window.toggleAvanzati(); };
+  document.getElementById('str-esci').onclick = () => { chiudi(); if (window.esciApp) window.esciApp(); };
 };
 setTimeout(() => { try { window.puntoStrumenti(); } catch(e){} }, 600);
 
