@@ -2325,6 +2325,7 @@ header.top .h1-riga{flex-wrap:nowrap}
 @media (prefers-reduced-motion:reduce){.str-campana{animation:none}}
 .str-wide{grid-column:1 / -1}
 .str-allarme{box-shadow:0 0 0 3px #E0532F,0 3px 10px rgba(0,0,0,.2)}
+.mp-ricomincia{display:block;margin:6px auto 4px;padding:9px 16px;border-radius:999px;border:1.5px solid var(--line-strong);background:var(--card);color:var(--ink);font:700 14px/1.1 'Inter',system-ui,sans-serif;cursor:pointer}
 /* v2.1 · le due strade e la ricetta passo passo */
 html.in-mappa .menu-bar{display:none!important}
 .mp-via .mv-sub{font:italic 600 16px/1.2 'Fraunces',Georgia,serif;margin-top:-4px}
@@ -2440,7 +2441,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.8.3</div>
+  <div class="splash-ver" id="splash-ver">v2.8.4</div>
 </div>
 
 <div class="wrap">
@@ -4191,7 +4192,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.8.1 · 29 ottobre 2026 · riordino: cocktail, calcoli, taratura</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.8.4 · 29 ottobre 2026 · riordino: cocktail, calcoli, taratura</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -5272,7 +5273,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.8.3</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.8.4</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -11604,7 +11605,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       const [nome, int, , ruoli] = s, col = (STYLE_COLORS[nome] || ['var(--c-neutro)', '#fff']);
       if (chiavi && !(ruoli && ruoli.length)) return '';
       const bot = (ruoli || []).map(r => String(r[1]).replace(/\s*\((?:tracce|dose piena|una sola)\)/gi, '')).join(', ');
-      const on = nome === currentStyleName;
+      const on = nome === currentStyleName && (!chiavi || !!(pr && pr.fatte.tipo));
       return '<button type="button" class="tipo-card' + (on ? ' on' : '') + '" data-i="' + i + '" style="--c:' + col[0] + ';--on:' + col[1] + '">' +
         '<span class="tc-nome">' + esc(nome) + (on ? ' <span class="tc-ok">✓ scelto</span>' : '') + '</span>' +
         (ruoli && ruoli.length ? '<span class="tc-int">Intensità ' + '●'.repeat(int) + '○'.repeat(Math.max(0, 5 - int)) + '</span><span class="tc-bot">' + esc(bot) + '</span>'
@@ -11755,7 +11756,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       const ora = Date.now(), nuove = R.righe.map((r, k) => { const x = r.inf || {}, dl = x.dil || {};
         return { id: (ora + k).toString(36), inizio: ora, botanica: r.n,
           tipo: r.n + ' · ' + r.stato + ' · ' + r.abv + '% vol · ' + nf(r.volInf, 0) + ' ml',
-          note: 'Gin no problem! · ' + currentStyleName + ((att() || {}).nome ? ' · ' + att().nome : ''),
+          note: 'Gin no problem! · ' + currentStyleName + ((att() || {}).nome ? ' · ' + att().nome : ''), prog: (att() || {}).id,
           alcolG: dl.alcG != null ? dl.alcG : null, alcolMl: dl.alcMl != null ? dl.alcMl : null, abvS: ALCOL_PARTENZA,
           acquaG: dl.acquaG != null ? dl.acquaG : null, botG: x.g, temp: REF_TEMP, tmin: x.tmin, tmax: x.tmax,
           allarme: x.assaggio ? diaNonDiNotte(ora + x.assaggio * 3600000) : null, avvisato: false, finito: null }; });
@@ -11888,7 +11889,8 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     } else {
       h += '<div class="mp-tit-riga"><button type="button" class="mp-indietro" id="mp-cambia" aria-label="Torna alla scelta della strada" title="Torna alla scelta della strada">\u21a9\ufe0e</button><h2 class="mp-tit">' + V.e + ' ' + V.t + '</h2></div>' + (V.st ? '<p class="mp-st-sub">' + V.st + '</p>' : '') +
         '<p class="mp-sub">' + (pr.via === 'chiavi' ? 'Una ricetta codificata da seguire passo passo.' : 'Ogni tappa: una breve lezione e una prova.') + ' Tocca una tappa: quella che pulsa è la prossima.</p>' +
-        strada(V.tappe, pr.fatte);
+        strada(V.tappe, pr.fatte) +
+        '<button type="button" class="mp-ricomincia" id="mp-ricomincia">\ud83d\udd04 Ricomincia da capo</button>';
     }
     // la teoria appartiene solo alla strada del gin personalizzato: con il Gin no problem! si gioca, non si studia
     if (pr.via === 'pers') h += '<div class="mp-sez"><h3>📚 Capire perché</h3><p>La parte teorica, da consultare quando vuoi: le botaniche e la loro potenza, cosa si estrae e a che gradazione, i ruoli, le ridondanze, le leggi.</p>' +
@@ -11903,6 +11905,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       scegliVia(b.dataset.via);
     }));
     const cb = $('mp-cambia'); if (cb) cb.onclick = e => { e.preventDefault(); tornaBivio(); };
+    const rc = $('mp-ricomincia'); if (rc) rc.onclick = ricomincia;
     $('mp-prog').onclick = apriProgetti;
   }
   // ---------- i suoni dei tondi: solo al tocco, generati qui (nessun file audio) ----------
@@ -12122,6 +12125,27 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     const vai = () => { pr.fatte = {}; pr.passi = {}; pr.pp = null; pr.via = null; scriviP(); renderMappa(); window.scrollTo(0, 0); };
     if (!fatto) { vai(); return; }
     mostraAvviso('Cambi strada?', '<p>Torni alla scelta fra <strong>Gin no problem!</strong> e <strong>Fatti un gin</strong>. Le spunte di questa strada si azzerano; stile, botaniche e quantità restano. Se vuoi tenere anche le spunte, crea invece un nuovo progetto (📁).</p>', 'Cambia strada', vai);
+  }
+  // Ricomincia da capo: il gin aperto torna com'era appena scelta la strada (stile, gradazione, volume, botaniche, quote e spunte)
+  function ricomincia(){
+    const pr = att(); if (!pr) return;
+    const nDia = (() => { try { return diarioCarica().filter(x => x.prog === pr.id && !x.finito).length; } catch(e){ return 0; } })();
+    mostraAvviso('\ud83d\udd04 Ricomincia da capo?',
+      '<p>Il gin <strong>' + esc(pr.nome) + '</strong> torna all\u2019inizio della strada <strong>' + VIE[pr.via].e + ' ' + VIE[pr.via].t + '</strong>: si azzerano stile, gradazione, quantità, botaniche, quote e tutte le spunte.</p>' +
+      (nDia ? '<label class="dia-chk"><input type="checkbox" id="rc-dia" checked> Togli dal diario anche i ' + nDia + ' infusi annotati da questo gin</label>' : '') +
+      '<p class="cond-hint">Le schede di prova restano. Per tenere questo gin e provarne un altro, usa invece \u00ab\ud83d\udcc1 I tuoi gin\u00bb \u2192 Inizia un nuovo gin.</p>', 'Ricomincia', () => {
+        const togli = nDia && document.getElementById('rc-dia') && document.getElementById('rc-dia').checked;
+        if (togli){ try { diarioSalva(diarioCarica().filter(x => !(x.prog === pr.id && !x.finito))); diarioRender(); } catch(e){} }
+        pr.fatte = {}; pr.passi = {}; pr.pp = null; pr.modello = null; pr.builder = null; pr.vol = '700'; pr.abv = '43';
+        Object.keys(livScelta).forEach(k => delete livScelta[k]);
+        _cambio = true;
+        try { $('dosi-vol').value = 700; $('dosi-abv').value = 43; $('dosi-vol').dispatchEvent(new Event('input')); $('dosi-abv').dispatchEvent(new Event('input')); } catch(e){}
+        _cambio = false;
+        scegliStile(pr.via === 'pers' ? idxPers() : 0);
+        cattura(pr); pr.fatte = {}; aggiornaNome(pr); scriviP();
+        try { $('pp-ricarica').click(); } catch(e){}
+        renderMappa(); window.scrollTo(0, 0);
+      });
   }
   function cambiaVia(){
     const pr = att(), altra = pr.via === 'chiavi' ? 'pers' : 'chiavi';
