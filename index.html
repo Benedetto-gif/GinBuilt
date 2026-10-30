@@ -2415,7 +2415,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.7.1</div>
+  <div class="splash-ver" id="splash-ver">v2.7.2</div>
 </div>
 
 <div class="wrap">
@@ -4166,7 +4166,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.7.1 · 29 ottobre 2026 · riordino: cocktail, calcoli, taratura</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.7.2 · 29 ottobre 2026 · riordino: cocktail, calcoli, taratura</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -5247,7 +5247,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.7.1</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.7.2</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -11383,8 +11383,8 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         { id:'unisci', tab:'ricetta', e:'🍾', t:'Unisci e imbottiglia', c:'#2F8F8F' },
         { id:'servire', tab:'servire', e:'🍸', t:'Servire', c:'#C0583E', d:'garnish, tonica, cocktail' }
       ] },
-    pers: { e:'🧪', t:'Il gin personalizzato', c:'#4C7BB5',
-      d:'Impari facendo: ogni tappa ha una breve lezione e una prova pratica, dal ginepro fino al bicchiere. La teoria completa è sempre a un tocco.',
+    pers: { e:'🧪', t:'Fatti un gin', c:'#4C7BB5',
+      d:'Impari facendo: ogni tappa ha una breve lezione e una prova pratica, dal ginepro fino al bicchiere. Se vuoi saperne di più, ogni lezione ha il suo «Approfondisci».',
       tappe: [
         { id:'l-basi',   tab:'lezione',    lez:'basi',       e:'🫐', t:'Il ginepro e le tre basi',     c:'#2F7259', d:'cos\u2019è un gin' },
         { id:'l-ruoli',  tab:'lezione',    lez:'ruoli',      e:'🧭', t:'I sei ruoli',                  c:'#5D6F8C', d:'e da dove partire' },
@@ -12031,7 +12031,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     const fatto = Object.keys(pr.fatte).length || Object.keys(pr.passi).length;
     const vai = () => { pr.fatte = {}; pr.passi = {}; pr.pp = null; pr.via = null; scriviP(); renderMappa(); window.scrollTo(0, 0); };
     if (!fatto) { vai(); return; }
-    mostraAvviso('Torni al bivio?', '<p>Puoi scegliere di nuovo fra <strong>Gin no problem!</strong> e <strong>Personalizzato</strong>. Le spunte di questa strada si azzerano; stile, botaniche e quantità restano. Se vuoi tenere anche le spunte, crea invece un nuovo progetto (📁).</p>', 'Torna al bivio', vai);
+    mostraAvviso('Torni al bivio?', '<p>Puoi scegliere di nuovo fra <strong>Gin no problem!</strong> e <strong>Fatti un gin</strong>. Le spunte di questa strada si azzerano; stile, botaniche e quantità restano. Se vuoi tenere anche le spunte, crea invece un nuovo progetto (📁).</p>', 'Torna al bivio', vai);
   }
   function cambiaVia(){
     const pr = att(), altra = pr.via === 'chiavi' ? 'pers' : 'chiavi';
