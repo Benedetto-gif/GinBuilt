@@ -338,10 +338,10 @@ body.scrolled .sticky-head{
 }
 
 header.top{
-  padding:44px var(--sp-luce) 22px 0;
+  padding:44px 0 22px 0;
   margin-bottom:0;
 }
-body.scrolled header.top{padding:10px var(--sp-luce) 8px 0;}
+body.scrolled header.top{padding:10px 0 8px 0;}
 body.scrolled header.top h1{font-size:19px;margin-bottom:0;letter-spacing:-0.01em;}
 body.scrolled header.top .kicker,
 body.scrolled header.top p:not(.kicker){display:none;}
@@ -1475,7 +1475,7 @@ footer.note{
   .theme-pop{right:16px;left:16px;width:auto;top:calc(env(safe-area-inset-top) + 50px);}
   body.scrolled .theme-pop{top:calc(env(safe-area-inset-top) + 42px);}
   :root{--sp-luce:58px;}
-  header.top{padding:30px var(--sp-luce) 18px 0;}
+  header.top{padding:30px 0 18px 0;}
   .home-hero{padding:24px 22px;border-radius:var(--r-md);}
   .home-hero p{max-width:100%;}
   .hero-art{width:84px;height:84px;right:10px;top:auto;bottom:16px;transform:none;opacity:.35;}
@@ -2318,6 +2318,13 @@ details.lez-carta .lez-corpo{padding:0 14px 12px}
 .str-tile span{font-size:24px}.str-tile b{font:800 14.5px/1.2 'Inter',system-ui,sans-serif}.str-tile small{font-size:12px;opacity:.9;line-height:1.3}
 .avviso .home-dati{margin:0}
 .str-ver{margin:12px 0 0;text-align:center;font-size:12px;color:var(--ink-faint)}
+#strumenti-btn{margin-left:auto}
+header.top .h1-riga{flex-wrap:nowrap}
+.str-campana{position:absolute;top:-10px;right:-8px;min-width:24px;height:24px;padding:0 4px;border-radius:999px;background:#E0532F;color:#fff;font:800 11px/24px 'Inter',system-ui,sans-serif;font-style:normal;text-align:center;box-shadow:0 0 0 2px var(--paper);animation:campana 1.6s ease-in-out infinite}
+@keyframes campana{0%,70%,100%{transform:rotate(0)}75%{transform:rotate(-14deg)}85%{transform:rotate(12deg)}92%{transform:rotate(-6deg)}}
+@media (prefers-reduced-motion:reduce){.str-campana{animation:none}}
+.str-wide{grid-column:1 / -1}
+.str-allarme{box-shadow:0 0 0 3px #E0532F,0 3px 10px rgba(0,0,0,.2)}
 /* v2.1 · le due strade e la ricetta passo passo */
 html.in-mappa .menu-bar{display:none!important}
 .mp-via .mv-sub{font:italic 600 16px/1.2 'Fraunces',Georgia,serif;margin-top:-4px}
@@ -2433,7 +2440,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.8</div>
+  <div class="splash-ver" id="splash-ver">v2.8.1</div>
 </div>
 
 <div class="wrap">
@@ -2456,7 +2463,7 @@ html.in-mappa #nav-indietro{display:none!important}
     <button type="button" class="tp-zero" id="tp-zero">↺ Valori iniziali</button>
   </div>
   <header class="top">
-    <div class="h1-riga"><h1>GinBuilder</h1><button type="button" class="cond-app-btn" id="strumenti-btn" onclick="apriStrumenti()" aria-label="Strumenti: condividi, i tuoi dati, impostazioni">⚙️ Strumenti<i class="str-punto" id="str-punto" hidden></i></button></div>
+    <div class="h1-riga"><h1>GinBuilder</h1><button type="button" class="cond-app-btn" id="strumenti-btn" onclick="apriStrumenti()" aria-label="Strumenti: condividi, i tuoi dati, impostazioni">⚙️ Strumenti<i class="str-punto" id="str-punto" hidden></i><i class="str-campana" id="str-campana" hidden>🔔</i></button></div>
     <p class="autore-app">di Benedetto Daniele Sgroi</p>
   </header>
 
@@ -4184,7 +4191,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </section>
 
   <footer class="note">
-    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.8 · 29 ottobre 2026 · riordino: cocktail, calcoli, taratura</span>
+    <span id="ver-stamp" style="display:block;margin-bottom:6px;font-weight:600;">Versione 2.8.1 · 29 ottobre 2026 · riordino: cocktail, calcoli, taratura</span>
     Le dosi e i tempi sono punti di partenza organolettici basati sulla libreria botanica; vanno sempre
     validati con assaggi comparativi. Le relazioni di ridondanza e complementarietà sono stime qualitative,
     non un giudizio definitivo. Le schede di prova sono salvate solo su questo dispositivo/browser (nessun
@@ -5265,7 +5272,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.8</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-haspopup="true"><span class="menu-ic">☰</span><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" title="Versione dell\'app">v2.8.1</span><span class="menu-car">▾</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -9462,11 +9469,23 @@ function datiInRitardo(){
   const c = contaDati(), d = ultimoBackup(), ci = c.schede + c.diario + c.lab, giorni = d ? (Date.now() - Date.parse(d)) / 864e5 : null;
   return ci > 0 && (!d || giorni > 14);
 }
-window.puntoStrumenti = function(){ const p = document.getElementById('str-punto'); if (p) p.hidden = !datiInRitardo(); };
+// infusi da controllare: non finiti e con il promemoria già scaduto (il diario è uno solo, per tutte e due le strade)
+function infusiDaControllare(){ const ora = Date.now(); try { return diarioCarica().filter(x => !x.finito && x.allarme && x.allarme <= ora).length; } catch(e){ return 0; } }
+function infusiInCorso(){ try { return diarioCarica().filter(x => !x.finito).length; } catch(e){ return 0; } }
+window.puntoStrumenti = function(){
+  const p = document.getElementById('str-punto'); if (p) p.hidden = !datiInRitardo();
+  const c = document.getElementById('str-campana'), n = infusiDaControllare();
+  if (c){ c.hidden = !n; c.textContent = '\ud83d\udd14' + (n > 1 ? n : ''); }
+};
+setInterval(() => { try { window.puntoStrumenti(); } catch(e){} }, 60000);
+(function(){ const ds = diarioSalva; diarioSalva = function(l){ const r = ds.apply(this, arguments); try { window.puntoStrumenti(); } catch(e){} return r; }; })();
 window.apriStrumenti = function(){
   const av = document.documentElement.classList.contains('avanzato'), ver = ((document.getElementById('menu-ver') || document.querySelector('.menu-ver') || {}).textContent || '').trim();
   mostraAvviso('\u2699\ufe0f Strumenti',
     '<div class="str-grid">' +
+      (() => { const n = infusiDaControllare(), k = infusiInCorso();
+        return '<button type="button" class="str-tile str-wide' + (n ? ' str-allarme' : '') + '" id="str-diario" style="--h:#B8921F"><span>' + (n ? '\ud83d\udd14' : '\ud83d\udcd3') + '</span><b>Diario degli infusi</b><small>' +
+          (n ? n + (n === 1 ? ' infuso da controllare adesso' : ' infusi da controllare adesso') : k ? k + (k === 1 ? ' infuso in corso, nessun allarme' : ' infusi in corso, nessun allarme') : 'nessun infuso in corso') + '</small></button>'; })() +
       '<button type="button" class="str-tile" id="str-cond" style="--h:#2E9D5B"><span>\ud83d\udce4</span><b>Condividi l\u2019app</b><small>manda GinBuilder a un amico</small></button>' +
       '<button type="button" class="str-tile" id="str-luce" style="--h:#5D6F8C"><span>\ud83c\udf17</span><b>Luce e colori</b><small>sfondo chiaro o scuro</small></button>' +
       '<button type="button" class="str-tile" id="str-av" style="--h:#8A63B0"><span>\ud83e\uddf0</span><b>Strumenti avanzati</b><small>' + (av ? 'accesi: tocca per spegnerli' : 'spenti: tocca per accenderli') + '</small></button>' +
@@ -9479,6 +9498,7 @@ window.apriStrumenti = function(){
   const ripr = () => { if (ic){ ic.style.display = ''; } };
   ['avviso-annulla','avviso-ok'].forEach(id => document.getElementById(id).addEventListener('click', ripr, { once: true }));
   const chiudi = () => { chiudiAvviso(); ripr(); };
+  document.getElementById('str-diario').onclick = () => { chiudi(); window._tappa = null; showTab('diario'); };
   document.getElementById('str-cond').onclick = () => { chiudi(); condividiApp(); };
   document.getElementById('str-luce').onclick = () => { chiudi(); const t = document.getElementById('theme-btn'); if (t) setTimeout(() => t.click(), 30); };
   document.getElementById('str-av').onclick = () => { chiudi(); if (window.toggleAvanzati) window.toggleAvanzati(); };
@@ -11836,7 +11856,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     if (!att()){ const pr = nuovoProgetto(); P.lista.push(pr); P.att = pr.id; cattura(pr); scriviP(); }
     const pr = att(), V = VIE[pr.via]; aggiornaNome(pr);
     let h = '<div class="mp-barra"><button type="button" class="mp-prog" id="mp-prog">📁 <span>' + (haScelto(pr) ? esc(pr.nome) : 'I tuoi gin') + '</span> ▾</button>' +
-      '<button type="button" class="mp-diario" id="mp-diario">📓 Diario</button></div>';
+      '</div>';
     if (!V){
       h += '<h2 class="mp-tit">Come vuoi fare il tuo gin?</h2><p class="mp-sub">Due strade, secondo quanto vuoi metterci le mani. Puoi cambiarla in ogni momento.</p>' +
         '<div class="mp-bivio">' + Object.keys(VIE).map(k => '<button type="button" class="mp-via" data-via="' + k + '" style="--c:' + VIE[k].c + '"><span class="mv-tondo">' + TONDI[k] + '</span><b>' + VIE[k].t + '</b>' + (VIE[k].st ? '<i class="mv-sub">' + VIE[k].st + '</i>' : '') + '<span>' + VIE[k].d + '</span>' +
@@ -11860,7 +11880,6 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     }));
     const cb = $('mp-cambia'); if (cb) cb.onclick = e => { e.preventDefault(); tornaBivio(); };
     $('mp-prog').onclick = apriProgetti;
-    $('mp-diario').onclick = () => { window._tappa = null; showTab('diario'); };
   }
   // ---------- i suoni dei tondi: solo al tocco, generati qui (nessun file audio) ----------
   let actx = null;
