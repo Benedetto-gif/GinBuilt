@@ -2271,6 +2271,15 @@ html details.howto a{color:#5A3E1C;}
 .lez-bot-t small{display:block;color:var(--ink-soft);font-size:12.5px}
 .lez-bot svg,.sc-gin svg,#lez-cfr-out svg{width:100%;height:auto;max-width:280px;display:block;margin:0 auto}
 .lez-pop{background:none;border:0;padding:0;font:inherit;color:var(--juniper);text-decoration:underline dotted;text-underline-offset:3px;cursor:pointer}
+.ascolta{margin-top:10px;text-align:left}
+.ascolta-t{font-size:15px;margin-bottom:2px}
+.ascolta-l{list-style:none;padding:0;margin:6px 0 8px;display:grid;gap:4px;font-size:14px}
+.ascolta-l li{padding:5px 8px;border-radius:10px;transition:background .3s}
+.ascolta-l li.on{background:color-mix(in srgb,#E0492B 16%,transparent)}
+.ascolta-l small{color:var(--ink-soft)}
+.ascolta-n{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;border:1.6px solid #2F7259;background:#fff;color:#2F7259;font-size:11px;font-weight:700;margin-right:6px;vertical-align:1px}
+.ascolta-n.g{background:#2F7259;color:#fff}
+.r-ord{transition:opacity .3s}
 .cs-chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
 .cs-chip{font:inherit;font-size:13px;padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:none;color:var(--ink-soft);opacity:.75;cursor:pointer}
 .cs-chip small{font-size:11px;opacity:.8}
@@ -2477,7 +2486,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.9.8</div>
+  <div class="splash-ver" id="splash-ver">v2.10.0</div>
 </div>
 
 <div class="wrap">
@@ -4750,7 +4759,7 @@ function radarSVG(serie, size, opts){
   }
   nota += '</div>';
   return '<div class="radar-wrap">' +
-    '<svg class="radar8" viewBox="-22 0 '+(size+44)+' '+size+'" role="img" aria-label="Profilo sensoriale. '+desc.replace(/"/g,'')+'">'+g+'<g class="r-norm">'+gN+'</g></svg>' + potLegenda(serie) + nota + '</div>';
+    '<svg class="radar8" viewBox="-22 0 '+(size+44)+' '+size+'" role="img" aria-label="Profilo sensoriale. '+desc.replace(/"/g,'')+'">'+g+'<g class="r-norm">'+gN+'</g>' + (opts.ordine ? ascoltaSvg(opts.ordine, pt) : '') + '</svg>' + potLegenda(serie) + nota + '</div>';
 }
 // ---------- Equilibrio con le base ----------
 // La forma del radar mostra la firma (senza ginepro, coriandolo e angelica), ma l'equilibrio di un gin si giudica
@@ -4865,6 +4874,63 @@ function ordineNoteHtml(elenco){
   return '<div class="fase-ordine"><strong>In ordine di arrivo:</strong> ' + r.map(([f,n]) => nm[f] + ' → ' + (n.length ? n.join(', ') : 'poco o nulla')).join(' · ') + '</div>';
 }
 
+// ---------- Ascoltare il gin: in che ordine arrivano le note ----------
+// Per ogni aroma: quanto pesa nella ricetta e QUANDO arriva, come media dei tempi (testa 0, cuore 1, coda 2)
+// delle botaniche che lo portano, pesata su quanto ciascuna lo porta. I gusti hanno tempi fisiologici fissi:
+// dolce e salino subito, acido poco dopo, amaro per ultimo e lungo. Stima da tarare all'assaggio.
+const GUSTO_T = { 0: 0.85, 3: 0.85, 2: 1.0, 1: 1.7 };   // Dolce, Salino, Acido, Amaro
+function ordineAscolto(elenco){
+  const el = elenco.filter(x => PROFILO8[x.n]); if (!el.length) return [];
+  const w = x => x.w === undefined ? 1 : x.w;
+  const I = ASSI8.map((_, i) => el.reduce((a, x) => a + PROFILO8[x.n][i] * w(x), 0));
+  const mx = Math.max.apply(null, I) || 1;
+  const passi = [];
+  ASSI8.forEach((nm, i) => {
+    if (I[i] < mx * 0.3) return;
+    let t;
+    if (i in GUSTO_T) t = GUSTO_T[i];
+    else { let a = 0, b = 0; el.forEach(x => { const s = STADI[x.n] || [.3, 1, .4], tot = s[0] + s[1] + s[2] || 1, q = PROFILO8[x.n][i] * w(x); a += q * (s[1] + 2 * s[2]) / tot; b += q; }); t = b ? a / b : 1; }
+    const chi = el.map(x => [x.n, PROFILO8[x.n][i] * w(x)]).filter(z => z[1] > 0).sort((a, b) => b[1] - a[1]).slice(0, 2).map(z => z[0]);
+    passi.push({ i, nome: nm.toLowerCase(), gusto: i in GUSTO_T, t, forza: I[i] / mx, chi });
+  });
+  return passi.sort((a, b) => b.forza - a.forza).slice(0, 7).sort((a, b) => a.t - b.t || b.forza - a.forza).map((p, k) => Object.assign(p, { k: k + 1 }));
+}
+function momentoAscolto(p, primoAroma){
+  if (p.gusto) return p.i === 1 ? ['⏳', 'Nel finale, sulla lingua'] : ['👅', 'Appena in bocca'];
+  return p.t < 0.85 || primoAroma ? ['👃', 'Al naso, prima di bere'] : p.t < 1.3 ? ['👄', 'A metà sorso, dal retro del naso'] : ['⏳', 'Nel finale'];
+}
+function ascoltaHtml(passi, nota){
+  if (!passi.length) return '';
+  const nomi = l => l.map(n => n === 'Bacche di ginepro' ? 'ginepro' : n.toLowerCase()).join(', ');
+  return '<div class="ascolta"><div class="ascolta-t">🎧 <strong>In che ordine ascoltarlo</strong></div>' +
+    '<p class="cond-hint">I numeri sui raggi sono l’ordine in cui le note dovrebbero arrivare: tondi bianchi gli aromi (naso), tondi pieni i gusti (lingua).' + (nota ? ' ' + nota : '') + '</p>' +
+    '<ol class="ascolta-l">' + passi.map(p => { const [ic, q] = momentoAscolto(p, p === passi.find(x => !x.gusto)), art = /^[aeiou]/.test(p.nome) ? 'l’' : /^(s[^aeiou]|z|gn|ps)/.test(p.nome) ? 'lo ' : 'il ';
+      return '<li data-k="' + p.k + '"><span class="ascolta-n' + (p.gusto ? ' g' : '') + '">' + p.k + '</span>' + ic + ' <b>' + q + ':</b> ' + (p.gusto ? 'senti ' : 'cerca ') + art + '<strong>' + p.nome + '</strong>' + (p.chi.length ? ' <small>(' + nomi(p.chi) + ')</small>' : '') + '</li>'; }).join('') + '</ol>' +
+    '<button type="button" class="ghost-btn ascolta-btn">🎧 Ascolta il tuo gin, una nota alla volta</button></div>';
+}
+// i numeri sui raggi (dentro il radar) e la guida passo passo
+function ascoltaSvg(passi, pt){
+  return passi.map(p => { const [x, y] = pt(p.i, 5), [cx, cy] = pt(p.i, 0);
+    return '<line class="r-ord-l" data-k="' + p.k + '" x1="' + cx + '" y1="' + cy + '" x2="' + x + '" y2="' + y + '" stroke="#E0492B" stroke-width="4" stroke-linecap="round" opacity="0"/>' +
+      '<g class="r-ord" data-k="' + p.k + '"><circle cx="' + x + '" cy="' + y + '" r="8.5" fill="' + (p.gusto ? '#2F7259' : '#fff') + '" stroke="#2F7259" stroke-width="1.6"/>' +
+      '<text x="' + x + '" y="' + (y + 4) + '" text-anchor="middle" font-size="11" font-weight="700" fill="' + (p.gusto ? '#fff' : '#2F7259') + '">' + p.k + '</text></g>'; }).join('');
+}
+document.addEventListener('click', e => {
+  const bt = e.target.closest('.ascolta-btn'); if (!bt) return;
+  const box = bt.closest('.radar-box, .sc-gin, .ascolta-box') || bt.parentElement.parentElement;
+  const li = [...box.querySelectorAll('.ascolta-l li')], n = li.length; if (!n || bt._va) return;
+  bt._va = true; bt.disabled = true;
+  const svg = box.querySelector('svg.radar8'); if (svg) svg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  const accendi = k => {
+    box.querySelectorAll('.r-ord-l').forEach(l => l.setAttribute('opacity', +l.dataset.k === k ? '.85' : '0'));
+    box.querySelectorAll('.r-ord').forEach(g => g.style.opacity = !k || +g.dataset.k === k ? '1' : '.3');
+    li.forEach(x => x.classList.toggle('on', +x.dataset.k === k));
+  };
+  let k = 0;
+  const fermo = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const passo = () => { k++; if (k > n){ accendi(0); bt._va = false; bt.disabled = false; bt.textContent = '🎧 Riascolta'; return; } accendi(k); setTimeout(passo, fermo ? 2500 : 2200); };
+  passo();
+});
 
 // ---------- Estrazione e profilo ----------
 // Modello semplice a cinetica del primo ordine: la frazione estratta dopo t ore e' F(t) = 1 - exp(-t / tau).
@@ -5332,7 +5398,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.9.8</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.10.0</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -6696,8 +6762,8 @@ function renderSummary(){
     const mx = Math.max.apply(null, mediaDi('tutto')) || 1;      // stessa scala per tutti i tempi, cosi' si confrontano
     const vals = mediaDi(window.radarFase).map(x => Math.min(5, Math.round(x / mx * 50) / 10));
     box.innerHTML = '<div class="radar-box"><div class="radar-title">Profilo della ricetta' + (window.radarConBase ? ' (con le base)' : ' (senza le base)') + '</div>' + fasiBtn + btnBase + insBox +
-      radarSVG([{vals:vals,color:'var(--juniper)',label:'Ricetta', potenza: potenzaMedia(elenco)}], 280, {stile: elRif.length ? currentStyleName : null, rifVals: elRif.length ? ASSI8.map((_,i) => elRif.reduce((a,x) => a + valFase(x.n, window.radarFase)[i] * x.w, 0)) : null, eq: eqRicetta ? [eqRicetta] : null}) + insNota +
-      ordineNoteHtml(elenco) +
+      radarSVG([{vals:vals,color:'var(--juniper)',label:'Ricetta', potenza: potenzaMedia(elenco)}], 280, {ordine: window.radarFase === 'tutto' ? ordineAscolto(elTutto) : null, stile: elRif.length ? currentStyleName : null, rifVals: elRif.length ? ASSI8.map((_,i) => elRif.reduce((a,x) => a + valFase(x.n, window.radarFase)[i] * x.w, 0)) : null, eq: eqRicetta ? [eqRicetta] : null}) + insNota +
+      (window.radarFase === 'tutto' ? ascoltaHtml(ordineAscolto(elTutto), window.radarConBase ? '' : 'La sequenza conta il gin intero, basi comprese, perché nel bicchiere ci sono.') : ordineNoteHtml(elenco)) +
       (FASE_NOTA[window.radarFase] ? '<div class="radar-nota">' + FASE_NOTA[window.radarFase] + '</div>' : '') +
       '<div class="radar-nota">Mostra la forma del profilo (quali note prevalgono), non l\'intensità. Ogni botanica pesa per le sue porzioni: quanta ne metti rispetto alla sua dose di riferimento (che tiene già conto della potenza). Stima orientativa da validare all\'assaggio.</div></div>' + sensRicettaBox(elTutto);
     aggancia();
@@ -12452,7 +12518,8 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     const sc = ruoliScelti(), el = Object.keys(sc).filter(n => PROFILO8[n]).map(n => ({ n, w: Math.max(0.0001, RUOLO_DOSE[sc[n].ruolo] ?? 1) }));
     if (!el.length) return '';
     const tot = el.reduce((a, x) => a + x.w, 0), v = ASSI8.map((_, i) => el.reduce((a, x) => a + PROFILO8[x.n][i] * x.w, 0) / tot), mx = Math.max.apply(null, v) || 1;
-    return radarSVG([{ vals: v.map(x => Math.round(x / mx * 50) / 10), color: 'var(--juniper)', label: 'Il tuo gin', potenza: potenzaMedia(el) }], 250, {});
+    const ord = ordineAscolto(el);
+    return radarSVG([{ vals: v.map(x => Math.round(x / mx * 50) / 10), color: 'var(--juniper)', label: 'Il tuo gin', potenza: potenzaMedia(el) }], 250, { ordine: ord }) + ascoltaHtml(ord, '');
   }
   function renderScelta(){
     const box = $('scelta-box'); if (!box) return;
