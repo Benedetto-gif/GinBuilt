@@ -1682,6 +1682,9 @@ footer.note{
 .sem-box{margin-top:16px;padding:16px 18px;border:1px solid var(--line);border-radius:var(--r-md);background:var(--surface-2);}
 .sem-box h4{margin:0 0 10px;font-family:'Public Sans',sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--ochre);font-weight:800;}
 .sem-verdi{margin-top:6px}
+.sem-ponte{font-size:14px;margin:0 0 12px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.sem-ponte p{margin:6px 0}
+.sem-ponte .sem-dot{display:inline-block;vertical-align:-1px;margin-right:6px}
 .sem-verdi > summary{cursor:pointer;display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:650;color:var(--ink-soft);padding:6px 0;list-style:none}
 .sem-verdi > summary::-webkit-details-marker{display:none}
 .sem-verdi > summary::after{content:'▾';margin-left:auto}
@@ -2537,7 +2540,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.11.11</div>
+  <div class="splash-ver" id="splash-ver">v2.11.12</div>
 </div>
 
 <div class="wrap">
@@ -5489,7 +5492,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.11.11</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.11.12</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -9983,7 +9986,12 @@ function renderSemafori(nomi){
   righe.sort((x, y) => ordine[x.c] - ordine[y.c]);
   const col = { rosso: 'var(--red-sym)', arancio: 'var(--orange-sym)', verde: 'var(--green-sym)' };
   const n = c => righe.filter(r => r.c === c).length;
-  let html = '<div class="sem-box"><h4>Valutazione della combinazione</h4><div class="sem-tot">' +
+  // un passaggio che spiega il salto: dal radar del gin intero alle botaniche guardate a due a due
+  const ponte = '<div class="sem-ponte"><p>Il radar mostra il gin intero. Qui si guardano invece le botaniche <strong>a due a due</strong>, per capire come lavorano insieme.</p>' +
+    '<p><i class="sem-dot" style="background:' + col.rosso + '"></i><strong>Ridondanza</strong>: le due botaniche portano la stessa nota. Si sommano, e quella nota rischia di diventare troppa.</p>' +
+    '<p><i class="sem-dot" style="background:' + col.arancio + '"></i><strong>Rischio</strong>: le due botaniche si somigliano in parte, oppure una va usata con cautela. Si possono tenere, con dosi attente.</p>' +
+    '<p><i class="sem-dot" style="background:' + col.verde + '"></i><strong>Complementari</strong>: portano note diverse che si completano. È il caso migliore.</p></div>';
+  let html = '<div class="sem-box"><h4>⚖️ Le botaniche a due a due</h4>' + ponte + '<div class="sem-tot">' +
     ['rosso', 'arancio', 'verde'].map(c => '<span><i class="sem-dot" style="background:' + col[c] + '"></i>' + n(c) + ' ' +
       (c === 'rosso' ? 'ridondanze' : c === 'arancio' ? 'rischi' : 'complementari') + '</span>').join('') + '</div>';
   if (!n('rosso') && !n('arancio'))
