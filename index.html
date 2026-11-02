@@ -2081,6 +2081,11 @@ html details.howto a{color:#5A3E1C;}
   table.tab-schede td,table.tab-schede td[data-l]::before{border:0;padding:3px 0;text-align:left!important;white-space:normal}
   table.tab-schede td[data-l]::before{content:attr(data-l);display:block;font:700 10.5px/1.3 'Inter',system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;opacity:.65}
   table.tab-schede td:first-child{font-weight:700;font-size:15px}
+  .tab-scorri{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;margin:4px 0 10px;border-radius:10px;
+    background:linear-gradient(to left,rgba(0,0,0,.18),transparent 22px) right/22px 100% no-repeat;}
+  .tab-scorri.in-fondo{background:none}
+  .tab-scorri > table.tab-larga{min-width:560px;margin:0}
+  .tab-scorri-nota{font:600 12px/1.3 'Inter',system-ui,sans-serif;opacity:.7;margin:8px 0 2px}
   table.tab-compatta{font-size:12px}
   table.tab-compatta th,table.tab-compatta td{padding:3px 3px}
 }
@@ -2551,7 +2556,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.12.3</div>
+  <div class="splash-ver" id="splash-ver">v2.12.4</div>
 </div>
 
 <div class="wrap">
@@ -5503,7 +5508,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.12.3</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.12.4</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -11470,22 +11475,24 @@ if ("serviceWorker" in navigator) {
 </script>
 <script>
 // ---------- Tabelle larghe sul telefono ----------
-// Una tabella che non entra nella larghezza dello schermo diventa una pila di schede (una per riga, con il nome
-// della colonna davanti a ogni voce). Le griglie di punteggi (colonne 0, 1, 2…) restano tabelle, solo più compatte.
+// Una tabella che non entra nella larghezza dello schermo si mette in un riquadro che scorre da sinistra a destra,
+// con una riga che lo avvisa. Le griglie di punteggi (colonne 0, 1, 2…) prima provano a stringersi.
 (function(){
   function sistema(){
     if (window.innerWidth > 640) return;
-    document.querySelectorAll('table:not(.tab-schede):not(.tab-compatta):not(.mat-griglia)').forEach(t => {
-      if (!t.offsetParent) return;
+    document.querySelectorAll('table:not(.mat-griglia)').forEach(t => {
+      if (!t.offsetParent || (t.parentElement && t.parentElement.classList.contains('tab-scorri'))) return;
       const box = t.parentElement; if (!box) return;
-      if (t.offsetWidth <= box.clientWidth + 2 && t.getBoundingClientRect().right <= window.innerWidth + 1) return;
-      const r0 = t.tHead ? t.tHead.rows[0] : t.rows[0]; if (!r0) return;
-      const th = [...r0.cells].map(c => c.tagName === 'TH' ? c.textContent.trim() : null);
-      if (!th.length || th.some(x => x === null)) return;
-      if (th.filter(x => /^\d$|^$/.test(x)).length >= th.length / 2){ t.classList.add('tab-compatta'); return; }
-      if (!t.tHead) r0.classList.add('tab-h');
-      [...t.rows].forEach(tr => { if (tr === r0) return; [...tr.cells].forEach((td, i) => { if (th[i]) td.dataset.l = th[i]; }); });
-      t.classList.add('tab-schede');
+      const esce = () => t.offsetWidth > box.clientWidth + 2 || t.getBoundingClientRect().right > window.innerWidth + 1;
+      if (!esce()) return;
+      const r0 = t.tHead ? t.tHead.rows[0] : t.rows[0];
+      const th = r0 ? [...r0.cells].map(c => c.textContent.trim()) : [];
+      if (th.length && th.filter(x => /^\d$|^$/.test(x)).length >= th.length / 2){ t.classList.add('tab-compatta'); if (!esce()) return; }
+      const w = document.createElement('div'); w.className = 'tab-scorri';
+      const nota = document.createElement('div'); nota.className = 'tab-scorri-nota'; nota.textContent = '↔ Scorri la tabella con il dito';
+      t.before(nota); t.before(w); w.appendChild(t); t.classList.add('tab-larga');
+      const fine = () => w.classList.toggle('in-fondo', w.scrollLeft + w.clientWidth >= w.scrollWidth - 4);
+      w.addEventListener('scroll', fine, { passive: true }); fine();
     });
   }
   let tmr = null; const piano = () => { clearTimeout(tmr); tmr = setTimeout(sistema, 150); };
@@ -11518,7 +11525,7 @@ if ("serviceWorker" in navigator) {
   pan.addEventListener('toggle', e => { const d = e.target; if (d.classList && d.classList.contains('mat-pag') && !d.open) d.open = true; }, true);
   // tabelle larghe: sul telefono ogni riga diventa una scheda, con il nome della colonna davanti a ogni voce
   // (si rifà a ogni pagina mostrata: altri script, come il glossario, possono riscrivere il contenuto)
-  const schedeTab = () => pan.querySelectorAll('.mat-pag table:not(.tab-schede)').forEach(t => { const th = [...t.querySelectorAll('thead th')].map(x => x.textContent.trim()); if (!th.length) return;
+  const schedeTab = () => [].forEach(t => { const th = [...t.querySelectorAll('thead th')].map(x => x.textContent.trim()); if (!th.length) return;
     t.classList.add('tab-schede'); t.querySelectorAll('tbody tr').forEach(tr => [...tr.children].forEach((td, i) => { if (th[i]) td.dataset.l = th[i]; })); });
   schedeTab();
   // le domande del curioso: si vedono solo le domande, la risposta si apre toccandole
