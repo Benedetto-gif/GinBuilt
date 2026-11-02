@@ -39,6 +39,8 @@ setTimeout(()=>{const w=dom.window,d=w.document,ser=new w.XMLSerializer();
   return out;
  }
  data.PAN={}; ['storia','nozioni','analisi','altrigin','ridondanza','cocktail','garnish','toniche','prove','leggi'].forEach(id=>data.PAN[id]=sezioni(id));
+ // la pagina «Aromi e sentori» e' un libretto che nasconde le pagine non aperte: per il libro servono tutte
+ d.querySelectorAll('#panel-matrice [data-pag]').forEach(n=>{n.hidden=false;n.removeAttribute('hidden');});
  // Ruota degli aromi e Laboratorio non sono piu' pagine a se': la ruota sta in «Che cosa si sente e perche'» (panel-matrice),
  // il laboratorio nella pagina Cocktail (#lab). Si ritagliano da li', con le stesse sezioni di prima.
  const frag=nodi=>{const div=d.createElement('div');nodi.forEach(n=>div.appendChild(n.cloneNode(true)));return div;};
