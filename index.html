@@ -1681,6 +1681,11 @@ footer.note{
 .ruolo-quant{font-size:12.5px;color:var(--juniper-deep);margin-top:5px;line-height:1.4;font-weight:400;}
 .sem-box{margin-top:16px;padding:16px 18px;border:1px solid var(--line);border-radius:var(--r-md);background:var(--surface-2);}
 .sem-box h4{margin:0 0 10px;font-family:'Public Sans',sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--ochre);font-weight:800;}
+.sem-verdi{margin-top:6px}
+.sem-verdi > summary{cursor:pointer;display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:650;color:var(--ink-soft);padding:6px 0;list-style:none}
+.sem-verdi > summary::-webkit-details-marker{display:none}
+.sem-verdi > summary::after{content:'▾';margin-left:auto}
+.sem-verdi[open] > summary::after{content:'▴'}
 .sem-tot{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;font-weight:700;margin-bottom:6px;color:var(--ink-soft);}
 .sem-dot{display:inline-block;width:13px;height:13px;border-radius:50%;margin-right:6px;vertical-align:-1px;}
 .sem-row{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--line);font-size:13.5px;line-height:1.45;color:var(--ink-soft);}
@@ -2531,7 +2536,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.11.7</div>
+  <div class="splash-ver" id="splash-ver">v2.11.8</div>
 </div>
 
 <div class="wrap">
@@ -5482,7 +5487,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.11.7</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.11.8</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -9980,7 +9985,11 @@ function renderSemafori(nomi){
       (c === 'rosso' ? 'ridondanze' : c === 'arancio' ? 'rischi' : 'complementari') + '</span>').join('') + '</div>';
   if (!n('rosso') && !n('arancio'))
     html += '<div class="sem-row"><i class="sem-dot" style="background:' + col.verde + '"></i><div>Nessuna ridondanza o rischio rilevato.</div></div>';
-  html += righe.map(r => '<div class="sem-row"><i class="sem-dot" style="background:' + col[r.c] + '"></i><div><strong>' + r.tit + '</strong> — ' + r.t + '</div></div>').join('') + '</div>';
+  const riga = r => '<div class="sem-row"><i class="sem-dot" style="background:' + col[r.c] + '"></i><div><strong>' + r.tit + '</strong> — ' + r.t + '</div></div>';
+  // ridondanze e rischi restano in vista; le coppie complementari (spesso tante) stanno chiuse, da aprire se servono
+  html += righe.filter(r => r.c !== 'verde').map(riga).join('');
+  if (n('verde')) html += '<details class="sem-verdi"><summary><i class="sem-dot" style="background:' + col.verde + '"></i>Vedi le ' + n('verde') + ' coppie complementari</summary>' + righe.filter(r => r.c === 'verde').map(riga).join('') + '</details>';
+  html += '</div>';
   box.innerHTML = html;
 }
 
