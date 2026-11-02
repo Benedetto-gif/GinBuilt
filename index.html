@@ -2317,6 +2317,9 @@ html details.howto a{color:#5A3E1C;}
 .ascolta-n{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;border:1.6px solid #2F7259;background:#fff;color:#2F7259;font-size:11px;font-weight:700;margin-right:6px;vertical-align:1px}
 .ascolta-n.g{background:#2F7259;color:#fff}
 .r-ord{transition:opacity .3s}
+.ascolta-come{margin:4px 0 10px;font-size:14px}
+.ascolta-come summary{cursor:pointer;font-weight:650;color:var(--ink-soft)}
+.ascolta-come p{margin:6px 0}
 .cs-chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
 .cs-chip{font:inherit;font-size:13px;padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:none;color:var(--ink-soft);opacity:.75;cursor:pointer}
 .cs-chip small{font-size:11px;opacity:.8}
@@ -2523,7 +2526,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.11.5</div>
+  <div class="splash-ver" id="splash-ver">v2.11.6</div>
 </div>
 
 <div class="wrap">
@@ -4916,21 +4919,34 @@ function ordineNoteHtml(elenco){
 // delle botaniche che lo portano, pesata su quanto ciascuna lo porta. I gusti hanno tempi fisiologici fissi:
 // dolce e salino subito, acido poco dopo, amaro per ultimo e lungo. Stima da tarare all'assaggio.
 const GUSTO_T = { 0: 0.85, 3: 0.85, 2: 1.0, 1: 1.7 };   // Dolce, Salino, Acido, Amaro
+// Quanto e' volatile, in media, la famiglia di una nota (0 testa, 1 cuore, 2 coda): agrumato e verde subito
+// (limonene, aldeidi verdi), fruttato e floreale leggero presto (esteri, linalolo), resinoso fra testa e cuore
+// (pinene), speziato piu' tardi (eugenolo, cinnamaldeide). Stima d'insieme, con eccezioni (l'irone dell'iris dura molto).
+const ASSE_T = { 4: 0.2, 6: 0.4, 9: 0.6, 5: 0.7, 8: 0.8, 7: 1.4 };
+// momento di una nota portata da una botanica: a meta' fra quando arriva la botanica (ruolo, persistenza) e quanto e' volatile la nota
+function tempoNota(nome, i){
+  const s = STADI[nome] || [.3, 1, .4], tot = s[0] + s[1] + s[2] || 1, tb = (s[1] + 2 * s[2]) / tot;
+  // i leganti e le radici (arrivo tardo, tb >= 1.4) trattengono anche le loro note: l'irone dell'iris, il terroso dell'angelica
+  return i in ASSE_T && tb < 1.4 ? (tb + ASSE_T[i]) / 2 : tb;
+}
 function ordineAscolto(elenco){
   const el = elenco.filter(x => PROFILO8[x.n]); if (!el.length) return [];
   const w = x => x.w === undefined ? 1 : x.w;
   const I = ASSI8.map((_, i) => el.reduce((a, x) => a + PROFILO8[x.n][i] * w(x), 0));
   const mx = Math.max.apply(null, I) || 1;
-  const passi = [];
+  const passi = [], top2 = l => l.slice().sort((a, b) => b[1] - a[1]).filter((z, j, L) => z[1] >= L[0][1] * 0.3).slice(0, 2).map(z => z[0]);
   ASSI8.forEach((nm, i) => {
     if (I[i] < mx * 0.3) return;
-    let t;
-    if (i in GUSTO_T) t = GUSTO_T[i];
-    else { let a = 0, b = 0; el.forEach(x => { const s = STADI[x.n] || [.3, 1, .4], tot = s[0] + s[1] + s[2] || 1, q = PROFILO8[x.n][i] * w(x); a += q * (s[1] + 2 * s[2]) / tot; b += q; }); t = b ? a / b : 1; }
-    // chi porta la nota proprio in quel momento: una botanica che la porta molto prima o molto dopo non va nominata qui
-    const tB = x => { const s = STADI[x.n] || [.3, 1, .4], tot = s[0] + s[1] + s[2] || 1; return (s[1] + 2 * s[2]) / tot; };
-    const chi = el.map(x => [x.n, PROFILO8[x.n][i] * w(x), tB(x)]).filter(z => z[1] > 0 && (i in GUSTO_T || Math.abs(z[2] - t) <= 0.4)).sort((a, b) => b[1] - a[1]).filter((z, j, l) => z[1] >= l[0][1] * 0.3).slice(0, 2).map(z => z[0]);
-    passi.push({ i, nome: nm.toLowerCase(), gusto: i in GUSTO_T, t, forza: I[i] / mx, chi });
+    if (i in GUSTO_T){ passi.push({ i, nome: nm.toLowerCase(), gusto: true, t: GUSTO_T[i], forza: I[i] / mx, chi: top2(el.map(x => [x.n, PROFILO8[x.n][i] * w(x)]).filter(z => z[1] > 0)) }); return; }
+    // la stessa nota puo' arrivare in due momenti: il floreale del linalolo (bergamotto, coriandolo) subito,
+    // quello dell'iris nel finale. Le botaniche si raggruppano per momento; ogni gruppo abbastanza forte e' un passo.
+    const c = el.map(x => [x.n, PROFILO8[x.n][i] * w(x), tempoNota(x.n, i)]).filter(z => z[1] > 0).sort((a, b) => a[2] - b[2]);
+    const gruppi = []; c.forEach(z => { const g = gruppi[gruppi.length - 1]; if (g && z[2] - g[g.length - 1][2] <= 0.5) g.push(z); else gruppi.push([z]); });
+    const fz = g => g.reduce((a, z) => a + z[1], 0);
+    let buoni = gruppi.filter(g => fz(g) >= mx * 0.25);
+    if (!buoni.length) buoni = [gruppi.slice().sort((a, b) => fz(b) - fz(a))[0]];
+    buoni.forEach(g => { const f = fz(g);
+      passi.push({ i, nome: nm.toLowerCase(), gusto: false, t: g.reduce((a, z) => a + z[1] * z[2], 0) / f, forza: f / mx, chi: top2(g) }); });
   });
   return passi.sort((a, b) => b.forza - a.forza).slice(0, 7).sort((a, b) => a.t - b.t || b.forza - a.forza).map((p, k) => Object.assign(p, { k: k + 1 }));
 }
@@ -4945,11 +4961,19 @@ function ascoltaHtml(passi, nota){
     '<p class="cond-hint">I numeri sui raggi sono l’ordine in cui le note dovrebbero arrivare: tondi bianchi gli aromi (naso), tondi pieni i gusti (lingua).' + (nota ? ' ' + nota : '') + '</p>' +
     '<ol class="ascolta-l">' + passi.map(p => { const [ic, q] = momentoAscolto(p, p === passi.find(x => !x.gusto)), art = /^[aeiou]/.test(p.nome) ? 'l’' : /^(s[^aeiou]|z|gn|ps)/.test(p.nome) ? 'lo ' : 'il ';
       return '<li data-k="' + p.k + '"><span class="ascolta-n' + (p.gusto ? ' g' : '') + '">' + p.k + '</span>' + ic + ' <b>' + q + ':</b> ' + (p.gusto ? 'senti ' : 'cerca ') + art + '<strong>' + p.nome + '</strong>' + (p.chi.length ? ' <small>(' + nomi(p.chi) + ')</small>' : '') + '</li>'; }).join('') + '</ol>' +
+    '<details class="ascolta-come"><summary>ℹ️ Come si calcola l’ordine</summary>' +
+    '<p>Per ogni nota contano due cose.</p>' +
+    '<p><b>La botanica.</b> Le scorze si sentono subito. Le radici e i leganti, come angelica e iris, si sentono tardi e restano a lungo: trattengono anche le loro note più leggere.</p>' +
+    '<p><b>La molecola.</b> Le molecole leggere evaporano prima e arrivano per prime al naso. Quelle pesanti evaporano piano e restano nel finale.</p>' +
+    '<p>Di solito arrivano prima l’agrumato (limonene) e il verde, poi il floreale leggero (linalolo) e il fruttato, poi il resinoso (pinene), poi lo speziato. Alcune molecole speziate, come la piperina del pepe, non evaporano affatto: si sentono solo sulla lingua.</p>' +
+    '<p>Ci sono eccezioni. Il floreale dell’iris (irone) è tra le note più tenaci che esistano: resta nel finale. Per questo la stessa nota può comparire due volte nell’elenco: il floreale leggero del bergamotto subito, quello dell’iris alla fine. I gusti hanno tempi loro: dolce e salino subito, acido poco dopo, amaro per ultimo.</p>' +
+    '<p>È una stima. Confrontala con il tuo assaggio e annota che cosa senti all’inizio, a metà e alla fine nelle Schede di prova.</p></details>' +
     '<button type="button" class="ghost-btn ascolta-btn">🎧 Ascolta il tuo gin, una nota alla volta</button></div>';
 }
 // i numeri sui raggi (dentro il radar) e la guida passo passo
 function ascoltaSvg(passi, pt){
-  return passi.map(p => { const [x, y] = pt(p.i, 5), [cx, cy] = pt(p.i, 0);
+  const visti = {};
+  return passi.map(p => { const j = visti[p.i] = (visti[p.i] || 0) + 1, [x, y] = pt(p.i, 5 - (j - 1) * 1.1), [cx, cy] = pt(p.i, 0);
     return '<line class="r-ord-l" data-k="' + p.k + '" x1="' + cx + '" y1="' + cy + '" x2="' + x + '" y2="' + y + '" stroke="#E0492B" stroke-width="4" stroke-linecap="round" opacity="0"/>' +
       '<g class="r-ord" data-k="' + p.k + '"><circle cx="' + x + '" cy="' + y + '" r="8.5" fill="' + (p.gusto ? '#2F7259' : '#fff') + '" stroke="#2F7259" stroke-width="1.6"/>' +
       '<text x="' + x + '" y="' + (y + 4) + '" text-anchor="middle" font-size="11" font-weight="700" fill="' + (p.gusto ? '#fff' : '#2F7259') + '">' + p.k + '</text></g>'; }).join('');
@@ -5437,7 +5461,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.11.5</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.11.6</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
