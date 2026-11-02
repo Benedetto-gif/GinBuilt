@@ -2448,7 +2448,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.8.7</div>
+  <div class="splash-ver" id="splash-ver">v2.8.8</div>
 </div>
 
 <div class="wrap">
@@ -5280,7 +5280,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.8.7</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.8.8</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -11972,7 +11972,8 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       html: '<p>Il radar disegna il profilo di una botanica su dieci assi: quattro <strong>gusti</strong> che si sentono in bocca (dolce, amaro, acido, salino) e sei famiglie di <strong>aromi</strong> che arrivano al naso (agrumato, floreale, fruttato, erbaceo, resinoso, speziato). Ogni asse va da 0, assente, a 5, dominante.</p>' +
         '<p>La <strong>potenza</strong>, da 1 a 10, dice quanto una botanica si fa sentire rispetto alle altre: il chiodo di garofano, a potenza 10, copre tutto anche in dosi minime; una botanica a potenza bassa va usata in quantità maggiore per farsi notare. Per questo il ruolo decide anche la dose.</p>' +
         '<p>Accanto alle note prevalenti trovi il <strong>carattere</strong>: dice quanto il profilo è raccolto su poche note. <em>Equilibrato</em> se le note sono quasi tutte alla pari, <em>sfumato</em> se ce ne sono parecchie, <em>marcato</em> se due o tre si staccano dalle altre, <em>netto</em> se ne domina una sola. Non dipende né dalla dose né dalla potenza.</p>' +
-        '<p>Quando due botaniche entrano nello stesso gin, i loro radar si sommano raggio per raggio, ognuno pesato per le sue <strong>porzioni</strong>: quanta botanica metti rispetto alla sua dose di riferimento. La potenza è già dentro la dose (delle botaniche potenti se ne mette poca), per questo i grammi di due botaniche non si confrontano fra loro: alla sua dose ognuna conta una porzione. <strong>Dove hanno la stessa nota, la nota si rafforza</strong> e il gin si sposta da quella parte; <strong>dove una ha una nota che all’altra manca, si completano</strong>. Poi la somma si riporta in scala, con la nota più alta a 5: così il disegno mostra verso dove va il gin, non quanto è forte. È una stima: il palato non somma come l’aritmetica (due note uguali si rafforzano, ma meno del doppio) e una botanica molto potente può coprirne una delicata. Lo conferma l’assaggio. Prova a unirne due.</p>' +
+        '<p>Quando due botaniche entrano nello stesso gin, i loro radar si sommano raggio per raggio, ognuno pesato per le sue <strong>porzioni</strong>: quanta botanica metti rispetto alla sua dose di riferimento. La potenza è già dentro la dose (delle botaniche potenti se ne mette poca), per questo i grammi di due botaniche non si confrontano fra loro: alla sua dose ognuna conta una porzione.</p>' +
+        '<p>Dalle porzioni nasce l’<strong>equivalente aromatico</strong>: quanti grammi di una botanica «suonano» forte quanto un grammo di un’altra. Il ginepro ha una dose di riferimento di circa 7,5 g, la lavanda di 0,3 g: 0,3 g di lavanda si sentono quanto 7,5 g di ginepro, quindi <strong>1 g di lavanda vale circa 25 g di ginepro</strong>. Non conta solo quanta molecola c’è, ma quanto poca ne basta per sentirla: il linalolo della lavanda si avverte in quantità molto più piccole del pinene del ginepro. L’equivalenza riguarda la forza della botanica intera; come quella forza si divide fra le note lo dice il radar. E raddoppiare non raddoppia: due porzioni si sentono più di una, ma non il doppio. Le dosi di riferimento sono stime d’esperienza: se all’assaggio una botanica copre le altre, la sua dose va abbassata nella taratura personale. <strong>Dove hanno la stessa nota, la nota si rafforza</strong> e il gin si sposta da quella parte; <strong>dove una ha una nota che all’altra manca, si completano</strong>. Poi la somma si riporta in scala, con la nota più alta a 5: così il disegno mostra verso dove va il gin, non quanto è forte. È una stima: il palato non somma come l’aritmetica (due note uguali si rafforzano, ma meno del doppio) e una botanica molto potente può coprirne una delicata. Lo conferma l’assaggio. Prova a unirne due.</p>' +
         approf('che cosa si sente e perché', "showTab('matrice')") },
     estrazione: { e:'⚗️', t:'Cosa si estrae e a che grado',
       html: '<p>L’alcol non estrae tutto allo stesso modo. Più il grado è alto, più scioglie le sostanze che non amano l’acqua: gli <strong>oli essenziali</strong> e i terpeni, che portano il profumo. Più è basso, più passano le sostanze solubili in acqua: <strong>zuccheri, acidi, tannini</strong>.</p>' +
@@ -12034,6 +12035,14 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       '<button type="button" class="ghost-btn" id="lez-unisci">▶ Unisci le due botaniche</button>' +
       '<div id="un-esito"></div></div>';
   }
+  // equivalente aromatico: quanti grammi della botanica meno concentrata valgono 1 g dell'altra
+  function equivalenteTesto(a, b){
+    const da = doseLibreria(a), db = doseLibreria(b); if (!da || !db || a === b) return '';
+    const [forte, debole, df, dd] = da <= db ? [a, b, da, db] : [b, a, db, da], r = dd / df;
+    const num = x => (x >= 10 ? Math.round(x) : Math.round(x * 10) / 10).toString().replace('.', ',');
+    if (r < 1.15) return 'Hanno quasi la stessa dose di riferimento: grammo per grammo si equivalgono. ';
+    return '<strong>Equivalente aromatico</strong>: 1 g di ' + forte.toLowerCase() + ' vale circa ' + num(r) + ' g di ' + debole.toLowerCase() + ' (dosi di riferimento ' + num(df) + ' g e ' + num(dd) + ' g). ';
+  }
   function animaUnione(a, b){
     const m = miscelaDi(a, b), poli = $('un-m'), pA = $('un-a'), pB = $('un-b'), bt = $('lez-unisci');
     if (!poli) return;
@@ -12060,7 +12069,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         (solo.length ? '🧩 <strong>Si completano</strong> dove una porta quello che all’altra manca: ' + lista(solo) + '. ' : '') +
         (su.length ? 'La miscela si sposta verso <strong>' + lista(su) + '</strong>' + (giu.length ? ', mentre ' + lista(giu) + (giu.length > 1 ? ' restano' : ' resta') + ' più indietro' : '') + '. ' : '') +
         'Nella miscela prevalgono <strong>' + direzioneTesto(bM) + '</strong> (carattere ' + carattereTesto(bM.pct) + '). ' +
-        'Ognuna entra alla sua dose di riferimento: ' + (m.pa !== m.pb ? 'della più potente se ne mette meno, ' : '') + 'così pesano alla pari. ' +
+        'Ognuna entra alla sua dose di riferimento, così pesano alla pari. ' + equivalenteTesto(a, b) +
         '<em>Stima da confermare all’assaggio.</em></div>';
     };
     requestAnimationFrame(passo);
