@@ -2038,7 +2038,7 @@ html details.howto a{color:#5A3E1C;}
 .mat-sel{margin:8px 0;}.mat-sel:empty{display:none;}.mat-sel .msel-box{border:1px solid var(--line,#e5e0d3);border-radius:10px;padding:8px 12px;background:var(--surface,#fbf9f4);}.mat-sel ul{margin:6px 0;padding-left:18px;}.mat-sel li{margin:4px 0;}.mat-sel .msel-vai{font:inherit;background:none;border:0;padding:0;color:var(--juniper-deep);text-decoration:underline;cursor:pointer;text-align:left;}
 .mat-cella.on{outline:3px solid var(--ink,#222);outline-offset:1px;}
 /* «Aromi e sentori» come libretto */
-.mat-libro details.mat-pag > .howto-chiudi,.mat-libro .ar-sezioni,.mat-libro #ar-ruota,.mat-libro #ar-matrice,.mat-libro #mat-sensi,.mat-libro details.mat-pag > summary{display:none!important}
+.mat-libro details.howto-hero > summary,.mat-libro details.mat-pag > .howto-chiudi,.mat-libro .ar-sezioni,.mat-libro #ar-ruota,.mat-libro #ar-matrice,.mat-libro #mat-sensi,.mat-libro details.mat-pag > summary{display:none!important}
 .mat-libro [hidden]{display:none!important}
 .libro-tit{margin:4px 0 12px;font:700 20px/1.25 'Fraunces',Georgia,serif;color:var(--ink)}
 .libro-tit span{display:block;font:700 11px/1 'Inter',system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px}
@@ -2053,6 +2053,10 @@ html details.howto a{color:#5A3E1C;}
 .libro-bar .libro-ind{background:none;color:var(--ink);font-size:14px;white-space:nowrap}
 .libro-bar button:disabled{opacity:.3;cursor:default}
 .ruota-h3{margin:18px 0 6px}
+.page-hero .ph-info{display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:6px 12px 6px 6px;border:0;border-radius:999px;background:rgba(255,255,255,.18);color:inherit;font:700 13px/1 'Inter',system-ui,sans-serif;cursor:pointer}
+.page-hero .ph-info i{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.35);color:#fff;font:italic 700 14px/1 Georgia,serif}
+.page-hero .ph-info.on{background:rgba(255,255,255,.32)}
+.mat-libro details.howto-hero{margin-top:0}
 @media (max-width:640px){
   .mat-libro table.tab-schede,.mat-libro table.tab-schede tbody,.mat-libro table.tab-schede tr,.mat-libro table.tab-schede td{display:block;width:auto}
   .mat-libro table.tab-schede thead{display:none}
@@ -2519,7 +2523,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.11.2</div>
+  <div class="splash-ver" id="splash-ver">v2.11.3</div>
 </div>
 
 <div class="wrap">
@@ -5431,7 +5435,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.11.2</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.11.3</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -11419,7 +11423,14 @@ if ("serviceWorker" in navigator) {
   });
   PAG.forEach((p, i) => { if (p.el) p.el().filter(Boolean).forEach(n => { n.dataset.pag = i; if (n.tagName === 'DETAILS'){ n.open = true; n.classList.add('mat-pag'); } }); });
   // l'indice: sulla prima pagina, dopo il titolo e il «Come si usa»
-  const howto = sum('Come si usa e da dove viene'); if (howto) howto.dataset.pag = 0;
+  const howto = sum('Come si usa e da dove viene'); if (howto){ howto.dataset.pag = 0; howto.classList.add('howto-hero'); howto.open = false; }
+  // la «i» del «Come si usa» sta dentro il riquadro del titolo: toccandola si apre la spiegazione
+  const infoHero = () => { const hero = pan.querySelector('.page-hero'); if (!hero || !howto || hero.querySelector('.ph-info')) return;
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'ph-info'; b.setAttribute('aria-label', 'Come si usa e da dove viene'); b.innerHTML = '<i>i</i> Come si usa';
+    b.onclick = () => { if (cur !== 0){ vai(0); howto.open = true; } else howto.open = !howto.open; b.classList.toggle('on', howto.open); if (howto.open) setTimeout(() => { try { howto.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch(e){} }, 30); };
+    howto.addEventListener('toggle', () => b.classList.toggle('on', howto.open));
+    hero.appendChild(b); };
+  setTimeout(infoHero, 0);
   const ind = document.createElement('div'); ind.className = 'libro-indice'; ind.dataset.pag = 0;
   const voce = (p, i) => '<button type="button" class="libro-voce" data-i="' + i + '"><span>' + p.e + '</span><b>' + p.t + '</b><i>' + i + '</i></button>';
   ind.innerHTML = '<div class="libro-ind-t">📖 Indice</div>' + PAG.map((p, i) => i && !p.app ? voce(p, i) : '').join('') +
@@ -11434,7 +11445,7 @@ if ("serviceWorker" in navigator) {
   function vai(i, ancora){
     cur = Math.max(0, Math.min(PAG.length - 1, i));
     pan.querySelectorAll('[data-pag]').forEach(n => { n.hidden = +n.dataset.pag !== cur; });
-    schedeTab();
+    schedeTab(); infoHero();
     const p = PAG[cur];
     tit.innerHTML = cur ? '<span>' + (p.app ? 'Appendice' : 'Capitolo ' + cur) + '</span>' + p.e + ' ' + p.t : '';
     tit.hidden = !cur;
