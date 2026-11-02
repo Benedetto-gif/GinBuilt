@@ -2317,6 +2317,11 @@ html details.howto a{color:#5A3E1C;}
 .ascolta-n{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;border:1.6px solid #2F7259;background:#fff;color:#2F7259;font-size:11px;font-weight:700;margin-right:6px;vertical-align:1px}
 .ascolta-n.g{background:#2F7259;color:#fff}
 .r-ord{transition:opacity .3s}
+.ascolta-cap{max-height:0;overflow:hidden;opacity:0;transition:opacity .35s,max-height .35s;margin:0 auto;max-width:320px;text-align:left}
+.ascolta-cap.on{max-height:240px;opacity:1;margin:8px auto 4px;padding:10px 12px;border-radius:14px;background:color-mix(in srgb,#E0492B 14%,var(--card));box-shadow:0 0 0 1px color-mix(in srgb,#E0492B 40%,transparent)}
+.ascolta-cap-t{font-size:14.5px}
+.ascolta-cap-t small{color:var(--ink-soft)}
+.ascolta-cap-c{font-size:13.5px;margin-top:6px;color:var(--ink-soft)}
 .ascolta-come{margin:4px 0 10px;font-size:14px}
 .ascolta-come summary{cursor:pointer;font-weight:650;color:var(--ink-soft)}
 .ascolta-come p{margin:6px 0}
@@ -2526,7 +2531,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.11.6</div>
+  <div class="splash-ver" id="splash-ver">v2.11.7</div>
 </div>
 
 <div class="wrap">
@@ -4954,13 +4959,22 @@ function momentoAscolto(p, primoAroma){
   if (p.gusto) return p.i === 1 ? ['⏳', 'Nel finale, sulla lingua'] : ['👅', 'Appena in bocca'];
   return p.t < 0.85 || primoAroma ? ['👃', 'Al naso, prima di bere'] : p.t < 1.3 ? ['👄', 'A metà sorso, dal retro del naso'] : ['⏳', 'Nel finale'];
 }
+// che cosa fare in ogni momento dell'assaggio: la nota che compare sul radar durante l'ascolto
+function consiglioAscolto(p, primoAroma){
+  if (p.gusto) return p.i === 1 ? 'Dopo aver deglutito, ascolta il fondo della lingua: l’amaro arriva per ultimo e resta.'
+    : p.i === 2 ? 'Senti i lati della lingua: l’acido fa venire l’acquolina.' : 'Senti la punta e i lati della lingua, appena il sorso entra in bocca.';
+  const [ic] = momentoAscolto(p, primoAroma);
+  return ic === '👃' ? 'Avvicina il bicchiere e annusa piano, senza bere. Le note leggere arrivano per prime.'
+    : ic === '👄' ? 'Prendi un piccolo sorso e tienilo in bocca. Respira piano dal naso: gli aromi risalgono da dietro.'
+    : 'Deglutisci e aspetta qualche secondo, a bocca chiusa: che cosa resta?';
+}
 function ascoltaHtml(passi, nota){
   if (!passi.length) return '';
   const nomi = l => l.map(n => n === 'Bacche di ginepro' ? 'ginepro' : n.toLowerCase()).join(', ');
   return '<div class="ascolta"><div class="ascolta-t">🎧 <strong>In che ordine ascoltarlo</strong></div>' +
     '<p class="cond-hint">I numeri sui raggi sono l’ordine in cui le note dovrebbero arrivare: tondi bianchi gli aromi (naso), tondi pieni i gusti (lingua).' + (nota ? ' ' + nota : '') + '</p>' +
     '<ol class="ascolta-l">' + passi.map(p => { const [ic, q] = momentoAscolto(p, p === passi.find(x => !x.gusto)), art = /^[aeiou]/.test(p.nome) ? 'l’' : /^(s[^aeiou]|z|gn|ps)/.test(p.nome) ? 'lo ' : 'il ';
-      return '<li data-k="' + p.k + '"><span class="ascolta-n' + (p.gusto ? ' g' : '') + '">' + p.k + '</span>' + ic + ' <b>' + q + ':</b> ' + (p.gusto ? 'senti ' : 'cerca ') + art + '<strong>' + p.nome + '</strong>' + (p.chi.length ? ' <small>(' + nomi(p.chi) + ')</small>' : '') + '</li>'; }).join('') + '</ol>' +
+      return '<li data-k="' + p.k + '" data-tip="' + consiglioAscolto(p, p === passi.find(x => !x.gusto)).replace(/"/g, '&quot;') + '"><span class="ascolta-n' + (p.gusto ? ' g' : '') + '">' + p.k + '</span>' + ic + ' <b>' + q + ':</b> ' + (p.gusto ? 'senti ' : 'cerca ') + art + '<strong>' + p.nome + '</strong>' + (p.chi.length ? ' <small>(' + nomi(p.chi) + ')</small>' : '') + '</li>'; }).join('') + '</ol>' +
     '<details class="ascolta-come"><summary>ℹ️ Come si calcola l’ordine</summary>' +
     '<p>Per ogni nota contano due cose.</p>' +
     '<p><b>La botanica.</b> Le scorze si sentono subito. Le radici e i leganti, come angelica e iris, si sentono tardi e restano a lungo: trattengono anche le loro note più leggere.</p>' +
@@ -4984,14 +4998,21 @@ document.addEventListener('click', e => {
   const li = [...box.querySelectorAll('.ascolta-l li')], n = li.length; if (!n || bt._va) return;
   bt._va = true; bt.disabled = true;
   const svg = box.querySelector('svg.radar8'); if (svg) svg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  // la nota del passo, subito sotto il radar: si legge mentre il raggio è acceso, senza scorrere
+  let cap = box.querySelector('.ascolta-cap');
+  if (!cap && svg){ cap = document.createElement('div'); cap.className = 'ascolta-cap'; cap.setAttribute('aria-live', 'polite'); svg.after(cap); }
   const accendi = k => {
     box.querySelectorAll('.r-ord-l').forEach(l => l.setAttribute('opacity', +l.dataset.k === k ? '.85' : '0'));
     box.querySelectorAll('.r-ord').forEach(g => g.style.opacity = !k || +g.dataset.k === k ? '1' : '.3');
     li.forEach(x => x.classList.toggle('on', +x.dataset.k === k));
+    if (!cap) return;
+    const x = li.find(l => +l.dataset.k === k);
+    if (x){ cap.innerHTML = '<div class="ascolta-cap-t">' + x.innerHTML + '</div><div class="ascolta-cap-c">' + x.dataset.tip + '</div>'; cap.classList.add('on'); }
+    else { cap.innerHTML = '<div class="ascolta-cap-c">Fine dell’ascolto. Annota che cosa hai sentito, e quando, nelle Schede di prova.</div>'; setTimeout(() => cap.classList.remove('on'), 4000); }
   };
   let k = 0;
   const fermo = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const passo = () => { k++; if (k > n){ accendi(0); bt._va = false; bt.disabled = false; bt.textContent = '🎧 Riascolta'; return; } accendi(k); setTimeout(passo, fermo ? 2500 : 2200); };
+  const passo = () => { k++; if (k > n){ accendi(0); bt._va = false; bt.disabled = false; bt.textContent = '🎧 Riascolta'; return; } accendi(k); setTimeout(passo, 4500); };
   passo();
 });
 
@@ -5461,7 +5482,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.11.6</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.11.7</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
