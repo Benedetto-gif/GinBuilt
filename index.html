@@ -2448,7 +2448,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.8.6</div>
+  <div class="splash-ver" id="splash-ver">v2.8.7</div>
 </div>
 
 <div class="wrap">
@@ -5280,7 +5280,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.8.6</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.8.7</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -6606,7 +6606,7 @@ function renderSummary(){
       if (visti.has(sel.value) || !PROFILO8[sel.value]) return;
       visti.add(sel.value);
       if (!window.radarConBase && FONDAMENTALI[sel.value]) return;
-      elenco.push({n: sel.value, w: Math.max(0.0001, pesoRiga(sel, doseLibreria(sel.value) ?? 0))});
+      elenco.push({n: sel.value, w: Math.max(0.0001, porzioni(sel.value, pesoRiga(sel, doseLibreria(sel.value) ?? 0)))});
     });
     // Ricetta di riferimento dello stile: la fotografia delle scelte proposte dallo stile appena caricato,
     // con le stesse dosi per ruolo. Il confronto con la ricetta e' cosi' alla pari (stessi pesi, stesse regole).
@@ -6614,7 +6614,7 @@ function renderSummary(){
       const vr = new Set(), el = [];
       [...selects].forEach(sel => {
         if (vr.has(sel.value) || !PROFILO8[sel.value]) return; vr.add(sel.value);
-        el.push({n: sel.value, fond: !!FONDAMENTALI[sel.value], w: Math.max(0.0001, pesoRiga(sel, doseLibreria(sel.value) ?? 0))});
+        el.push({n: sel.value, fond: !!FONDAMENTALI[sel.value], w: Math.max(0.0001, porzioni(sel.value, pesoRiga(sel, doseLibreria(sel.value) ?? 0)))});
       });
       window._rifStile = { nome: currentStyleName, elenco: el };
     }
@@ -6623,7 +6623,7 @@ function renderSummary(){
     const oreIns = window.radarInsieme > 0 ? window.radarInsieme : 0;
     const vt = new Set(), elTutto = [];
     [...selects].forEach(sel => { if (vt.has(sel.value) || !PROFILO8[sel.value]) return; vt.add(sel.value);
-      elTutto.push({n: sel.value, w: Math.max(0.0001, pesoRiga(sel, doseLibreria(sel.value) ?? 0))}); });
+      elTutto.push({n: sel.value, w: Math.max(0.0001, porzioni(sel.value, pesoRiga(sel, doseLibreria(sel.value) ?? 0)))}); });
     if (oreIns) elTutto.forEach(x => { x.w = Math.max(0.0001, x.w * moltEstrazione(x.n, oreIns)); });
     const eqRicetta = window.radarConBase ? null : (elTutto.some(x => BASE_EQ.includes(x.n)) ?
       (() => { const t = elTutto.reduce((a,x) => a + x.w, 0); return ASSI8.map((_,i) => elTutto.reduce((a,x) => a + valFase(x.n, window.radarFase)[i] * x.w, 0) / t); })() : null);
@@ -6647,7 +6647,7 @@ function renderSummary(){
       radarSVG([{vals:vals,color:'var(--juniper)',label:'Ricetta', potenza: potenzaMedia(elenco)}], 280, {stile: elRif.length ? currentStyleName : null, rifVals: elRif.length ? ASSI8.map((_,i) => elRif.reduce((a,x) => a + valFase(x.n, window.radarFase)[i] * x.w, 0)) : null, eq: eqRicetta ? [eqRicetta] : null}) + insNota +
       ordineNoteHtml(elenco) +
       (FASE_NOTA[window.radarFase] ? '<div class="radar-nota">' + FASE_NOTA[window.radarFase] + '</div>' : '') +
-      '<div class="radar-nota">Mostra la forma del profilo (quali note prevalgono), non l\'intensità. Pesato sulle quantità reali; stima orientativa da validare all\'assaggio.</div></div>' + sensRicettaBox(elTutto);
+      '<div class="radar-nota">Mostra la forma del profilo (quali note prevalgono), non l\'intensità. Ogni botanica pesa per le sue porzioni: quanta ne metti rispetto alla sua dose di riferimento (che tiene già conto della potenza). Stima orientativa da validare all\'assaggio.</div></div>' + sensRicettaBox(elTutto);
     aggancia();
   })();
 
@@ -6657,7 +6657,7 @@ function renderSummary(){
     const visti = new Set(), nomi = [], pesi = [];
     [...selects].forEach(sel => {
       if (!sel.value || visti.has(sel.value)) return; visti.add(sel.value);
-      nomi.push(sel.value); pesi.push(pesoRiga(sel, doseLibreria(sel.value) ?? 0));
+      nomi.push(sel.value); pesi.push(porzioni(sel.value, pesoRiga(sel, doseLibreria(sel.value) ?? 0)));
     });
     window._ricettaBuilder = { nomi: nomi.slice(), pesi: pesi.slice(), stile: currentStyleName };
     if (!box || !window.garnishBoxRicetta) return;
@@ -7066,6 +7066,13 @@ function doseLibreria(nome){
   const d = byName[nome];
   const v = ds.test ?? (d ? d.dose : undefined);
   return (typeof v === 'number') ? v : null;
+}
+// Porzioni: quanta botanica c'e' rispetto alla sua dose di riferimento. E' l'unita' con cui le botaniche
+// pesano sul profilo della miscela: la dose di riferimento e' gia' tarata sulla forza di ciascuna (le potenti
+// ne vogliono poca), quindi alla propria dose ognuna conta una porzione e i grammi non vanno confrontati fra loro.
+function porzioni(nome, grammi){
+  const d = doseLibreria(nome), g = +grammi || 0;
+  return d ? g / d : g;
 }
 function volumeCampione(){ return parseFloat(tfVolumeInput.value) || 100; }
 function nf(n, dec){
@@ -8326,7 +8333,7 @@ const GIN_BASE = ['Bacche di ginepro','Coriandolo','Angelica'];
 // conBase=false: solo la "firma" del gin, senza le tre base che quasi tutti condividono
 function profiloGin(nome, conBase){
   const g = GIN_LISTE[nome]; if (!g) return null;
-  const el = g.b.filter(n => PROFILO8[n] && (conBase || !GIN_BASE.includes(n))).map(n => ({n, w: (DATA.dose[n] && DATA.dose[n].test) || 1}));
+  const el = g.b.filter(n => PROFILO8[n] && (conBase || !GIN_BASE.includes(n))).map(n => ({n, w: 1}));   // proporzioni segrete: una porzione ciascuna
   if (!el.length) return null;
   const tot = el.reduce((a,x) => a + x.w, 0);
   const vals = ASSI8.map((_,i) => Math.round(el.reduce((a,x) => a + PROFILO8[x.n][i] * x.w, 0) / tot * 10) / 10);
@@ -10924,7 +10931,7 @@ if ("serviceWorker" in navigator) {
     let scelto = 'Etna';
     function disegna(){
       const P = PAE[scelto], righe = P.r.map(([r, n]) => [r, fixNome(n)]);
-      const firma = righe.filter(([, n]) => !isBase(n)).map(([, n]) => ({n, w: dose(n)}));
+      const firma = righe.filter(([, n]) => !isBase(n)).map(([, n]) => ({n, w: 1}));
       const v = profilo(firma);
       const zona = n => { const m = MASTER.find(x => x.botanica === n || (n === 'Mirto foglie' && x.botanica === 'Mirto')); return m && m.zone_italia ? m.zone_italia : ''; };
       box.innerHTML = '<div class="inv-ctrl">' + Object.keys(PAE).map(k => '<button type="button" class="conf-chip' + (k === scelto ? ' on' : '') + '" data-p="' + esc(k) + '">' + esc(k) + '</button>').join(' ') + '</div>' +
@@ -11965,7 +11972,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       html: '<p>Il radar disegna il profilo di una botanica su dieci assi: quattro <strong>gusti</strong> che si sentono in bocca (dolce, amaro, acido, salino) e sei famiglie di <strong>aromi</strong> che arrivano al naso (agrumato, floreale, fruttato, erbaceo, resinoso, speziato). Ogni asse va da 0, assente, a 5, dominante.</p>' +
         '<p>La <strong>potenza</strong>, da 1 a 10, dice quanto una botanica si fa sentire rispetto alle altre: il chiodo di garofano, a potenza 10, copre tutto anche in dosi minime; una botanica a potenza bassa va usata in quantità maggiore per farsi notare. Per questo il ruolo decide anche la dose.</p>' +
         '<p>Accanto alle note prevalenti trovi il <strong>carattere</strong>: dice quanto il profilo è raccolto su poche note. <em>Equilibrato</em> se le note sono quasi tutte alla pari, <em>sfumato</em> se ce ne sono parecchie, <em>marcato</em> se due o tre si staccano dalle altre, <em>netto</em> se ne domina una sola. Non dipende né dalla dose né dalla potenza.</p>' +
-        '<p>Quando due botaniche entrano nello stesso gin, i loro radar si sommano raggio per raggio, ognuno pesato per quanto quella botanica si fa sentire. <strong>Dove hanno la stessa nota, la nota si rafforza</strong> e il gin si sposta da quella parte; <strong>dove una ha una nota che all’altra manca, si completano</strong>. Poi la somma si riporta in scala, con la nota più alta a 5: così il disegno mostra verso dove va il gin, non quanto è forte. È una stima: il palato non somma come l’aritmetica (due note uguali si rafforzano, ma meno del doppio) e una botanica molto potente può coprirne una delicata. Lo conferma l’assaggio. Prova a unirne due.</p>' +
+        '<p>Quando due botaniche entrano nello stesso gin, i loro radar si sommano raggio per raggio, ognuno pesato per le sue <strong>porzioni</strong>: quanta botanica metti rispetto alla sua dose di riferimento. La potenza è già dentro la dose (delle botaniche potenti se ne mette poca), per questo i grammi di due botaniche non si confrontano fra loro: alla sua dose ognuna conta una porzione. <strong>Dove hanno la stessa nota, la nota si rafforza</strong> e il gin si sposta da quella parte; <strong>dove una ha una nota che all’altra manca, si completano</strong>. Poi la somma si riporta in scala, con la nota più alta a 5: così il disegno mostra verso dove va il gin, non quanto è forte. È una stima: il palato non somma come l’aritmetica (due note uguali si rafforzano, ma meno del doppio) e una botanica molto potente può coprirne una delicata. Lo conferma l’assaggio. Prova a unirne due.</p>' +
         approf('che cosa si sente e perché', "showTab('matrice')") },
     estrazione: { e:'⚗️', t:'Cosa si estrae e a che grado',
       html: '<p>L’alcol non estrae tutto allo stesso modo. Più il grado è alto, più scioglie le sostanze che non amano l’acqua: gli <strong>oli essenziali</strong> e i terpeni, che portano il profumo. Più è basso, più passano le sostanze solubili in acqua: <strong>zuccheri, acidi, tannini</strong>.</p>' +
@@ -11997,13 +12004,13 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
   }
 
   // ---------- Lezione 3: due radar che si uniscono in una miscela ----------
-  // Miscela = somma raggio per raggio, ogni botanica pesata sulla sua potenza (a parita' di quantita'),
+  // Miscela = somma raggio per raggio, una porzione ciascuna (ognuna alla sua dose di riferimento, che tiene gia' conto della potenza),
   // poi riportata in scala con la nota piu' alta a 5: mostra verso dove si sposta il gin.
   const UN = { size: 320, colA: '#2F7259', colB: '#C0583E', colM: '#7A4FB0' };
   function miscelaDi(a, b){
     const A = ASSI8.map((_, i) => +(PROFILO8[a] || [])[i] || 0), B = ASSI8.map((_, i) => +(PROFILO8[b] || [])[i] || 0);
-    const pa = potenzaDi(a) || 5, pb = potenzaDi(b) || 5;
-    const raw = ASSI8.map((_, i) => A[i] * pa + B[i] * pb), mx = Math.max.apply(null, raw) || 1;
+    const pa = potenzaDi(a) || '—', pb = potenzaDi(b) || '—';
+    const raw = ASSI8.map((_, i) => A[i] + B[i]), mx = Math.max.apply(null, raw) || 1;
     return { A, B, pa, pb, M: raw.map(x => x / mx * 5) };
   }
   function unionePt(i, v){
@@ -12053,7 +12060,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         (solo.length ? '🧩 <strong>Si completano</strong> dove una porta quello che all’altra manca: ' + lista(solo) + '. ' : '') +
         (su.length ? 'La miscela si sposta verso <strong>' + lista(su) + '</strong>' + (giu.length ? ', mentre ' + lista(giu) + (giu.length > 1 ? ' restano' : ' resta') + ' più indietro' : '') + '. ' : '') +
         'Nella miscela prevalgono <strong>' + direzioneTesto(bM) + '</strong> (carattere ' + carattereTesto(bM.pct) + '). ' +
-        (m.pa !== m.pb ? 'A parità di quantità pesa di più la botanica più potente. ' : 'Hanno la stessa potenza: a parità di quantità pesano uguale. ') +
+        'Ognuna entra alla sua dose di riferimento: ' + (m.pa !== m.pb ? 'della più potente se ne mette meno, ' : '') + 'così pesano alla pari. ' +
         '<em>Stima da confermare all’assaggio.</em></div>';
     };
     requestAnimationFrame(passo);
@@ -12143,7 +12150,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
   const livScelta = {};
   function ruoliScelti(){ const m = {}; roleList.querySelectorAll('.role-row-custom').forEach(r => { const s = r.querySelector('select:not(.role-label-input)'), l = r.querySelector('.role-label-input'); if (s) m[s.value] = { ruolo: l ? l.value : 'Base', protetta: !!r.dataset.protetta || s.disabled || s._bloccata }; }); return m; }
   function radarGin(){
-    const sc = ruoliScelti(), el = Object.keys(sc).filter(n => PROFILO8[n]).map(n => ({ n, w: Math.max(0.0001, (doseLibreria(n) || 0.5) * (RUOLO_DOSE[sc[n].ruolo] ?? 1)) }));
+    const sc = ruoliScelti(), el = Object.keys(sc).filter(n => PROFILO8[n]).map(n => ({ n, w: Math.max(0.0001, RUOLO_DOSE[sc[n].ruolo] ?? 1) }));
     if (!el.length) return '';
     const tot = el.reduce((a, x) => a + x.w, 0), v = ASSI8.map((_, i) => el.reduce((a, x) => a + PROFILO8[x.n][i] * x.w, 0) / tot), mx = Math.max.apply(null, v) || 1;
     return radarSVG([{ vals: v.map(x => Math.round(x / mx * 50) / 10), color: 'var(--juniper)', label: 'Il tuo gin', potenza: potenzaMedia(el) }], 250, {});

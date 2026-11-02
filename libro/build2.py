@@ -456,14 +456,14 @@ def parse_ruolo(testo):
         if prof(nome): out.append((nome, tracce))
     return out
 GARN = D.get('GARN') or {}
-stili = '<section><h1>Gli stili</h1><p>Gli stili di partenza del Gin Builder. Per ogni stile: l\'intensità, i ruoli con le botaniche proposte e il radar della firma, cioè del profilo senza ginepro, coriandolo e angelica, pesato sulle dosi di riferimento e sulla quota di ogni ruolo.</p>'
+stili = '<section><h1>Gli stili</h1><p>Gli stili di partenza del Gin Builder. Per ogni stile: l\'intensità, i ruoli con le botaniche proposte e il radar della firma, cioè del profilo senza ginepro, coriandolo e angelica, pesato sulle porzioni: la quota di ogni ruolo, con ogni botanica che alla sua dose di riferimento conta una porzione (la dose tiene già conto della potenza).</p>'
 for nome, inten, maxb, ruoli in D['STYLES']:
     if not ruoli: continue
     el = []
     for r, t in ruoli:
         fr = next((v for k, v in FRAZ.items() if r.startswith(k)), .5)
         for n, tr in parse_ruolo(t):
-            if n not in BASE: el.append((n, (DOSE.get(n, {}).get('test') or 1) * fr * (0.3 if tr else 1)))
+            if n not in BASE: el.append((n, fr * (0.3 if tr else 1)))   # porzioni: la dose di riferimento tiene gia' conto della potenza
     v = media(el)
     stili += '<article class="bot" id="s-%s"><h2>%s</h2><p class="nota">Intensità %s su 5 · fino a %s botaniche</p>' % (slug(nome), e(nome), inten, maxb)
     pz = pot_media(el)
@@ -610,7 +610,7 @@ add('cap5-schede.xhtml', 'Le schede di assaggio', '<section><h1>Le schede di ass
 # ---------- 6. I gin del mondo ----------
 GIN = D['GIN']
 def prof_gin(n, base=False):
-    el = [(b, DOSE.get(b, {}).get('test') or 1) for b in GIN[n]['b'] if prof(b) and (base or b not in BASE)]
+    el = [(b, 1) for b in GIN[n]['b'] if prof(b) and (base or b not in BASE)]
     return media(el), el
 PG = {n: prof_gin(n)[0] for n in GIN}
 PG = {n: v for n, v in PG.items() if v}
