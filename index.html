@@ -2267,6 +2267,7 @@ html details.howto a{color:#5A3E1C;}
 .lez-sub{margin:16px 0 8px}
 .lez-bots{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
 .lez-bot{padding:10px;border-radius:14px;background:var(--card);box-shadow:0 0 0 1px var(--line)}
+.lez-base p{margin:6px 0 0;font-size:14px}
 .lez-bot-t small{display:block;color:var(--ink-soft);font-size:12.5px}
 .lez-bot svg,.sc-gin svg,#lez-cfr-out svg{width:100%;height:auto;max-width:280px;display:block;margin:0 auto}
 .lez-pop{background:none;border:0;padding:0;font:inherit;color:var(--juniper);text-decoration:underline dotted;text-underline-offset:3px;cursor:pointer}
@@ -2465,7 +2466,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.9.4</div>
+  <div class="splash-ver" id="splash-ver">v2.9.5</div>
 </div>
 
 <div class="wrap">
@@ -5320,7 +5321,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.9.4</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.9.5</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -12010,7 +12011,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         '<p>Gli aromi più leggeri evaporano in fretta. Un <strong>legante</strong> (o fissativo) li trattiene e fa durare il finale. Profuma poco, ma senza di lui il gin si apre e svanisce subito. Per questo un legante serve sempre. Puoi scegliere fra tre:</p><ul><li><strong>Angelica</strong> (radice): terrosa e asciutta. È la scelta classica.</li><li><strong>Iris</strong> (radice, detta anche giaggiolo): floreale e cipriata. È il legante più elegante, ma costa caro e ne basta pochissima.</li><li><strong>Liquirizia</strong> (radice): dolce e morbida, con una dolcezza che arriva tardi e dura. È molto potente: ne basta poca.</li></ul>' +
         '<p class="lez-sub">🌿 <strong>Il coriandolo, la tradizione</strong></p>' +
         '<p>I semi di coriandolo sono agrumati e appena speziati. Fanno da <strong>ponte</strong> fra il ginepro e le altre note. Sono in quasi tutti i gin, ma non sono obbligatori: puoi toglierli, sapendo che cosa perdi.</p>' +
-        '<p>Quando costruirai il tuo gin, l’app partirà da queste tre botaniche: il ginepro, l’angelica come legante e il coriandolo. Più avanti, quando sceglierai le botaniche, potrai cambiare il legante o togliere il coriandolo.</p><p>Qui sotto vedi come «suona» ciascuna sul radar.</p>' + noz('il ginepro deve superare il 50%?', 'Il ginepro deve superare') },
+        '<p>Quando costruirai il tuo gin, l’app partirà da queste tre botaniche: il ginepro, l’angelica come legante e il coriandolo. Più avanti, quando sceglierai le botaniche, potrai cambiare il legante o togliere il coriandolo.</p><p>Qui sotto trovi una scheda per ciascuna: che parte della pianta si usa, che profumo ha e che lavoro fa nel gin.</p>' + noz('il ginepro deve superare il 50%?', 'Il ginepro deve superare') },
     ruoli: { e:'🧭', t:'I sei ruoli delle botaniche',
       html: '<p>In un gin ogni botanica ha un compito. Pensare per ruoli aiuta a non mettere tutto insieme: un gin riuscito si riconosce in due o tre note, non in venti.</p>' +
         '<p>Ogni ruolo ha una <strong>prova del ruolo</strong>: una domanda da farsi immaginando di <em>togliere</em> quella botanica dal gin. Se togliendola il gin perde qualcosa di importante, la botanica sta facendo il suo lavoro; se non cambierebbe niente, è superflua o è nel ruolo sbagliato. Si usa quando scegli le botaniche e di nuovo all\u2019assaggio.</p>' },
@@ -12166,14 +12167,30 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     const d = byName[n] || {};
     return '<div class="lez-bot"><div class="lez-bot-t">' + (d.icona || '🌿') + ' <b>' + n + '</b><small>potenza ' + (d.potenza10 ?? '—') + '/10 · ' + (d.profilo || '') + '</small></div>' + mini(n, col, 300) + '</div>';
   }
+  // Lezione 1: schede a parole, senza radar (il radar si spiega nella lezione 3)
+  const LAVORO_BASE = {
+    'Bacche di ginepro': ['🫐', 'È obbligatorio: dà al gin il suo carattere e deve sentirsi più di tutto il resto.'],
+    'Coriandolo': ['🌿', 'Fa da ponte fra il ginepro e le altre botaniche, soprattutto gli agrumi.'],
+    'Angelica': ['🔗', 'Legante classico: trattiene gli aromi e allunga il finale, quasi senza farsi sentire.'],
+    'Iris': ['🔗', 'Legante elegante: trattiene gli aromi e aggiunge una nota floreale e cipriata.'],
+    'Liquirizia': ['🔗', 'Legante morbido: trattiene gli aromi e arrotonda il gin con una dolcezza lunga.']
+  };
+  function schedaBase(n){
+    const d = byName[n] || {}, L = LAVORO_BASE[n] || ['🌿', ''];
+    return '<div class="lez-bot lez-base"><div class="lez-bot-t">' + (d.icona || '🌿') + ' <b>' + n + '</b></div>' +
+      (d.parte ? '<p>✂️ <b>Si usa:</b> ' + (d.parte === 'rizoma' ? 'rizoma, cioè la radice ingrossata' : d.parte) + '</p>' : '') +
+      (d.profilo ? '<p>👃 <b>Profumo:</b> ' + d.profilo + '</p>' : '') +
+      '<p>' + L[0] + ' <b>Nel gin:</b> ' + L[1] + '</p></div>';
+  }
   function renderLezione(){
     const T = tappeDi(att()), tp = T.find(t => t.id === window._tappa && t.tab === 'lezione') || T.find(t => t.tab === 'lezione');
     const box = $('lez-box'); if (!tp || !box) return;
     const L = LEZ[tp.lez], i = T.indexOf(tp);
     $('lez-h').innerHTML = '<span>' + (i + 1) + '</span>' + L.t;
     let pr = '';
-    if (tp.lez === 'basi') pr = '<div class="lez-bots">' + ['Bacche di ginepro', 'Coriandolo'].map((n, k) => botCard(n, ['#2F7259', '#C4803A'][k])).join('') + '</div>' +
-      '<p class="lez-sub">🔗 <strong>I tre leganti a confronto</strong></p><div class="lez-bots">' + LEGANTI.map((n, k) => botCard(n, ['#8A63B0', '#5D6F8C', '#8A6D3B'][k])).join('') + '</div>';
+    if (tp.lez === 'basi') pr = '<div class="lez-bots">' + ['Bacche di ginepro', 'Coriandolo'].map(n => schedaBase(n)).join('') + '</div>' +
+      '<p class="lez-sub">🔗 <strong>I tre leganti a confronto</strong></p><div class="lez-bots">' + LEGANTI.map(n => schedaBase(n)).join('') + '</div>' +
+      '<p class="cond-hint">Nella lezione 3 imparerai a leggere il radar, il disegno che mostra il profilo di ogni botanica. Lì ritroverai queste cinque.</p>';
     if (tp.lez === 'ruoli') pr = renderRuoli();
     if (tp.lez === 'stili') pr = renderStili();
     if (tp.lez === 'radar') pr = '<div class="lez-cfr"><label>Prima botanica<select id="lez-a"></select></label><label>Seconda botanica<select id="lez-b"></select></label></div><div id="lez-cfr-out"></div>';
