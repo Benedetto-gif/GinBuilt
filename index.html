@@ -1953,9 +1953,9 @@ html details.howto, html .pg-bento details.howto, html .pg-sez details.howto{
   --juniper:#5E5246; --juniper-deep:#4A3F35; --ochre:#7A5A2E;
   --surface:rgba(255,255,255,.55); --surface-2:rgba(255,255,255,.4);
   --line:rgba(60,50,40,.18); --line-strong:rgba(60,50,40,.3);
-  background:linear-gradient(155deg,#F1EEE9,#E3DED6) !important;
-  border:1px solid #B9AFA3 !important;
-  border-left:5px solid #9C8F80 !important;
+  background:linear-gradient(155deg,#F6EEDB,#EBDDBE) !important;   /* pergamena */
+  border:1px solid #C9B48A !important;
+  border-left:5px solid #A88A55 !important;
   box-shadow:0 1px 3px rgba(40,30,20,.12) !important;
   color:#2E2924;
 }
@@ -1966,26 +1966,26 @@ html details.howto summary::after{
   width:24px;height:24px;border-radius:50%;
   display:inline-flex;align-items:center;justify-content:center;
   font:italic 800 15px/1 Georgia, 'Fraunces', serif;text-transform:none;letter-spacing:0;
-  background:#7D7064;color:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);
+  background:#8A6D3B;color:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);
 }
 html details.howto a{color:#5A3E1C;}
 :root[data-theme="dark"] details.howto,
 :root[data-theme="dark"] .pg-bento details.howto,
 :root[data-theme="dark"] .pg-sez details.howto{
-  /* tortora chiaro con testo scuro: il bianco sul tortora si leggeva male */
+  /* pergamena con testo scuro, come col tema chiaro */
   --ink:#211C17; --ink-soft:#2E2822; --ink-faint:#4A4139;
   --juniper:#3F352B; --juniper-deep:#2E261F; --ochre:#6B4A1E;
   --surface:rgba(255,255,255,.35); --surface-2:rgba(255,255,255,.25);
   --line:rgba(40,30,20,.2); --line-strong:rgba(40,30,20,.32);
-  background:linear-gradient(155deg,#D6CCBF,#C3B6A6) !important;
-  border:1px solid #A89A89 !important;
-  border-left:5px solid #7D7064 !important;
+  background:linear-gradient(155deg,#F3EAD3,#E6D6B3) !important;   /* pergamena */
+  border:1px solid #BFA676 !important;
+  border-left:5px solid #A88A55 !important;
   box-shadow:0 2px 6px rgba(0,0,0,.35) !important;
   color:#211C17;
 }
 :root[data-theme="dark"] details.howto summary,
 :root[data-theme="dark"] .pg-bento details.howto summary{color:#2E2822 !important;}
-:root[data-theme="dark"] details.howto summary::after{background:#5A4E43;color:#fff;}
+:root[data-theme="dark"] details.howto summary::after{background:#8A6D3B;color:#fff;}
 :root[data-theme="dark"] details.howto a{color:#5A3E1C;}
 @media print{ html details.howto{background:#fff !important;box-shadow:none !important;} html details.howto summary::after{display:none;} }
 
@@ -2558,7 +2558,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.12.8</div>
+  <div class="splash-ver" id="splash-ver">v2.12.9</div>
 </div>
 
 <div class="wrap">
@@ -5497,7 +5497,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.12.8</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.12.9</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
