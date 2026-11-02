@@ -2486,7 +2486,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.10.1</div>
+  <div class="splash-ver" id="splash-ver">v2.10.2</div>
 </div>
 
 <div class="wrap">
@@ -5398,7 +5398,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.10.1</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.10.2</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -12082,13 +12082,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     basi: { e:'🫐', t:'Il ginepro e i suoi compagni',
       html: '<p class="lez-sub">⚖️ <strong>Che cos’è un gin</strong></p>' +
         '<p>Per la legge europea (Reg. UE 2019/787) il gin è una bevanda alcolica aromatizzata con le bacche di <strong>ginepro</strong> (<em>Juniperus communis</em>). Il sapore del ginepro deve restare <strong>prevalente</strong>. La gradazione minima è 37,5 % vol. La legge chiede solo questo: tutto il resto lo sceglie chi fa il gin.</p>' +
-        '<p class="lez-sub">🫐 <strong>Il ginepro, obbligatorio</strong></p>' +
-        '<p>Il ginepro è resinoso e balsamico: è la spina dorsale del gin. È l’unica botanica che non si può togliere.</p>' +
-        '<p class="lez-sub">🔗 <strong>Il legante, uno a scelta</strong></p>' +
-        '<p>Gli aromi più leggeri evaporano in fretta. Un <strong>legante</strong> (o fissativo) li trattiene e fa durare il finale. Profuma poco, ma senza di lui il gin si apre e svanisce subito. Per questo un legante serve sempre. Puoi scegliere fra tre:</p><ul><li><strong>Angelica</strong> (radice): terrosa e asciutta. È la scelta classica.</li><li><strong>Iris</strong> (radice, detta anche giaggiolo): floreale e cipriata. È il legante più elegante, ma costa caro e ne basta pochissima.</li><li><strong>Liquirizia</strong> (radice): dolce e morbida, con una dolcezza che arriva tardi e dura. È molto potente: ne basta poca.</li></ul>' +
-        '<p class="lez-sub">🌿 <strong>Il coriandolo, la tradizione</strong></p>' +
-        '<p>I semi di coriandolo sono agrumati e appena speziati. Fanno da <strong>ponte</strong> fra il ginepro e le altre note. Sono in quasi tutti i gin, ma non sono obbligatori: puoi toglierli, sapendo che cosa perdi.</p>' +
-        '<p>Quando costruirai il tuo gin, l’app partirà da queste tre botaniche: il ginepro, l’angelica come legante e il coriandolo. Più avanti, quando sceglierai le botaniche, potrai cambiare il legante o togliere il coriandolo.</p><p>Qui sotto trovi una scheda per ciascuna: che parte della pianta si usa, che profumo ha e che lavoro fa nel gin.</p>' + noz('il ginepro deve superare il 50%?', 'Il ginepro deve superare') },
+        '<p>Accanto al ginepro, quasi tutti i gin hanno altre due presenze: il coriandolo e un legante. Eccole una per una.</p>' },
     ruoli: { e:'🧭', t:'I sei ruoli delle botaniche',
       html: '<p>In un gin ogni botanica ha un compito. Pensare per ruoli aiuta a non mettere tutto insieme: un gin riuscito si riconosce in due o tre note, non in venti.</p>' +
         '<p>Ogni ruolo ha una <strong>prova del ruolo</strong>: una domanda da farsi immaginando di <em>togliere</em> quella botanica dal gin. Se togliendola il gin perde qualcosa di importante, la botanica sta facendo il suo lavoro; se non cambierebbe niente, è superflua o è nel ruolo sbagliato. Si usa quando scegli le botaniche e di nuovo all\u2019assaggio.</p>' },
@@ -12246,11 +12240,11 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
   }
   // Lezione 1: schede a parole, senza radar (il radar si spiega nella lezione 3)
   const LAVORO_BASE = {
-    'Bacche di ginepro': ['🫐', 'È obbligatorio: dà al gin il suo carattere e deve sentirsi più di tutto il resto.'],
-    'Coriandolo': ['🌿', 'Fa da ponte fra il ginepro e le altre botaniche, soprattutto gli agrumi.'],
+    'Bacche di ginepro': ['🫐', 'È obbligatorio per legge: è la spina dorsale del gin e deve sentirsi più di tutto il resto. È l’unica botanica che non si toglie.'],
+    'Coriandolo': ['🌿', 'Fa da ponte fra il ginepro e le altre botaniche, soprattutto gli agrumi. È in quasi tutti i gin, ma non è obbligatorio: puoi toglierlo, sapendo che cosa perdi.'],
     'Angelica': ['🔗', 'Legante classico: trattiene gli aromi e allunga il finale, quasi senza farsi sentire.'],
-    'Iris': ['🔗', 'Legante elegante: trattiene gli aromi e aggiunge una nota floreale e cipriata.'],
-    'Liquirizia': ['🔗', 'Legante morbido: trattiene gli aromi e arrotonda il gin con una dolcezza lunga.']
+    'Iris': ['🔗', 'Legante elegante: trattiene gli aromi e aggiunge una nota floreale e cipriata. Costa caro e ne basta pochissima.'],
+    'Liquirizia': ['🔗', 'Legante morbido: trattiene gli aromi e arrotonda il gin con una dolcezza che arriva tardi e dura. È molto potente: ne basta poca.']
   };
   function schedaBase(n){
     const d = byName[n] || {}, L = LAVORO_BASE[n] || ['🌿', ''];
@@ -12266,13 +12260,18 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     $('lez-h').innerHTML = '<span>' + (i + 1) + '</span>' + L.t;
     let pr = '';
     if (tp.lez === 'basi') pr = '<div class="lez-bots">' + ['Bacche di ginepro', 'Coriandolo'].map(n => schedaBase(n)).join('') + '</div>' +
-      '<p class="lez-sub">🔗 <strong>I tre leganti a confronto</strong></p><div class="lez-bots">' + LEGANTI.map(n => schedaBase(n)).join('') + '</div>' +
-      '<p class="cond-hint">Nella lezione 3 imparerai a leggere il radar, il disegno che mostra il profilo di ogni botanica. Lì ritroverai queste cinque.</p>';
+      '<p class="lez-sub">🔗 <strong>Il legante, uno a scelta</strong></p>' +
+      '<p>Gli aromi più leggeri evaporano in fretta. Un <strong>legante</strong> (o fissativo) li trattiene e fa durare il finale. Profuma poco, ma senza di lui il gin si apre e svanisce subito. Per questo un legante serve sempre. Puoi scegliere fra tre:</p>' +
+      '<div class="lez-bots">' + LEGANTI.map(n => schedaBase(n)).join('') + '</div>' +
+      '<p>Quando costruirai il tuo gin, l’app partirà dal ginepro, dall’angelica come legante e dal coriandolo. Più avanti, quando sceglierai le botaniche, potrai cambiare il legante o togliere il coriandolo.</p>' +
+      '<p class="cond-hint">Nella lezione 3 imparerai a leggere il radar, il disegno che mostra il profilo di ogni botanica. Lì ritroverai queste cinque.</p>' +
+      noz('il ginepro deve superare il 50%?', 'Il ginepro deve superare');
     if (tp.lez === 'ruoli') pr = renderRuoli();
     if (tp.lez === 'stili') pr = renderStili();
     if (tp.lez === 'radar') pr = '<div class="lez-cfr"><label>Prima botanica<select id="lez-a"></select></label><label>Seconda botanica<select id="lez-b"></select></label></div><div id="lez-cfr-out"></div>';
     if (tp.lez === 'estrazione') pr = tabellaEstrazione();
-    box.innerHTML = '<div class="lez-corpo lez-teoria">' + L.html + '</div>' + (pr ? '<h3 class="lez-prova">✋ Prova</h3>' + pr : '');
+    // la lezione 1 non ha una prova: le schede delle botaniche sono la lezione stessa
+    box.innerHTML = '<div class="lez-corpo lez-teoria">' + L.html + (tp.lez === 'basi' ? pr + '</div>' : '</div>' + (pr ? '<h3 class="lez-prova">✋ Prova</h3>' + pr : ''));
     if (tp.lez === 'stili'){ agganciaRuoli(); agganciaStili(); }
     if (tp.lez === 'radar'){
       assegnaUso();
