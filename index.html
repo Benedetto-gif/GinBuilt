@@ -2038,7 +2038,7 @@ html details.howto a{color:#5A3E1C;}
 .mat-sel{margin:8px 0;}.mat-sel:empty{display:none;}.mat-sel .msel-box{border:1px solid var(--line,#e5e0d3);border-radius:10px;padding:8px 12px;background:var(--surface,#fbf9f4);}.mat-sel ul{margin:6px 0;padding-left:18px;}.mat-sel li{margin:4px 0;}.mat-sel .msel-vai{font:inherit;background:none;border:0;padding:0;color:var(--juniper-deep);text-decoration:underline;cursor:pointer;text-align:left;}
 .mat-cella.on{outline:3px solid var(--ink,#222);outline-offset:1px;}
 /* «Aromi e sentori» come libretto */
-.mat-libro details.mat-pag > .howto-chiudi,.mat-libro .ar-sezioni,.mat-libro #ar-ruota,.mat-libro #ar-matrice,.mat-libro .ruota-h3,.mat-libro #ruota-lista,.mat-libro #mat-sensi,.mat-libro details.mat-pag > summary{display:none!important}
+.mat-libro details.mat-pag > .howto-chiudi,.mat-libro .ar-sezioni,.mat-libro #ar-ruota,.mat-libro #ar-matrice,.mat-libro #mat-sensi,.mat-libro details.mat-pag > summary{display:none!important}
 .mat-libro [hidden]{display:none!important}
 .libro-tit{margin:4px 0 12px;font:700 20px/1.25 'Fraunces',Georgia,serif;color:var(--ink)}
 .libro-tit span{display:block;font:700 11px/1 'Inter',system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px}
@@ -2052,6 +2052,15 @@ html details.howto a{color:#5A3E1C;}
 .libro-bar button{border:0;border-radius:999px;padding:10px 0;font:700 15px/1 'Inter',system-ui,sans-serif;cursor:pointer;background:var(--juniper);color:#fff}
 .libro-bar .libro-ind{background:none;color:var(--ink);font-size:14px;white-space:nowrap}
 .libro-bar button:disabled{opacity:.3;cursor:default}
+.ruota-h3{margin:18px 0 6px}
+@media (max-width:640px){
+  .mat-libro table.tab-schede,.mat-libro table.tab-schede tbody,.mat-libro table.tab-schede tr,.mat-libro table.tab-schede td{display:block;width:auto}
+  .mat-libro table.tab-schede thead{display:none}
+  .mat-libro table.tab-schede tr{margin:0 0 10px;padding:8px 10px;border-radius:12px;box-shadow:0 0 0 1px var(--line)}
+  .mat-libro table.tab-schede td{border:0;padding:3px 0;text-align:left}
+  .mat-libro table.tab-schede td[data-l]::before{content:attr(data-l);display:block;font:700 10.5px/1.3 'Inter',system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;opacity:.65}
+  .mat-libro table.tab-schede td:first-child{font-weight:700;font-size:15px}
+}
 .cur-q{margin:0;padding:12px 4px 12px 30px;border-top:1px solid var(--line);cursor:pointer;position:relative}
 .cur-q::before{content:'❓';position:absolute;left:2px;top:12px;font-size:16px}
 .cur-q.aperta::before{content:'💡'}
@@ -2510,7 +2519,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.11.1</div>
+  <div class="splash-ver" id="splash-ver">v2.11.2</div>
 </div>
 
 <div class="wrap">
@@ -5422,7 +5431,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.11.1</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.11.2</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -11392,6 +11401,11 @@ if ("serviceWorker" in navigator) {
   pan.classList.add('mat-libro');
   // le pagine del libretto restano sempre aperte: se qualcosa le chiude, si riaprono
   pan.addEventListener('toggle', e => { const d = e.target; if (d.classList && d.classList.contains('mat-pag') && !d.open) d.open = true; }, true);
+  // tabelle larghe: sul telefono ogni riga diventa una scheda, con il nome della colonna davanti a ogni voce
+  // (si rifà a ogni pagina mostrata: altri script, come il glossario, possono riscrivere il contenuto)
+  const schedeTab = () => pan.querySelectorAll('.mat-pag table:not(.tab-schede)').forEach(t => { const th = [...t.querySelectorAll('thead th')].map(x => x.textContent.trim()); if (!th.length) return;
+    t.classList.add('tab-schede'); t.querySelectorAll('tbody tr').forEach(tr => [...tr.children].forEach((td, i) => { if (th[i]) td.dataset.l = th[i]; })); });
+  schedeTab();
   // le domande del curioso: si vedono solo le domande, la risposta si apre toccandole
   const curD = document.getElementById('mat-curioso');
   if (curD) curD.querySelectorAll('.howto-body > p').forEach(p => {
@@ -11420,6 +11434,7 @@ if ("serviceWorker" in navigator) {
   function vai(i, ancora){
     cur = Math.max(0, Math.min(PAG.length - 1, i));
     pan.querySelectorAll('[data-pag]').forEach(n => { n.hidden = +n.dataset.pag !== cur; });
+    schedeTab();
     const p = PAG[cur];
     tit.innerHTML = cur ? '<span>' + (p.app ? 'Appendice' : 'Capitolo ' + cur) + '</span>' + p.e + ' ' + p.t : '';
     tit.hidden = !cur;
