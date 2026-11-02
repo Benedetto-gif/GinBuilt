@@ -2037,6 +2037,23 @@ html details.howto a{color:#5A3E1C;}
 .mat-guida{font-size:14px;line-height:1.5;margin:6px 0 10px;}.mat-guida p{margin:0 0 8px;}
 .mat-sel{margin:8px 0;}.mat-sel:empty{display:none;}.mat-sel .msel-box{border:1px solid var(--line,#e5e0d3);border-radius:10px;padding:8px 12px;background:var(--surface,#fbf9f4);}.mat-sel ul{margin:6px 0;padding-left:18px;}.mat-sel li{margin:4px 0;}.mat-sel .msel-vai{font:inherit;background:none;border:0;padding:0;color:var(--juniper-deep);text-decoration:underline;cursor:pointer;text-align:left;}
 .mat-cella.on{outline:3px solid var(--ink,#222);outline-offset:1px;}
+/* «Aromi e sentori» come libretto */
+.mat-libro .ar-sezioni,.mat-libro #ar-ruota,.mat-libro #ar-matrice,.mat-libro .ruota-h3,.mat-libro #ruota-lista,.mat-libro #mat-sensi,.mat-libro details.mat-pag > summary{display:none!important}
+.mat-libro [hidden]{display:none!important}
+.libro-tit{margin:4px 0 12px;font:700 20px/1.25 'Fraunces',Georgia,serif;color:var(--ink)}
+.libro-tit span{display:block;font:700 11px/1 'Inter',system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px}
+.libro-indice{margin:10px 0 16px;padding:14px;border-radius:18px;background:var(--card);box-shadow:0 0 0 1px var(--line)}
+.libro-ind-t{font:700 18px/1.2 'Fraunces',Georgia,serif;margin-bottom:8px}
+.libro-ind-s{margin:14px 0 4px;font:700 11px/1 'Inter',system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
+.libro-voce{display:grid;grid-template-columns:28px 1fr auto;gap:8px;align-items:center;width:100%;text-align:left;padding:10px 4px;border:0;border-top:1px solid var(--line);background:none;color:var(--ink);font:inherit;font-size:15px;cursor:pointer}
+.libro-voce span{font-size:20px}
+.libro-voce i{font-style:normal;color:var(--ink-soft);font-size:13px}
+.libro-bar{position:sticky;bottom:12px;z-index:5;display:grid;grid-template-columns:44px 1fr 44px;gap:6px;margin:18px 0 0 auto;width:200px;padding:6px;border-radius:999px;background:var(--card);box-shadow:0 4px 18px rgba(0,0,0,.25),0 0 0 1px var(--line)}
+.libro-bar button{border:0;border-radius:999px;padding:10px 0;font:700 15px/1 'Inter',system-ui,sans-serif;cursor:pointer;background:var(--juniper);color:#fff}
+.libro-bar .libro-ind{background:none;color:var(--ink);font-size:14px;white-space:nowrap}
+.libro-bar button:disabled{opacity:.3;cursor:default}
+.mat-col{border:0;background:none;padding:2px 4px;font:inherit;color:var(--c);cursor:pointer;border-radius:8px}
+.mat-col.on{background:color-mix(in srgb,var(--c) 22%,transparent)}
 .mat-griglia{border-collapse:separate;border-spacing:4px;width:100%;font-size:13px;}
 .mat-griglia th{font-weight:700;color:var(--ink-soft);text-align:left;padding:2px 4px;}
 .mat-griglia thead th{text-align:center;color:var(--c);font-size:12px;}
@@ -2486,7 +2503,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.10.3</div>
+  <div class="splash-ver" id="splash-ver">v2.11.0</div>
 </div>
 
 <div class="wrap">
@@ -2941,7 +2958,7 @@ html.in-mappa #nav-indietro{display:none!important}
     <details class="howto"><summary>Rifinitura</summary><div class="howto-body"><p>È il tocco finale, in dose minima («tracce»), che chiude il sorso e rifinisce la coda del gusto. Facoltativa. Peso: 15%.</p><p><em>Esempi:</em> timo o rosmarino in tracce, alloro, cannella, cardamomo, mandorla.</p><p>Il ruolo non è fisso: la stessa botanica cambia ruolo da uno stile all'altro (bergamotto: Freschezza nel Mediterraneo, Identità nell'Agrumato).</p><p><em>Domanda guida:</em> se la tolgo, il finale perde la sua coda o la sua memoria aromatica?</p></div></details>
 <details class="howto"><summary>Il ginepro deve superare il 50% in peso?</summary><div class="howto-body"><p><strong>Il ginepro deve superare il 50%?</strong> No: il 50% non è una regola. La normativa europea sul gin chiede che il sapore di ginepro sia <em>predominante</em>, senza indicare nessuna percentuale in peso: il criterio è sensoriale. Il peso dice poco su cosa si sente, perché una botanica potente (cedro, chiodo di garofano) pesa pochissimo ma si fa notare molto. Per questo molti gin moderni hanno una quota di ginepro ben sotto il 50% e restano riconoscibili come gin. Nel Builder la quota di ginepro sul totale è verde da 45% in su, arancio tra 30% e 44%, rossa sotto il 30%: sono soglie pratiche di lavoro, non di legge. Se all'assaggio il ginepro è la prima nota riconoscibile, la miscela è a posto; se è coperto, alza il ginepro o riduci le botaniche potenti. Se il gin è destinato alla vendita, verifica la definizione legale e l'etichetta con le autorità competenti.</p></div></details>
       <h3>La percezione: sigle e domande</h3>
-      <p class="noz-rimando">🔬 Nella pagina «Aromi e sentori»: <a href="#" onclick="showTab('matrice');var d=document.getElementById('mat-sigle');if(d){d.open=true;setTimeout(function(){d.scrollIntoView({block:'start'})},80);}return false;">che cosa vogliono dire le sigle</a> (TRP, TAS2R, OTOP1, ENaC, KCNK e le altre) e <a href="#" onclick="showTab('matrice');var d=document.getElementById('mat-curioso');if(d){d.open=true;setTimeout(function(){d.scrollIntoView({block:'start'})},80);}return false;">le domande del curioso</a> (perché la menta è fredda, perché il gin scalda, la mappa della lingua…).</p>
+      <p class="noz-rimando">🔬 Nella pagina «Aromi e sentori»: <a href="#" onclick="libroVai('mat-sigle');return false;">che cosa vogliono dire le sigle</a> (TRP, TAS2R, OTOP1, ENaC, KCNK e le altre) e <a href="#" onclick="libroVai('mat-curioso');return false;">le domande del curioso</a> (perché la menta è fredda, perché il gin scalda, la mappa della lingua…).</p>
       <h3>Glossario A–Z</h3>
     <details class="howto"><summary>Glossario A–Z</summary><div class="howto-body"><dl class="voc-dl"><dt id="g-albedo">Albedo</dt><dd>parte bianca sotto la scorza degli agrumi, amara; da evitare.</dd><dt id="g-alcaloidi">Alcaloidi</dt><dd>molecole vegetali che contengono azoto, spesso amare e attive sull'organismo: il chinino della china, la caffeina, la piperina del pepe.</dd><dt id="g-alcol-di-partenza">Alcol di partenza</dt><dd>l'alcol alimentare da cui si parte (96% vol qui), poi diluito con acqua.</dd><dt id="g-aldeidi">Aldeidi</dt><dd>molecole con un gruppo –CHO, spesso molto odorose: il citrale del limone, la cinnamaldeide della cannella, il decanale del coriandolo fresco. Si ossidano facilmente: per questo gli infusi di agrumi invecchiano in fretta.</dd><dt id="g-anetolo">Anetolo</dt><dd>la molecola dell'anice (anice verde, stellato, finocchio). Poco solubile in acqua: è la principale responsabile dell'effetto louche, come nell'ouzo e nel pastis.</dd><dt id="g-antociani">Antociani</dt><dd>pigmenti rossi, viola e blu di ibisco, mirtillo, ribes, mora. Si sciolgono in acqua e cambiano colore con il pH: rossi in ambiente acido, verso il blu in ambiente meno acido.</dd><dt id="g-astringenza">Astringenza</dt><dd>la sensazione di bocca che si asciuga e diventa ruvida. Non è un gusto ma un fatto tattile: tannini e altri polifenoli si legano alle proteine lubrificanti della saliva e le fanno precipitare.</dd><dt id="g-base-neutra">Base neutra</dt><dd>alcol e acqua alla gradazione di lavoro, senza botaniche.</dd><dt id="g-botanica">Botanica</dt><dd>qualsiasi parte vegetale usata per aromatizzare.</dd><dt id="g-bottone-gustativo">Bottone gustativo</dt><dd>un gruppo di 50–100 cellule a forma di bocciolo, dentro le papille, che contiene le cellule del gusto. Ogni bottone sente tutti e cinque i gusti.</dd><dt id="g-canale-ionico">Canale ionico</dt><dd>una proteina a forma di poro nella membrana di una cellula: quando una molecola o una temperatura la fa aprire, gli ioni passano e parte un segnale nervoso. Sono canali quelli dell'acido, del salato, del caldo e del freddo.</dd><dt id="g-canfora">Canfora</dt><dd>molecola balsamica e fresca di rosmarino, salvia, lavanda e alloro. In dose alta sa di medicinale.</dd><dt id="g-capsaicina">Capsaicina</dt><dd>la molecola che fa bruciare il peperoncino: attiva il canale TRPV1, lo stesso del calore. Contiene un gruppo «vanillile» come la vanillina, da cui il nome dei recettori «vanilloidi».</dd><dt id="g-chill-haze">Chill haze</dt><dd>velatura che compare quando il gin si raffredda.</dd><dt id="g-cineolo-eucaliptolo">Cineolo (eucaliptolo)</dt><dd>molecola fresca e balsamica di eucalipto, rosmarino, cardamomo, alloro. Attiva il canale del freddo TRPM8: per questo rinfresca.</dd><dt id="g-cinetica-del-primo-ordine">Cinetica del primo ordine</dt><dd>un modello in cui la velocità di un processo è proporzionale a quanto resta da fare. Nella macerazione: all'inizio le molecole passano in fretta, poi sempre più lentamente, fino a fermarsi vicino alla saturazione.</dd><dt id="g-cinnamaldeide">Cinnamaldeide</dt><dd>l'aldeide della cannella e della cassia: dolce, calda, pungente. Attiva il canale TRPA1.</dd><dt id="g-citrale">Citrale</dt><dd>miscela di due aldeidi (geraniale e nerale) dal profumo di limone, abbondante in verbena odorosa, citronella e melissa. Molto sensibile alla luce e all'ossigeno.</dd><dt id="g-compound-gin">Compound gin</dt><dd>gin ottenuto aromatizzando l'alcol con estratti e infusi, senza distillare le botaniche.</dd><dt id="g-contrazione-di-volume">Contrazione di volume</dt><dd>l'alcol mescolato con acqua occupa meno della somma dei volumi.</dd><dt id="g-cumarina">Cumarina</dt><dd>molecola dal profumo di fieno, mandorla e vaniglia, presente in fave di tonka, foglie di ciliegio e cassia. In dosi alte è dannosa per il fegato: la normativa europea ne vieta l'aggiunta allo stato puro e ne limita il contenuto negli alimenti.</dd><dt id="g-distillazione">Distillazione</dt><dd>separare le sostanze facendole evaporare e poi ricondensare. Il gin distillato ridistilla l'alcol con le botaniche; il gin compound non distilla, macera e miscela.</dd><dt id="g-dose-di-riferimento">Dose di riferimento</dt><dd>grammi di botanica per 100 ml di infuso dati dalla libreria.</dd><dt id="g-effetto-louche">Effetto louche</dt><dd>intorbidamento per oli che si separano quando si diluisce l'alcol.</dd><dt id="g-enantiomeri">Enantiomeri</dt><dd>molecole fatte degli stessi atomi ma l'una immagine speculare dell'altra, come la mano destra e la sinistra. Possono avere odori diversi: un carvone sa di menta, il suo «gemello» di carvi.</dd><dt id="g-esteri">Esteri</dt><dd>molecole che nascono da un acido e un alcol; danno spesso odori fruttati e floreali, come l'acetato di linalile del bergamotto e della lavanda.</dd><dt id="g-estratto-infuso">Estratto / infuso</dt><dd>liquido aromatico ottenuto dalla macerazione di una botanica.</dd><dt id="g-eugenolo">Eugenolo</dt><dd>la molecola del chiodo di garofano, presente anche in alloro, cannella e basilico. È un fenolo: calda, speziata, un po' medicinale.</dd><dt id="g-fenoli">Fenoli</dt><dd>molecole con un anello aromatico e un gruppo –OH: odori speziati, medicinali o affumicati (eugenolo, timolo, carvacrolo). Molti sono antiossidanti.</dd><dt id="g-flavedo">Flavedo</dt><dd>parte colorata della scorza, ricca di oli essenziali.</dd><dt id="g-flavonoidi">Flavonoidi</dt><dd>polifenoli gialli o incolori di agrumi, tè, camomilla. Danno colore e a volte un amaro leggero, come la naringina del pompelmo.</dd><dt id="g-ftalidi">Ftalidi</dt><dd>molecole di sedano e levistico che danno una nota «brodosa» e rinforzano la sensazione di sapidità.</dd><dt id="g-gestalt-chiusura">Gestalt (chiusura)</dt><dd>la psicologia della forma: il cervello tende a vedere figure intere anche dove ci sono solo pezzi. Per la «chiusura», punti uniti da un contorno diventano un'unica figura.</dd><dt id="g-gingeroli">Gingeroli</dt><dd>le molecole pungenti dello zenzero fresco. Essiccando o scaldando diventano shogaoli, ancora più piccanti. Attivano TRPV1.</dd><dt id="g-glicirrizina">Glicirrizina</dt><dd>la sostanza dolce della liquirizia, decine di volte più dolce dello zucchero. La sua dolcezza arriva tardi e dura a lungo.</dd><dt id="g-glicosidi">Glicosidi</dt><dd>molecole legate a uno zucchero, spesso inodori finché lo zucchero non si stacca. L'amigdalina della mandorla amara, staccandosi, libera la benzaldeide che dà il suo profumo.</dd><dt id="g-glutammato">Glutammato</dt><dd>la forma dell'acido glutammico, un amminoacido, che dà il gusto umami. Non è volatile e si scioglie bene in acqua, poco quando il grado alcolico è alto.</dd><dt id="g-gradazione-vol">Gradazione (% vol)</dt><dd>percentuale di alcol in volume.</dd><dt id="g-idrofilo-idrofobo-lipofilo">Idrofilo / idrofobo (lipofilo)</dt><dd>che si scioglie in acqua, oppure in alcol e grassi.</dd><dt id="g-isotiocianati">Isotiocianati</dt><dd>molecole pungenti di senape, rafano, wasabi e cappero. Si formano quando la pianta viene tagliata o masticata e un enzima libera i glucosinolati. Attivano TRPA1.</dd><dt id="g-lattoni">Lattoni</dt><dd>esteri chiusi ad anello, con odori di pesca, cocco, crema e latte (γ-decalattone, γ-nonalattone). Anche la cumarina è un lattone.</dd><dt id="g-legante-fissativo">Legante / fissativo</dt><dd>botanica che trattiene gli aromi volatili e allunga il finale.</dd><dt id="g-limonene">Limonene</dt><dd>il terpene più abbondante nell'olio delle scorze di agrumi: fresco, di arancia. Volatile e ossidabile: è la prima nota a svanire.</dd><dt id="g-linalolo">Linalolo</dt><dd>terpene floreale e morbido, protagonista dei semi di coriandolo, della lavanda e del bergamotto.</dd><dt id="g-macerazione">Macerazione</dt><dd>contatto della botanica con il solvente per estrarne le sostanze.</dd><dt id="g-meccanorecettori">Meccanorecettori</dt><dd>terminazioni nervose che sentono il tatto: pressione, attrito, vibrazione. In bocca leggono astringenza, corpo e il formicolio del pepe di Sichuan.</dd><dt id="g-memoria-di-lavoro">Memoria di lavoro</dt><dd>la memoria a breve termine che tiene a mente le cose mentre ci si ragiona. Regge circa quattro elementi alla volta.</dd><dt id="g-mentolo">Mentolo</dt><dd>la molecola della menta piperita: attiva il canale del freddo TRPM8 e dà freschezza anche a temperatura ambiente.</dd><dt id="g-micro-emulsione">Micro-emulsione</dt><dd>oli dispersi in goccioline finissime: il velo bianco della torbidità.</dd><dt id="g-monoterpeni-e-sesquiterpeni">Monoterpeni e sesquiterpeni</dt><dd>terpeni a 10 e a 15 atomi di carbonio. I monoterpeni (limonene, pinene, linalolo) sono leggeri e volatili: le note di testa. I sesquiterpeni (cariofillene del pepe, bisabololo della camomilla, zingiberene dello zenzero) sono più pesanti e durano: cuore e fondo.</dd><dt id="g-mouthfeel">Mouthfeel</dt><dd>sensazione in bocca: densità, oleosità, rotondità.</dd><dt id="g-mucillagini">Mucillagini</dt><dd>zuccheri complessi che in acqua formano un gel viscoso (malva, altea, semi di lino). Danno corpo, ma passano poco quando il grado alcolico è alto.</dd><dt id="g-note-di-testa-cuore-e-fondo">Note di testa, cuore e fondo</dt><dd>l'ordine in cui si percepiscono gli aromi: prima i volatili, poi i medi, infine i persistenti.</dd><dt id="g-nucleotidi">Nucleotidi</dt><dd>molecole come l'inosinato (carne, pesce) e il guanilato (funghi secchi) che moltiplicano l'umami del glutammato: insieme fanno molto più della somma.</dd><dt id="g-ossidazione">Ossidazione</dt><dd>reazione con l'ossigeno dell'aria, accelerata da luce e calore. Rovina terpeni e aldeidi: gli agrumi perdono freschezza e prendono odore di vernice. Per questo gli infusi si tengono al buio e in bottiglie piene.</dd><dt id="g-papille-gustative">Papille gustative</dt><dd>le piccole sporgenze della lingua (fungiformi, foliate, circumvallate) che contengono i bottoni gustativi.</dd><dt id="g-persistenza">Persistenza</dt><dd>quanto a lungo l'aroma resta in bocca dopo il sorso.</dd><dt id="g-ph">pH</dt><dd>la misura dell'acidità, da 0 a 14: 7 è neutro, sotto è acido. Il succo di limone è intorno a 2, l'acqua potabile intorno a 7.</dd><dt id="g-pinene">Pinene</dt><dd>il terpene resinoso del pino e del ginepro (alfa-pinene e beta-pinene): la spina dorsale aromatica del gin.</dd><dt id="g-piperina">Piperina</dt><dd>la molecola pungente del pepe nero: attiva i canali TRPV1 e TRPA1, quelli del bruciore.</dd><dt id="g-polarita">Polarità</dt><dd>quanto una molecola ha cariche elettriche separate. Le molecole polari (zuccheri, acidi, tannini) si sciolgono in acqua; quelle apolari (oli essenziali, cere) in alcol e grassi. L'etanolo sta a metà: per questo la gradazione decide che cosa si estrae.</dd><dt id="g-polifenoli">Polifenoli</dt><dd>famiglia di molecole con più gruppi fenolici: tannini, flavonoidi, antociani. Danno colore, astringenza e protezione dall'ossidazione.</dd><dt id="g-potenza">Potenza</dt><dd>forza aromatica di una botanica: più è alta, meno se ne usa.</dd><dt id="g-recettore">Recettore</dt><dd>una proteina che riconosce una molecola precisa, come una serratura con la sua chiave, e avvia un segnale nella cellula. Dolce, amaro, umami e odori passano da recettori.</dd><dt id="g-saturazione">Saturazione</dt><dd>il punto in cui un solvente non riesce più a sciogliere una sostanza: oltre, la macerazione non estrae più nulla di quella molecola.</dd><dt id="g-soglia-olfattiva">Soglia olfattiva</dt><dd>la concentrazione più bassa alla quale una molecola si sente. Cambia moltissimo da molecola a molecola e da persona a persona: alcune si sentono in tracce infinitesimali, altre solo in quantità.</dd><dt id="g-solvente">Solvente</dt><dd>il liquido che scioglie le sostanze. Nella macerazione è la miscela di alcol e acqua, che con la sua gradazione sceglie che cosa estrarre.</dd><dt id="g-tannini">Tannini</dt><dd>polifenoli che si legano alle proteine e danno astringenza: la bocca si asciuga e diventa ruvida. Abbondano in scorze, tè, foglie e cortecce; passano soprattutto con l'acqua della miscela.</dd><dt id="g-terpeni">Terpeni</dt><dd>la grande famiglia di molecole aromatiche degli oli essenziali (limonene, pinene, linalolo). Sono apolari: si sciolgono bene in alcol, poco in acqua.</dd><dt id="g-timolo-e-carvacrolo">Timolo e carvacrolo</dt><dd>i fenoli di timo, origano e santoreggia: caldi, speziati, un po' medicinali. Attivano i canali TRPV3 e TRPA1.</dd><dt id="g-tracce">Tracce</dt><dd>dose ridotta (circa il 15%) per le botaniche di rifinitura.</dd><dt id="g-tujone">Tujone</dt><dd>composto di artemisia, abrotano e salvia, da dosare con cautela.</dd><dt id="g-umami">Umami</dt><dd>il quinto gusto, il «saporito»: lo individuò il chimico giapponese Kikunae Ikeda nel 1908 nel brodo di alga kombu. Lo danno glutammato e nucleotidi, letti dal recettore T1R1 + T1R3.</dd><dt id="g-vanillina">Vanillina</dt><dd>l'aldeide della vaniglia: dolce, cremosa. Il cervello la associa al dolce anche se non tocca i recettori del gusto.</dd><dt id="g-volatilita">Volatilità</dt><dd>la tendenza di una molecola a evaporare. Solo le molecole volatili arrivano al naso: quelle leggere evaporano subito (note di testa), quelle pesanti lentamente (note di fondo).</dd></dl></div></details>
 
@@ -4029,7 +4046,7 @@ html.in-mappa #nav-indietro{display:none!important}
           <li><strong>KCNK3, KCNK9, KCNK18.</strong> Canali del potassio "a due pori" che tengono a riposo i nervi del tatto leggero. Il sanshool del pepe sansho li blocca: le fibre si eccitano da sole e la lingua formicola come se vibrasse a circa 50 Hz.</li>
         </ul>
         <p class="cond-hint">Le soglie di temperatura sono valori indicativi misurati in laboratorio: nella bocca cambiano con la concentrazione delle molecole e con la persona.</p>
-        <p class="cond-hint">Gli studi da cui vengono queste informazioni sono elencati nel riquadro <a href="#" onclick="var d=document.getElementById('mat-fonti');d.open=true;d.scrollIntoView({behavior:'smooth'});return false;">📚 Fonti scientifiche</a>.</p>
+        <p class="cond-hint">Gli studi da cui vengono queste informazioni sono elencati nel riquadro <a href="#" onclick="libroVai('mat-fonti');return false;">📚 Fonti scientifiche</a>.</p>
       </div>
     </details>
     <details class="howto" id="mat-porte">
@@ -4207,7 +4224,7 @@ html.in-mappa #nav-indietro{display:none!important}
     </details>
     <div class="mat-guida">
       <p><strong>Come si legge la griglia.</strong> Le <strong>righe</strong> sono gli assi del radar delle botaniche (Dolce, Amaro, Acido…); l'ultima, Struttura, riguarda le sensazioni in bocca. Le <strong>colonne</strong> sono i quattro sensi che percepiscono: <span style="color:#C0583E;font-weight:700">Gusto</span> (lingua), <span style="color:#4C7BB5;font-weight:700">Olfatto</span> (naso), <span style="color:#B8921F;font-weight:700">Trigemino</span> (caldo, fresco, pungente), <span style="color:#5D6F8C;font-weight:700">Tatto</span> (astringenza, formicolio). Il <strong>numero</strong> in una casella dice quante schede ci sono per quell'incrocio: per esempio Speziato × Trigemino = 2, lo speziato che si sente anche come calore e pizzicore.</p>
-      <p>Tocca una casella: sotto la griglia compare l'elenco di quei sentori, e toccando un nome si va alla sua scheda. Tocca di nuovo la stessa casella per vederli tutti.</p>
+      <p>Tocca una casella: sotto la griglia compare l'elenco di quei sentori, e toccando un nome si va alla sua scheda. Tocca il nome di una colonna (Gusto, Olfatto…) per vedere tutti i sentori di quel senso. Tocca di nuovo per togliere la scelta.</p>
     </div>
     <div class="mat-wrap"><table class="mat-griglia" id="mat-griglia"></table></div>
     <div class="mat-sel" id="mat-sel"></div>
@@ -5398,7 +5415,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.10.3</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.11.0</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -11294,9 +11311,10 @@ if ("serviceWorker" in navigator) {
   function griglia(){
     const t = document.getElementById('mat-griglia');
     const conta = (a, k) => S.filter(x => x.a === a && x.k === k).length;
-    t.innerHTML = '<thead><tr><th></th>' + Object.keys(SENSI).map(k => '<th style="--c:' + SENSI[k][2] + '">' + SENSI[k][0] + '</th>').join('') + '</tr></thead><tbody>' +
+    t.innerHTML = '<thead><tr><th></th>' + Object.keys(SENSI).map(k => '<th style="--c:' + SENSI[k][2] + '"><button type="button" class="mat-col' + (filtro.senso === k && !filtro.asse ? ' on' : '') + '" data-k="' + k + '">' + SENSI[k][0] + '</button></th>').join('') + '</tr></thead><tbody>' +
       ASSI.map(a => '<tr><th>' + a + '</th>' + Object.keys(SENSI).map(k => { const n = conta(a, k), on = filtro.asse === a && filtro.senso === k;
         return '<td>' + (n ? '<button type="button" class="mat-cella' + (on ? ' on' : '') + '" data-a="' + a + '" data-k="' + k + '" style="--c:' + SENSI[k][2] + '">' + n + '</button>' : '<span class="mat-vuota">·</span>') + '</td>'; }).join('') + '</tr>').join('') + '</tbody>';
+    t.querySelectorAll('.mat-col').forEach(b => b.onclick = () => { const on = filtro.senso === b.dataset.k && !filtro.asse; filtro.senso = on ? null : b.dataset.k; filtro.asse = null; disegna(); });
     t.querySelectorAll('.mat-cella').forEach(b => b.onclick = () => {
       const on = filtro.asse === b.dataset.a && filtro.senso === b.dataset.k;
       filtro.asse = on ? null : b.dataset.a; filtro.senso = on ? null : b.dataset.k; disegna(); });
@@ -11311,7 +11329,8 @@ if ("serviceWorker" in navigator) {
     griglia(); chips();
     const q = filtro.q.trim().toLowerCase();
     const el = S.filter(x => (!filtro.senso || x.k === filtro.senso) && (!filtro.asse || x.a === filtro.asse) && (!q || testo(x).includes(q)));
-    document.getElementById('mat-conta').textContent = (filtro.asse || filtro.senso || q) ? 'Schede mostrate qui sotto: ' + el.length + ' su ' + S.length : 'Tutte le ' + S.length + ' schede';
+    const scelto = !!(filtro.asse || filtro.senso || q);
+    document.getElementById('mat-conta').textContent = scelto ? 'Schede mostrate qui sotto: ' + el.length + ' su ' + S.length : 'Tocca una casella o il nome di una colonna della griglia, oppure cerca: qui sotto compariranno le schede (' + S.length + ' in tutto).';
     const SPIEGA = {gusto:'sentite dalla lingua', olfatto:'sentite dal naso, anche da dietro mentre si deglutisce', trigemino:'sentite dai nervi della bocca come caldo, fresco o pizzicore', tatto:'sentite dalla bocca come attrito, secchezza o formicolio'};
     const selEl = document.getElementById('mat-sel');
     if (selEl){
@@ -11324,7 +11343,7 @@ if ("serviceWorker" in navigator) {
         const tutti = document.getElementById('mat-tutti'); if (tutti) tutti.onclick = () => { filtro.asse = null; filtro.senso = null; filtro.q = ''; if (qIn) qIn.value = ''; disegna(); };
       } else selEl.innerHTML = '';
     }
-    box.innerHTML = el.map(x => { const se = SENSI[x.k];
+    box.innerHTML = !scelto ? '' : el.map(x => { const se = SENSI[x.k];
       return '<div class="ck-card mat-card" style="--c:' + se[2] + '"><div class="gar-head"><h3>' + esc(x.s) + '</h3><span class="gar-tipo ton-fam" style="--c:' + se[2] + '">' + se[0] + '</span></div>' +
         '<p class="ck-origin">Senso: ' + se[0] + ' (' + se[1] + ') · riga della griglia: ' + x.a + '</p>' +
         '<table class="mat-mol"><thead><tr><th>Molecole</th><th>Botaniche</th></tr></thead><tbody>' +
@@ -11333,6 +11352,7 @@ if ("serviceWorker" in navigator) {
         '<p class="ck-desc" style="margin:10px 0 0;">' + esc(x.n) + '</p></div>'; }).join('') ||
       '<div class="radar-nota">Nessun sentore con questi filtri. La botanica potrebbe non avere molecole elencate qui: la sua scheda in libreria riporta le molecole da estrarre.</div>';
     box.querySelectorAll('.mat-dove').forEach(a => a.onclick = e => { e.preventDefault();
+      if (window.libroVai){ libroVai('mat-canali'); return; }
       const d = document.getElementById('mat-canali'); if (!d) return; d.open = true;
       const sm = d.querySelector('summary'); if (sm){ sm.style.scrollMarginTop = '84px'; sm.scrollIntoView({behavior:'smooth', block:'start'}); } });
     box.querySelectorAll('.mat-bot').forEach(a => a.onclick = e => { e.preventDefault();
@@ -11342,6 +11362,66 @@ if ("serviceWorker" in navigator) {
   if (qIn) qIn.addEventListener('input', () => { filtro.q = qIn.value; disegna(); });
   disegna();
   window.MATRICE_SENTORI = S;
+})();
+</script>
+<script>
+// ---------- «Aromi e sentori» come un libretto: indice e pagine da sfogliare ----------
+// Il contenuto resta quello della pagina (anche per l'ePub): qui si raggruppa in pagine e se ne mostra una alla volta.
+(function(){
+  const pan = document.getElementById('panel-matrice'); if (!pan) return;
+  const sum = t => [...pan.querySelectorAll('details')].find(d => { const s = d.querySelector(':scope > summary'); return s && s.textContent.trim().indexOf(t) === 0; });
+  const fra = (a, b) => { const out = []; let n = a; while (n && n !== b){ out.push(n); n = n.nextElementSibling; } return out; };
+  const PAG = [
+    { e:'📖', t:'Indice' },
+    { e:'🎡', t:'Che cosa si sente: la ruota degli aromi', el: () => fra(document.getElementById('ar-ruota'), document.getElementById('ar-matrice')) },
+    { e:'🧠', t:'Quattro sistemi, un solo sapore', el: () => [sum('Quattro sistemi')] },
+    { e:'🚪', t:'I canali e dove si trovano', el: () => [document.getElementById('mat-canali')] },
+    { e:'🗝️', t:'Chiavi, grimaldelli e regolatori di volume', el: () => [document.getElementById('mat-porte')] },
+    { e:'🧬', t:'Perché si sente: la griglia dei sentori', el: () => { const g = pan.querySelector('.mat-guida'); return fra(g, null); } },
+    { e:'🔤', t:'Che cosa vogliono dire le sigle', app: 1, el: () => [document.getElementById('mat-sigle')] },
+    { e:'❓', t:'Le domande del curioso', app: 1, el: () => [document.getElementById('mat-curioso')] },
+    { e:'📚', t:'Fonti scientifiche', app: 1, el: () => [document.getElementById('mat-fonti')] }
+  ];
+  pan.classList.add('mat-libro');
+  PAG.forEach((p, i) => { if (p.el) p.el().filter(Boolean).forEach(n => { n.dataset.pag = i; if (n.tagName === 'DETAILS'){ n.open = true; n.classList.add('mat-pag'); } }); });
+  // l'indice: sulla prima pagina, dopo il titolo e il «Come si usa»
+  const howto = sum('Come si usa e da dove viene'); if (howto) howto.dataset.pag = 0;
+  const ind = document.createElement('div'); ind.className = 'libro-indice'; ind.dataset.pag = 0;
+  const voce = (p, i) => '<button type="button" class="libro-voce" data-i="' + i + '"><span>' + p.e + '</span><b>' + p.t + '</b><i>' + i + '</i></button>';
+  ind.innerHTML = '<div class="libro-ind-t">📖 Indice</div>' + PAG.map((p, i) => i && !p.app ? voce(p, i) : '').join('') +
+    '<div class="libro-ind-s">Appendici</div>' + PAG.map((p, i) => p.app ? voce(p, i) : '').join('');
+  (howto || pan.querySelector('.ar-sezioni')).after(ind);
+  // il titolo di ogni pagina e la barra per sfogliare
+  const tit = document.createElement('div'); tit.className = 'libro-tit'; pan.querySelector('.storia').after(tit);
+  const bar = document.createElement('div'); bar.className = 'libro-bar';
+  bar.innerHTML = '<button type="button" class="libro-prev" aria-label="Pagina precedente">‹</button><button type="button" class="libro-ind" aria-label="Torna all’indice"></button><button type="button" class="libro-next" aria-label="Pagina successiva">›</button>';
+  pan.appendChild(bar);
+  let cur = 0;
+  function vai(i, ancora){
+    cur = Math.max(0, Math.min(PAG.length - 1, i));
+    pan.querySelectorAll('[data-pag]').forEach(n => { n.hidden = +n.dataset.pag !== cur; });
+    const p = PAG[cur];
+    tit.innerHTML = cur ? '<span>' + (p.app ? 'Appendice' : 'Capitolo ' + cur) + '</span>' + p.e + ' ' + p.t : '';
+    tit.hidden = !cur;
+    bar.querySelector('.libro-ind').innerHTML = cur ? '📖 ' + cur + ' / ' + (PAG.length - 1) : '📖 Indice';
+    bar.querySelector('.libro-prev').disabled = cur === 0;
+    const nx = PAG[cur + 1]; bar.querySelector('.libro-next').disabled = !nx;
+    
+    const dest = ancora || pan; try { dest.style.scrollMarginTop = '84px'; dest.scrollIntoView({ block: 'start' }); } catch(e){}
+  }
+  bar.querySelector('.libro-prev').onclick = () => vai(cur - 1);
+  bar.querySelector('.libro-next').onclick = () => vai(cur + 1);
+  bar.querySelector('.libro-ind').onclick = () => vai(0);
+  ind.querySelectorAll('.libro-voce').forEach(b => b.onclick = () => vai(+b.dataset.i));
+  // sfogliare col dito, a destra e a sinistra (non sulla ruota e non sulle tabelle che scorrono)
+  let x0 = null, y0 = 0;
+  pan.addEventListener('touchstart', e => { if (e.target.closest('svg, .mat-wrap, input, table')) { x0 = null; return; } x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+  pan.addEventListener('touchend', e => { if (x0 == null) return; const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0; x0 = null;
+    if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.8) vai(cur + (dx < 0 ? 1 : -1)); }, { passive: true });
+  // da altre pagine dell'app: apri il libretto alla pagina che contiene l'elemento
+  window.libroVai = id => { if (typeof showTab === 'function') showTab('matrice'); const n = document.getElementById(id); if (!n) return;
+    const box = n.closest('[data-pag]'); vai(box ? +box.dataset.pag : 0); setTimeout(() => { try { n.scrollIntoView({ block: 'start' }); } catch(e){} }, 60); };
+  vai(0);
 })();
 </script>
 <script>
