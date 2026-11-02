@@ -2266,6 +2266,7 @@ html details.howto a{color:#5A3E1C;}
 .lez-bot{padding:10px;border-radius:14px;background:var(--card);box-shadow:0 0 0 1px var(--line)}
 .lez-bot-t small{display:block;color:var(--ink-soft);font-size:12.5px}
 .lez-bot svg,.sc-gin svg,#lez-cfr-out svg{width:100%;height:auto;max-width:280px;display:block;margin:0 auto}
+.lez-pop{background:none;border:0;padding:0;font:inherit;color:var(--juniper);text-decoration:underline dotted;text-underline-offset:3px;cursor:pointer}
 .lez-corpo .lez-sub{margin:16px 0 4px;font-size:15px}
 .lez-corpo .lez-sub:first-child{margin-top:0}
 .lez-cfr{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
@@ -2450,7 +2451,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.8.10</div>
+  <div class="splash-ver" id="splash-ver">v2.8.11</div>
 </div>
 
 <div class="wrap">
@@ -4501,6 +4502,19 @@ function umamiMiscela(el){
   if (!tot) return 0;
   return Math.round(Math.sqrt(ok.reduce((a,x) => a + x.w * Math.pow(UMAMI[x.n] || 0, 2), 0) / tot) * 10) / 10;
 }
+// finestra a comparsa della Lezione 3: il quinto gusto e perche' nel gin e' raro
+function umamiInfo(){
+  const ic = n => ((typeof byName !== 'undefined' && byName[n]) || {}).icona || '🌿';
+  const top = Object.keys(UMAMI).filter(n => UMAMI[n] >= 2).sort((a, b) => UMAMI[b] - UMAMI[a] || a.localeCompare(b, 'it'));
+  const ico = document.querySelector('.avviso-icona');
+  if (ico) ico.textContent = '🍅';
+  mostraAvviso('Umami, il quinto gusto',
+    '<p>È il gusto «saporito» del brodo, del parmigiano, del pomodoro maturo e dei funghi secchi. Lo individuò il chimico giapponese Kikunae Ikeda nel 1908, studiando il brodo di alga kombu. Lo danno il <strong>glutammato</strong> e alcuni nucleotidi.</p>' +
+    '<p><strong>Nel gin è raro.</strong> Queste molecole non evaporano, quindi non arrivano al naso, e si sciolgono male quando il grado alcolico è alto: in un infuso ne passa poco.</p>' +
+    '<p><strong>Oggi però c\u2019è chi lo cerca</strong>, con alghe, pomodoro, capperi e piante di scogliera. Nell\u2019erbario dell\u2019app ne hanno di più:</p>' +
+    '<ul>' + top.map(n => '<li>' + ic(n) + ' ' + n + ' <small>(umami ' + UMAMI[n] + '/5)</small></li>').join('') + '</ul>' +
+    '<p>Per questo l\u2019umami non è un asse del radar: quando una botanica ne ha, compare a parte, sotto il radar delle sensazioni in bocca.</p>', '', null);
+}
 function umamiNota(v, nomi){
   if (!v) return '';
   return '<div class="radar-nota"><strong>Umami ' + String(v).replace('.', ',') + '/5</strong>' + (nomi ? ' (da ' + nomi + ')' : '') +
@@ -5282,7 +5296,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.8.10</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.8.11</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -7484,7 +7498,7 @@ function mostraAvviso(titolo, corpoHtml, etichettaOk, onConferma){
   avvisoAzione = onConferma || null;
   avvisoEl.hidden = false;
 }
-function chiudiAvviso(){ avvisoEl.hidden = true; avvisoAzione = null; }
+function chiudiAvviso(){ avvisoEl.hidden = true; avvisoAzione = null; const ic = document.querySelector('.avviso-icona'); if (ic) ic.textContent = '⚖️'; }
 
 document.getElementById('avviso-annulla').addEventListener('click', chiudiAvviso);
 document.getElementById('avviso-ok').addEventListener('click', () => {
@@ -11972,7 +11986,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         '<p>Ogni ruolo ha una <strong>prova del ruolo</strong>: una domanda da farsi immaginando di <em>togliere</em> quella botanica dal gin. Se togliendola il gin perde qualcosa di importante, la botanica sta facendo il suo lavoro; se non cambierebbe niente, è superflua o è nel ruolo sbagliato. Si usa quando scegli le botaniche e di nuovo all\u2019assaggio.</p>' },
     radar: { e:'📡', t:'Leggere il radar e la potenza',
       html: '<p class="lez-sub">📡 <strong>Il radar</strong></p>' +
-        '<p>Il radar disegna il profilo di una botanica su dieci assi. Quattro sono <strong>gusti</strong>, che si sentono in bocca: dolce, amaro, acido, salino. Sei sono famiglie di <strong>aromi</strong>, che arrivano al naso: agrumato, floreale, fruttato, erbaceo, resinoso, speziato. Ogni asse va da 0 (la nota non c’è) a 5 (la nota domina).</p>' +
+        '<p>Il radar disegna il profilo di una botanica su dieci assi. Quattro sono <strong>gusti</strong>, che si sentono in bocca: dolce, amaro, acido, salino (per i più curiosi c\'è anche un quinto gusto, l\'<button type="button" class="lez-pop" onclick="umamiInfo()">umami ⓘ</button>). Sei sono famiglie di <strong>aromi</strong>, che arrivano al naso: agrumato, floreale, fruttato, erbaceo, resinoso, speziato. Ogni asse va da 0 (la nota non c’è) a 5 (la nota domina).</p>' +
         '<p class="lez-sub">🎯 <strong>Il carattere</strong></p>' +
         '<p>Sotto il radar trovi le note che prevalgono e il <strong>carattere</strong> della botanica. Il carattere dice se il profilo è raccolto su poche note o sparso su molte:</p><ul><li><em>equilibrato</em>: le note sono quasi tutte alla pari;</li><li><em>sfumato</em>: se ne sentono parecchie;</li><li><em>marcato</em>: due o tre si staccano dalle altre;</li><li><em>netto</em>: ne domina una sola.</li></ul>' +
         '<p class="lez-sub">🔊 <strong>La potenza</strong></p>' +
