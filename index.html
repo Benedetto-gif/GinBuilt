@@ -2523,7 +2523,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.11.4</div>
+  <div class="splash-ver" id="splash-ver">v2.11.5</div>
 </div>
 
 <div class="wrap">
@@ -4927,7 +4927,9 @@ function ordineAscolto(elenco){
     let t;
     if (i in GUSTO_T) t = GUSTO_T[i];
     else { let a = 0, b = 0; el.forEach(x => { const s = STADI[x.n] || [.3, 1, .4], tot = s[0] + s[1] + s[2] || 1, q = PROFILO8[x.n][i] * w(x); a += q * (s[1] + 2 * s[2]) / tot; b += q; }); t = b ? a / b : 1; }
-    const chi = el.map(x => [x.n, PROFILO8[x.n][i] * w(x)]).filter(z => z[1] > 0).sort((a, b) => b[1] - a[1]).slice(0, 2).map(z => z[0]);
+    // chi porta la nota proprio in quel momento: una botanica che la porta molto prima o molto dopo non va nominata qui
+    const tB = x => { const s = STADI[x.n] || [.3, 1, .4], tot = s[0] + s[1] + s[2] || 1; return (s[1] + 2 * s[2]) / tot; };
+    const chi = el.map(x => [x.n, PROFILO8[x.n][i] * w(x), tB(x)]).filter(z => z[1] > 0 && (i in GUSTO_T || Math.abs(z[2] - t) <= 0.4)).sort((a, b) => b[1] - a[1]).filter((z, j, l) => z[1] >= l[0][1] * 0.3).slice(0, 2).map(z => z[0]);
     passi.push({ i, nome: nm.toLowerCase(), gusto: i in GUSTO_T, t, forza: I[i] / mx, chi });
   });
   return passi.sort((a, b) => b.forza - a.forza).slice(0, 7).sort((a, b) => a.t - b.t || b.forza - a.forza).map((p, k) => Object.assign(p, { k: k + 1 }));
@@ -5435,7 +5437,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.11.4</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.11.5</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -6615,7 +6617,7 @@ function guessDefaultBotanica(suggestionText, used, usedSf){
   return pick || cand[0];
 }
 
-function addCustomRoleRow(label, botanica, protetta){
+function addCustomRoleRow(label, botanica, protetta, tracce){
   const row = document.createElement('div');
   row.className = 'role-row role-row-custom';
   const labelInput = document.createElement('select');
@@ -6628,8 +6630,8 @@ function addCustomRoleRow(label, botanica, protetta){
   const aggQuant = () => {
     const base = doseLibreria(select.value);
     if (base === null){ quant.textContent = ''; return; }
-    const f = RUOLO_DOSE[labelInput.value] === undefined ? 1 : RUOLO_DOSE[labelInput.value];
-    quant.innerHTML = f === 1 ? '' : 'Peso nella ricetta: <strong>' + Math.round(f * 100) + '%</strong> della dose di riferimento';
+    const f = select.dataset.trace === '1' ? TRACE_FACTOR : (RUOLO_DOSE[labelInput.value] === undefined ? 1 : RUOLO_DOSE[labelInput.value]);
+    quant.innerHTML = f === 1 ? '' : (select.dataset.trace === '1' ? 'In tracce: ' : 'Peso nella ricetta: ') + '<strong>' + Math.round(f * 100) + '%</strong> della dose di riferimento';
   };
   labelInput.addEventListener('change', () => { aggHint(); aggQuant(); renderSummary(); });
   const select = document.createElement('select');
@@ -6637,6 +6639,7 @@ function addCustomRoleRow(label, botanica, protetta){
     const o = document.createElement('option'); o.value = n; o.textContent = n; select.appendChild(o);
   });
   select.value = botanica || allBotNames[0];
+  if (tracce) select.dataset.trace = '1';   // portata da uno stile che la vuole «in tracce»: resta in tracce
   // Anche nel Personalizzato le basi di partenza seguono le regole degli stili: il ginepro non si cambia,
   // l'angelica solo con le sue sostitute (dopo un avviso), e il loro ruolo resta Base.
   if (protetta){
@@ -9706,7 +9709,7 @@ window.salvaStatoBuilder = function(){
   if (_ripristinoInCorso || typeof roleList === 'undefined') return;
   const custom = currentStyleName === 'Personalizzato';
   const righe = custom
-    ? [...roleList.querySelectorAll('.role-row-custom')].map(r => [r.querySelector('.role-label-input').value, (r.querySelector('select:not(.role-label-input)') || {}).value, r.dataset.protetta ? 1 : 0])
+    ? [...roleList.querySelectorAll('.role-row-custom')].map(r => [r.querySelector('.role-label-input').value, (r.querySelector('select:not(.role-label-input)') || {}).value, r.dataset.protetta ? 1 : 0, (r.querySelector('select:not(.role-label-input)') || {dataset:{}}).dataset.trace === '1' ? 1 : 0])
     : [...roleList.querySelectorAll('select:not(.role-label-input)')].map(x => [x.dataset.k || '', x.value]);
   scriviJ(BUILDER_KEY, { v: 2, i: window._styleIdx, nome: currentStyleName, custom, righe });
 };
@@ -9726,7 +9729,7 @@ function applicaBuilder(sb){
       const btn = document.querySelectorAll('.style-btn')[sb.i]; if (btn) btn.click();
       if (sb.custom){
         roleList.querySelectorAll('.role-row-custom').forEach(r => r.remove());
-        (sb.righe || []).forEach(r => { if (Array.isArray(r) && byName[r[1]]) addCustomRoleRow(r[0], r[1], !!r[2] || r[1] === 'Bacche di ginepro'); });
+        (sb.righe || []).forEach(r => { if (Array.isArray(r) && byName[r[1]]) addCustomRoleRow(r[0], r[1], !!r[2] || r[1] === 'Bacche di ginepro', !!r[3]); });
       } else if (sb.v === 2){
         // Ogni riga si ripristina dalla sua chiave (stile, ruolo, posizione): le righe tolte restano tolte e
         // nessun valore finisce nella riga sbagliata. Il ginepro non viene mai toccato.
@@ -12603,12 +12606,12 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
   function partiDa(k){
     const pr = att(); if (!pr) return;
     let righe = [];
-    if (k !== ''){ scegliStile(+k); righe = tutteSel().map(s => [normRuolo(s.dataset.role || ''), s.value]); }
+    if (k !== ''){ scegliStile(+k); righe = tutteSel().map(s => [normRuolo(s.dataset.role || ''), s.value, s.dataset.trace === '1']); }
     scegliStile(idxPers());   // sempre Personalizzato: ginepro, angelica, coriandolo
     const leg = righe.find(([r, n]) => r === 'Base' && LEGANTI.includes(n) && n !== 'Angelica');
     if (leg) cambiaLegante(leg[1]);   // lo stile usa un altro legante (iris, liquirizia): prende il posto dell'angelica
     const gia = new Set(tutteSel().map(s => s.value));
-    righe.forEach(([r, n]) => { if (!gia.has(n) && byName[n]){ addCustomRoleRow(r, n, false); gia.add(n); } });
+    righe.forEach(([r, n, tr]) => { if (!gia.has(n) && byName[n]){ addCustomRoleRow(r, n, false, tr); gia.add(n); } });
     renderSummary();
     pr.modello = k === '' ? null : STYLES[+k][0]; delete pr.fatte.scelta; aggiornaNome(pr); scriviP();
   }
@@ -12646,9 +12649,9 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     return [...new Map(ok.map(d => [d.botanica, d])).values()].sort((a, b) => (ord[a.uso] - ord[b.uso]) || (daStili.has(b.botanica) - daStili.has(a.botanica)) || a.botanica.localeCompare(b.botanica, 'it'));
   }
   const livScelta = {};
-  function ruoliScelti(){ const m = {}; roleList.querySelectorAll('.role-row-custom').forEach(r => { const s = r.querySelector('select:not(.role-label-input)'), l = r.querySelector('.role-label-input'); if (s) m[s.value] = { ruolo: l ? l.value : 'Base', protetta: !!r.dataset.protetta || s.disabled || s._bloccata }; }); return m; }
+  function ruoliScelti(){ const m = {}; roleList.querySelectorAll('.role-row-custom').forEach(r => { const s = r.querySelector('select:not(.role-label-input)'), l = r.querySelector('.role-label-input'); if (s) m[s.value] = { ruolo: l ? l.value : 'Base', protetta: !!r.dataset.protetta || s.disabled || s._bloccata, tracce: s.dataset.trace === '1' }; }); return m; }
   function radarGin(){
-    const sc = ruoliScelti(), el = Object.keys(sc).filter(n => PROFILO8[n]).map(n => ({ n, w: Math.max(0.0001, RUOLO_DOSE[sc[n].ruolo] ?? 1) }));
+    const sc = ruoliScelti(), el = Object.keys(sc).filter(n => PROFILO8[n]).map(n => ({ n, w: Math.max(0.0001, sc[n].tracce ? TRACE_FACTOR : (RUOLO_DOSE[sc[n].ruolo] ?? 1)) }));
     if (!el.length) return '';
     const tot = el.reduce((a, x) => a + x.w, 0), v = ASSI8.map((_, i) => el.reduce((a, x) => a + PROFILO8[x.n][i] * x.w, 0) / tot), mx = Math.max.apply(null, v) || 1;
     const ord = ordineAscolto(el);
