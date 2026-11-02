@@ -2448,7 +2448,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.8.5</div>
+  <div class="splash-ver" id="splash-ver">v2.8.6</div>
 </div>
 
 <div class="wrap">
@@ -4683,7 +4683,7 @@ function radarSVG(serie, size, opts){
   // I giudizi usano solo i valori delle note, mai la forma o l'area del disegno.
   const piene = serie.filter(se => !se.dash);
   const insieme = opts.insieme ? ASSI8.map((_,i) => piene.reduce((a,se) => a + se.vals[i], 0)) : (piene[0] || serie[0] || {vals:[]}).vals;
-  const car = b => '<strong>' + direzioneTesto(b) + '</strong> (carattere ' + carattereTesto(b.pct) + ', concentrazione ' + b.pct + ' %)';
+  const car = b => '<strong>' + direzioneTesto(b) + '</strong> (carattere ' + carattereTesto(b.pct) + ')';
   const bR = baricentro(insieme), bE = EQI ? baricentro(EQI) : null;
   const sq = serie.map((se, k) => ({ l: se.label || '', fv: se.vals, ev: EQ && EQ[k] ? EQ[k] : null, dash: se.dash }));
   let nota = '<div class="radar-nota r-giudizio">';
@@ -5280,7 +5280,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.8.5</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.8.6</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -11964,7 +11964,8 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     radar: { e:'📡', t:'Leggere il radar e la potenza',
       html: '<p>Il radar disegna il profilo di una botanica su dieci assi: quattro <strong>gusti</strong> che si sentono in bocca (dolce, amaro, acido, salino) e sei famiglie di <strong>aromi</strong> che arrivano al naso (agrumato, floreale, fruttato, erbaceo, resinoso, speziato). Ogni asse va da 0, assente, a 5, dominante.</p>' +
         '<p>La <strong>potenza</strong>, da 1 a 10, dice quanto una botanica si fa sentire rispetto alle altre: il chiodo di garofano, a potenza 10, copre tutto anche in dosi minime; una botanica a potenza bassa va usata in quantità maggiore per farsi notare. Per questo il ruolo decide anche la dose.</p>' +
-        '<p>Il radar del gin finito è la somma dei radar delle botaniche, pesata sulla quantità di ciascuna. Sono stime orientative: le conferma l’assaggio. Prova a confrontarne due.</p>' +
+        '<p>Accanto alle note prevalenti trovi il <strong>carattere</strong>: dice quanto il profilo è raccolto su poche note. <em>Equilibrato</em> se le note sono quasi tutte alla pari, <em>sfumato</em> se ce ne sono parecchie, <em>marcato</em> se due o tre si staccano dalle altre, <em>netto</em> se ne domina una sola. Non dipende né dalla dose né dalla potenza.</p>' +
+        '<p>Quando due botaniche entrano nello stesso gin, i loro radar si sommano raggio per raggio, ognuno pesato per quanto quella botanica si fa sentire. <strong>Dove hanno la stessa nota, la nota si rafforza</strong> e il gin si sposta da quella parte; <strong>dove una ha una nota che all’altra manca, si completano</strong>. Poi la somma si riporta in scala, con la nota più alta a 5: così il disegno mostra verso dove va il gin, non quanto è forte. È una stima: il palato non somma come l’aritmetica (due note uguali si rafforzano, ma meno del doppio) e una botanica molto potente può coprirne una delicata. Lo conferma l’assaggio. Prova a unirne due.</p>' +
         approf('che cosa si sente e perché', "showTab('matrice')") },
     estrazione: { e:'⚗️', t:'Cosa si estrae e a che grado',
       html: '<p>L’alcol non estrae tutto allo stesso modo. Più il grado è alto, più scioglie le sostanze che non amano l’acqua: gli <strong>oli essenziali</strong> e i terpeni, che portano il profumo. Più è basso, più passano le sostanze solubili in acqua: <strong>zuccheri, acidi, tannini</strong>.</p>' +
@@ -11995,6 +11996,68 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     if (hero) hero.after(d); else pan.prepend(d);
   }
 
+  // ---------- Lezione 3: due radar che si uniscono in una miscela ----------
+  // Miscela = somma raggio per raggio, ogni botanica pesata sulla sua potenza (a parita' di quantita'),
+  // poi riportata in scala con la nota piu' alta a 5: mostra verso dove si sposta il gin.
+  const UN = { size: 320, colA: '#2F7259', colB: '#C0583E', colM: '#7A4FB0' };
+  function miscelaDi(a, b){
+    const A = ASSI8.map((_, i) => +(PROFILO8[a] || [])[i] || 0), B = ASSI8.map((_, i) => +(PROFILO8[b] || [])[i] || 0);
+    const pa = potenzaDi(a) || 5, pb = potenzaDi(b) || 5;
+    const raw = ASSI8.map((_, i) => A[i] * pa + B[i] * pb), mx = Math.max.apply(null, raw) || 1;
+    return { A, B, pa, pb, M: raw.map(x => x / mx * 5) };
+  }
+  function unionePt(i, v){
+    const c = UN.size / 2, R = UN.size / 2 - 62, n = ASSI8.length, k = ORDINE_RADAR.indexOf(i), ang = -Math.PI / 2 + k * 2 * Math.PI / n;
+    return [c + R * v / 5 * Math.cos(ang), c + R * v / 5 * Math.sin(ang)];
+  }
+  const unionePts = v => ORDINE_RADAR.map(i => unionePt(i, v[i]).map(x => x.toFixed(1)).join(',')).join(' ');
+  function unioneRadar(a, b){
+    const m = miscelaDi(a, b), c = UN.size / 2;
+    let g = '';
+    for (let l = 1; l <= 5; l++) g += '<polygon points="' + unionePts(ASSI8.map(() => l)) + '" fill="none" stroke="var(--line)" stroke-width="1"/>';
+    ASSI8.forEach((nm, i) => { const [x, y] = unionePt(i, 5), [lx, ly] = unionePt(i, 5.7), anc = Math.abs(lx - c) < 6 ? 'middle' : (lx > c ? 'start' : 'end');
+      g += '<line x1="' + c + '" y1="' + c + '" x2="' + x + '" y2="' + y + '" stroke="var(--line)" stroke-width="1"/>' +
+        '<text id="un-ax-' + i + '" x="' + lx + '" y="' + (ly + 4) + '" text-anchor="' + anc + '" font-size="12" fill="var(--ink-soft)">' + nm + '</text>'; });
+    const poli = (id, v, col, op) => '<polygon id="' + id + '" points="' + unionePts(v) + '" fill="' + col + '" fill-opacity="' + op + '" stroke="' + col + '" stroke-width="2" stroke-linejoin="round" style="transition:opacity .5s"/>';
+    g += poli('un-a', m.A, UN.colA, '.22') + poli('un-b', m.B, UN.colB, '.22') +
+      '<polygon id="un-m" points="' + unionePts(m.A.map((x, i) => Math.max(x, m.B[i]))) + '" fill="' + UN.colM + '" fill-opacity=".35" stroke="' + UN.colM + '" stroke-width="2.5" stroke-linejoin="round" style="opacity:0"/>';
+    const leg = (col, t) => '<span style="display:inline-flex;align-items:center;gap:5px;margin-right:12px"><i style="width:12px;height:12px;border-radius:3px;background:' + col + ';display:inline-block"></i>' + t + '</span>';
+    return '<div class="radar-wrap"><svg class="radar8" viewBox="-22 0 ' + (UN.size + 44) + ' ' + UN.size + '" role="img" aria-label="' + a + ' e ' + b + ' sovrapposte e la loro miscela">' + g + '</svg>' +
+      '<div class="cond-hint" style="margin:4px 0 8px">' + leg(UN.colA, ((byName[a] || {}).icona || '🌿') + ' ' + a + ' · potenza ' + m.pa + '/10') + leg(UN.colB, ((byName[b] || {}).icona || '🌿') + ' ' + b + ' · potenza ' + m.pb + '/10') + '<span id="un-leg-m" style="opacity:0;transition:opacity .5s">' + leg(UN.colM, '🍸 Miscela') + '</span></div>' +
+      '<button type="button" class="ghost-btn" id="lez-unisci">▶ Unisci le due botaniche</button>' +
+      '<div id="un-esito"></div></div>';
+  }
+  function animaUnione(a, b){
+    const m = miscelaDi(a, b), poli = $('un-m'), pA = $('un-a'), pB = $('un-b'), bt = $('lez-unisci');
+    if (!poli) return;
+    const da = m.A.map((x, i) => Math.max(x, m.B[i])), fin = m.M;
+    ASSI8.forEach((_, i) => { const t = $('un-ax-' + i); if (t){ t.setAttribute('fill', 'var(--ink-soft)'); t.removeAttribute('font-weight'); } });
+    $('un-esito').innerHTML = ''; bt.disabled = true;
+    poli.style.opacity = '1'; $('un-leg-m').style.opacity = '1'; pA.style.opacity = '.35'; pB.style.opacity = '.35';
+    const fermo = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches, T = fermo ? 1 : 1600, t0 = performance.now();
+    const passo = now => {
+      const k = Math.min(1, (now - t0) / T), e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+      poli.setAttribute('points', unionePts(da.map((x, i) => x + (fin[i] - x) * e)));
+      if (k < 1) return requestAnimationFrame(passo);
+      bt.disabled = false; bt.textContent = '↻ Rivedi l’unione';
+      // assi che crescono (la nota si rafforza) e assi che restano indietro
+      const su = [], giu = [], insieme = [], solo = [];
+      ASSI8.forEach((nm, i) => { const t = $('un-ax-' + i), d = fin[i] - da[i];
+        if (m.A[i] >= 1 && m.B[i] >= 1) insieme.push(nm.toLowerCase()); else if (m.A[i] >= 1 || m.B[i] >= 1) solo.push(nm.toLowerCase());
+        if (d >= 0.4){ su.push(nm.toLowerCase()); if (t){ t.setAttribute('fill', UN.colM); t.setAttribute('font-weight', '700'); } }
+        else if (d <= -0.6) giu.push(nm.toLowerCase()); });
+      const lista = x => x.length > 1 ? x.slice(0, -1).join(', ') + ' e ' + x[x.length - 1] : x[0];
+      const bM = baricentro(fin);
+      $('un-esito').innerHTML = '<div class="radar-nota r-giudizio">' +
+        (insieme.length ? '🔺 <strong>Si rafforzano</strong> le note che hanno in comune: ' + lista(insieme) + '. ' : '🔺 Non hanno note forti in comune: nessuna nota si rafforza. ') +
+        (solo.length ? '🧩 <strong>Si completano</strong> dove una porta quello che all’altra manca: ' + lista(solo) + '. ' : '') +
+        (su.length ? 'La miscela si sposta verso <strong>' + lista(su) + '</strong>' + (giu.length ? ', mentre ' + lista(giu) + (giu.length > 1 ? ' restano' : ' resta') + ' più indietro' : '') + '. ' : '') +
+        'Nella miscela prevalgono <strong>' + direzioneTesto(bM) + '</strong> (carattere ' + carattereTesto(bM.pct) + '). ' +
+        (m.pa !== m.pb ? 'A parità di quantità pesa di più la botanica più potente. ' : 'Hanno la stessa potenza: a parità di quantità pesano uguale. ') +
+        '<em>Stima da confermare all’assaggio.</em></div>';
+    };
+    requestAnimationFrame(passo);
+  }
   // ---------- le pratiche delle lezioni ----------
   const mini = (n, col, size) => radarSVG([{ vals: PROFILO8[n] || [], color: col || 'var(--juniper)', label: n }], size || 300, {});
   function botCard(n, col){
@@ -12017,9 +12080,9 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       assegnaUso();
       const opz = [...new Set(MASTER.filter(d => d.uso === 'comune' && PROFILO8[d.botanica]).map(d => d.botanica))].sort((a, b) => a.localeCompare(b, 'it')).map(n => '<option>' + n + '</option>').join('');
       $('lez-a').innerHTML = opz; $('lez-b').innerHTML = opz; $('lez-a').value = 'Bacche di ginepro'; $('lez-b').value = byName['Lavanda'] ? 'Lavanda' : 'Limone';
-      const cfr = () => { const a = $('lez-a').value, b = $('lez-b').value, da = byName[a] || {}, db = byName[b] || {};
-        $('lez-cfr-out').innerHTML = radarSVG([{ vals: PROFILO8[a], color: '#2F7259', label: a }, { vals: PROFILO8[b], color: '#C0583E', label: b }], 320, {}) +
-          '<p class="cond-hint">' + a + ': potenza ' + (da.potenza10 ?? '—') + '/10 · ' + b + ': potenza ' + (db.potenza10 ?? '—') + '/10. Dove le due forme si sovrappongono le note si sommano; dove una riempie un vuoto dell’altra, si completano.</p>'; };
+      const cfr = () => { const a = $('lez-a').value, b = $('lez-b').value;
+        $('lez-cfr-out').innerHTML = unioneRadar(a, b);
+        const bt = $('lez-unisci'); if (bt) bt.onclick = () => animaUnione(a, b); };
       $('lez-a').onchange = cfr; $('lez-b').onchange = cfr; cfr();
     }
   }
