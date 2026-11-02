@@ -2272,8 +2272,10 @@ html details.howto a{color:#5A3E1C;}
 .lez-bot svg,.sc-gin svg,#lez-cfr-out svg{width:100%;height:auto;max-width:280px;display:block;margin:0 auto}
 .lez-pop{background:none;border:0;padding:0;font:inherit;color:var(--juniper);text-decoration:underline dotted;text-underline-offset:3px;cursor:pointer}
 .cs-chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
-.cs-chip{font-size:13px;padding:4px 9px;border-radius:999px;border:1px dashed var(--line);color:var(--ink-soft);opacity:.7}
-.cs-chip.on{border-style:solid;border-color:#2F7259;color:var(--ink);opacity:1}
+.cs-chip{font:inherit;font-size:13px;padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:none;color:var(--ink-soft);opacity:.75;cursor:pointer}
+.cs-chip small{font-size:11px;opacity:.8}
+.cs-chip.base{border-style:dashed}
+.cs-chip.on{border-color:#2F7259;color:var(--ink);opacity:1;background:color-mix(in srgb,#2F7259 10%,transparent)}
 .cs-chip.ult{background:color-mix(in srgb,#2F7259 18%,transparent);font-weight:650}
 .cs-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 #cs-esito:empty{display:none}
@@ -2466,7 +2468,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.9.6</div>
+  <div class="splash-ver" id="splash-ver">v2.9.7</div>
 </div>
 
 <div class="wrap">
@@ -5321,7 +5323,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.9.6</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.9.7</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -12277,7 +12279,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     return v.map(x => x / mx * 5);
   }
   function costruisciHtml(k){
-    const P = passiStile(k), c = UN.size / 2; window._costr = { k, n: 1 };
+    const P = passiStile(k), c = UN.size / 2; window._costr = { k, on: P.map((_, j) => j === 0), ult: -1 };
     let g = '';
     for (let l = 1; l <= 5; l++) g += '<polygon points="' + unionePts(ASSI8.map(() => l)) + '" fill="none" stroke="var(--line)" stroke-width="1"/>';
     ASSI8.forEach((nm, i) => { const [x, y] = unionePt(i, 5), [lx, ly] = unionePt(i, 5.7), anc = Math.abs(lx - c) < 6 ? 'middle' : (lx > c ? 'start' : 'end');
@@ -12287,75 +12289,73 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     g += '<polygon id="cs-prima" points="' + v1 + '" fill="none" stroke="#8A8F8A" stroke-width="1.5" stroke-dasharray="4 3" style="opacity:0"/>' +
       '<polygon id="cs-ora" points="' + v1 + '" fill="#2F7259" fill-opacity=".3" stroke="#2F7259" stroke-width="2.5" stroke-linejoin="round"/>';
     return '<p class="lez-sub">🧱 <strong>Costruiscilo passo passo</strong></p>' +
-      '<p class="cond-hint">Si parte dal solo ginepro. Ogni tocco aggiunge la botanica successiva, nella sua dose: il radar cambia forma e si ferma. La linea tratteggiata è la forma di prima.</p>' +
-      '<p class="cond-hint">Qui le basi ci sono, perché nel bicchiere ci sono sempre. Per questo, a stile completo, la forma è diversa da quella di sopra. Alla fine potrai togliere le basi e vedere che cosa succede.</p>' +
+      '<p class="cond-hint">Si parte dal solo ginepro. Tocca una botanica per accenderla o spegnerla, nell’ordine che vuoi: entra nella sua dose, il radar cambia forma e si ferma. La linea tratteggiata è la forma di prima.</p>' +
+      '<p class="cond-hint">Le basi (con il bordo tratteggiato) ci sono, perché nel bicchiere ci sono sempre. Spegnile tutte e tre e ritrovi il radar di sopra.</p>' +
       '<div class="radar-wrap"><svg class="radar8" viewBox="-22 0 ' + (UN.size + 44) + ' ' + UN.size + '" role="img" aria-label="Il radar dello stile che si costruisce una botanica alla volta">' + g + '</svg></div>' +
       '<div class="cs-chips" id="cs-chips"></div><div id="cs-esito" class="radar-nota r-giudizio"></div>' +
-      '<div class="cs-btns"><button type="button" class="ghost-btn" id="cs-piu"></button> <button type="button" class="ghost-btn" id="cs-reset">↺ Ricomincia dal ginepro</button></div>';
+      '<div class="cs-btns"><button type="button" class="ghost-btn" id="cs-tutte">✅ Accendi tutte</button> <button type="button" class="ghost-btn" id="cs-firma">➖ Solo quello che aggiunge lo stile</button> <button type="button" class="ghost-btn" id="cs-reset">↺ Solo il ginepro</button></div>';
   }
+  // insieme acceso -> profilo (porzioni di ruolo), scala con la nota piu' alta a 5
+  function profiloAcceso(P, on){
+    const el = P.filter((_, i) => on[i]), t = el.reduce((a, x) => a + x.w, 0);
+    if (!t) return ASSI8.map(() => 0);
+    const v = ASSI8.map((_, i) => el.reduce((a, x) => a + PROFILO8[x.n][i] * x.w, 0) / t), mx = Math.max.apply(null, v) || 1;
+    return v.map(x => x / mx * 5);
+  }
+  const eBaseP = x => x.r === 'Base' || BASE_EQ.includes(x.n);
   function costruisciAggiorna(){
-    const st = window._costr; if (!st || !$('cs-piu')) return;
+    const st = window._costr; if (!st || !$('cs-chips')) return;
     const P = passiStile(st.k), ic = n => (byName[n] || {}).icona || '🌿';
-    $('cs-chips').innerHTML = P.map((x, i) => '<span class="cs-chip' + (i < st.n ? ' on' : '') + (i === st.n - 1 ? ' ult' : '') + '">' + ic(x.n) + ' ' + x.n + '</span>').join('');
-    const prossima = P[st.n];
-    if (!prossima && !st.senzaBasi){ $('cs-piu').textContent = '➖ Togli le basi (ginepro, legante, coriandolo)'; $('cs-piu').disabled = false; $('cs-reset').hidden = false; return; }
-    if (st.senzaBasi){ $('cs-piu').textContent = '✓ Ecco il radar di sopra'; $('cs-piu').disabled = true; $('cs-reset').hidden = false; return; }
-    $('cs-piu').textContent = prossima ? '➕ Aggiungi ' + ic(prossima.n) + ' ' + prossima.n + ' (' + (prossima.r === 'Base' && prossima.n !== 'Bacche di ginepro' ? 'legante' : prossima.r.toLowerCase()) + (prossima.tracce || prossima.w <= TRACE_FACTOR ? ', in tracce' : '') + ')' : '✓ Lo stile è completo';
-    $('cs-piu').disabled = !prossima; $('cs-reset').hidden = st.n <= 1;
+    $('cs-chips').innerHTML = P.map((x, i) => '<button type="button" class="cs-chip' + (st.on[i] ? ' on' : '') + (i === st.ult ? ' ult' : '') + (eBaseP(x) ? ' base' : '') + '" data-i="' + i + '" aria-pressed="' + (st.on[i] ? 'true' : 'false') + '">' +
+      ic(x.n) + ' ' + x.n + (x.tracce || x.w <= TRACE_FACTOR ? ' <small>tracce</small>' : '') + '</button>').join('');
+    $('cs-chips').querySelectorAll('.cs-chip').forEach(c => c.onclick = () => costruisciCambia(+c.dataset.i));
   }
-  function costruisciPasso(){
-    const st = window._costr; if (!st) return;
-    const P = passiStile(st.k);
-    if (st.n >= P.length){ if (!st.senzaBasi) togliBasi(); return; }
-    const da = profiloPassi(P, st.n), a = profiloPassi(P, st.n + 1), nuova = P[st.n]; st.n++;
-    const ora = $('cs-ora'), prima = $('cs-prima'), bt = $('cs-piu'); bt.disabled = true;
-    prima.setAttribute('points', unionePts(da)); prima.style.opacity = '1';
-    ASSI8.forEach((_, i) => { const t = $('cs-ax-' + i); if (t){ t.setAttribute('fill', 'var(--ink-soft)'); t.removeAttribute('font-weight'); } });
-    const fermo = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches, T = fermo ? 1 : 1100, t0 = performance.now();
+  // accende o spegne una o piu' botaniche e anima il radar fino alla nuova forma
+  function costruisciCambia(i, nuovoOn){
+    const st = window._costr; if (!st || st.anima) return;
+    const P = passiStile(st.k), prima = st.on.slice();
+    st.on = nuovoOn ? nuovoOn.slice() : st.on.map((v, j) => j === i ? !v : v);
+    st.ult = nuovoOn ? -1 : i;
+    const da = profiloAcceso(P, prima), a = profiloAcceso(P, st.on);
+    const ora = $('cs-ora'), pr = $('cs-prima');
+    pr.setAttribute('points', unionePts(da)); pr.style.opacity = prima.some(Boolean) ? '1' : '0';
+    ASSI8.forEach((_, j) => { const t = $('cs-ax-' + j); if (t){ t.setAttribute('fill', 'var(--ink-soft)'); t.removeAttribute('font-weight'); } });
+    costruisciAggiorna(); st.anima = true;
+    const fermo = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches, T = fermo ? 1 : 1000, t0 = performance.now();
     const passo = now => {
       const k = Math.min(1, (now - t0) / T), e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
-      ora.setAttribute('points', unionePts(da.map((x, i) => x + (a[i] - x) * e)));
+      ora.setAttribute('points', unionePts(da.map((x, j) => x + (a[j] - x) * e)));
       if (k < 1) return requestAnimationFrame(passo);
+      st.anima = false;
+      const soloFirma = P.every((x, j) => st.on[j] === !eBaseP(x)), tutte = st.on.every(Boolean), nessuna = !st.on.some(Boolean);
+      const col = soloFirma ? ROSA[0] : '#2F7259'; ora.setAttribute('fill', col); ora.setAttribute('stroke', col);
       const su = [], giu = [];
-      ASSI8.forEach((nm, i) => { const d = a[i] - da[i], t = $('cs-ax-' + i);
-        if (d >= 0.4){ su.push(nm.toLowerCase()); if (t){ t.setAttribute('fill', '#2F7259'); t.setAttribute('font-weight', '700'); } }
+      ASSI8.forEach((nm, j) => { const d = a[j] - da[j], t = $('cs-ax-' + j);
+        if (d >= 0.4){ su.push(nm.toLowerCase()); if (t){ t.setAttribute('fill', col); t.setAttribute('font-weight', '700'); } }
         else if (d <= -0.4) giu.push(nm.toLowerCase()); });
       const lista = x => x.length > 1 ? x.slice(0, -1).join(', ') + (/^e/.test(x[x.length - 1]) ? ' ed ' : ' e ') + x[x.length - 1] : x[0];
-      const ic = (byName[nuova.n] || {}).icona || '🌿';
-      $('cs-esito').innerHTML = ic + ' Con <strong>' + nuova.n + '</strong> ' +
-        (su.length ? (su.length > 1 ? 'crescono' : 'cresce') + ' <strong>' + lista(su) + '</strong>' : 'la forma cambia poco') +
-        (giu.length ? (su.length ? '; ' : ', ') + 'in proporzione ' + (giu.length > 1 ? 'scendono ' : 'scende ') + lista(giu) : '') + '. ' +
-        (nuova.tracce || nuova.w <= TRACE_FACTOR ? 'È in tracce: si sente come un accento, per questo sposta poco. ' : '') +
-        'Prevalgono ora <strong>' + direzioneTesto(baricentro(a)) + '</strong>.';
-      costruisciAggiorna();
-    };
-    requestAnimationFrame(passo);
-  }
-  // a stile completo: via le basi, e il radar diventa quello di «Che cosa aggiunge lo stile»
-  function togliBasi(){
-    const st = window._costr, P = passiStile(st.k), da = profiloPassi(P, P.length);
-    const firma = P.filter(x => x.r !== 'Base' && !BASE_EQ.includes(x.n));
-    if (!firma.length) return;
-    const a = profiloPassi(firma, firma.length); st.senzaBasi = true;
-    const ora = $('cs-ora'), prima = $('cs-prima'); $('cs-piu').disabled = true;
-    prima.setAttribute('points', unionePts(da)); prima.style.opacity = '1';
-    ASSI8.forEach((_, i) => { const t = $('cs-ax-' + i); if (t){ t.setAttribute('fill', 'var(--ink-soft)'); t.removeAttribute('font-weight'); } });
-    document.querySelectorAll('#cs-chips .cs-chip').forEach((c, i) => { const x = P[i]; if (x && (x.r === 'Base' || BASE_EQ.includes(x.n))) c.classList.remove('on', 'ult'); });
-    const fermo = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches, T = fermo ? 1 : 1300, t0 = performance.now();
-    const passo = now => {
-      const k = Math.min(1, (now - t0) / T), e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
-      ora.setAttribute('points', unionePts(da.map((x, i) => x + (a[i] - x) * e)));
-      if (k < 1) return requestAnimationFrame(passo);
-      ora.setAttribute('fill', ROSA[0]); ora.setAttribute('stroke', ROSA[0]);
-      $('cs-esito').innerHTML = '➖ Senza ginepro, legante e coriandolo resta solo quello che lo stile aggiunge: è <strong>lo stesso radar di «Che cosa aggiunge lo stile»</strong>, qui sopra. La linea tratteggiata è il gin intero, con le basi. Le basi sono uguali in tutti gli stili: per confrontare gli stili si guarda la forma senza di loro, per sapere che cosa si sente nel bicchiere si guarda quella con loro.';
-      costruisciAggiorna();
+      let t = '';
+      if (nessuna) t = 'Nessuna botanica accesa: accendine una per vedere il radar.';
+      else {
+        if (i != null && !nuovoOn){ const x = P[i], ic = (byName[x.n] || {}).icona || '🌿';
+          t = ic + ' ' + (st.on[i] ? 'Con' : 'Senza') + ' <strong>' + x.n + '</strong> ' +
+            (su.length ? (su.length > 1 ? 'crescono' : 'cresce') + ' <strong>' + lista(su) + '</strong>' : 'la forma cambia poco') +
+            (giu.length ? (su.length ? '; ' : ', ') + (giu.length > 1 ? 'scendono ' : 'scende ') + lista(giu) : '') + '. ' +
+            (x.tracce || x.w <= TRACE_FACTOR ? 'È in tracce: si sente come un accento, per questo sposta poco. ' : ''); }
+        t += 'Prevalgono <strong>' + direzioneTesto(baricentro(a)) + '</strong>.';
+        if (tutte) t += ' È il gin intero, come lo senti nel bicchiere.';
+        if (soloFirma) t += ' Senza le basi resta solo quello che lo stile aggiunge: è <strong>lo stesso radar di «Che cosa aggiunge lo stile»</strong>, qui sopra.';
+      }
+      $('cs-esito').innerHTML = t;
     };
     requestAnimationFrame(passo);
   }
   function costruisciAggancia(){
-    if (!$('cs-piu')) return;
-    $('cs-piu').onclick = costruisciPasso;
-    $('cs-reset').onclick = () => { const k = window._costr.k; const box = $('cs-box'); box.innerHTML = costruisciHtml(k); costruisciAggancia(); };
+    const st = window._costr; if (!st || !$('cs-chips')) return;
+    const P = passiStile(st.k);
+    $('cs-tutte').onclick = () => costruisciCambia(null, P.map(() => true));
+    $('cs-firma').onclick = () => costruisciCambia(null, P.map(x => !eBaseP(x)));
+    $('cs-reset').onclick = () => costruisciCambia(null, P.map((x, j) => j === 0));
     costruisciAggiorna();
   }
   function renderStili(){
