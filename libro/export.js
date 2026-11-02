@@ -38,7 +38,14 @@ setTimeout(()=>{const w=dom.window,d=w.document,ser=new w.XMLSerializer();
   } else out.push(['',xs(c)]);
   return out;
  }
- data.PAN={}; ['storia','nozioni','analisi','ruota','altrigin','ridondanza','cocktail','laboratorio','garnish','toniche','prove','leggi'].forEach(id=>data.PAN[id]=sezioni(id));
+ data.PAN={}; ['storia','nozioni','analisi','altrigin','ridondanza','cocktail','garnish','toniche','prove','leggi'].forEach(id=>data.PAN[id]=sezioni(id));
+ // Ruota degli aromi e Laboratorio non sono piu' pagine a se': la ruota sta in «Che cosa si sente e perche'» (panel-matrice),
+ // il laboratorio nella pagina Cocktail (#lab). Si ritagliano da li', con le stesse sezioni di prima.
+ const frag=nodi=>{const div=d.createElement('div');nodi.forEach(n=>div.appendChild(n.cloneNode(true)));return div;};
+ {const h=d.getElementById('ar-ruota'),pre=[],post=[];let n=h&&h.nextElementSibling,dopo=false;
+  while(n&&n.id!=='ar-matrice'){if(n.classList.contains('ruota-h3'))dopo=true;else (dopo?post:pre).push(n);n=n.nextElementSibling;}
+  data.PAN.ruota=[['',xs(clean(frag(pre)))],['Tutte le famiglie',xs(clean(frag(post)))]];}
+ {const lab=d.getElementById('lab');data.PAN.laboratorio=[['',lab?xs(clean(lab)):'']];}
  const box=(pid,txt,k)=>{const el=[...d.querySelectorAll('#panel-'+pid+' details')].find(x=>x.querySelector('summary').textContent.includes(txt));return el?xs(clean(el.querySelector('.howto-body,.tar-body')||el,k)):'';};
  data.QUATTRO=box('matrice','Quattro sistemi'); data.CANALI=box('matrice','I canali e dove',true); data.SIGLE=box('matrice','Che cosa vogliono dire le sigle'); data.CURIOSO=box('matrice','Le domande del curioso'); data.PORTE=box('matrice','Chiavi, grimaldelli');
  data.RIDGUIDA=box('ridondanza','Come si usa'); data.TARATURA=box('prove','Taratura del palato');
