@@ -2558,7 +2558,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.12.7</div>
+  <div class="splash-ver" id="splash-ver">v2.12.8</div>
 </div>
 
 <div class="wrap">
@@ -2866,7 +2866,7 @@ html.in-mappa #nav-indietro{display:none!important}
 
       <h3>Gradazione e solubilità dell'alcol</h3>
         <details class="howto" id="gradaz-noz">
-      <summary>La solubilità selettiva: come scegliere la gradazione</summary>
+      <summary>La solubilità selettiva: gradazione e calore</summary>
       <div class="howto-body">
         <p>L'alcol della macerazione è sempre una miscela di etanolo e acqua, e le due parti sciolgono cose diverse. L'etanolo scioglie bene le molecole <strong>lipofile</strong>: oli essenziali, resine, terpeni. L'acqua scioglie le molecole <strong>idrofile</strong>: zuccheri, acidi, tannini, sali. Cambiando la gradazione si sceglie che cosa estrarre: per questo ogni botanica ha la sua. <strong>La gradazione più alta non è automaticamente la migliore.</strong> Gli intervalli sono punti di partenza: contano anche lo stato fresco o secco, la finezza dei pezzi e il tempo.</p>
         <ul>
@@ -2880,11 +2880,7 @@ html.in-mappa #nav-indietro{display:none!important}
         <p><strong>L'acqua della pianta.</strong> Una botanica fresca contiene già acqua e abbassa il grado effettivo del macerato (100 g di pianta fresca possono contenere circa 70 g di acqua). Con materia fresca e molto acquosa, in grande quantità, può servire partire da 70–80%; ma alle dosi del gin (pochi grammi per 100 ml) l'acqua della pianta abbassa il grado di appena 1–3 punti; con materia secca bastano spesso 50–65%; radici, semi e resine arrivano al massimo a 65–70%, oltre il quale si estraggono resine pesanti e amari duri.</p>
         <p><strong>Metodo sperimentale per una botanica nuova.</strong> Prepara tre piccoli campioni identici a gradazioni diverse, per esempio <strong>40%, 60% e 80%</strong> per una botanica sconosciuta. Per le botaniche dell'app la scheda calcola i tre campioni gi&agrave; sui limiti di quella botanica: soglia bassa, centro consigliato e soglia alta. Tieni uguali peso della botanica, rapporto botanica/alcol (per esempio 1 parte di secca ogni 5–10 di alcol), dimensione dei pezzi, tempo, temperatura, agitazione e filtrazione. Poi confronta intensità e qualità dell'aroma, amaro o astringenza, colore, limpidezza dopo la diluizione e stabilità dopo alcuni giorni. Con botaniche molto intense (chiodo di garofano, cannella, assenzio, scorze amare) riduci il tempo prima ancora di cambiare la gradazione.</p>
         <p><strong>In sintesi</strong>, i valori usati per tutte le botaniche: scorze di agrumi 65–75% vol; ginepro, spezie e foglie fresche 55–65%; coriandolo e angelica 55–60%; fiori 45–55%; botaniche fresche molto acquose (cetriolo, portulaca) 70–90%. Se non sai quale frazione prevalga in una botanica nuova, confronta 40, 60 e 80%. Usa solo etanolo di grado alimentare, mai alcol denaturato o solventi tecnici. Se l'estratto deve entrare in un gin a 35–45% vol., controlla sempre la <strong>limpidezza dopo la diluizione</strong>: è spesso questo test, più della gradazione iniziale, a dire se il solvente era giusto. Ogni scheda botanica indica la gradazione consigliata, i limiti da non superare e il tempo di macerazione: sono stime di partenza, da affinare con gli assaggi.</p>
-      </div>
-    </details>
-    <details class="howto" id="combinata-noz">
-      <summary>Grado alcolico e temperatura insieme</summary>
-      <div class="howto-body">
+        <h4 class="can-tit">🌡️ La seconda manopola: il calore</h4>
         <p>Oltre al grado alcolico c'è una seconda manopola: la <strong>temperatura</strong>. Il calore accelera l'estrazione e scioglie meglio alcune sostanze, ma ne rovina altre; il freddo rallenta tutto, però tiene fuori cere e clorofilla e protegge le molecole più volatili. Combinando le due manopole si può spostare l'estrazione verso una famiglia di molecole piuttosto che un'altra: è l'idea dell'<strong>estrazione selettiva</strong>.</p>
         <p>Ogni riga della tabella è una famiglia di molecole, con alcune botaniche che ne sono ricche, e indica l'intervallo di grado alcolico e di temperatura in cui quella famiglia passa meglio nel liquido. Si legge così: se di una botanica voglio soprattutto i terpeni freschi, lavoro a grado alcolico molto alto e al freddo; se voglio gli amari della genziana, scendo di grado alcolico e resto a temperatura ambiente.</p>
         <table class="tar-table tab-comb">
@@ -5501,7 +5497,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.12.7</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.12.8</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
