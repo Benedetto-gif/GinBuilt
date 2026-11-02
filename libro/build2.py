@@ -317,7 +317,7 @@ IMP_ES = ''.join('<div class="impronta">%s<p>%s</p></div>' % (radar(P[n], 200, '
 add('cap2-radar.xhtml', 'Come leggere il radar', '''<section><h1>Come leggere il radar</h1>
 <p>I dieci assi sono quattro di gusto, sentiti dalla lingua (<strong>dolce, amaro, acido, salino</strong>), e sei di aroma, sentiti dal naso (<strong>agrumato, floreale, erbaceo, speziato, resinoso, fruttato</strong>). Ogni valore va da 0 a 5. Sul disegno ogni nota sta di fronte a una nota di carattere opposto: dolce e amaro, fruttato e resinoso, floreale ed erbaceo, agrumato e speziato, acido e salino. È una disposizione scelta per comodità di lettura, non una misura. Il <strong>resinoso</strong> raccoglie le note di conifera e di balsamo (pino, ginepro, lentisco), il <strong>fruttato</strong> la frutta che non è agrume (bacche, frutta matura, frutta tropicale). Il radar mostra la <em>forma</em> del profilo, cioè quali note prevalgono, non la quantità: una botanica potente e una delicata possono avere la stessa forma.</p>
 <p><strong>Si leggono i raggi, non l'area.</strong> Gli unici dati del radar sono i valori sui dieci raggi. La forma e l'area dipendono dall'ordine in cui gli assi sono disposti: due note forti vicine fanno una vela larga, le stesse due note messe una di fronte all'altra fanno una linea sottile, ma la botanica è la stessa. Per questo l'area va presa come un'<em>impronta</em>, fatta per riconoscere e non per misurare, e ogni confronto si fa nota per nota. Così sono calcolate la somiglianza fra due profili (la parte che hanno in comune, nota per nota) e il <em>carattere</em> (quanto il profilo si concentra su poche note: equilibrato, sfumato, marcato, netto).</p>
-<p><strong>La firma e il gin nel bicchiere.</strong> Il radar di una botanica, come quello della <em>firma</em> di un gin, si disegna <em>senza</em> ginepro, coriandolo e angelica. È fatto apposta: mostra soltanto ciò che quella botanica aggiunge e permette di confrontarla con le altre. Non dice invece quali note si sentiranno nel gin finito. Presa da sola, una fragola è quasi tutta fruttato e dolce; ma nel bicchiere il ginepro c'è sempre, e un gin alla fragola resta un gin, con un accento fruttato. Per sapere quali note prevalgono davvero bisogna guardare il profilo con le base dentro, ed è così che lo calcola <a href="https://benedetto-gif.github.io/GinBuilt/">l'app GinBuilder</a>.</p>
+<p><strong>La firma e il gin nel bicchiere.</strong> Il radar di una botanica, come quello della <em>firma</em> di un gin, si disegna <em>senza</em> le basi: il ginepro, il coriandolo e il <em>legante</em>, cioè la botanica che trattiene gli aromi (di solito l'angelica, oppure l'iris o la liquirizia). È fatto apposta: mostra soltanto ciò che quella botanica aggiunge e permette di confrontarla con le altre. Non dice invece quali note si sentiranno nel gin finito. Presa da sola, una fragola è quasi tutta fruttato e dolce; ma nel bicchiere il ginepro c'è sempre, e un gin alla fragola resta un gin, con un accento fruttato. Per sapere quali note prevalgono davvero bisogna guardare il profilo con le base dentro, ed è così che lo calcola <a href="https://benedetto-gif.github.io/GinBuilt/">l'app GinBuilder</a>.</p>
 <h2>Perché un radar e non una tabella</h2>
 <p>Gli stessi numeri si potrebbero scrivere in una tabella: le botaniche sulle righe, i dieci sentori sulle colonne, un valore da 0 a 5 in ogni casella. I dati sarebbero identici e la tabella darebbe gli stessi risultati in ogni calcolo. Ecco cinque botaniche così:</p>
 @@TAB@@
@@ -456,14 +456,15 @@ def parse_ruolo(testo):
         if prof(nome): out.append((nome, tracce))
     return out
 GARN = D.get('GARN') or {}
-stili = '<section><h1>Gli stili</h1><p>Gli stili di partenza del Gin Builder. Per ogni stile: l\'intensità, i ruoli con le botaniche proposte e il radar della firma, cioè del profilo senza ginepro, coriandolo e angelica, pesato sulle porzioni: la quota di ogni ruolo, con ogni botanica che alla sua dose di riferimento conta una porzione (la dose tiene già conto della potenza).</p>'
+stili = '<section><h1>Gli stili</h1><p>Gli stili di partenza del Gin Builder. Per ogni stile: l\'intensità, i ruoli con le botaniche proposte e il radar della firma, cioè del profilo senza le basi (ginepro, coriandolo e il legante dello stile), pesato sulle porzioni: la quota di ogni ruolo, con ogni botanica che alla sua dose di riferimento conta una porzione (la dose tiene già conto della potenza).</p>'
 for nome, inten, maxb, ruoli in D['STYLES']:
     if not ruoli: continue
     el = []
     for r, t in ruoli:
         fr = next((v for k, v in FRAZ.items() if r.startswith(k)), .5)
         for n, tr in parse_ruolo(t):
-            if n not in BASE: el.append((n, fr * (0.3 if tr else 1)))   # porzioni: la dose di riferimento tiene gia' conto della potenza
+            # le basi restano fuori: il ginepro, il coriandolo e tutto il ruolo Base (dove sta il legante: angelica, iris o liquirizia)
+            if n not in BASE and not r.startswith('Base'): el.append((n, .15 if tr else fr))   # porzioni, come nell'app: in tracce il 15%
     v = media(el)
     stili += '<article class="bot" id="s-%s"><h2>%s</h2><p class="nota">Intensità %s su 5 · fino a %s botaniche</p>' % (slug(nome), e(nome), inten, maxb)
     pz = pot_media(el)
@@ -624,7 +625,7 @@ def con_radar(frag):
         vic = sorted(((breve(x), PG[x], cos(v, PG[x])) for x in PG if x != n), key=lambda t: -t[2])[:3]
         firma = ', '.join(sorted({b for b, _ in prof_gin(n)[1]}))
         pz = pot_media(prof_gin(n)[1])
-        extra = '<div class="bot-radar">' + radar(v, 220, rid, pot_colore(pz) if pz else '#2F7259') + pot_legenda(pz) + chips(rid, vic) + '</div><p class="nota">Firma (senza ginepro, coriandolo e angelica): %s.%s</p>' % (
+        extra = '<div class="bot-radar">' + radar(v, 220, rid, pot_colore(pz) if pz else '#2F7259') + pot_legenda(pz) + chips(rid, vic) + '</div><p class="nota">Firma (senza le basi: ginepro, coriandolo e angelica): %s.%s</p>' % (
             e(firma), (' Lista incompleta: ' + e(GIN[n]['parziale'])) if GIN[n].get('parziale') else '')
         return m.group(0)[:-len('</section>')] + extra + '</section>'
     return re.sub(r'<section class="box"><h3>(.*?)</h3>[\s\S]*?</section>', fai, frag)
