@@ -2270,6 +2270,12 @@ html details.howto a{color:#5A3E1C;}
 .lez-bot-t small{display:block;color:var(--ink-soft);font-size:12.5px}
 .lez-bot svg,.sc-gin svg,#lez-cfr-out svg{width:100%;height:auto;max-width:280px;display:block;margin:0 auto}
 .lez-pop{background:none;border:0;padding:0;font:inherit;color:var(--juniper);text-decoration:underline dotted;text-underline-offset:3px;cursor:pointer}
+.cs-chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.cs-chip{font-size:13px;padding:4px 9px;border-radius:999px;border:1px dashed var(--line);color:var(--ink-soft);opacity:.7}
+.cs-chip.on{border-style:solid;border-color:#2F7259;color:var(--ink);opacity:1}
+.cs-chip.ult{background:color-mix(in srgb,#2F7259 18%,transparent);font-weight:650}
+.cs-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+#cs-esito:empty{display:none}
 .lez-stile .lez-st-ricetta{display:grid;gap:6px;margin:6px 0 10px}
 .lez-st-riga{display:grid;grid-template-columns:108px 1fr;gap:8px;font-size:14px;align-items:baseline}
 .lez-st-riga small{color:var(--ink-soft)}
@@ -2459,7 +2465,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.9.2</div>
+  <div class="splash-ver" id="splash-ver">v2.9.3</div>
 </div>
 
 <div class="wrap">
@@ -5314,7 +5320,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.9.2</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.9.3</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -12237,7 +12243,78 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       (sola.length ? '🧩 <strong>Porta una sola botanica</strong>: ' + lista(sola) + '. ' : '') +
       (accenti.length ? '✨ <strong>In tracce</strong>, come accento: ' + lista(accenti) + '. ' : '') +
       '<em>Stima da confermare all’assaggio.</em></div>';
+    h += '<div id="cs-box">' + costruisciHtml(k) + '</div>';
     return h + '</div>';
+  }
+  // ---------- Costruire uno stile passo passo: dal solo ginepro, una botanica alla volta ----------
+  function passiStile(k){
+    const righe = ricettaStile(k).filter(x => PROFILO8[x.n]), ord = [];
+    const prendi = f => righe.filter(f).forEach(x => { if (!ord.some(y => y.n === x.n)) ord.push(x); });
+    prendi(x => x.n === 'Bacche di ginepro'); prendi(x => x.r === 'Base'); prendi(x => x.n === 'Coriandolo');
+    RUOLI.forEach(r => prendi(x => x.r === r));
+    return ord.map(x => ({ n: x.n, r: x.r, tracce: x.tracce, w: x.tracce ? TRACE_FACTOR : (RUOLO_DOSE[x.r] ?? 1) }));
+  }
+  function profiloPassi(P, n){
+    const el = P.slice(0, n), t = el.reduce((a, x) => a + x.w, 0) || 1;
+    const v = ASSI8.map((_, i) => el.reduce((a, x) => a + PROFILO8[x.n][i] * x.w, 0) / t), mx = Math.max.apply(null, v) || 1;
+    return v.map(x => x / mx * 5);
+  }
+  function costruisciHtml(k){
+    const P = passiStile(k), c = UN.size / 2; window._costr = { k, n: 1 };
+    let g = '';
+    for (let l = 1; l <= 5; l++) g += '<polygon points="' + unionePts(ASSI8.map(() => l)) + '" fill="none" stroke="var(--line)" stroke-width="1"/>';
+    ASSI8.forEach((nm, i) => { const [x, y] = unionePt(i, 5), [lx, ly] = unionePt(i, 5.7), anc = Math.abs(lx - c) < 6 ? 'middle' : (lx > c ? 'start' : 'end');
+      g += '<line x1="' + c + '" y1="' + c + '" x2="' + x + '" y2="' + y + '" stroke="var(--line)" stroke-width="1"/>' +
+        '<text id="cs-ax-' + i + '" x="' + lx + '" y="' + (ly + 4) + '" text-anchor="' + anc + '" font-size="12" fill="var(--ink-soft)">' + nm + '</text>'; });
+    const v1 = unionePts(profiloPassi(P, 1));
+    g += '<polygon id="cs-prima" points="' + v1 + '" fill="none" stroke="#8A8F8A" stroke-width="1.5" stroke-dasharray="4 3" style="opacity:0"/>' +
+      '<polygon id="cs-ora" points="' + v1 + '" fill="#2F7259" fill-opacity=".3" stroke="#2F7259" stroke-width="2.5" stroke-linejoin="round"/>';
+    return '<p class="lez-sub">🧱 <strong>Costruiscilo passo passo</strong></p>' +
+      '<p class="cond-hint">Si parte dal solo ginepro. Ogni tocco aggiunge la botanica successiva, nella sua dose: il radar cambia forma e si ferma. La linea tratteggiata è la forma di prima.</p>' +
+      '<div class="radar-wrap"><svg class="radar8" viewBox="-22 0 ' + (UN.size + 44) + ' ' + UN.size + '" role="img" aria-label="Il radar dello stile che si costruisce una botanica alla volta">' + g + '</svg></div>' +
+      '<div class="cs-chips" id="cs-chips"></div><div id="cs-esito" class="radar-nota r-giudizio"></div>' +
+      '<div class="cs-btns"><button type="button" class="ghost-btn" id="cs-piu"></button> <button type="button" class="ghost-btn" id="cs-reset">↺ Ricomincia dal ginepro</button></div>';
+  }
+  function costruisciAggiorna(){
+    const st = window._costr; if (!st || !$('cs-piu')) return;
+    const P = passiStile(st.k), ic = n => (byName[n] || {}).icona || '🌿';
+    $('cs-chips').innerHTML = P.map((x, i) => '<span class="cs-chip' + (i < st.n ? ' on' : '') + (i === st.n - 1 ? ' ult' : '') + '">' + ic(x.n) + ' ' + x.n + '</span>').join('');
+    const prossima = P[st.n];
+    $('cs-piu').textContent = prossima ? '➕ Aggiungi ' + ic(prossima.n) + ' ' + prossima.n + ' (' + (prossima.r === 'Base' && prossima.n !== 'Bacche di ginepro' ? 'legante' : prossima.r.toLowerCase()) + (prossima.tracce || prossima.w <= TRACE_FACTOR ? ', in tracce' : '') + ')' : '✓ Lo stile è completo';
+    $('cs-piu').disabled = !prossima; $('cs-reset').hidden = st.n <= 1;
+  }
+  function costruisciPasso(){
+    const st = window._costr; if (!st) return;
+    const P = passiStile(st.k); if (st.n >= P.length) return;
+    const da = profiloPassi(P, st.n), a = profiloPassi(P, st.n + 1), nuova = P[st.n]; st.n++;
+    const ora = $('cs-ora'), prima = $('cs-prima'), bt = $('cs-piu'); bt.disabled = true;
+    prima.setAttribute('points', unionePts(da)); prima.style.opacity = '1';
+    ASSI8.forEach((_, i) => { const t = $('cs-ax-' + i); if (t){ t.setAttribute('fill', 'var(--ink-soft)'); t.removeAttribute('font-weight'); } });
+    const fermo = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches, T = fermo ? 1 : 1100, t0 = performance.now();
+    const passo = now => {
+      const k = Math.min(1, (now - t0) / T), e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+      ora.setAttribute('points', unionePts(da.map((x, i) => x + (a[i] - x) * e)));
+      if (k < 1) return requestAnimationFrame(passo);
+      const su = [], giu = [];
+      ASSI8.forEach((nm, i) => { const d = a[i] - da[i], t = $('cs-ax-' + i);
+        if (d >= 0.4){ su.push(nm.toLowerCase()); if (t){ t.setAttribute('fill', '#2F7259'); t.setAttribute('font-weight', '700'); } }
+        else if (d <= -0.4) giu.push(nm.toLowerCase()); });
+      const lista = x => x.length > 1 ? x.slice(0, -1).join(', ') + (/^e/.test(x[x.length - 1]) ? ' ed ' : ' e ') + x[x.length - 1] : x[0];
+      const ic = (byName[nuova.n] || {}).icona || '🌿';
+      $('cs-esito').innerHTML = ic + ' Con <strong>' + nuova.n + '</strong> ' +
+        (su.length ? (su.length > 1 ? 'crescono' : 'cresce') + ' <strong>' + lista(su) + '</strong>' : 'la forma cambia poco') +
+        (giu.length ? (su.length ? '; ' : ', ') + 'in proporzione ' + (giu.length > 1 ? 'scendono ' : 'scende ') + lista(giu) : '') + '. ' +
+        (nuova.tracce || nuova.w <= TRACE_FACTOR ? 'È in tracce: si sente come un accento, per questo sposta poco. ' : '') +
+        'Prevalgono ora <strong>' + direzioneTesto(baricentro(a)) + '</strong>.';
+      costruisciAggiorna();
+    };
+    requestAnimationFrame(passo);
+  }
+  function costruisciAggancia(){
+    if (!$('cs-piu')) return;
+    $('cs-piu').onclick = costruisciPasso;
+    $('cs-reset').onclick = () => { const k = window._costr.k; const box = $('cs-box'); box.innerHTML = costruisciHtml(k); costruisciAggancia(); };
+    costruisciAggiorna();
   }
   function renderStili(){
     const pr = att(), ok = STYLES.map((s, k) => k).filter(k => STYLES[k][3] && STYLES[k][3].length);
@@ -12250,8 +12327,8 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
   }
   function agganciaStili(){
     const a = $('lez-st'), b = $('lez-st2'); if (!a || !b) return;
-    const ag = () => { window._lezStile = +a.value; window._lezStile2 = b.value; $('lez-st-out').innerHTML = schedaStile(+a.value, b.value); };
-    a.onchange = ag; b.onchange = ag;
+    const ag = () => { window._lezStile = +a.value; window._lezStile2 = b.value; $('lez-st-out').innerHTML = schedaStile(+a.value, b.value); costruisciAggancia(); };
+    a.onchange = ag; b.onchange = ag; costruisciAggancia();
   }
   const normRuolo = r => /^Identit/.test(r) ? 'Identità' : /^Cuore/.test(r) ? 'Cuore' : /Firma/.test(r) ? 'Firma' : /^Rifinitura/.test(r) ? 'Rifinitura' : /^Freschezza/.test(r) ? 'Freschezza' : 'Base';
   // cambia il legante delle basi (angelica, iris o liquirizia) nella riga protetta del Builder
