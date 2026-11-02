@@ -2459,7 +2459,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.9.1</div>
+  <div class="splash-ver" id="splash-ver">v2.9.2</div>
 </div>
 
 <div class="wrap">
@@ -5314,7 +5314,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.9.1</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.9.2</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -12012,7 +12012,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       html: '<p class="lez-sub">🎨 <strong>Che cos’è uno stile</strong></p>' +
         '<p>Uno stile è una <strong>ricetta di partenza</strong>. Mette una botanica in ogni ruolo e dà al gin un carattere che si riconosce: agrumato, marino, speziato, floreale. Non è una regola da rispettare: è un modello da cui partire e da cambiare.</p>' +
         '<p class="lez-sub">🔎 <strong>Come si legge</strong></p>' +
-        '<p>Qui sotto scegli uno stile e trovi tre cose:</p><ul><li>le sue <strong>botaniche, ruolo per ruolo</strong>;</li><li>il <strong>radar della firma</strong>: il profilo dello stile senza le basi (ginepro, coriandolo e legante). Le basi ci sono in tutti gli stili, quindi non aiutano a distinguerli;</li><li>quali note le botaniche <strong>rafforzano insieme</strong> e quali porta <strong>una sola</strong>.</li></ul>' +
+        '<p>Qui sotto scegli uno stile e trovi tre cose:</p><ul><li>le sue <strong>botaniche, ruolo per ruolo</strong>;</li><li>il <strong>radar di che cosa aggiunge lo stile</strong>: mostra solo le botaniche messe accanto alle basi. Ginepro, legante e coriandolo ci sono in tutti gli stili, quindi non aiutano a distinguerli;</li><li>quali note le botaniche <strong>rafforzano insieme</strong> e quali porta <strong>una sola</strong>.</li></ul>' +
         '<p class="lez-sub">🥄 <strong>Le dosi dentro lo stile</strong></p>' +
         '<p>Nello stile ogni ruolo usa una parte della porzione: Base e Freschezza una porzione intera, Identità l’80 %, Cuore il 70 %, Firma il 30 %. Le botaniche «in tracce» e la Rifinitura ne usano circa il 15 %. Per questo una botanica di firma pesa poco sul radar anche se è molto potente: si sente, ma come un accento.</p>' +
         '<p class="lez-sub">🔺 <strong>Quando le note si sommano troppo</strong></p>' +
@@ -12224,7 +12224,8 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       return '<div class="lez-st-riga"><b>' + RUOLI_IC[r] + ' ' + r + '</b><span>' + qui.map(x => ic(x.n) + ' ' + x.n + (x.tracce ? ' <small>(tracce)</small>' : '') + (x.alt.length ? ' <small>o ' + x.alt.join(' o ') + '</small>' : '')).join(' · ') + '</span></div>'; }).join('') + '</div>';
     const serie = [{ vals: f.vals, color: ROSA[0], label: st[0] }];
     if (k2 !== '' && k2 != null && +k2 !== k) serie.push({ vals: firmaStile(+k2).vals, color: ROSA[1], label: STYLES[+k2][0] });
-    h += '<p class="lez-sub">📡 <strong>La firma</strong> <small>(senza le basi)</small></p>' + radarSVG(serie, 300, {});
+    h += '<p class="lez-sub">📡 <strong>Che cosa aggiunge lo stile</strong></p>' +
+      '<p class="cond-hint">Il radar mostra solo le botaniche che lo stile mette accanto alle basi. Ginepro, legante e coriandolo sono uguali in tutti gli stili: se li contassimo, i radar si somiglierebbero tutti.</p>' + radarSVG(serie, 300, {});
     // note rafforzate insieme e note portate da una sola botanica
     const insieme = [], sola = [];
     const piene = f.el.filter(x => x.w > TRACE_FACTOR), accenti = f.el.filter(x => x.w <= TRACE_FACTOR).map(x => x.n);
