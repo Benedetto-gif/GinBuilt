@@ -2465,7 +2465,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.9.3</div>
+  <div class="splash-ver" id="splash-ver">v2.9.4</div>
 </div>
 
 <div class="wrap">
@@ -5320,7 +5320,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.9.3</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.9.4</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -12010,7 +12010,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         '<p>Gli aromi più leggeri evaporano in fretta. Un <strong>legante</strong> (o fissativo) li trattiene e fa durare il finale. Profuma poco, ma senza di lui il gin si apre e svanisce subito. Per questo un legante serve sempre. Puoi scegliere fra tre:</p><ul><li><strong>Angelica</strong> (radice): terrosa e asciutta. È la scelta classica.</li><li><strong>Iris</strong> (radice, detta anche giaggiolo): floreale e cipriata. È il legante più elegante, ma costa caro e ne basta pochissima.</li><li><strong>Liquirizia</strong> (radice): dolce e morbida, con una dolcezza che arriva tardi e dura. È molto potente: ne basta poca.</li></ul>' +
         '<p class="lez-sub">🌿 <strong>Il coriandolo, la tradizione</strong></p>' +
         '<p>I semi di coriandolo sono agrumati e appena speziati. Fanno da <strong>ponte</strong> fra il ginepro e le altre note. Sono in quasi tutti i gin, ma non sono obbligatori: puoi toglierli, sapendo che cosa perdi.</p>' +
-        '<p>Nel tuo progetto ci sono già il ginepro, l’angelica e il coriandolo. Il legante lo potrai cambiare più avanti, quando sceglierai le botaniche. Qui sotto, come «suona» ciascuna sul radar.</p>' + noz('il ginepro deve superare il 50%?', 'Il ginepro deve superare') },
+        '<p>Quando costruirai il tuo gin, l’app partirà da queste tre botaniche: il ginepro, l’angelica come legante e il coriandolo. Più avanti, quando sceglierai le botaniche, potrai cambiare il legante o togliere il coriandolo.</p><p>Qui sotto vedi come «suona» ciascuna sul radar.</p>' + noz('il ginepro deve superare il 50%?', 'Il ginepro deve superare') },
     ruoli: { e:'🧭', t:'I sei ruoli delle botaniche',
       html: '<p>In un gin ogni botanica ha un compito. Pensare per ruoli aiuta a non mettere tutto insieme: un gin riuscito si riconosce in due o tre note, non in venti.</p>' +
         '<p>Ogni ruolo ha una <strong>prova del ruolo</strong>: una domanda da farsi immaginando di <em>togliere</em> quella botanica dal gin. Se togliendola il gin perde qualcosa di importante, la botanica sta facendo il suo lavoro; se non cambierebbe niente, è superflua o è nel ruolo sbagliato. Si usa quando scegli le botaniche e di nuovo all\u2019assaggio.</p>' },
