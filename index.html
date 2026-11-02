@@ -2279,6 +2279,14 @@ html details.howto a{color:#5A3E1C;}
 .cs-chip.ult{background:color-mix(in srgb,#2F7259 18%,transparent);font-weight:650}
 .cs-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 #cs-esito:empty{display:none}
+.lez-st-b{display:block}
+.lez-st-cfr{display:grid;gap:0;margin:6px 0 10px;font-size:13.5px}
+.lez-st-cfr-h,.lez-st-cfr-r{display:grid;grid-template-columns:52px 1fr 1fr;gap:8px;align-items:start;padding:6px 0}
+.lez-st-cfr-r{border-top:1px solid var(--line)}
+.lez-st-cfr-h b{font-size:13px;line-height:1.2}
+.lez-st-cfr-ru{display:flex;flex-direction:column;align-items:center;font-size:18px;line-height:1.1}
+.lez-st-cfr-ru small{font-size:10px;color:var(--ink-soft);margin-top:2px}
+.lez-st-cfr small{color:var(--ink-soft)}
 .lez-stile .lez-st-ricetta{display:grid;gap:6px;margin:6px 0 10px}
 .lez-st-riga{display:grid;grid-template-columns:108px 1fr;gap:8px;font-size:14px;align-items:baseline}
 .lez-st-riga small{color:var(--ink-soft)}
@@ -2286,7 +2294,8 @@ html details.howto a{color:#5A3E1C;}
 .lez-da a{color:inherit;font-weight:650}
 .lez-corpo .lez-sub{margin:16px 0 4px;font-size:15px}
 .lez-corpo .lez-sub:first-child{margin-top:0}
-.lez-cfr{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.lez-cfr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin-bottom:8px}
+.lez-cfr select{width:100%;min-width:0;box-sizing:border-box}
 .lez-cfr label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:650}
 .lez-ruoli{display:grid;gap:8px}
 .lez-ruolo{padding:10px 12px;border-radius:12px;background:var(--card);box-shadow:0 0 0 1px var(--line)}
@@ -2468,7 +2477,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.9.7</div>
+  <div class="splash-ver" id="splash-ver">v2.9.8</div>
 </div>
 
 <div class="wrap">
@@ -5323,7 +5332,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.9.7</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.9.8</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -12241,27 +12250,37 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     const v = ASSI8.map((_, i) => el.reduce((a, x) => a + PROFILO8[x.n][i] * x.w, 0) / t), mx = Math.max.apply(null, v) || 1;
     return { el, vals: v.map(x => Math.round(x / mx * 50) / 10) };
   }
-  function schedaStile(k, k2){
-    const st = STYLES[k], righe = ricettaStile(k), f = firmaStile(k), ic = n => (byName[n] || {}).icona || '🌿';
-    const lista = l => l.length > 1 ? l.slice(0, -1).join(', ') + ' e ' + l[l.length - 1] : l[0];
-    let h = '<div class="lez-stile"><div class="lez-st-ricetta">' + RUOLI.map(r => {
-      const qui = righe.filter(x => x.r === r); if (!qui.length) return '';
-      return '<div class="lez-st-riga"><b>' + RUOLI_IC[r] + ' ' + r + '</b><span>' + qui.map(x => ic(x.n) + ' ' + x.n + (x.tracce ? ' <small>(tracce)</small>' : '') + (x.alt.length ? ' <small>o ' + x.alt.join(' o ') + '</small>' : '')).join(' · ') + '</span></div>'; }).join('') + '</div>';
-    const serie = [{ vals: f.vals, color: ROSA[0], label: st[0] }];
-    if (k2 !== '' && k2 != null && +k2 !== k) serie.push({ vals: firmaStile(+k2).vals, color: ROSA[1], label: STYLES[+k2][0] });
-    h += '<p class="lez-sub">📡 <strong>Che cosa aggiunge lo stile</strong></p>' +
-      '<p class="cond-hint">Il radar mostra solo le botaniche che lo stile mette accanto alle basi. Ginepro, legante e coriandolo sono uguali in tutti gli stili: se li contassimo, i radar si somiglierebbero tutti.</p>' + radarSVG(serie, 300, {});
-    // note rafforzate insieme e note portate da una sola botanica
+  // le note che le botaniche di uno stile rafforzano insieme, quelle portate da una sola e gli accenti in tracce
+  function notaStile(k, conNome){
+    const f = firmaStile(k), lista = l => l.length > 1 ? l.slice(0, -1).join(', ') + ' e ' + l[l.length - 1] : l[0];
     const insieme = [], sola = [];
     const piene = f.el.filter(x => x.w > TRACE_FACTOR), accenti = f.el.filter(x => x.w <= TRACE_FACTOR).map(x => x.n);
     ASSI8.forEach((nm, i) => { const chi = piene.filter(x => PROFILO8[x.n][i] >= 3).map(x => x.n);
       if (chi.length >= 2) insieme.push('<strong>' + nm.toLowerCase() + '</strong> (' + lista(chi) + ')');
       else if (chi.length === 1) sola.push('<strong>' + nm.toLowerCase() + '</strong> (' + chi[0] + ')'); });
-    h += '<div class="radar-nota r-giudizio">' +
+    return (conNome ? '<b>' + STYLES[k][0] + '</b>: ' : '') +
       (insieme.length ? '🔺 <strong>Si rafforzano</strong> su ' + lista(insieme) + '. ' : '🔺 Nessuna nota è forte in più di una botanica: ognuna fa la sua parte. ') +
       (sola.length ? '🧩 <strong>Porta una sola botanica</strong>: ' + lista(sola) + '. ' : '') +
-      (accenti.length ? '✨ <strong>In tracce</strong>, come accento: ' + lista(accenti) + '. ' : '') +
-      '<em>Stima da confermare all’assaggio.</em></div>';
+      (accenti.length ? '✨ <strong>In tracce</strong>, come accento: ' + lista(accenti) + '. ' : '');
+  }
+  function schedaStile(k, k2){
+    const st = STYLES[k], f = firmaStile(k), ic = n => (byName[n] || {}).icona || '🌿';
+    const cfr = k2 !== '' && k2 != null && +k2 !== k, k2n = cfr ? +k2 : null;
+    const R1 = ricettaStile(k), R2 = cfr ? ricettaStile(k2n) : null;
+    const cella = (righe, r) => righe.filter(x => x.r === r).map(x => '<span class="lez-st-b">' + ic(x.n) + ' ' + x.n + (x.tracce ? ' <small>(tracce)</small>' : '') + (x.alt.length ? ' <small>o ' + x.alt.join(' o ') + '</small>' : '') + '</span>').join('') || '<small>—</small>';
+    let h = '<div class="lez-stile">';
+    if (!cfr){
+      h += '<div class="lez-st-ricetta">' + RUOLI.map(r => R1.some(x => x.r === r) ? '<div class="lez-st-riga"><b>' + RUOLI_IC[r] + ' ' + r + '</b><span>' + cella(R1, r) + '</span></div>' : '').join('') + '</div>';
+    } else {
+      // confronto: una riga per ruolo, le due ricette affiancate
+      h += '<div class="lez-st-cfr"><div class="lez-st-cfr-h"><span></span><b style="color:' + ROSA[0] + '">● ' + st[0] + '</b><b style="color:' + ROSA[1] + '">● ' + STYLES[k2n][0] + '</b></div>' +
+        RUOLI.map(r => '<div class="lez-st-cfr-r"><span class="lez-st-cfr-ru" title="' + r + '">' + RUOLI_IC[r] + '<small>' + r + '</small></span><span>' + cella(R1, r) + '</span><span>' + cella(R2, r) + '</span></div>').join('') + '</div>';
+    }
+    const serie = [{ vals: f.vals, color: ROSA[0], label: st[0] }];
+    if (cfr) serie.push({ vals: firmaStile(k2n).vals, color: ROSA[1], label: STYLES[k2n][0] });
+    h += '<p class="lez-sub">📡 <strong>Che cosa aggiunge lo stile</strong></p>' +
+      '<p class="cond-hint">Il radar mostra solo le botaniche che lo stile mette accanto alle basi. Ginepro, legante e coriandolo sono uguali in tutti gli stili: se li contassimo, i radar si somiglierebbero tutti.</p>' + radarSVG(serie, 300, {});
+    h += '<div class="radar-nota r-giudizio">' + notaStile(k, cfr) + (cfr ? '<br>' + notaStile(k2n, true) : '') + '<em>Stima da confermare all’assaggio.</em></div>';
     h += '<div id="cs-box">' + costruisciHtml(k) + '</div>';
     return h + '</div>';
   }
