@@ -2549,7 +2549,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.12.1</div>
+  <div class="splash-ver" id="splash-ver">v2.12.2</div>
 </div>
 
 <div class="wrap">
@@ -2879,7 +2879,7 @@ html.in-mappa #nav-indietro{display:none!important}
           <li><strong>Molecole idrofobe (oli essenziali).</strong> Il ginepro (ricco di alfa-pinene) e gli agrumi come il cedro (ricchi di limonene) richiedono una gradazione alta per sciogliersi ed essere estratti bene: 55–65% per il ginepro, 65–75% per le scorze degli agrumi. Se la gradazione è troppo bassa, una parte del profumo resta nella botanica.</li>
           <li><strong>Molecole idrofile e parti verdi.</strong> Foglie come quelle di cappero e il finocchio di mare contengono acqua cellulare, clorofilla e componenti idrosolubili. Con un grado alcolico troppo basso, o tempi troppo lunghi, passano note sgradevoli di erba bagnata o fieno. Un grado alcolico molto alto (oltre 75%) estrae bene anche clorofilla e cere: per le foglie fresche conviene una gradazione media (55–65%) e poche ore al buio, così si preleva soprattutto la frazione aromatica.</li>
         </ul>
-        <p><strong>Più forte non è meglio.</strong> Un solvente troppo forte non estrae solo gli aromi buoni: trascina anche resine, cere, clorofilla e amari duri, che danno note di trementina, di erba tagliata o di amaro. Un solvente troppo debole lascia gli oli nella botanica e porta tannini e acqua. Per questo ogni botanica ha una gradazione consigliata, una soglia oltre cui evitare di salire e il relativo tempo di macerazione; nelle schede trovi cosa succede oltre e sotto quei limiti. I valori sono stime di partenza: affinali con le tue tarature e con gli assaggi.</p>
+        <p><strong>In pratica.</strong> Ogni scheda indica la gradazione consigliata, i limiti da non superare e il tempo di macerazione. Sono stime di partenza: affinale con gli assaggi.</p>
       </div>
     </details>
     <details class="howto" id="combinata-noz">
@@ -5501,7 +5501,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.12.1</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.12.2</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
