@@ -2459,7 +2459,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.9.0</div>
+  <div class="splash-ver" id="splash-ver">v2.9.1</div>
 </div>
 
 <div class="wrap">
@@ -5123,11 +5123,21 @@ const FONDAMENTALI = {
   },
   'Angelica': {
     blocco: false,
-    perche: 'L\u2019angelica \u00e8 il fissativo: trattiene gli aromi e d\u00e0 tenuta al finale. Senza, il profumo si apre subito e svanisce in fretta.'
+    perche: 'L\u2019angelica \u00e8 il legante (fissativo): trattiene gli aromi e d\u00e0 tenuta al finale. Senza un legante, il profumo si apre subito e svanisce in fretta. Al suo posto possono lavorare l\u2019iris o la liquirizia.'
   },
 };
 // Nota di ruolo per lo stile Personalizzato: aderente alla botanica scelta.
 // Le fondamentali usano lo stesso testo dell'avviso di rimozione, ma solo nel ruolo che gli è proprio.
+// I leganti: la base che trattiene gli aromi. Ne serve uno, a scelta fra questi tre.
+const LEGANTI = ['Angelica', 'Iris', 'Liquirizia'];
+// ruolo della riga a cui appartiene un menu del Builder ('' se non si sa)
+function ruoloDiSelect(sel){
+  const row = sel && sel.closest && sel.closest('.role-row-custom');
+  if (row){ const l = row.querySelector('.role-label-input'); return l ? l.value : 'Base'; }
+  return /^Base/.test((sel && sel.dataset && sel.dataset.role) || '') ? 'Base' : '';
+}
+// e' una base del gin? il ginepro, il coriandolo e il legante quando sta nel ruolo Base
+function eBase(nome, ruolo){ return !!FONDAMENTALI[nome] || (LEGANTI.includes(nome) && ruolo === 'Base'); }
 const RUOLO_CLASSICO = {'Bacche di ginepro': 'Base', 'Angelica': 'Base', 'Coriandolo': 'Freschezza', 'Iris': 'Base', 'Liquirizia': 'Base'};
 const NOTA_AGGIUNTIVA = {
   'Iris': 'Il giaggiolo (iris) \u00e8 il fissativo pi\u00f9 raffinato: trattiene gli aromi volatili e d\u00e0 rotondit\u00e0 e tenuta al finale. \u00c8 molto potente, ne basta poco.',
@@ -5304,7 +5314,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.9.0</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.9.1</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -6629,7 +6639,7 @@ function renderSummary(){
     [...selects].forEach(sel => {
       if (visti.has(sel.value) || !PROFILO8[sel.value]) return;
       visti.add(sel.value);
-      if (!window.radarConBase && FONDAMENTALI[sel.value]) return;
+      if (!window.radarConBase && eBase(sel.value, ruoloDiSelect(sel))) return;
       elenco.push({n: sel.value, w: Math.max(0.0001, porzioni(sel.value, pesoRiga(sel, doseLibreria(sel.value) ?? 0)))});
     });
     // Ricetta di riferimento dello stile: la fotografia delle scelte proposte dallo stile appena caricato,
@@ -6638,7 +6648,7 @@ function renderSummary(){
       const vr = new Set(), el = [];
       [...selects].forEach(sel => {
         if (vr.has(sel.value) || !PROFILO8[sel.value]) return; vr.add(sel.value);
-        el.push({n: sel.value, fond: !!FONDAMENTALI[sel.value], w: Math.max(0.0001, porzioni(sel.value, pesoRiga(sel, doseLibreria(sel.value) ?? 0)))});
+        el.push({n: sel.value, fond: eBase(sel.value, ruoloDiSelect(sel)), w: Math.max(0.0001, porzioni(sel.value, pesoRiga(sel, doseLibreria(sel.value) ?? 0)))});
       });
       window._rifStile = { nome: currentStyleName, elenco: el };
     }
@@ -7537,7 +7547,8 @@ function chiediRimozione(nome, poi){
 function proteggiSostituzione(select, ruolo){
   let prev = select.value;
   const f = FONDAMENTALI[prev];
-  const sost = sostituteDi(prev).split(/,|;/).map(x => x.trim()).filter(n => n && byName[n] && n !== prev);
+  const sost = LEGANTI.includes(prev) && ruolo === 'Base' ? LEGANTI.filter(n => n !== prev && byName[n])
+    : sostituteDi(prev).split(/,|;/).map(x => x.trim()).filter(n => n && byName[n] && n !== prev);
   if (f && f.blocco){
     // Il ginepro non si sceglie: il menù contiene solo lui, cosi' non compare la ricerca e nessuna via lo puo' cambiare.
     select.innerHTML = ''; const o = document.createElement('option'); o.value = prev; o.textContent = prev; select.appendChild(o);
@@ -7556,7 +7567,7 @@ function proteggiSostituzione(select, ruolo){
     if (select._ok){ select._ok = false; prev = select.value; return; }
     const nuovo = select.value; select.value = prev; e.stopImmediatePropagation();
     if (nuovo === prev) return;
-    const perche = (FONDAMENTALI[prev] && FONDAMENTALI[prev].perche) || notaRuolo(prev, 'Base');
+    const perche = LEGANTI.includes(prev) ? 'Un legante trattiene gli aromi e dà tenuta al finale: ne serve sempre uno, a scelta fra angelica, iris e liquirizia.' : ((FONDAMENTALI[prev] && FONDAMENTALI[prev].perche) || notaRuolo(prev, 'Base'));
     const dn = byName[nuovo] || {};
     mostraAvviso(prev + ' → ' + nuovo,
       '<p>' + perche + '</p><div class="avviso-sost"><strong>' + nuovo + '</strong> può svolgere la stessa funzione' + (dn.profilo ? ' (profilo: ' + dn.profilo + ')' : '') +
@@ -11503,7 +11514,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     pers: { e:'🧪', t:'Fatti un gin', c:'#4C7BB5',
       d:'Impari facendo: ogni tappa ha una breve lezione e una prova pratica, dal ginepro fino al bicchiere. Se vuoi saperne di più, ogni lezione ha il suo «Approfondisci».',
       tappe: [
-        { id:'l-basi',   tab:'lezione',    lez:'basi',       e:'🫐', t:'Il ginepro e le tre basi',     c:'#2F7259', d:'cos\u2019è un gin' },
+        { id:'l-basi',   tab:'lezione',    lez:'basi',       e:'🫐', t:'Il ginepro e i suoi compagni', c:'#2F7259', d:'cos\u2019è un gin' },
         { id:'l-ruoli',  tab:'lezione',    lez:'ruoli',      e:'🧭', t:'I sei ruoli',                  c:'#5D6F8C', d:'e la prova del ruolo' },
         { id:'l-radar',  tab:'lezione',    lez:'radar',      e:'📡', t:'Leggere il radar',             c:'#8A63B0', d:'profilo e potenza' },
         { id:'l-stili',  tab:'lezione',    lez:'stili',      e:'🎨', t:'Gli stili',                    c:'#B04A6B', d:'come lavorano le botaniche, e da dove partire' },
@@ -11984,13 +11995,16 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
   const approf = (testo, js) => '<p class="lez-approf">🔬 Approfondisci: <a href="#" onclick="event.preventDefault();' + js + '">' + testo + '</a></p>';
   const noz = (testo, chiave) => '<p class="lez-approf">🔬 Approfondisci: <a href="#" class="noz-link" data-noz="' + chiave + '">' + testo + '</a> <span class="cond-hint">(in Nozioni)</span></p>';
   const LEZ = {
-    basi: { e:'🫐', t:'Il ginepro e le tre basi',
-      html: '<p>Per la legge europea (Reg. UE 2019/787) il gin è una bevanda alcolica aromatizzata con bacche di <strong>ginepro</strong> (<em>Juniperus communis</em>), il cui sapore deve restare <strong>prevalente</strong>, con una gradazione minima di 37,5% vol. Tutto il resto è scelta di chi lo fa.</p>' +
-        '<p>Attorno al ginepro la tradizione ha fissato altre due botaniche, quasi sempre presenti:</p><ul>' +
-        '<li><strong>Ginepro</strong>: resinoso e balsamico, la spina dorsale del gin.</li>' +
-        '<li><strong>Coriandolo</strong> (semi): agrumato e appena speziato, fa da ponte fra il ginepro e le altre note.</li>' +
-        '<li><strong>Angelica</strong> (radice): terrosa e asciutta, profuma poco ma lega gli aromi e dà tenuta al finale.</li></ul>' +
-        '<p>Nel tuo progetto queste tre ci sono già. Qui sotto, come «suona» ciascuna sul radar.</p>' + noz('il ginepro deve superare il 50%?', 'Il ginepro deve superare') },
+    basi: { e:'🫐', t:'Il ginepro e i suoi compagni',
+      html: '<p class="lez-sub">⚖️ <strong>Che cos’è un gin</strong></p>' +
+        '<p>Per la legge europea (Reg. UE 2019/787) il gin è una bevanda alcolica aromatizzata con le bacche di <strong>ginepro</strong> (<em>Juniperus communis</em>). Il sapore del ginepro deve restare <strong>prevalente</strong>. La gradazione minima è 37,5 % vol. La legge chiede solo questo: tutto il resto lo sceglie chi fa il gin.</p>' +
+        '<p class="lez-sub">🫐 <strong>Il ginepro, obbligatorio</strong></p>' +
+        '<p>Il ginepro è resinoso e balsamico: è la spina dorsale del gin. È l’unica botanica che non si può togliere.</p>' +
+        '<p class="lez-sub">🔗 <strong>Il legante, uno a scelta</strong></p>' +
+        '<p>Gli aromi più leggeri evaporano in fretta. Un <strong>legante</strong> (o fissativo) li trattiene e fa durare il finale. Profuma poco, ma senza di lui il gin si apre e svanisce subito. Per questo un legante serve sempre. Puoi scegliere fra tre:</p><ul><li><strong>Angelica</strong> (radice): terrosa e asciutta. È la scelta classica.</li><li><strong>Iris</strong> (radice, detta anche giaggiolo): floreale e cipriata. È il legante più elegante, ma costa caro e ne basta pochissima.</li><li><strong>Liquirizia</strong> (radice): dolce e morbida, con una dolcezza che arriva tardi e dura. È molto potente: ne basta poca.</li></ul>' +
+        '<p class="lez-sub">🌿 <strong>Il coriandolo, la tradizione</strong></p>' +
+        '<p>I semi di coriandolo sono agrumati e appena speziati. Fanno da <strong>ponte</strong> fra il ginepro e le altre note. Sono in quasi tutti i gin, ma non sono obbligatori: puoi toglierli, sapendo che cosa perdi.</p>' +
+        '<p>Nel tuo progetto ci sono già il ginepro, l’angelica e il coriandolo. Il legante lo potrai cambiare più avanti, quando sceglierai le botaniche. Qui sotto, come «suona» ciascuna sul radar.</p>' + noz('il ginepro deve superare il 50%?', 'Il ginepro deve superare') },
     ruoli: { e:'🧭', t:'I sei ruoli delle botaniche',
       html: '<p>In un gin ogni botanica ha un compito. Pensare per ruoli aiuta a non mettere tutto insieme: un gin riuscito si riconosce in due o tre note, non in venti.</p>' +
         '<p>Ogni ruolo ha una <strong>prova del ruolo</strong>: una domanda da farsi immaginando di <em>togliere</em> quella botanica dal gin. Se togliendola il gin perde qualcosa di importante, la botanica sta facendo il suo lavoro; se non cambierebbe niente, è superflua o è nel ruolo sbagliato. Si usa quando scegli le botaniche e di nuovo all\u2019assaggio.</p>' },
@@ -11998,13 +12012,13 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       html: '<p class="lez-sub">🎨 <strong>Che cos’è uno stile</strong></p>' +
         '<p>Uno stile è una <strong>ricetta di partenza</strong>. Mette una botanica in ogni ruolo e dà al gin un carattere che si riconosce: agrumato, marino, speziato, floreale. Non è una regola da rispettare: è un modello da cui partire e da cambiare.</p>' +
         '<p class="lez-sub">🔎 <strong>Come si legge</strong></p>' +
-        '<p>Qui sotto scegli uno stile e trovi tre cose:</p><ul><li>le sue <strong>botaniche, ruolo per ruolo</strong>;</li><li>il <strong>radar della firma</strong>: il profilo dello stile senza ginepro, coriandolo e angelica. Le tre basi ci sono in tutti gli stili, quindi non aiutano a distinguerli;</li><li>quali note le botaniche <strong>rafforzano insieme</strong> e quali porta <strong>una sola</strong>.</li></ul>' +
+        '<p>Qui sotto scegli uno stile e trovi tre cose:</p><ul><li>le sue <strong>botaniche, ruolo per ruolo</strong>;</li><li>il <strong>radar della firma</strong>: il profilo dello stile senza le basi (ginepro, coriandolo e legante). Le basi ci sono in tutti gli stili, quindi non aiutano a distinguerli;</li><li>quali note le botaniche <strong>rafforzano insieme</strong> e quali porta <strong>una sola</strong>.</li></ul>' +
         '<p class="lez-sub">🥄 <strong>Le dosi dentro lo stile</strong></p>' +
         '<p>Nello stile ogni ruolo usa una parte della porzione: Base e Freschezza una porzione intera, Identità l’80 %, Cuore il 70 %, Firma il 30 %. Le botaniche «in tracce» e la Rifinitura ne usano circa il 15 %. Per questo una botanica di firma pesa poco sul radar anche se è molto potente: si sente, ma come un accento.</p>' +
         '<p class="lez-sub">🔺 <strong>Quando le note si sommano troppo</strong></p>' +
         '<p>Se molte botaniche insistono sulla stessa nota, quella nota cresce molto: è la <strong>ridondanza</strong>. A volte è voluta (uno stile agrumato vuole l’agrumato forte), altre volte è un eccesso che appiattisce il gin. Stili diversi distribuiscono le note in modo diverso: confrontane due sullo stesso radar.</p>' +
         '<p class="lez-sub">🧭 <strong>Poi scegli</strong></p>' +
-        '<p>In fondo alla pagina scegli da dove partire: <strong>uno stile come modello</strong>, oppure <strong>le sole tre basi</strong> per costruire un gin tutto tuo. Nella tappa successiva potrai cambiare, togliere o aggiungere ogni botanica.</p>' +
+        '<p>In fondo alla pagina scegli da dove partire: <strong>uno stile come modello</strong>, oppure <strong>le sole basi</strong> (ginepro, coriandolo e un legante a scelta) per costruire un gin tutto tuo. Nella tappa successiva potrai cambiare, togliere o aggiungere ogni botanica.</p>' +
         approf('ridondanza e complementarietà', "showTab('ridondanza')") },
     radar: { e:'📡', t:'Leggere il radar e la potenza',
       html: '<p class="lez-sub">📡 <strong>Il radar</strong></p>' +
@@ -12152,7 +12166,8 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     const L = LEZ[tp.lez], i = T.indexOf(tp);
     $('lez-h').innerHTML = '<span>' + (i + 1) + '</span>' + L.t;
     let pr = '';
-    if (tp.lez === 'basi') pr = '<div class="lez-bots">' + ['Bacche di ginepro', 'Coriandolo', 'Angelica'].map((n, k) => botCard(n, ['#2F7259', '#C4803A', '#8A63B0'][k])).join('') + '</div>';
+    if (tp.lez === 'basi') pr = '<div class="lez-bots">' + ['Bacche di ginepro', 'Coriandolo'].map((n, k) => botCard(n, ['#2F7259', '#C4803A'][k])).join('') + '</div>' +
+      '<p class="lez-sub">🔗 <strong>I tre leganti a confronto</strong></p><div class="lez-bots">' + LEGANTI.map((n, k) => botCard(n, ['#8A63B0', '#5D6F8C', '#8A6D3B'][k])).join('') + '</div>';
     if (tp.lez === 'ruoli') pr = renderRuoli();
     if (tp.lez === 'stili') pr = renderStili();
     if (tp.lez === 'radar') pr = '<div class="lez-cfr"><label>Prima botanica<select id="lez-a"></select></label><label>Seconda botanica<select id="lez-b"></select></label></div><div id="lez-cfr-out"></div>';
@@ -12180,7 +12195,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
   function partenzaHtml(){
     const pr = att();
     return '<h4 class="lez-sub">🧭 Ora scegli da dove partire</h4><div class="lez-partenza">' +
-      '<button type="button" class="lez-part' + (pr && !pr.modello ? ' on' : '') + '" data-m="">🫐 Dalle sole tre basi<small>e scegli tu tutto il resto</small></button>' +
+      '<button type="button" class="lez-part' + (pr && !pr.modello ? ' on' : '') + '" data-m="">🫐 Dalle sole basi<small>ginepro, coriandolo e un legante: il resto lo scegli tu</small></button>' +
       STYLES.map((s, k) => (s[3] && s[3].length) ? '<button type="button" class="lez-part' + (pr && pr.modello === s[0] ? ' on' : '') + '" data-m="' + k + '" style="--c:' + (STYLE_COLORS[s[0]] || ['#5D6F8C'])[0] + '">' + s[0] + '<small>come modello</small></button>' : '').join('') + '</div>' +
       '<p class="cond-hint">Partire da uno stile carica le sue botaniche come proposta: nella tappa successiva le cambi, le togli o ne aggiungi.</p>';
   }
@@ -12209,7 +12224,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       return '<div class="lez-st-riga"><b>' + RUOLI_IC[r] + ' ' + r + '</b><span>' + qui.map(x => ic(x.n) + ' ' + x.n + (x.tracce ? ' <small>(tracce)</small>' : '') + (x.alt.length ? ' <small>o ' + x.alt.join(' o ') + '</small>' : '')).join(' · ') + '</span></div>'; }).join('') + '</div>';
     const serie = [{ vals: f.vals, color: ROSA[0], label: st[0] }];
     if (k2 !== '' && k2 != null && +k2 !== k) serie.push({ vals: firmaStile(+k2).vals, color: ROSA[1], label: STYLES[+k2][0] });
-    h += '<p class="lez-sub">📡 <strong>La firma</strong> <small>(senza le tre basi)</small></p>' + radarSVG(serie, 300, {});
+    h += '<p class="lez-sub">📡 <strong>La firma</strong> <small>(senza le basi)</small></p>' + radarSVG(serie, 300, {});
     // note rafforzate insieme e note portate da una sola botanica
     const insieme = [], sola = [];
     const piene = f.el.filter(x => x.w > TRACE_FACTOR), accenti = f.el.filter(x => x.w <= TRACE_FACTOR).map(x => x.n);
@@ -12238,11 +12253,22 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     a.onchange = ag; b.onchange = ag;
   }
   const normRuolo = r => /^Identit/.test(r) ? 'Identità' : /^Cuore/.test(r) ? 'Cuore' : /Firma/.test(r) ? 'Firma' : /^Rifinitura/.test(r) ? 'Rifinitura' : /^Freschezza/.test(r) ? 'Freschezza' : 'Base';
+  // cambia il legante delle basi (angelica, iris o liquirizia) nella riga protetta del Builder
+  function cambiaLegante(nuovo){
+    const row = [...roleList.querySelectorAll('.role-row-custom[data-protetta]')].find(r => LEGANTI.includes((r.querySelector('select:not(.role-label-input)') || {}).value));
+    const sel = row && row.querySelector('select:not(.role-label-input)'); if (!sel || sel.value === nuovo) return false;
+    // se il nuovo legante era gia' in un'altra riga, quella riga sparisce: il legante va nelle basi
+    [...roleList.querySelectorAll('.role-row-custom:not([data-protetta])')].forEach(r => { if ((r.querySelector('select:not(.role-label-input)') || {}).value === nuovo) r.remove(); });
+    sel._ok = true; sel.value = nuovo; sel.dispatchEvent(new Event('change'));
+    return true;
+  }
   function partiDa(k){
     const pr = att(); if (!pr) return;
     let righe = [];
     if (k !== ''){ scegliStile(+k); righe = tutteSel().map(s => [normRuolo(s.dataset.role || ''), s.value]); }
     scegliStile(idxPers());   // sempre Personalizzato: ginepro, angelica, coriandolo
+    const leg = righe.find(([r, n]) => r === 'Base' && LEGANTI.includes(n) && n !== 'Angelica');
+    if (leg) cambiaLegante(leg[1]);   // lo stile usa un altro legante (iris, liquirizia): prende il posto dell'angelica
     const gia = new Set(tutteSel().map(s => s.value));
     righe.forEach(([r, n]) => { if (!gia.has(n) && byName[n]){ addCustomRoleRow(r, n, false); gia.add(n); } });
     renderSummary();
@@ -12252,7 +12278,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     document.querySelectorAll('.lez-part').forEach(b => b.onclick = () => {
       const fare = () => { partiDa(b.dataset.m); renderLezione(); };
       const pr = att(), n = tutteSel().length;
-      if (n > 3) mostraAvviso('Ricominci da qui?', '<p>Le botaniche scelte finora lasciano il posto a quelle ' + (b.dataset.m === '' ? 'delle sole tre basi' : 'dello stile <strong>' + STYLES[+b.dataset.m][0] + '</strong>') + '.</p>', 'Ricomincia', fare);
+      if (n > 3) mostraAvviso('Ricominci da qui?', '<p>Le botaniche scelte finora lasciano il posto a quelle ' + (b.dataset.m === '' ? 'delle sole basi' : 'dello stile <strong>' + STYLES[+b.dataset.m][0] + '</strong>') + '.</p>', 'Ricomincia', fare);
       else fare();
     });
   }
@@ -12296,7 +12322,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     const prS = att();
     let h = (prS && prS.via === 'pers' ? '<div class="lez-da">' + (prS.modello
       ? '🎨 Parti dallo stile <strong>' + prS.modello + '</strong>: le sue botaniche sono già al loro posto. Cambiale, toglile o aggiungine quante vuoi.'
-      : '🫐 Parti dalle sole tre basi: scegli tu una botanica per ogni ruolo.') + ' <a href="#" onclick="event.preventDefault();vaiTappaId(\'l-stili\')">Cambia partenza</a></div>' : '') +
+      : '🫐 Parti dalle sole basi: scegli tu una botanica per ogni ruolo. In Base puoi cambiare il legante.') + ' <a href="#" onclick="event.preventDefault();vaiTappaId(\'l-stili\')">Cambia partenza</a></div>' : '') +
       '<div class="sc-gin"><div class="sc-gin-t">🍸 Il tuo gin finora · ' + quanti + ' botaniche</div>' + radarGin() + '<div id="sc-avvisi"></div></div>';
     RUOLI.forEach(r => {
       const [desc, dom] = (RUOLI_DESC[r] || '').split('Domanda guida:'), lista = candidati(r), liv = livScelta[r] || 1;
@@ -12309,7 +12335,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
             (altrove ? '<em>in ' + s.ruolo + '</em>' : '') + '<button type="button" class="sc-i" aria-label="Profilo di ' + d.botanica.replace(/"/g, '') + '">i</button></span>'; }).join('') + '</div>' +
         '<div class="sc-liv">' + (liv < 2 && nF ? '<button type="button" data-r="' + r + '" data-l="2">✨ + le più originali (' + nF + ')</button>' : '') + (liv < 3 && nA ? '<button type="button" data-r="' + r + '" data-l="3">🔍 + tutte le altre (' + nA + ')</button>' : '') + '</div></section>';
     });
-    h += '<p class="cond-hint">Tocca una botanica per aggiungerla o toglierla; la <strong>i</strong> mostra il suo radar. I pallini sono la potenza. Il ginepro non si toglie; l’angelica si cambia solo con una sostituta, nel Builder. <a href="#" onclick="event.preventDefault();showTab(\'builder\')">🎯 Apri il Builder completo</a></p>';
+    h += '<p class="cond-hint">Tocca una botanica per aggiungerla o toglierla; la <strong>i</strong> mostra il suo radar. I pallini sono la potenza. Il ginepro non si toglie; il legante si cambia toccandone un altro in Base (angelica, iris o liquirizia). <a href="#" onclick="event.preventDefault();showTab(\'builder\')">🎯 Apri il Builder completo</a></p>';
     box.innerHTML = h;
     // avvisi di ridondanza dal Builder
     try { const w = ($('build-semafori') ? $('build-semafori').innerHTML : '') + ($('build-warnings') ? $('build-warnings').innerHTML : ''); $('sc-avvisi').innerHTML = w; } catch(e){}
@@ -12318,7 +12344,13 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       if (e.target.closest('.sc-i')){ e.stopPropagation(); const d = byName[n] || {};
         mostraAvviso((d.icona || '🌿') + ' ' + n, '<p>' + (d.profilo || '') + ' · potenza ' + (d.potenza10 ?? '—') + '/10</p>' + mini(n, '#2F7259', 300) + (MOLECOLE[n] ? '<p class="cond-hint">' + MOLECOLE[n] + '</p>' : ''), '', null); return; }
       const s = ruoliScelti()[n];
-      if (s && s.protetta){ mostraAvviso(n, '<p>È una botanica di base del progetto: ' + (n === 'Bacche di ginepro' ? 'senza ginepro non è gin.' : 'si cambia solo con una sua sostituta, dal Builder completo.') + '</p>', '', null); return; }
+      if (s && s.protetta){ mostraAvviso(n, '<p>' + (n === 'Bacche di ginepro' ? 'Senza ginepro non è gin: è l’unica botanica che non si toglie.' : 'È il legante del tuo gin e ne serve sempre uno. Per cambiarlo tocca un altro legante: angelica, iris o liquirizia.') + '</p>', '', null); return; }
+      const legAtt = Object.keys(ruoliScelti()).find(x => LEGANTI.includes(x) && ruoliScelti()[x].protetta);
+      if (!s && r === 'Base' && LEGANTI.includes(n) && legAtt){   // un legante prende il posto dell'altro
+        cambiaLegante(n); renderSummary(); const y = window.scrollY; renderScelta(); window.scrollTo(0, y); return; }
+      if (s && FONDAMENTALI[n] && s.ruolo === r){   // il coriandolo si toglie, dopo un avviso che dice che cosa si perde
+        chiediRimozione(n, () => { const row = [...roleList.querySelectorAll('.role-row-custom')].find(x => (x.querySelector('select:not(.role-label-input)') || {}).value === n);
+          if (row) row.remove(); renderSummary(); const y = window.scrollY; renderScelta(); window.scrollTo(0, y); }); return; }
       if (s){ // togli (o sposta di ruolo)
         const row = [...roleList.querySelectorAll('.role-row-custom')].find(x => (x.querySelector('select:not(.role-label-input)') || {}).value === n);
         if (row) row.remove();
