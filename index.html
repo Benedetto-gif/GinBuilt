@@ -2270,6 +2270,11 @@ html details.howto a{color:#5A3E1C;}
 .lez-bot-t small{display:block;color:var(--ink-soft);font-size:12.5px}
 .lez-bot svg,.sc-gin svg,#lez-cfr-out svg{width:100%;height:auto;max-width:280px;display:block;margin:0 auto}
 .lez-pop{background:none;border:0;padding:0;font:inherit;color:var(--juniper);text-decoration:underline dotted;text-underline-offset:3px;cursor:pointer}
+.lez-stile .lez-st-ricetta{display:grid;gap:6px;margin:6px 0 10px}
+.lez-st-riga{display:grid;grid-template-columns:108px 1fr;gap:8px;font-size:14px;align-items:baseline}
+.lez-st-riga small{color:var(--ink-soft)}
+.lez-da{margin:0 0 12px;padding:10px 12px;border-radius:12px;background:var(--tint-info);color:var(--tint-info-ink);font-size:14px}
+.lez-da a{color:inherit;font-weight:650}
 .lez-corpo .lez-sub{margin:16px 0 4px;font-size:15px}
 .lez-corpo .lez-sub:first-child{margin-top:0}
 .lez-cfr{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
@@ -2454,7 +2459,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.8.12</div>
+  <div class="splash-ver" id="splash-ver">v2.9.0</div>
 </div>
 
 <div class="wrap">
@@ -2541,7 +2546,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </section>
 
   <section class="panel" id="panel-scelta">
-    <h2 class="tappa-h"><span>4</span>Le botaniche, ruolo per ruolo</h2>
+    <h2 class="tappa-h"><span>5</span>Le botaniche, ruolo per ruolo</h2>
     <p class="tappa-intro">Le basi ci sono già. Per ogni ruolo scegli una o due botaniche: prima compaiono le più usate, poi, se vuoi, le più originali. Il radar in alto mostra come cambia il tuo gin.</p>
     <div id="scelta-box"></div>
   </section>
@@ -5299,7 +5304,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.8.12</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.9.0</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -11499,8 +11504,9 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       d:'Impari facendo: ogni tappa ha una breve lezione e una prova pratica, dal ginepro fino al bicchiere. Se vuoi saperne di più, ogni lezione ha il suo «Approfondisci».',
       tappe: [
         { id:'l-basi',   tab:'lezione',    lez:'basi',       e:'🫐', t:'Il ginepro e le tre basi',     c:'#2F7259', d:'cos\u2019è un gin' },
-        { id:'l-ruoli',  tab:'lezione',    lez:'ruoli',      e:'🧭', t:'I sei ruoli',                  c:'#5D6F8C', d:'e da dove partire' },
+        { id:'l-ruoli',  tab:'lezione',    lez:'ruoli',      e:'🧭', t:'I sei ruoli',                  c:'#5D6F8C', d:'e la prova del ruolo' },
         { id:'l-radar',  tab:'lezione',    lez:'radar',      e:'📡', t:'Leggere il radar',             c:'#8A63B0', d:'profilo e potenza' },
+        { id:'l-stili',  tab:'lezione',    lez:'stili',      e:'🎨', t:'Gli stili',                    c:'#B04A6B', d:'come lavorano le botaniche, e da dove partire' },
         { id:'scelta',   tab:'scelta',                       e:'🌿', t:'Le botaniche, ruolo per ruolo', c:'#4C7BB5' },
         { id:'l-estr',   tab:'lezione',    lez:'estrazione', e:'⚗️', t:'Cosa si estrae e a che grado', c:'#2F8F8F', d:'una gradazione per botanica' },
         { id:'grado',    tab:'grado',      lez:'diluizione', e:'🌡️', t:'Gradazione finale',            c:'#C4803A' },
@@ -11851,6 +11857,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     const tp = tappeDi(att()).find(t => t.id === id); if (!tp) return;
     window._tappa = id; showTab(tp.tab); apriSezione(tp);
   }
+  window.vaiTappaId = vaiTappa;
   function vaiMappa(){ window._tappa = null; window._navDaMenu = true; showTab('mappa'); }
   window.vaiMappa = vaiMappa;
 
@@ -11987,6 +11994,18 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     ruoli: { e:'🧭', t:'I sei ruoli delle botaniche',
       html: '<p>In un gin ogni botanica ha un compito. Pensare per ruoli aiuta a non mettere tutto insieme: un gin riuscito si riconosce in due o tre note, non in venti.</p>' +
         '<p>Ogni ruolo ha una <strong>prova del ruolo</strong>: una domanda da farsi immaginando di <em>togliere</em> quella botanica dal gin. Se togliendola il gin perde qualcosa di importante, la botanica sta facendo il suo lavoro; se non cambierebbe niente, è superflua o è nel ruolo sbagliato. Si usa quando scegli le botaniche e di nuovo all\u2019assaggio.</p>' },
+    stili: { e:'🎨', t:'Gli stili: come lavorano le botaniche',
+      html: '<p class="lez-sub">🎨 <strong>Che cos’è uno stile</strong></p>' +
+        '<p>Uno stile è una <strong>ricetta di partenza</strong>. Mette una botanica in ogni ruolo e dà al gin un carattere che si riconosce: agrumato, marino, speziato, floreale. Non è una regola da rispettare: è un modello da cui partire e da cambiare.</p>' +
+        '<p class="lez-sub">🔎 <strong>Come si legge</strong></p>' +
+        '<p>Qui sotto scegli uno stile e trovi tre cose:</p><ul><li>le sue <strong>botaniche, ruolo per ruolo</strong>;</li><li>il <strong>radar della firma</strong>: il profilo dello stile senza ginepro, coriandolo e angelica. Le tre basi ci sono in tutti gli stili, quindi non aiutano a distinguerli;</li><li>quali note le botaniche <strong>rafforzano insieme</strong> e quali porta <strong>una sola</strong>.</li></ul>' +
+        '<p class="lez-sub">🥄 <strong>Le dosi dentro lo stile</strong></p>' +
+        '<p>Nello stile ogni ruolo usa una parte della porzione: Base e Freschezza una porzione intera, Identità l’80 %, Cuore il 70 %, Firma il 30 %. Le botaniche «in tracce» e la Rifinitura ne usano circa il 15 %. Per questo una botanica di firma pesa poco sul radar anche se è molto potente: si sente, ma come un accento.</p>' +
+        '<p class="lez-sub">🔺 <strong>Quando le note si sommano troppo</strong></p>' +
+        '<p>Se molte botaniche insistono sulla stessa nota, quella nota cresce molto: è la <strong>ridondanza</strong>. A volte è voluta (uno stile agrumato vuole l’agrumato forte), altre volte è un eccesso che appiattisce il gin. Stili diversi distribuiscono le note in modo diverso: confrontane due sullo stesso radar.</p>' +
+        '<p class="lez-sub">🧭 <strong>Poi scegli</strong></p>' +
+        '<p>In fondo alla pagina scegli da dove partire: <strong>uno stile come modello</strong>, oppure <strong>le sole tre basi</strong> per costruire un gin tutto tuo. Nella tappa successiva potrai cambiare, togliere o aggiungere ogni botanica.</p>' +
+        approf('ridondanza e complementarietà', "showTab('ridondanza')") },
     radar: { e:'📡', t:'Leggere il radar e la potenza',
       html: '<p class="lez-sub">📡 <strong>Il radar</strong></p>' +
         '<p>Il radar disegna il profilo di una botanica su dieci assi. Quattro sono <strong>gusti</strong>, che si sentono in bocca: dolce, amaro, acido, salino (per i più curiosi c\'è anche un quinto gusto, l\'<button type="button" class="lez-pop" onclick="umamiInfo()">umami ⓘ</button>). Sei sono famiglie di <strong>aromi</strong>, che arrivano al naso: agrumato, floreale, fruttato, erbaceo, resinoso, speziato. Ogni asse va da 0 (la nota non c’è) a 5 (la nota domina).</p>' +
@@ -12135,10 +12154,11 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     let pr = '';
     if (tp.lez === 'basi') pr = '<div class="lez-bots">' + ['Bacche di ginepro', 'Coriandolo', 'Angelica'].map((n, k) => botCard(n, ['#2F7259', '#C4803A', '#8A63B0'][k])).join('') + '</div>';
     if (tp.lez === 'ruoli') pr = renderRuoli();
+    if (tp.lez === 'stili') pr = renderStili();
     if (tp.lez === 'radar') pr = '<div class="lez-cfr"><label>Prima botanica<select id="lez-a"></select></label><label>Seconda botanica<select id="lez-b"></select></label></div><div id="lez-cfr-out"></div>';
     if (tp.lez === 'estrazione') pr = tabellaEstrazione();
     box.innerHTML = '<div class="lez-corpo lez-teoria">' + L.html + '</div>' + (pr ? '<h3 class="lez-prova">✋ Prova</h3>' + pr : '');
-    if (tp.lez === 'ruoli') agganciaRuoli();
+    if (tp.lez === 'stili'){ agganciaRuoli(); agganciaStili(); }
     if (tp.lez === 'radar'){
       assegnaUso();
       const opz = [...new Set(MASTER.filter(d => d.uso === 'comune' && PROFILO8[d.botanica]).map(d => d.botanica))].sort((a, b) => a.localeCompare(b, 'it')).map(n => '<option>' + n + '</option>').join('');
@@ -12154,10 +12174,68 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     const pr = att();
     return '<div class="lez-ruoli">' + RUOLI.map(r => { const [desc, dom] = (RUOLI_DESC[r] || '').split('Domanda guida:');
       return '<div class="lez-ruolo"><b>' + RUOLI_IC[r] + ' ' + r + '</b><span>' + desc.trim() + '</span>' + (dom ? '<i>\ud83e\udd14 <b>La prova del ruolo:</b> ' + dom.trim() + '</i>' : '') + '</div>'; }).join('') + '</div>' +
-      '<h4 class="lez-sub">Da dove parti?</h4><div class="lez-partenza">' +
+      '<p class="cond-hint">Nella prossima lezione vedrai come gli stili mettono una botanica in ogni ruolo; poi sceglierai da dove partire.</p>';
+  }
+  // la scelta di partenza: alla fine della lezione sugli stili, quando si sa che cosa si sceglie
+  function partenzaHtml(){
+    const pr = att();
+    return '<h4 class="lez-sub">🧭 Ora scegli da dove partire</h4><div class="lez-partenza">' +
       '<button type="button" class="lez-part' + (pr && !pr.modello ? ' on' : '') + '" data-m="">🫐 Dalle sole tre basi<small>e scegli tu tutto il resto</small></button>' +
       STYLES.map((s, k) => (s[3] && s[3].length) ? '<button type="button" class="lez-part' + (pr && pr.modello === s[0] ? ' on' : '') + '" data-m="' + k + '" style="--c:' + (STYLE_COLORS[s[0]] || ['#5D6F8C'])[0] + '">' + s[0] + '<small>come modello</small></button>' : '').join('') + '</div>' +
       '<p class="cond-hint">Partire da uno stile carica le sue botaniche come proposta: nella tappa successiva le cambi, le togli o ne aggiungi.</p>';
+  }
+  // ---------- Lezione Gli stili ----------
+  const ROSA = ['#C0583E', '#3E7FD9'];
+  function ricettaStile(k){
+    const st = STYLES[k], righe = [];
+    (st[3] || []).forEach(([ruolo, testo]) => {
+      const r = normRuolo(ruolo);
+      gruppiRuolo(testo).forEach(g => { const c = (g.candidati || []).filter(n => byName[n] || PROFILO8[n]); if (c.length) righe.push({ r, ruoloTxt: ruolo, n: c[0], alt: c.slice(1), tracce: g.tracce }); });
+    });
+    return righe;
+  }
+  function firmaStile(k){
+    const righe = ricettaStile(k).filter(x => !BASE_EQ.includes(x.n) && PROFILO8[x.n] && x.r !== 'Base');
+    const el = righe.map(x => ({ n: x.n, w: x.tracce ? TRACE_FACTOR : (RUOLO_DOSE[x.r] ?? 1) }));
+    const t = el.reduce((a, x) => a + x.w, 0) || 1;
+    const v = ASSI8.map((_, i) => el.reduce((a, x) => a + PROFILO8[x.n][i] * x.w, 0) / t), mx = Math.max.apply(null, v) || 1;
+    return { el, vals: v.map(x => Math.round(x / mx * 50) / 10) };
+  }
+  function schedaStile(k, k2){
+    const st = STYLES[k], righe = ricettaStile(k), f = firmaStile(k), ic = n => (byName[n] || {}).icona || '🌿';
+    const lista = l => l.length > 1 ? l.slice(0, -1).join(', ') + ' e ' + l[l.length - 1] : l[0];
+    let h = '<div class="lez-stile"><div class="lez-st-ricetta">' + RUOLI.map(r => {
+      const qui = righe.filter(x => x.r === r); if (!qui.length) return '';
+      return '<div class="lez-st-riga"><b>' + RUOLI_IC[r] + ' ' + r + '</b><span>' + qui.map(x => ic(x.n) + ' ' + x.n + (x.tracce ? ' <small>(tracce)</small>' : '') + (x.alt.length ? ' <small>o ' + x.alt.join(' o ') + '</small>' : '')).join(' · ') + '</span></div>'; }).join('') + '</div>';
+    const serie = [{ vals: f.vals, color: ROSA[0], label: st[0] }];
+    if (k2 !== '' && k2 != null && +k2 !== k) serie.push({ vals: firmaStile(+k2).vals, color: ROSA[1], label: STYLES[+k2][0] });
+    h += '<p class="lez-sub">📡 <strong>La firma</strong> <small>(senza le tre basi)</small></p>' + radarSVG(serie, 300, {});
+    // note rafforzate insieme e note portate da una sola botanica
+    const insieme = [], sola = [];
+    const piene = f.el.filter(x => x.w > TRACE_FACTOR), accenti = f.el.filter(x => x.w <= TRACE_FACTOR).map(x => x.n);
+    ASSI8.forEach((nm, i) => { const chi = piene.filter(x => PROFILO8[x.n][i] >= 3).map(x => x.n);
+      if (chi.length >= 2) insieme.push('<strong>' + nm.toLowerCase() + '</strong> (' + lista(chi) + ')');
+      else if (chi.length === 1) sola.push('<strong>' + nm.toLowerCase() + '</strong> (' + chi[0] + ')'); });
+    h += '<div class="radar-nota r-giudizio">' +
+      (insieme.length ? '🔺 <strong>Si rafforzano</strong> su ' + lista(insieme) + '. ' : '🔺 Nessuna nota è forte in più di una botanica: ognuna fa la sua parte. ') +
+      (sola.length ? '🧩 <strong>Porta una sola botanica</strong>: ' + lista(sola) + '. ' : '') +
+      (accenti.length ? '✨ <strong>In tracce</strong>, come accento: ' + lista(accenti) + '. ' : '') +
+      '<em>Stima da confermare all’assaggio.</em></div>';
+    return h + '</div>';
+  }
+  function renderStili(){
+    const pr = att(), ok = STYLES.map((s, k) => k).filter(k => STYLES[k][3] && STYLES[k][3].length);
+    const mod = pr && pr.modello ? pr.modello : null;
+    if (window._lezModello !== mod){ window._lezModello = mod; window._lezStile = null; }
+    if (window._lezStile == null || !ok.includes(+window._lezStile)){ const m = pr && pr.modello ? STYLES.findIndex(s => s[0] === pr.modello) : -1; window._lezStile = m >= 0 ? m : ok[0]; }
+    const opz = sel => ok.map(k => '<option value="' + k + '"' + (k === sel ? ' selected' : '') + '>' + STYLES[k][0] + '</option>').join('');
+    return '<div class="lez-cfr"><label>Stile<select id="lez-st">' + opz(+window._lezStile) + '</select></label><label>Confronta con<select id="lez-st2"><option value="">nessuno</option>' + opz(window._lezStile2 === '' || window._lezStile2 == null ? -1 : +window._lezStile2) + '</select></label></div>' +
+      '<div id="lez-st-out">' + schedaStile(+window._lezStile, window._lezStile2) + '</div>' + partenzaHtml();
+  }
+  function agganciaStili(){
+    const a = $('lez-st'), b = $('lez-st2'); if (!a || !b) return;
+    const ag = () => { window._lezStile = +a.value; window._lezStile2 = b.value; $('lez-st-out').innerHTML = schedaStile(+a.value, b.value); };
+    a.onchange = ag; b.onchange = ag;
   }
   const normRuolo = r => /^Identit/.test(r) ? 'Identità' : /^Cuore/.test(r) ? 'Cuore' : /Firma/.test(r) ? 'Firma' : /^Rifinitura/.test(r) ? 'Rifinitura' : /^Freschezza/.test(r) ? 'Freschezza' : 'Base';
   function partiDa(k){
@@ -12215,7 +12293,11 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     const box = $('scelta-box'); if (!box) return;
     if (currentStyleName !== 'Personalizzato'){ const pr = att(); if (pr && pr.via === 'pers'){ partiDa(''); } }
     const sc = ruoliScelti(), quanti = Object.keys(sc).length;
-    let h = '<div class="sc-gin"><div class="sc-gin-t">🍸 Il tuo gin finora · ' + quanti + ' botaniche</div>' + radarGin() + '<div id="sc-avvisi"></div></div>';
+    const prS = att();
+    let h = (prS && prS.via === 'pers' ? '<div class="lez-da">' + (prS.modello
+      ? '🎨 Parti dallo stile <strong>' + prS.modello + '</strong>: le sue botaniche sono già al loro posto. Cambiale, toglile o aggiungine quante vuoi.'
+      : '🫐 Parti dalle sole tre basi: scegli tu una botanica per ogni ruolo.') + ' <a href="#" onclick="event.preventDefault();vaiTappaId(\'l-stili\')">Cambia partenza</a></div>' : '') +
+      '<div class="sc-gin"><div class="sc-gin-t">🍸 Il tuo gin finora · ' + quanti + ' botaniche</div>' + radarGin() + '<div id="sc-avvisi"></div></div>';
     RUOLI.forEach(r => {
       const [desc, dom] = (RUOLI_DESC[r] || '').split('Domanda guida:'), lista = candidati(r), liv = livScelta[r] || 1;
       const vis = lista.filter(d => d.uso === 'comune' || (liv >= 2 && d.uso === 'firma') || liv >= 3 || sc[d.botanica]);
