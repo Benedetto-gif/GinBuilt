@@ -1688,6 +1688,8 @@ footer.note{
 .sc-guida li{line-height:1.45}
 .sc-guida .sc-es{pointer-events:none;display:inline-flex;vertical-align:middle;margin:0 4px 0 0;font-size:13px;padding:4px 10px;min-height:0}
 .sc-guida-i{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.45);color:#fff;font:italic 700 12px/1 Georgia,serif}
+.focus-banner{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:0 0 14px;padding:10px 12px;border-radius:14px;background:var(--tint-info);color:var(--tint-info-ink);font-size:14px}
+.focus-banner .ghost-btn{padding:6px 12px;font-size:13px}
 .sc-promemoria{display:block;font:500 13px/1.3 'Inter',system-ui,sans-serif;color:var(--ink-soft);margin-top:2px}
 .sc-ripasso{margin:4px 0 10px}
 .sc-quota{margin:10px 0 0;font-size:14px}
@@ -2556,7 +2558,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.12.6</div>
+  <div class="splash-ver" id="splash-ver">v2.12.7</div>
 </div>
 
 <div class="wrap">
@@ -5499,7 +5501,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.12.6</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.12.7</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -5678,6 +5680,7 @@ function apriTecnicaAssaggio(){
   showTab('analisi');
   const t = document.getElementById('analisi-procedura'); if (!t) return;
   t.open = true; t.style.scrollMarginTop = '84px';
+  if (window.focusPagina) focusPagina(document.getElementById('panel-analisi'), [t]);
   const v = () => t.scrollIntoView({ behavior: 'smooth', block: 'start' });
   setTimeout(v, 60); setTimeout(v, 420);
 }
@@ -5687,6 +5690,7 @@ window.apriTaratura = function(){
   showTab('analisi');
   const d = document.querySelector('#tf-taratura-palato .tar-box'); if (!d) return;
   d.open = true; d.style.scrollMarginTop = '84px';
+  if (window.focusPagina) focusPagina(document.getElementById('panel-analisi'), [d]);
   const v = () => d.scrollIntoView({ behavior: 'smooth', block: 'start' }); setTimeout(v, 60); setTimeout(v, 420);
 };
 // Apre la pagina del Diario degli infusi (solo il diario, senza le schede delle botaniche).
@@ -9820,6 +9824,35 @@ function ripristina(){
 // ---------- Rimandi alle Nozioni tecniche ----------
 // Le pagine di lavoro tengono solo "Come si usa"; le spiegazioni scientifiche stanno in Nozioni tecniche
 // e si aprono da qui, gia' sul paragrafo giusto.
+// ---------- Approfondimenti: si vede solo la parte che interessa ----------
+// Un rimando da una lezione o da una tappa apre la pagina mostrando solo il riquadro richiesto; il resto si nasconde
+// finché non lo si chiede o si cambia pagina. In cima una riga lo dice, con un solo tasto per vedere tutta la pagina.
+(function(){
+  let attivo = null;   // { pan, nascosti: [...], banner }
+  function ripristina(){
+    if (!attivo) return;
+    attivo.nascosti.forEach(n => { n.hidden = false; });
+    if (attivo.banner) attivo.banner.remove();
+    attivo.pan.classList.remove('in-focus'); attivo = null;
+  }
+  window.focusPagina = (pan, tieni) => {
+    ripristina();
+    tieni = (tieni || []).filter(Boolean); if (!pan || !tieni.length) return;
+    const salva = new Set(); tieni.forEach(n => { let x = n; while (x && x !== pan){ salva.add(x); x = x.parentElement; } });
+    const nascosti = [];
+    salva.forEach(n => { const par = n.parentElement; if (!par) return;
+      [...par.children].forEach(f => { if (!salva.has(f) && !f.hidden && f.tagName !== 'SCRIPT' && !f.classList.contains('page-hero')){ f.hidden = true; nascosti.push(f); } }); });
+    const banner = document.createElement('div'); banner.className = 'focus-banner';
+    banner.innerHTML = '<span>🔬 Stai leggendo solo l’approfondimento.</span><button type="button" class="ghost-btn">Mostra tutta la pagina</button>';
+    banner.querySelector('button').onclick = () => { const primo = tieni[0]; ripristina(); try { primo.scrollIntoView({ block: 'start' }); } catch(e){} };
+    const hero = pan.querySelector(':scope > .page-hero, :scope .storia .page-hero');
+    (hero || pan.firstElementChild).after(banner);
+    pan.classList.add('in-focus');
+    attivo = { pan, nascosti, banner };
+  };
+  // cambiando pagina l'approfondimento si chiude da solo
+  const orig = window.showTab; window.showTab = function(name){ ripristina(); return orig.apply(this, arguments); };
+})();
 document.addEventListener('click', e => {
   const a = e.target.closest && e.target.closest('.noz-link'); if (!a) return;
   e.preventDefault();
@@ -9828,6 +9861,7 @@ document.addEventListener('click', e => {
   const det = [...document.querySelectorAll('#panel-nozioni details')].find(d => { const su = d.querySelector('summary'); return su && su.textContent.trim().toLowerCase().indexOf(t) === 0; });
   if (!det) return;
   let p = det; while (p){ if (p.tagName === 'DETAILS') p.open = true; p = p.parentElement; }
+  focusPagina(document.getElementById('panel-nozioni'), [det]);
   det.style.scrollMarginTop = '84px';
   const v = () => det.scrollIntoView({block: 'start'}); setTimeout(v, 60); setTimeout(v, 520);
 });
@@ -12315,7 +12349,9 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
   // dalla lezione sui ruoli alle definizioni complete in Nozioni: si aprono tutte e sei, insieme al criterio
   window.apriRuoliNozioni = () => { showTab('nozioni');
     const h = [...document.querySelectorAll('#panel-nozioni h3')].find(x => /I ruoli delle botaniche/.test(x.textContent)); if (!h) return;
-    const sez = h.closest('.pg-sez') || h.parentElement; sez.querySelectorAll('details').forEach(d => { if (!/Il ginepro deve superare/.test((d.querySelector('summary') || {}).textContent || '')) d.open = true; });
+    const sez = h.closest('.pg-sez') || h.parentElement, aperti = [h];
+    sez.querySelectorAll('details').forEach(d => { if (!/Il ginepro deve superare/.test((d.querySelector('summary') || {}).textContent || '')){ d.open = true; aperti.push(d); } });
+    if (window.focusPagina) focusPagina(document.getElementById('panel-nozioni'), aperti);
     h.style.scrollMarginTop = '84px'; setTimeout(() => h.scrollIntoView({ block: 'start' }), 60); };
   const approf = (testo, js) => '<p class="lez-approf">🔬 Approfondisci: <a href="#" onclick="event.preventDefault();' + js + '">' + testo + '</a></p>';
   const noz = (testo, chiave) => '<p class="lez-approf">🔬 Approfondisci: <a href="#" class="noz-link" data-noz="' + chiave + '">' + testo + '</a> <span class="cond-hint">(in Nozioni)</span></p>';
