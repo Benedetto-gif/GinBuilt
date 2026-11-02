@@ -2075,12 +2075,14 @@ html details.howto a{color:#5A3E1C;}
 .page-hero .ph-info.on{background:rgba(255,255,255,.32)}
 .mat-libro details.howto-hero{margin-top:0}
 @media (max-width:640px){
-  .mat-libro table.tab-schede,.mat-libro table.tab-schede tbody,.mat-libro table.tab-schede tr,.mat-libro table.tab-schede td{display:block;width:auto}
-  .mat-libro table.tab-schede thead{display:none}
-  .mat-libro table.tab-schede tr{margin:0 0 10px;padding:8px 10px;border-radius:12px;box-shadow:0 0 0 1px var(--line)}
-  .mat-libro table.tab-schede td{border:0;padding:3px 0;text-align:left}
-  .mat-libro table.tab-schede td[data-l]::before{content:attr(data-l);display:block;font:700 10.5px/1.3 'Inter',system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;opacity:.65}
-  .mat-libro table.tab-schede td:first-child{font-weight:700;font-size:15px}
+  table.tab-schede,table.tab-schede tbody,table.tab-schede tr,table.tab-schede td{display:block;width:auto!important;min-width:0!important}
+  table.tab-schede thead,table.tab-schede tr.tab-h{display:none}
+  table.tab-schede tr{margin:0 0 10px;padding:8px 10px;border-radius:12px;box-shadow:0 0 0 1px var(--line)}
+  table.tab-schede td,table.tab-schede td[data-l]::before{border:0;padding:3px 0;text-align:left!important;white-space:normal}
+  table.tab-schede td[data-l]::before{content:attr(data-l);display:block;font:700 10.5px/1.3 'Inter',system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;opacity:.65}
+  table.tab-schede td:first-child{font-weight:700;font-size:15px}
+  table.tab-compatta{font-size:12px}
+  table.tab-compatta th,table.tab-compatta td{padding:3px 3px}
 }
 .cur-q{margin:0;padding:12px 4px 12px 30px;border-top:1px solid var(--line);cursor:pointer;position:relative}
 .cur-q::before{content:'❓';position:absolute;left:2px;top:12px;font-size:16px}
@@ -2549,7 +2551,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.12.2</div>
+  <div class="splash-ver" id="splash-ver">v2.12.3</div>
 </div>
 
 <div class="wrap">
@@ -5501,7 +5503,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.12.2</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.12.3</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -11464,6 +11466,33 @@ if ("serviceWorker" in navigator) {
   if (qIn) qIn.addEventListener('input', () => { filtro.q = qIn.value; disegna(); });
   disegna();
   window.MATRICE_SENTORI = S;
+})();
+</script>
+<script>
+// ---------- Tabelle larghe sul telefono ----------
+// Una tabella che non entra nella larghezza dello schermo diventa una pila di schede (una per riga, con il nome
+// della colonna davanti a ogni voce). Le griglie di punteggi (colonne 0, 1, 2…) restano tabelle, solo più compatte.
+(function(){
+  function sistema(){
+    if (window.innerWidth > 640) return;
+    document.querySelectorAll('table:not(.tab-schede):not(.tab-compatta):not(.mat-griglia)').forEach(t => {
+      if (!t.offsetParent) return;
+      const box = t.parentElement; if (!box) return;
+      if (t.offsetWidth <= box.clientWidth + 2 && t.getBoundingClientRect().right <= window.innerWidth + 1) return;
+      const r0 = t.tHead ? t.tHead.rows[0] : t.rows[0]; if (!r0) return;
+      const th = [...r0.cells].map(c => c.tagName === 'TH' ? c.textContent.trim() : null);
+      if (!th.length || th.some(x => x === null)) return;
+      if (th.filter(x => /^\d$|^$/.test(x)).length >= th.length / 2){ t.classList.add('tab-compatta'); return; }
+      if (!t.tHead) r0.classList.add('tab-h');
+      [...t.rows].forEach(tr => { if (tr === r0) return; [...tr.cells].forEach((td, i) => { if (th[i]) td.dataset.l = th[i]; }); });
+      t.classList.add('tab-schede');
+    });
+  }
+  let tmr = null; const piano = () => { clearTimeout(tmr); tmr = setTimeout(sistema, 150); };
+  new MutationObserver(piano).observe(document.body, { childList: true, subtree: true });
+  document.addEventListener('toggle', piano, true);
+  window.addEventListener('resize', piano);
+  piano();
 })();
 </script>
 <script>
