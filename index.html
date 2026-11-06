@@ -2410,6 +2410,7 @@ details.lez-carta .lez-corpo{padding:0 14px 12px}
 .sc-pot{font-style:normal;font-size:8px;letter-spacing:1px;color:#C0583E}.sc-chip.on .sc-pot{color:#fff}
 .sc-i{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:24px;height:24px;border-radius:50%;border:0;background:#5A4E43;color:#fff;font:italic 800 13px/24px Georgia,serif;padding:0;cursor:pointer}
 .sc-liv{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.sc-liv .sc-chiudi{border-style:dashed}
 .sc-liv button{padding:6px 11px;border-radius:999px;border:1px solid var(--line-strong);background:var(--card);color:var(--ink);font:650 12.5px/1.1 'Inter',system-ui,sans-serif;cursor:pointer}
 .mp-altra{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:12px;row-gap:6px;align-items:center;width:100%;margin:8px 0 6px;padding:12px 14px;border:0;border-radius:16px;
   background:var(--c);color:#fff;text-align:left;font:inherit;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.22)}
@@ -2559,7 +2560,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.12.13</div>
+  <div class="splash-ver" id="splash-ver">v2.12.14</div>
 </div>
 
 <div class="wrap">
@@ -5512,7 +5513,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.12.13</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.12.14</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -12850,7 +12851,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         '<li><span class="sc-chip altrove sc-es">🍋 Limone<em>in Cuore</em></span> <b>sbiadita</b>: è già nel gin con un altro ruolo. Toccala per spostarla qui.</li>' +
         '<li><i class="sc-pot">●●●</i> <b>i pallini</b> sono la potenza: più sono, meno ne serve.</li>' +
         '<li><span class="sc-guida-i">i</span> mostra il radar e le molecole della botanica.</li>' +
-        '<li>✨ e 🔍 aprono altre botaniche: prima le più originali, poi tutte le altre.</li>' +
+        '<li>✨ e 🔍 aprono altre botaniche: prima le più originali, poi tutte le altre. ▲ le richiude (restano quelle già scelte).</li>' +
         '<li>🫐 Il ginepro non si toglie. Il legante si cambia toccandone un altro in Base: angelica, iris o liquirizia.</li>' +
       '</ul></div>';
     RUOLI.forEach(r => {
@@ -12862,7 +12863,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
           return '<span class="sc-chip' + (qui ? ' on' : '') + (altrove ? ' altrove' : '') + (s && s.protetta ? ' fissa' : '') + '" data-n="' + d.botanica.replace(/"/g, '&quot;') + '" data-r="' + r + '" role="button" tabindex="0">' +
             (d.icona || '🌿') + ' ' + d.botanica + '<i class="sc-pot" title="potenza ' + (d.potenza10 ?? '') + '/10">' + '●'.repeat(Math.round((d.potenza10 || 0) / 2)) + '</i>' +
             (altrove ? '<em>in ' + s.ruolo + '</em>' : '') + '<button type="button" class="sc-i" aria-label="Profilo di ' + d.botanica.replace(/"/g, '') + '">i</button></span>'; }).join('') + '</div>' +
-        '<div class="sc-liv">' + (liv < 2 && nF ? '<button type="button" data-r="' + r + '" data-l="2">✨ + le più originali (' + nF + ')</button>' : '') + (liv < 3 && nA ? '<button type="button" data-r="' + r + '" data-l="3">🔍 + tutte le altre (' + nA + ')</button>' : '') + '</div></section>';
+        '<div class="sc-liv">' + (liv < 2 && nF ? '<button type="button" data-r="' + r + '" data-l="2">✨ + le più originali (' + nF + ')</button>' : '') + (liv < 3 && nA ? '<button type="button" data-r="' + r + '" data-l="3">🔍 + tutte le altre (' + nA + ')</button>' : '') + (liv > 1 ? '<button type="button" class="sc-chiudi" data-r="' + r + '" data-l="1">▲ Richiudi: solo le più usate</button>' : '') + '</div></section>';
     });
     h += '<p class="cond-hint">Preferisci vedere tutto in una pagina, con dosi e ruoli da modificare a mano? <a href="#" onclick="event.preventDefault();showTab(\'builder\')">🎯 Apri il Builder completo</a></p>';
     // il risultato delle scelte, in fondo: il radar del gin, l'ascolto e solo le coppie da tenere d'occhio
