@@ -2175,6 +2175,12 @@ details.howto-hero:not([open]){display:none}
 
 /* ===== v2.0 · il percorso a tappe ===== */
 #panel-mappa{max-width:520px;margin:0 auto}
+.mp-ver{display:block;margin:22px auto 6px;padding:8px 14px;border:1px solid var(--line-strong);border-radius:999px;background:var(--card);color:var(--ink-faint);font:700 12.5px/1.2 'Inter',system-ui,sans-serif;cursor:pointer}
+.mp-ver.nuova{background:#2B7BB9;color:#fff;border-color:#2B7BB9;font-size:13.5px}
+#avviso-agg{position:fixed;left:10px;right:10px;bottom:14px;z-index:9999;display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:14px;background:#2B7BB9;color:#fff;box-shadow:0 6px 20px rgba(0,0,0,.3);font:600 14px/1.3 'Inter',system-ui,sans-serif}
+#avviso-agg span{flex:1}
+#avviso-agg button{border:0;border-radius:999px;padding:8px 12px;font:800 13.5px/1 'Inter',system-ui,sans-serif;background:#fff;color:#2B7BB9;cursor:pointer}
+#avviso-agg .agg-x{background:transparent;color:#fff;padding:6px 8px}
 .mp-barra{display:flex;gap:8px;justify-content:space-between;align-items:center;margin:2px 0 8px}
 .mp-prog,.mp-diario{display:inline-flex;align-items:center;gap:6px;padding:8px 13px;border-radius:999px;border:0;cursor:pointer;
   font:700 13px/1.1 'Inter',system-ui,sans-serif;color:#fff;box-shadow:0 3px 10px rgba(0,0,0,.2)}
@@ -2560,7 +2566,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.12.14</div>
+  <div class="splash-ver" id="splash-ver">v2.12.15</div>
 </div>
 
 <div class="wrap">
@@ -5513,7 +5519,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.12.14</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.12.15</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -9760,6 +9766,7 @@ window.apriStrumenti = function(){
       '<button type="button" class="str-tile" id="str-cond" style="--h:#2E9D5B"><span>\ud83d\udce4</span><b>Condividi l\u2019app</b><small>manda GinBuilder a un amico</small></button>' +
       '<button type="button" class="str-tile" id="str-luce" style="--h:#5D6F8C"><span>\ud83c\udf17</span><b>Luce e colori</b><small>sfondo chiaro o scuro</small></button>' +
       '<button type="button" class="str-tile" id="str-av" style="--h:#8A63B0"><span>\ud83e\uddf0</span><b>Strumenti avanzati</b><small>' + (av ? 'accesi: tocca per spegnerli' : 'spenti: tocca per accenderli') + '</small></button>' +
+    '<button type="button" class="str-tile str-wide" data-aggiorna style="--h:#2B7BB9"><span>\ud83d\udd04</span><b>Aggiorna l\u2019app</b><small>' + (window.testoAggiorna ? testoAggiorna() : 'tocca per controllare') + '</small></button>' +
     '<button type="button" class="str-tile str-wide" id="str-esci" style="--h:#7A867F"><span>\u23cf\ufe0f</span><b>Ho finito · esci</b><small>chiude il lavoro in corso e torna alla pagina iniziale</small></button>' +
     '</div>' +
     '<div class="home-dati" id="home-dati"></div>' +
@@ -10689,6 +10696,60 @@ document.getElementById('print-builder').addEventListener('click', () => {
   stampaHtml(printArea.innerHTML, 'Gin Builder — ' + styleName);
 });
 
+</script>
+<script>
+/* ----- Aggiorna l'app (come in Che cucino?) -----
+   VERSIONE_APP deve coincidere con VERSIONE in service-worker.js, NOME_VERSIONE con il suo NOME_VERSIONE. */
+var VERSIONE_APP = 'ginbuilder-v274', NOME_VERSIONE = '2.12.15';
+var verOnline = '', verOnlineNome = '';
+function numVer(x){ return parseInt(String(x).replace(/\D/g, '')) || 0; }
+function etichettaVer(v){ return v === VERSIONE_APP ? 'v' + NOME_VERSIONE : (v && v === verOnline && verOnlineNome) ? 'v' + verOnlineNome : (v || ''); }
+function cèNuova(){ return verOnline && numVer(verOnline) > numVer(VERSIONE_APP); }
+function testoAggiorna(){
+  if (cèNuova()) return 'c’è la ' + etichettaVer(verOnline) + ', hai la ' + etichettaVer(VERSIONE_APP);
+  if (verOnline) return '✅ hai l’ultima versione, ' + etichettaVer(VERSIONE_APP);
+  return 'hai la ' + etichettaVer(VERSIONE_APP) + ': tocca per controllare';
+}
+function testoVerMappa(){
+  if (cèNuova()) return '🔄 ' + etichettaVer(VERSIONE_APP) + ' → ' + etichettaVer(verOnline) + ': tocca per aggiornare';
+  if (verOnline) return '✅ GinBuilder ' + etichettaVer(VERSIONE_APP);
+  return 'GinBuilder ' + etichettaVer(VERSIONE_APP) + ' · 🔄 controlla aggiornamenti';
+}
+async function versioneOnline(){
+  const t = await (await fetch('service-worker.js?n=' + Date.now(), { cache: 'no-store' })).text();
+  const m = t.match(/ginbuilder-v(\d+)/), k = t.match(/NOME_VERSIONE\s*=\s*'([\d.]+)'/);
+  verOnline = m ? 'ginbuilder-v' + m[1] : ''; verOnlineNome = k ? k[1] : '';
+  return verOnline;
+}
+function segnaVerMappa(){ const v = document.getElementById('mp-ver'); if (v){ v.textContent = testoVerMappa(); v.classList.toggle('nuova', !!cèNuova()); } }
+async function aggiornaApp(btn){
+  const scrivi = t => { if (btn){ const b = btn.querySelector('small') || btn; b.textContent = t; } };
+  scrivi('⏳ Controllo…');
+  try { await versioneOnline(); }
+  catch(e){ scrivi(testoAggiorna()); alert('Per aggiornare serve la connessione a internet.'); return; }
+  segnaVerMappa();
+  if (!cèNuova() && !confirm('Hai già l’ultima versione (' + etichettaVer(VERSIONE_APP) + ').\nRicarico comunque l’app da capo? I tuoi dati restano dove sono.')){ scrivi(testoAggiorna()); return; }
+  scrivi('⏳ Scarico la versione nuova…');
+  // i dati (ricette, schede, diario) stanno nella memoria del browser, non nella cache dei file: non vengono toccati
+  const file = ['./', './index.html', './manuale.html', './manifest.json', './service-worker.js'];
+  await Promise.all(file.map(f => fetch(f, { cache: 'reload' }).catch(() => {})));
+  try { const regs = await navigator.serviceWorker.getRegistrations(); await Promise.all(regs.map(r => r.unregister())); } catch(e){}
+  try { const ks = await caches.keys(); await Promise.all(ks.map(k => caches.delete(k))); } catch(e){}
+  location.replace(location.pathname + '?agg=' + Date.now());
+}
+if (/[?&]agg=/.test(location.search)){ try { history.replaceState(null, '', location.pathname + location.hash); } catch(e){} }
+document.addEventListener('click', e => { const b = e.target.closest('[data-aggiorna]'); if (!b) return; e.preventDefault(); e.stopPropagation(); aggiornaApp(b); }, true);
+// all'apertura controllo in silenzio: se online c'è una versione nuova compare un avviso col tasto
+window.addEventListener('load', () => setTimeout(async () => {
+  if (!navigator.onLine) return;
+  try {
+    await versioneOnline(); segnaVerMappa();
+    if (!cèNuova() || document.getElementById('avviso-agg')) return;
+    const d = document.createElement('div'); d.id = 'avviso-agg';
+    d.innerHTML = '<span>✨ È pronta la ' + etichettaVer(verOnline) + ' (tu hai la ' + etichettaVer(VERSIONE_APP) + ')</span><button type="button" data-aggiorna>🔄 Aggiorna</button><button type="button" class="agg-x" aria-label="Più tardi" onclick="this.parentNode.remove()">✕</button>';
+    document.body.appendChild(d);
+  } catch(e){}
+}, 2500));
 </script>
 <script>
 if ("serviceWorker" in navigator) {
@@ -12335,6 +12396,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     // la teoria appartiene solo alla strada del gin personalizzato: con il Gin no problem! si gioca, non si studia
     if (pr.via === 'pers') h += '<div class="mp-sez"><h3>📚 Capire perché</h3><p>La parte teorica, da consultare quando vuoi: le botaniche e la loro potenza, cosa si estrae e a che gradazione, i ruoli, le ridondanze, le leggi.</p>' +
         '<div class="mp-grid">' + tessere(CAPIRE, 2) + '</div></div>';
+    h += '<button type="button" class="mp-ver" id="mp-ver" data-aggiorna>' + (window.testoVerMappa ? testoVerMappa() : '\ud83d\udd04 Controlla aggiornamenti') + '</button>';
     box.innerHTML = h;
     try { if (window.puntoStrumenti) window.puntoStrumenti(); } catch(e){}
     box.querySelectorAll('.mp-st').forEach(b => b.addEventListener('click', () => vaiTappa(b.dataset.id)));

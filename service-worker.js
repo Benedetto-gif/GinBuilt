@@ -8,7 +8,9 @@
  * l'app continua comunque a funzionare senza connessione.
  */
 
-const VERSIONE = 'ginbuilder-v273';
+const VERSIONE = 'ginbuilder-v274';
+// il nome della versione che vede l'utente: deve coincidere con NOME_VERSIONE in index.html
+const NOME_VERSIONE = '2.12.15';
 
 const FILE = [
   './',
@@ -48,7 +50,8 @@ self.addEventListener('fetch', (e) => {
       // il manuale ha la sua pagina: non deve prendere il posto di index.html nella cache
       const chiave = new URL(req.url).pathname.endsWith('/manuale.html') ? './manuale.html' : './index.html';
       try {
-        const risposta = await fetch(req);
+        // no-cache: chiede sempre al server se la pagina è cambiata (GitHub Pages la tiene 10 minuti nella cache del telefono)
+        const risposta = await fetch(req.url, { cache: 'no-cache', credentials: 'same-origin' });
         const cache = await caches.open(VERSIONE);
         cache.put(chiave, risposta.clone());
         return risposta;
