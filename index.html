@@ -2566,7 +2566,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.12.15</div>
+  <div class="splash-ver" id="splash-ver">v2.12.16</div>
 </div>
 
 <div class="wrap">
@@ -5519,7 +5519,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.12.15</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.12.16</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -10700,7 +10700,7 @@ document.getElementById('print-builder').addEventListener('click', () => {
 <script>
 /* ----- Aggiorna l'app (come in Che cucino?) -----
    VERSIONE_APP deve coincidere con VERSIONE in service-worker.js, NOME_VERSIONE con il suo NOME_VERSIONE. */
-var VERSIONE_APP = 'ginbuilder-v274', NOME_VERSIONE = '2.12.15';
+var VERSIONE_APP = 'ginbuilder-v275', NOME_VERSIONE = '2.12.16';
 var verOnline = '', verOnlineNome = '';
 function numVer(x){ return parseInt(String(x).replace(/\D/g, '')) || 0; }
 function etichettaVer(v){ return v === VERSIONE_APP ? 'v' + NOME_VERSIONE : (v && v === verOnline && verOnlineNome) ? 'v' + verOnlineNome : (v || ''); }
@@ -12904,7 +12904,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     const prS = att();
     let h = (prS && prS.via === 'pers' ? '<div class="lez-da">' + (prS.modello
       ? '🎨 Parti dallo stile <strong>' + prS.modello + '</strong>: le sue botaniche sono già al loro posto. Cambiale, toglile o aggiungine quante vuoi.'
-      : '🫐 Parti dalle sole basi: scegli tu una botanica per ogni ruolo. In Base puoi cambiare il legante.') + ' <a href="#" onclick="event.preventDefault();vaiTappaId(\'l-stili\')">Cambia partenza</a></div>' : '') +
+      : '🫐 Parti dalle sole basi: scegli tu una botanica per ogni ruolo. In Base puoi aggiungere o cambiare il legante.') + ' <a href="#" onclick="event.preventDefault();vaiTappaId(\'l-stili\')">Cambia partenza</a></div>' : '') +
       '<p class="cond-hint sc-ripasso">I sei ruoli li hai visti nella <a href="#" onclick="event.preventDefault();vaiTappaId(\'l-ruoli\')">lezione 2</a>: qui sotto, per ciascuno, solo un promemoria e le botaniche da scegliere.</p>' +
       // la guida per leggere le schede, prima delle schede
       '<div class="sc-guida"><div class="sc-guida-t">📖 Come si leggono le botaniche</div><ul>' +
@@ -12914,7 +12914,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         '<li><i class="sc-pot">●●●</i> <b>i pallini</b> sono la potenza: più sono, meno ne serve.</li>' +
         '<li><span class="sc-guida-i">i</span> mostra il radar e le molecole della botanica.</li>' +
         '<li>✨ e 🔍 aprono altre botaniche: prima le più originali, poi tutte le altre. ▲ le richiude (restano quelle già scelte).</li>' +
-        '<li>🫐 Il ginepro non si toglie. Il legante si cambia toccandone un altro in Base: angelica, iris o liquirizia.</li>' +
+        '<li>🫐 Il ginepro non si toglie. I leganti (angelica, iris, liquirizia) si possono anche sommare, come nel Tanqueray: ne serve almeno uno.</li>' +
       '</ul></div>';
     RUOLI.forEach(r => {
       const [desc, dom] = (RUOLI_DESC[r] || '').split('Domanda guida:'), lista = candidati(r), liv = livScelta[r] || 1;
@@ -12949,10 +12949,12 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       if (e.target.closest('.sc-i')){ e.stopPropagation(); const d = byName[n] || {};
         mostraAvviso((d.icona || '🌿') + ' ' + n, '<p>' + (d.profilo || '') + ' · potenza ' + (d.potenza10 ?? '—') + '/10</p>' + mini(n, '#2F7259', 300) + (MOLECOLE[n] ? '<p class="cond-hint">' + MOLECOLE[n] + '</p>' : ''), '', null); return; }
       const s = ruoliScelti()[n];
-      if (s && s.protetta){ mostraAvviso(n, '<p>' + (n === 'Bacche di ginepro' ? 'Senza ginepro non è gin: è l’unica botanica che non si toglie.' : 'È il legante del tuo gin e ne serve sempre uno. Per cambiarlo tocca un altro legante: angelica, iris o liquirizia.') + '</p>', '', null); return; }
-      const legAtt = Object.keys(ruoliScelti()).find(x => LEGANTI.includes(x) && ruoliScelti()[x].protetta);
-      if (!s && r === 'Base' && LEGANTI.includes(n) && legAtt){   // un legante prende il posto dell'altro
-        cambiaLegante(n); renderSummary(); const y = window.scrollY; renderScelta(); window.scrollTo(0, y); return; }
+      // i leganti si possono sommare (es. Tanqueray: angelica e liquirizia); ne serve almeno uno
+      if (s && s.protetta && LEGANTI.includes(n) && r === 'Base'){
+        const sc0 = ruoliScelti(), altro = LEGANTI.find(x => x !== n && sc0[x] && sc0[x].ruolo === 'Base');
+        if (altro){ cambiaLegante(altro); renderSummary(); const y = window.scrollY; renderScelta(); window.scrollTo(0, y); return; }   // resta l'altro legante
+      }
+      if (s && s.protetta){ mostraAvviso(n, '<p>' + (n === 'Bacche di ginepro' ? 'Senza ginepro non è gin: è l’unica botanica che non si toglie.' : 'È l’unico legante del tuo gin e ne serve sempre uno. Per cambiarlo, prima aggiungi un altro legante (angelica, iris o liquirizia), poi togli questo.') + '</p>', '', null); return; }
       if (s && FONDAMENTALI[n] && s.ruolo === r){   // il coriandolo si toglie, dopo un avviso che dice che cosa si perde
         chiediRimozione(n, () => { const row = [...roleList.querySelectorAll('.role-row-custom')].find(x => (x.querySelector('select:not(.role-label-input)') || {}).value === n);
           if (row) row.remove(); renderSummary(); const y = window.scrollY; renderScelta(); window.scrollTo(0, y); }); return; }
