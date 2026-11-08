@@ -10747,6 +10747,8 @@ document.getElementById('print-builder').addEventListener('click', () => {
 /* ----- Aggiorna l'app (come in Che cucino?) -----
    VERSIONE_APP deve coincidere con VERSIONE in service-worker.js, NOME_VERSIONE con il suo NOME_VERSIONE. */
 var VERSIONE_APP = 'ginbuilder-v281', NOME_VERSIONE = '2.14';
+// un solo punto da cambiare: animazione iniziale e menu leggono il numero da qui
+['splash-ver','menu-ver'].forEach(function(id){ var e = document.getElementById(id); if (e) e.textContent = 'v' + NOME_VERSIONE; });
 var verOnline = '', verOnlineNome = '';
 function numVer(x){ return parseInt(String(x).replace(/\D/g, '')) || 0; }
 function etichettaVer(v){ return v === VERSIONE_APP ? 'v' + NOME_VERSIONE : (v && v === verOnline && verOnlineNome) ? 'v' + verOnlineNome : (v || ''); }
