@@ -2589,7 +2589,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.15</div>
+  <div class="splash-ver" id="splash-ver">v2.15.1</div>
 </div>
 
 <div class="wrap">
@@ -3544,7 +3544,7 @@ html.in-mappa #nav-indietro{display:none!important}
       <summary>Vademecum: i ruoli delle botaniche</summary>
       <div class="howto-body">
         <p>In uno stile personalizzato ogni botanica ha un compito, con gli stessi sei ruoli degli stili preordinati: lo scegli dal menù accanto alla botanica. <button type="button" class="ghost-btn" onclick="document.getElementById('ruoli-def-btn').click()">📖 Definizioni dei ruoli</button></p>
-        <p><strong>Il ruolo cambia la quantità.</strong> Ogni ruolo usa una frazione della dose di riferimento della Libreria: <em>Base</em> e <em>Freschezza</em> 100%, <em>Identità</em> 80%, <em>Cuore</em> 70%, <em>Firma</em> 30%, <em>Rifinitura</em> 15% (tracce). Sotto ogni botanica vedi la percentuale applicata; i grammi li trovi nella pagina Infusi. La quota di ginepro, la scheda di prova e la stampa usano questi stessi pesi. Sono valori di partenza, da correggere con gli assaggi.</p>
+        <p><strong>Il ruolo cambia la quantità.</strong> Ogni infuso si prepara sempre a dose piena; il ruolo decide quanta parte di gin occupa: <em>Base</em> e <em>Freschezza</em> una parte intera, <em>Identità</em> l’80%, <em>Cuore</em> il 70%, <em>Firma</em> il 30%, <em>Rifinitura</em> il 15% (tracce). Il ginepro parte comunque da metà del gin. Sotto ogni botanica vedi la percentuale applicata. La quota di ginepro, la scheda di prova e la stampa usano questi stessi pesi. Sono valori di partenza, da correggere con gli assaggi.</p>
         <p><strong>Quota di ginepro.</strong> Verde da 45% in su, arancio tra 30% e 44%, rossa sotto il 30%: soglie pratiche di lavoro, non di legge. <a href="#" class="noz-link" data-noz="Il ginepro deve superare">Perché il 50% non è una regola</a>.</p>
         <p>Sotto la combinazione compaiono i semafori: <strong>rosso</strong> ridondanza, <strong>arancio</strong> rischio se messe insieme (o da dosare), <strong>verde</strong> complementari.</p>
       </div>
@@ -5547,7 +5547,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.15</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.15.1</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -10742,10 +10742,10 @@ document.getElementById('print-builder').addEventListener('click', () => {
     const gradP = est ? est.a[0] : undefined;   // dose e tempo alla gradazione consigliata, come nella Libreria
     const baseAdj = (base !== undefined && gradP !== undefined) ? (adjustedDose(base, gradP, REF_TEMP, bd?.categoria) ?? base) : base;
     const tempoP = gradP !== undefined ? (adjustedTempo(baseTempoP, gradP, REF_TEMP, bd?.categoria) || baseTempoP) : baseTempoP;
-    const dose = baseAdj !== undefined ? Math.round(pesoRiga(r.sel, baseAdj) * 1000) / 1000 : '—';
+    const dose = baseAdj !== undefined ? Math.round(baseAdj * 1000) / 1000 : '—';   // l'infuso si prepara sempre a dose piena: il ruolo agisce sulla quota nel gin
     const fr = r.sel ? fattoreRuolo(r.sel) : 1;
     const grad = est ? estAbvTxt(est.a) : '—';
-    return `<tr><td>${r.ruolo}</td><td>${r.botanica}${r.trace ? ' <em>(tracce)</em>' : ''}</td><td>${dose} g${(!r.trace && fr !== 1) ? ' <em>(' + Math.round(fr * 100) + '% della dose)</em>' : ''}</td><td>${tempoP || '—'}</td><td>${grad}</td></tr>`;
+    return `<tr><td>${r.ruolo}</td><td>${r.botanica}${r.trace ? ' <em>(tracce)</em>' : ''}</td><td>${dose} g${(r.trace || fr !== 1) ? ' <em>(quota ' + Math.round((r.trace ? TRACE_FACTOR : fr) * 100) + '%)</em>' : ''}</td><td>${tempoP || '—'}</td><td>${grad}</td></tr>`;
   }).join('');
   printArea.innerHTML = `
     <h2>Gin Builder — ${styleName}</h2>
@@ -10765,7 +10765,7 @@ document.getElementById('print-builder').addEventListener('click', () => {
 <script>
 /* ----- Aggiorna l'app (come in Che cucino?) -----
    VERSIONE_APP deve coincidere con VERSIONE in service-worker.js, NOME_VERSIONE con il suo NOME_VERSIONE. */
-var VERSIONE_APP = 'ginbuilder-v286', NOME_VERSIONE = '2.15';
+var VERSIONE_APP = 'ginbuilder-v287', NOME_VERSIONE = '2.15.1';
 // un solo punto da cambiare: animazione iniziale e menu leggono il numero da qui
 ['splash-ver','menu-ver'].forEach(function(id){ var e = document.getElementById(id); if (e) e.textContent = 'v' + NOME_VERSIONE; });
 var verOnline = '', verOnlineNome = '';
@@ -12565,7 +12565,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         '<p class="lez-sub">🔎 <strong>Come si legge</strong></p>' +
         '<p>Qui sotto scegli uno stile e trovi tre cose:</p><ul><li>le sue <strong>botaniche, ruolo per ruolo</strong>;</li><li>il <strong>radar di che cosa aggiunge lo stile</strong>: mostra solo le botaniche messe accanto alle basi. Ginepro, legante e coriandolo ci sono in tutti gli stili, quindi non aiutano a distinguerli;</li><li>quali note le botaniche <strong>rafforzano insieme</strong> e quali porta <strong>una sola</strong>.</li></ul>' +
         '<p class="lez-sub">🥄 <strong>Le dosi dentro lo stile</strong></p>' +
-        '<p>Nello stile ogni ruolo usa una parte della porzione: Base e Freschezza una porzione intera, Identità l’80 %, Cuore il 70 %, Firma il 30 %. Le botaniche «in tracce» e la Rifinitura ne usano circa il 15 %. Per questo una botanica di firma pesa poco sul radar anche se è molto potente: si sente, ma come un accento.</p>' +
+        '<p>Ogni infuso si prepara sempre a dose piena. Il ruolo decide quanta parte di gin occupa quell’infuso: Base e Freschezza una parte intera, Identità l’80 %, Cuore il 70 %, Firma il 30 %. Le botaniche «in tracce» e la Rifinitura circa il 15 %. Il ginepro, che deve prevalere, parte da metà del gin. Per questo una botanica di firma pesa poco sul radar anche se è molto potente: si sente, ma come un accento.</p>' +
         '<p class="lez-sub">🔺 <strong>Quando le note si sommano troppo</strong></p>' +
         '<p>Se molte botaniche insistono sulla stessa nota, quella nota cresce molto: è la <strong>ridondanza</strong>. A volte è voluta (uno stile agrumato vuole l’agrumato forte), altre volte è un eccesso che appiattisce il gin. Stili diversi distribuiscono le note in modo diverso: confrontane due sullo stesso radar.</p>' +
         '<p class="lez-sub">🧭 <strong>Poi scegli</strong></p>' +
