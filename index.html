@@ -2589,7 +2589,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.15.4</div>
+  <div class="splash-ver" id="splash-ver">v2.15.5</div>
 </div>
 
 <div class="wrap">
@@ -3616,10 +3616,10 @@ html.in-mappa #nav-indietro{display:none!important}
     </div>
     <div class="pp-cursori" id="pp-cursori"></div>
     <div class="pp-totali" id="pp-totali"></div>
-    <div class="pp-azioni" style="margin-top:12px;">
+    <div class="pp-azioni" style="display:none!important">
       <button type="button" class="primary-btn" id="pp-banco">🧪 Invia al banco di prova con queste quote</button>
     </div>
-    <p class="cond-hint" id="pp-banco-dopo" hidden>🧪 Queste quote restano salvate. Le porterai al banco di prova nella tappa «Assaggio e correzioni», quando gli infusi saranno pronti.</p>
+    <p class="cond-hint" id="pp-banco-dopo">🧪 Queste quote restano salvate. Le porterai al banco di prova nella tappa «Assaggio e correzioni», quando gli infusi saranno pronti.</p>
   </section>
 
   <!-- INFUSI -->
@@ -5547,7 +5547,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.15.4</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.15.5</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -7480,7 +7480,8 @@ function renderMixSummary(){
     // Ogni infuso filtrato si porta da solo alla gradazione finale prima di miscelarlo.
     let conc = 0, acq = 0; const sotto = [];
     rows.forEach(r => { const d = byName[r.botanica], e = d ? estPer(d) : null, a = e ? (e.a[0] + e.a[1]) / 2 : abv, ml = vol * r.perc / 100;
-      if (a < abv){ sotto.push(r.botanica); conc += ml; } else { conc += ml * abv / a; acq += ml - ml * abv / a; } });
+      if (a < abv){ sotto.push(r.botanica); conc += ml; }
+      else if (ml > 0){ const D = diluizione(abv, ml, a); conc += D.alcMl; acq += D.acquaMl; } });   // a peso: tiene conto della contrazione
     html += `<div class="mix-line"><span>Per portare gli infusi a ${nf(abv,1)}% prima di miscelarli</span><strong>≈ ${nf(conc,1)} ml di infusi filtrati + ${nf(acq,1)} ml d'acqua</strong></div>`;
     if (sotto.length) html += `<div class="mix-warn">${sotto.join(', ')}: infuso consigliato sotto ${nf(abv,1)}%, non si può diluire.</div>`;
   }
@@ -10696,7 +10697,11 @@ function renderDosiGin(selects){
     $('tf-name').value = (st.stile || 'Ricetta') + ' — proporzioni';
     tfStyleSelect.value = st.stile || '';
     tfBotaniche.innerHTML = '';
+    const vP = parseFloat(document.getElementById('dosi-vol').value), aP = parseFloat(String(document.getElementById('dosi-abv').value).replace(',', '.'));
+    if (vP > 0) tfVolumeInput.value = vP;
+    if (aP >= 37.5) tfAbvInput.value = aP;
     st.righe.forEach((r, k) => addBotRow({ botanica: r.n, perc: Math.round(st.q[k] * 10) / 10 }));
+    activeSyncFns.forEach(fn => fn());
     renderMixSummary();
   });
   // aprendo la pagina: se la ricetta del Builder e' cambiata si ricarica, altrimenti restano le quote scelte
@@ -10708,9 +10713,7 @@ function renderDosiGin(selects){
       const R = dosiRicetta(sel), firma = R ? R.righe.map(x => x.n).join('|') : '';
       if (firma !== st.firma || currentStyleName !== st.stile) carica(); else aggiorna();
       // nella tappa delle quote gli infusi non ci sono ancora: il banco di prova arriva con l'assaggio
-      const nascondi = () => { const b = document.querySelector('#panel-proporzioni > .tappa-bar'), inQ = !!b && !b.hidden;
-        document.querySelector('#panel-proporzioni .pp-azioni').hidden = inQ; $('pp-banco-dopo').hidden = !inQ; };
-      nascondi(); setTimeout(nascondi, 0);
+      // il tasto del banco non compare mai qui: gli infusi non ci sono ancora, il banco arriva con l'assaggio
       ppTop();
     }
     return r;
@@ -10793,7 +10796,7 @@ document.getElementById('print-builder').addEventListener('click', () => {
 <script>
 /* ----- Aggiorna l'app (come in Che cucino?) -----
    VERSIONE_APP deve coincidere con VERSIONE in service-worker.js, NOME_VERSIONE con il suo NOME_VERSIONE. */
-var VERSIONE_APP = 'ginbuilder-v290', NOME_VERSIONE = '2.15.4';
+var VERSIONE_APP = 'ginbuilder-v291', NOME_VERSIONE = '2.15.5';
 // un solo punto da cambiare: animazione iniziale e menu leggono il numero da qui
 ['splash-ver','menu-ver'].forEach(function(id){ var e = document.getElementById(id); if (e) e.textContent = 'v' + NOME_VERSIONE; });
 var verOnline = '', verOnlineNome = '';
