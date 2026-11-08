@@ -2589,7 +2589,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.14.3</div>
+  <div class="splash-ver" id="splash-ver">v2.14.4</div>
 </div>
 
 <div class="wrap">
@@ -5547,7 +5547,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.14.3</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.14.4</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -10755,7 +10755,7 @@ document.getElementById('print-builder').addEventListener('click', () => {
 <script>
 /* ----- Aggiorna l'app (come in Che cucino?) -----
    VERSIONE_APP deve coincidere con VERSIONE in service-worker.js, NOME_VERSIONE con il suo NOME_VERSIONE. */
-var VERSIONE_APP = 'ginbuilder-v284', NOME_VERSIONE = '2.14.3';
+var VERSIONE_APP = 'ginbuilder-v285', NOME_VERSIONE = '2.14.4';
 // un solo punto da cambiare: animazione iniziale e menu leggono il numero da qui
 ['splash-ver','menu-ver'].forEach(function(id){ var e = document.getElementById(id); if (e) e.textContent = 'v' + NOME_VERSIONE; });
 var verOnline = '', verOnlineNome = '';
@@ -12795,8 +12795,9 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
   function ricettaGin(nome){
     const g = GIN_RUOLI[nome]; if (!g) return null;
     const righe = Object.keys(g.r).filter(n => byName[n]).map(n => { const r = g.r[n], d = doseLibreria(n) ?? byName[n].dose ?? 1; return { n, r, w: d * (RUOLO_DOSE[r] ?? 1), porz: RUOLO_DOSE[r] ?? 1 }; });
-    const tot = righe.reduce((a, x) => a + x.w, 0) || 1;
-    righe.forEach(x => x.pc = x.w / tot * 100);
+    // pc = quota di infuso, come nella tappa delle quote; pw = parte sul peso delle botaniche
+    const tot = righe.reduce((a, x) => a + x.porz, 0) || 1, totW = righe.reduce((a, x) => a + x.w, 0) || 1;
+    righe.forEach(x => { x.pc = x.porz / tot * 100; x.pw = x.w / totW * 100; });
     righe.sort((a, b) => RUOLI.indexOf(a.r) - RUOLI.indexOf(b.r) || b.pc - a.pc);
     return righe;
   }
@@ -12805,7 +12806,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     if (!righe || !righe.length) return '';
     const fmt = v => v < 1 ? '<1%' : Math.round(v) + '%';
     let h = '<p class="cond-hint">' + GIN_RUOLI[nome].p + '</p>' + righe.map(x => '<div class="gc-r"><span class="gc-ru">' + RUOLI_IC[x.r] + ' ' + x.r + '</span><span>' + ic(x.n) + ' ' + x.n + '</span><span class="gc-pc">' + fmt(x.pc) + '</span><span class="gc-bar" style="width:' + Math.max(1, Math.round(x.pc)) + '%"></span></div>').join('');
-    const gq = (righe.find(x => x.n === 'Bacche di ginepro') || {}).pc || 0, cl = gq >= 45 ? 'v' : gq >= 30 ? 'a' : 'r';
+    const gq = (righe.find(x => x.n === 'Bacche di ginepro') || {}).pw || 0, cl = gq >= 45 ? 'v' : gq >= 30 ? 'a' : 'r';
     h += '<p class="gc-gq">🫐 Quota di ginepro: <b class="' + cl + '">' + Math.round(gq) + '%</b> del peso delle botaniche.</p>';
     const el = righe.filter(x => PROFILO8[x.n]).map(x => ({ n: x.n, w: x.porz }));
     if (el.length){
@@ -12827,7 +12828,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     if (!aperto) return h;
     const nomi = Object.keys(GIN_RUOLI).filter(n => GIN_LISTE[n] && GIN_LISTE[n].b.length);
     h += '<div class="gc-box"><p>Questi sono i gin in commercio di cui conosciamo le <strong>botaniche</strong>. I produttori però non dicono <strong>quanto</strong> ne mettono: le dosi sono un segreto di fabbrica.</p>' +
-      '<p>Per ognuno trovi un’<strong>ipotesi</strong>: a ogni botanica è dato il ruolo che sembra avere, guardando il carattere noto del gin e la potenza della botanica. Dal ruolo vengono le percentuali, con le stesse regole del Builder. La percentuale è la parte di quella botanica sul peso di tutte le botaniche.</p>' +
+      '<p>Per ognuno trovi un’<strong>ipotesi</strong>: a ogni botanica è dato il ruolo che sembra avere, guardando il carattere noto del gin e la potenza della botanica. Dal ruolo vengono le percentuali: sono le <strong>quote di infuso</strong>, cioè la parte di gin occupata dall’infuso di quella botanica, le stesse che ritrovi nella tappa delle quote se parti da quel gin.</p>' +
       '<p class="cond-hint">È una ricostruzione per imparare, non la ricetta vera: se parti da un gin, l’assaggio dirà quanto ci si avvicina.</p>' +
       nomi.map(n => '<details class="gc-gin" data-gin="' + n.replace(/"/g, '&quot;') + '"' + (window._lezGinOpen === n ? ' open' : '') + '><summary>🥃 ' + n + ' <small>· ' + GIN_LISTE[n].b.length + ' botaniche</small></summary><div class="gc-body">' + (window._lezGinOpen === n ? schedaGin(n) : '') + '</div></details>').join('') + '</div>';
     return h;
@@ -13091,6 +13092,8 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       '</ul></div>';
     RUOLI.forEach(r => {
       const [desc, dom] = (RUOLI_DESC[r] || '').split('Domanda guida:'), lista = candidati(r), liv = livScelta[r] || 1;
+      // le botaniche messe in questo ruolo compaiono sempre qui, anche se di solito ne hanno un altro (es. liquirizia in Rifinitura)
+      Object.keys(sc).forEach(n => { if (sc[n].ruolo === r && byName[n] && !lista.some(d => d.botanica === n)) lista.unshift(byName[n]); });
       const vis = lista.filter(d => d.uso === 'comune' || (liv >= 2 && d.uso === 'firma') || liv >= 3 || sc[d.botanica]);
       const nF = lista.filter(d => d.uso === 'firma').length, nA = lista.filter(d => d.uso === 'altra').length;
       h += '<section class="sc-ruolo"><h3>' + RUOLI_IC[r] + ' ' + r + ' <small class="sc-promemoria">' + (RUOLO_BREVE[r] || '') + '</small></h3><div class="sc-chips">' +
