@@ -2589,7 +2589,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.15.2</div>
+  <div class="splash-ver" id="splash-ver">v2.15.3</div>
 </div>
 
 <div class="wrap">
@@ -5547,7 +5547,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.15.2</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.15.3</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -10765,7 +10765,7 @@ document.getElementById('print-builder').addEventListener('click', () => {
 <script>
 /* ----- Aggiorna l'app (come in Che cucino?) -----
    VERSIONE_APP deve coincidere con VERSIONE in service-worker.js, NOME_VERSIONE con il suo NOME_VERSIONE. */
-var VERSIONE_APP = 'ginbuilder-v288', NOME_VERSIONE = '2.15.2';
+var VERSIONE_APP = 'ginbuilder-v289', NOME_VERSIONE = '2.15.3';
 // un solo punto da cambiare: animazione iniziale e menu leggono il numero da qui
 ['splash-ver','menu-ver'].forEach(function(id){ var e = document.getElementById(id); if (e) e.textContent = 'v' + NOME_VERSIONE; });
 var verOnline = '', verOnlineNome = '';
@@ -12599,7 +12599,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         '<p>I conti si fanno sul peso dell’alcol: alcol e acqua, mescolandosi, si contraggono e i millilitri non si sommano esattamente.</p>' + approf('🧮 I calcoli dell’alcol', "showTab('calcoli')") },
     quote: { e:'⚖️', t:'Quote e potenza',
       html: '<p>La quota è la parte di gin occupata da ciascun infuso, già portato alla gradazione finale. Da sola non basta a giudicare: conta la potenza. Una botanica forte in una quota piccola può pesare più di una debole in una quota grande.</p>' +
-        '<p>Il ginepro deve restare la nota prevalente: per questo parte da <strong>metà del gin</strong> (50 % degli infusi). Le altre botaniche si dividono l’altra metà secondo i ruoli dello stile. Ogni infuso ha già la sua dose di botanica, quindi una botanica in Base o Freschezza prende una parte intera, in Identità l’80 %, in Cuore il 70 %, in Firma il 30 %, in tracce il 15 %.</p><p class="lez-sub">🧮 <strong>Un esempio: lo stile Mediterraneo</strong></p><p>Il ginepro prende metà del gin: 50 %. Resta l’altra metà, da dividere fra le altre botaniche.</p><p>Si contano le parti. Angelica, coriandolo e bergamotto valgono una parte ciascuna: 3 parti. Il finocchio di mare (Identità) vale 0,8. Il lentisco (Cuore) vale 0,7. Elicriso e rosmarino, in tracce, 0,15 ciascuno. In tutto fanno 4,8 parti.</p><p>Una parte vale quindi 50 % diviso 4,8, cioè circa 10,4 %. Il lentisco ne prende il 70 %: circa 7,3 % del gin. Vuol dire che il 70 % si riferisce a una botanica da una parte intera, come l’angelica, non al ginepro. Così il totale fa sempre 100 %.</p><p>Se sposti i cursori, tieni d’occhio il ginepro: la sua quota è verde dal 45 % in su, arancio fra 30 e 44%, rossa sotto il 30%: soglie di lavoro, non di legge. Muovi i cursori e guarda come cambia il radar.</p>' },
+        '<p>Il ginepro deve restare la nota prevalente: per questo parte da <strong>metà del gin</strong> (50 % degli infusi). Le altre botaniche si dividono l’altra metà secondo i ruoli dello stile. Ogni infuso ha già la sua dose di botanica, quindi una botanica in Base o Freschezza prende una parte intera, in Identità l’80 %, in Cuore il 70 %, in Firma il 30 %, in tracce il 15 %.</p><p class="lez-sub">🧮 <strong>Un esempio: lo stile Mediterraneo</strong></p><p>Il ginepro prende metà del gin: 50 %. Resta l’altra metà, da dividere fra le altre botaniche.</p><p>Si contano le parti delle altre botaniche:</p><ul><li>angelica, coriandolo e bergamotto: 1 parte ciascuna, cioè 3;</li><li>finocchio di mare (Identità): 0,8;</li><li>lentisco (Cuore): 0,7;</li><li>elicriso (in tracce): 0,15;</li><li>rosmarino (in tracce): 0,15.</li></ul><p>In tutto fanno 4,8 parti.</p><p>Una parte vale quindi 50 % diviso 4,8, cioè circa 10,4 %. Il lentisco ne prende il 70 %: circa 7,3 % del gin. Vuol dire che il 70 % si riferisce a una botanica da una parte intera, come l’angelica, non al ginepro. Così il totale fa sempre 100 %.</p><p>Se sposti i cursori, tieni d’occhio il ginepro: la sua quota è verde dal 45 % in su, arancio fra 30 e 44%, rossa sotto il 30%: soglie di lavoro, non di legge. Muovi i cursori e guarda come cambia il radar.</p>' },
     filtrazione: { e:'🧻', t:'Macerare e filtrare',
       html: '<p>Ogni infuso macera al buio per il suo tempo. Quando è pronto si filtra: prima un colino o una garza per togliere le botaniche, poi un filtro di carta per le particelle fini.</p>' +
         '<p>Se dopo la diluizione compare una velatura, è l’<strong>effetto louche</strong>: gli oli essenziali non restano sciolti quando il grado scende. Si rimedia raffreddando e filtrando a freddo. Il diario ti ricorda quando assaggiare e quando filtrare.</p>' + noz('i metodi di filtrazione', 'Metodi di filtrazione') },
