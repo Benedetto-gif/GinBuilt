@@ -2589,7 +2589,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.15.5</div>
+  <div class="splash-ver" id="splash-ver">v2.15.6</div>
 </div>
 
 <div class="wrap">
@@ -3582,7 +3582,7 @@ html.in-mappa #nav-indietro{display:none!important}
       <div class="howto-body">
         <ul>
           <li>Tappa 4 del progetto: scrivi quanto gin vuoi fare; la pagina parte dalle botaniche scelte nella tappa 3, con le quote di partenza dei loro ruoli. Le quote che scegli restano nel progetto.</li>
-          <li>Sposta un cursore: quella botanica cambia e le altre si adeguano in proporzione, così il totale resta 100%. Il lucchetto 🔒 tiene ferma una botanica mentre muovi le altre.</li>
+          <li>Sposta un cursore: quella botanica cambia e le altre si adeguano in proporzione, così il totale resta 100%. Le quote partono tutte bloccate 🔒, così scorrendo la pagina non si spostano per sbaglio. Tocca il lucchetto per sbloccare quelle da regolare (almeno due): quello che aggiungi a una lo togli alle altre sbloccate.</li>
           <li>Il cursore è per le regolazioni grosse; per la precisione usa i tasti <strong>−</strong> e <strong>+</strong>. Il tasto <strong>± 1%</strong> in alto cambia lo scatto a ogni tocco: 1%, 0,5%, 0,1%, 5%.</li>
           <li>In alto, in un'unica vista: la <strong>striscia delle quote</strong> (gli stessi colori dei cursori) e il radar: <strong>sapori</strong> in bocca e <strong>sentori</strong> al naso, oppure le <strong>sensazioni</strong> (pungente, rinfrescante, astringente, corpo, persistenza). La linea tratteggiata è la ricetta di partenza; sotto, le note che salgono e quelle che scendono. Due tasti accendono un radar alla volta: <em>Sapori e sentori</em> oppure <em>Sensazioni in bocca</em>. Su schermo largo compare anche la torta.</li>
           <li>Accanto a ogni cursore trovi i millilitri di infuso, già portato alla gradazione finale, per il volume di gin scelto; in fondo, quanti infusi filtrati e quanta acqua servono in tutto.</li>
@@ -5547,7 +5547,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.15.5</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.15.6</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -10542,7 +10542,7 @@ function renderDosiGin(selects){
     if (!R){ st.righe = []; return; }
     st.righe = R.righe.map((r, k) => Object.assign({}, r, { col: r.n === 'Bacche di ginepro' ? '#2F7259' : PAL[(k + 1) % PAL.length] }));
     st.rif = st.righe.map(r => r.quota * 100);
-    st.q = st.rif.slice(); st.fermo = new Set(); st.stile = currentStyleName;
+    st.q = st.rif.slice(); st.fermo = new Set(st.righe.map((_, k) => k)); st.stile = currentStyleName;   // tutte bloccate: scorrendo la pagina non si sposta niente per sbaglio
     st.firma = st.righe.map(r => r.n).join('|');
     try { if (window.ppCarica) window.ppCarica(st); } catch(e){}
     disegnaCursori(); aggiorna();
@@ -10665,12 +10665,16 @@ function renderDosiGin(selects){
     const box = $('pp-cursori'); if (!box) return;
     $('pp-tit').textContent = st.righe.length ? (st.stile || 'Ricetta') + ' · ' + st.righe.length + ' botaniche' : 'Nessuna ricetta';
     if (!st.righe.length){ box.innerHTML = '<div class="radar-nota">Non c\'è ancora una ricetta: scegli tipo di gin e botaniche (tappe 1 e 3) e torna qui.</div>'; return; }
-    box.innerHTML = st.righe.map((r, k) =>
+    const nLiberi = st.righe.length - st.fermo.size;
+    const notaLucchetti = nLiberi >= 2 ? '' : '<p class="cond-hint pp-lock-nota">🔒 ' + (nLiberi === 0
+      ? 'Le quote sono bloccate, così scorrendo la pagina non si spostano per sbaglio. Tocca il lucchetto delle botaniche da regolare: <b>almeno due</b>, perché quello che aggiungi a una lo togli all’altra.'
+      : 'Sblocca <b>almeno un’altra</b> botanica: quello che aggiungi a una lo togli alle altre sbloccate.') + '</p>';
+    box.innerHTML = notaLucchetti + st.righe.map((r, k) =>
       '<div class="pp-riga' + (st.fermo.has(k) ? ' ferma' : '') + '" data-k="' + k + '" style="--pc:' + r.col + '">' +
       '<span class="pp-dot" style="background:' + r.col + '"></span>' +
       '<span class="pp-nome">' + r.n + (r.tracce ? ' <em>(tracce)</em>' : '') + '<small>partenza ' + fq(st.rif[k]) + '% · infuso a ' + r.abv + '%</small></span>' +
       '<span class="pp-val"></span>' +
-      '<button type="button" class="pp-lock" aria-pressed="' + st.fermo.has(k) + '" title="Tieni ferma questa botanica">' + (st.fermo.has(k) ? '🔒' : '🔓') + '</button>' +
+      '<button type="button" class="pp-lock" aria-pressed="' + st.fermo.has(k) + '" title="Blocca o sblocca questa botanica">' + (st.fermo.has(k) ? '🔒' : '🔓') + '</button>' +
       '<div class="pp-fine"><button type="button" class="pp-pm" data-d="-1" aria-label="Meno"' + (st.fermo.has(k) ? ' disabled' : '') + '>−</button>' +
       '<input type="range" min="0" max="1000" step="1" value="' + aPos(st.q[k]) + '" aria-label="Quota di ' + r.n.replace(/"/g, '') + '"' + (st.fermo.has(k) ? ' disabled' : '') + '>' +
       '<button type="button" class="pp-pm" data-d="1" aria-label="Più"' + (st.fermo.has(k) ? ' disabled' : '') + '>+</button></div>' +
@@ -10690,7 +10694,7 @@ function renderDosiGin(selects){
   const scrittaPasso = () => { $('pp-passo').textContent = '± ' + nf(st.passo, st.passo < 1 ? 1 : 0) + '%'; };
   scrittaPasso();
   $('pp-passo').addEventListener('click', () => { st.passo = PASSI[(PASSI.indexOf(st.passo) + 1) % PASSI.length]; try { localStorage.setItem('gb-pp-passo', st.passo); } catch(e){} scrittaPasso(); aggiorna(); });
-  $('pp-reset').addEventListener('click', () => { st.q = st.rif.slice(); st.fermo = new Set(); disegnaCursori(); aggiorna(); });
+  $('pp-reset').addEventListener('click', () => { st.q = st.rif.slice(); st.fermo = new Set(st.righe.map((_, k) => k)); disegnaCursori(); aggiorna(); });
   $('pp-banco').addEventListener('click', () => {
     if (!st.righe.length) return;
     showTab('prove'); openForm(null);
@@ -10796,7 +10800,7 @@ document.getElementById('print-builder').addEventListener('click', () => {
 <script>
 /* ----- Aggiorna l'app (come in Che cucino?) -----
    VERSIONE_APP deve coincidere con VERSIONE in service-worker.js, NOME_VERSIONE con il suo NOME_VERSIONE. */
-var VERSIONE_APP = 'ginbuilder-v291', NOME_VERSIONE = '2.15.5';
+var VERSIONE_APP = 'ginbuilder-v292', NOME_VERSIONE = '2.15.6';
 // un solo punto da cambiare: animazione iniziale e menu leggono il numero da qui
 ['splash-ver','menu-ver'].forEach(function(id){ var e = document.getElementById(id); if (e) e.textContent = 'v' + NOME_VERSIONE; });
 var verOnline = '', verOnlineNome = '';
