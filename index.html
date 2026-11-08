@@ -2588,7 +2588,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.14.1</div>
+  <div class="splash-ver" id="splash-ver">v2.14.2</div>
 </div>
 
 <div class="wrap">
@@ -5546,7 +5546,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.14.1</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.14.2</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -10430,15 +10430,18 @@ function dosiRicetta(selects){
   [...selects].forEach(sel => {
     if (!sel.value || visti.has(sel.value) || !byName[sel.value]) return; visti.add(sel.value);
     const base = doseLibreria(sel.value) ?? 1;
-    righe.push({ n: sel.value, peso: pesoRiga(sel, base), tracce: sel.dataset.trace === '1' });
+    // porz = porzioni di infuso secondo il ruolo (Base 1, Identità 0,8 ... tracce 0,15): ogni infuso ha già la sua dose
+    // per 100 ml, quindi la quota di volume segue il ruolo, non i grammi (contarli darebbe la dose due volte)
+    const tr = sel.dataset.trace === '1';
+    righe.push({ n: sel.value, peso: pesoRiga(sel, base), porz: tr ? TRACE_FACTOR : fattoreRuolo(sel), tracce: tr });
   });
-  const T = righe.reduce((a, r) => a + r.peso, 0);
+  const T = righe.reduce((a, r) => a + r.porz, 0);
   if (!T) return null;
   const vol = Math.max(10, parseFloat(document.getElementById('dosi-vol').value) || 700);
   const abvF = Math.min(70, Math.max(1, parseFloat(String(document.getElementById('dosi-abv').value).replace(',', '.')) || 43));
   righe.forEach(r => {
     const d = byName[r.n], st = infRif(d), est = estPer(d, st);
-    r.quota = r.peso / T;                                                    // quota nella miscela di infusi
+    r.quota = r.porz / T;                                                    // quota nella miscela di infusi
     r.abv = est ? Math.round((est.a[0] + est.a[1]) / 2) : REF_ABV;           // gradazione dell'infuso
     const g100 = infusoRiga(d, r.abv, REF_TEMP, 100, 'tempo', st, false, ALCOL_PARTENZA);
     r.g100 = g100 && g100.g ? g100.g : (doseLibreria(r.n) || 0);           // g di botanica per 100 ml di infuso
@@ -10597,9 +10600,9 @@ function renderDosiGin(selects){
       (T.sotto.length ? '<div class="warn-box">' + T.sotto.join(', ') + ': infuso consigliato sotto la gradazione finale, non si può diluire.</div>' : '') +
       '<div class="radar-nota">Ogni infuso, filtrato, si porta da solo a ' + nf(abvF, 1) + '% e poi si miscela: i millilitri accanto ai cursori sono quelli già diluiti. La quantità di gin e la gradazione si cambiano qui in alto.</div>';
     // quota di ginepro
-    const gi = st.righe.findIndex(r => r.n === 'Bacche di ginepro'), pg = gi >= 0 ? st.q[gi] : 0;
+    const gi = st.righe.findIndex(r => r.n === 'Bacche di ginepro'), pg = gi >= 0 && T.gTot > 0 ? parti[gi].g / T.gTot * 100 : 0;
     const col = pg >= 45 ? 'var(--green-sym, #2e7d32)' : (pg >= 30 ? 'var(--orange-sym, #b26a00)' : 'var(--red-sym, #c62828)');
-    $('pp-ginepro').innerHTML = '<span style="color:' + col + ';font-weight:650">Ginepro ' + fq(pg) + '%</span>' + (pg < 30 ? ' · troppo poco: il ginepro deve restare la nota prevalente' : pg < 45 ? ' · al limite: il ginepro rischia di non prevalere' : '');
+    $('pp-ginepro').innerHTML = '<span style="color:' + col + ';font-weight:650">Ginepro ' + fq(pg) + '% del peso delle botaniche</span>' + (pg < 30 ? ' · troppo poco: il ginepro deve restare la nota prevalente' : pg < 45 ? ' · al limite: il ginepro rischia di non prevalere' : '');
     // grafici
     $('pp-torta').innerHTML = torta();
     const ora = profilo(el()), prima = profilo(st.righe.map((r, k) => ({ n: r.n, w: Math.max(0.00001, st.rif[k]) })));
@@ -10666,8 +10669,9 @@ function renderDosiGin(selects){
       const R = dosiRicetta(sel), firma = R ? R.righe.map(x => x.n).join('|') : '';
       if (firma !== st.firma || currentStyleName !== st.stile) carica(); else aggiorna();
       // nella tappa delle quote gli infusi non ci sono ancora: il banco di prova arriva con l'assaggio
-      const inQuote = window._tappa === 'quote';
-      document.querySelector('#panel-proporzioni .pp-azioni').hidden = inQuote; $('pp-banco-dopo').hidden = !inQuote;
+      const nascondi = () => { const b = document.querySelector('#panel-proporzioni > .tappa-bar'), inQ = !!b && !b.hidden;
+        document.querySelector('#panel-proporzioni .pp-azioni').hidden = inQ; $('pp-banco-dopo').hidden = !inQ; };
+      nascondi(); setTimeout(nascondi, 0);
       ppTop();
     }
     return r;
@@ -10750,7 +10754,7 @@ document.getElementById('print-builder').addEventListener('click', () => {
 <script>
 /* ----- Aggiorna l'app (come in Che cucino?) -----
    VERSIONE_APP deve coincidere con VERSIONE in service-worker.js, NOME_VERSIONE con il suo NOME_VERSIONE. */
-var VERSIONE_APP = 'ginbuilder-v282', NOME_VERSIONE = '2.14.1';
+var VERSIONE_APP = 'ginbuilder-v283', NOME_VERSIONE = '2.14.2';
 // un solo punto da cambiare: animazione iniziale e menu leggono il numero da qui
 ['splash-ver','menu-ver'].forEach(function(id){ var e = document.getElementById(id); if (e) e.textContent = 'v' + NOME_VERSIONE; });
 var verOnline = '', verOnlineNome = '';
@@ -12113,11 +12117,11 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
   let tQ = null;
   window.ppSalva = st => {
     if (_cambio || !st.righe.length) return; clearTimeout(tQ);
-    tQ = setTimeout(() => { const pr = att(); if (!pr) return; pr.pp = { firma: st.firma, q: st.q.map(x => Math.round(x * 100) / 100) }; scriviP(); }, 300);
+    tQ = setTimeout(() => { const pr = att(); if (!pr) return; pr.pp = { v: 2, firma: st.firma, q: st.q.map(x => Math.round(x * 100) / 100) }; scriviP(); }, 300);
   };
   window.ppCarica = st => {
     const pr = att();
-    if (pr && pr.pp && pr.pp.firma === st.firma && Array.isArray(pr.pp.q) && pr.pp.q.length === st.q.length) st.q = pr.pp.q.slice();
+    if (pr && pr.pp && pr.pp.v === 2 && pr.pp.firma === st.firma && Array.isArray(pr.pp.q) && pr.pp.q.length === st.q.length) st.q = pr.pp.q.slice();
   };
 
   // ---------- menu delle botaniche: le più usate, l'erbario intero a richiesta ----------
@@ -12257,7 +12261,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     let R = dosiRicetta(tutteSel()); if (!R) return null;
     // Fatti un gin: valgono le quote decise nella tappa delle quote (stessa ricetta), non quelle di partenza dei ruoli
     const pr = att();
-    if (pr && pr.via === 'pers' && pr.pp && Array.isArray(pr.pp.q)){
+    if (pr && pr.via === 'pers' && pr.pp && pr.pp.v === 2 && Array.isArray(pr.pp.q)){
       const nomi = String(pr.pp.firma || '').split('|');
       if (nomi.join('|') === R.righe.map(r => r.n).join('|') && pr.pp.q.length === nomi.length){
         const T = pr.pp.q.reduce((a, x) => a + x, 0) || 1;
@@ -12584,7 +12588,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         '<p>I conti si fanno sul peso dell’alcol: alcol e acqua, mescolandosi, si contraggono e i millilitri non si sommano esattamente.</p>' + approf('🧮 I calcoli dell’alcol', "showTab('calcoli')") },
     quote: { e:'⚖️', t:'Quote e potenza',
       html: '<p>La quota è la parte di gin occupata da ciascun infuso, già portato alla gradazione finale. Da sola non basta a giudicare: conta la potenza. Una botanica forte in una quota piccola può pesare più di una debole in una quota grande.</p>' +
-        '<p>Il ginepro deve restare la nota prevalente. Come soglia pratica, qui la sua quota è verde dal 45% in su, arancio fra 30 e 44%, rossa sotto il 30%: soglie di lavoro, non di legge. Muovi i cursori e guarda come cambia il radar.</p>' },
+        '<p>Le quote di partenza seguono i ruoli dello stile: ogni infuso ha già la sua dose di botanica, quindi una botanica in Base occupa una parte intera, in Identità l’80 %, in Cuore il 70 %, in Firma il 30 %, in tracce il 15 %.</p><p>Il ginepro deve restare la nota prevalente. Come soglia pratica, la sua parte sul peso delle botaniche è verde dal 45% in su, arancio fra 30 e 44%, rossa sotto il 30%: soglie di lavoro, non di legge. Muovi i cursori e guarda come cambia il radar.</p>' },
     filtrazione: { e:'🧻', t:'Macerare e filtrare',
       html: '<p>Ogni infuso macera al buio per il suo tempo. Quando è pronto si filtra: prima un colino o una garza per togliere le botaniche, poi un filtro di carta per le particelle fini.</p>' +
         '<p>Se dopo la diluizione compare una velatura, è l’<strong>effetto louche</strong>: gli oli essenziali non restano sciolti quando il grado scende. Si rimedia raffreddando e filtrando a freddo. Il diario ti ricorda quando assaggiare e quando filtrare.</p>' + noz('i metodi di filtrazione', 'Metodi di filtrazione') },
