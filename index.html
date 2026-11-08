@@ -2255,6 +2255,10 @@ details.howto-hero:not([open]){display:none}
 
 /* tappa 4 */
 .pp-volbox{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:end;margin-bottom:12px}
+.pp-gradi{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}
+.pp-gradi button{padding:6px 11px;border-radius:999px;border:1px solid var(--line-strong);background:var(--card);color:var(--ink);font:700 13px/1.1 'Inter',system-ui,sans-serif;cursor:pointer}
+.pp-gradi button small{font-weight:500;opacity:.8}
+.pp-gradi button.on{background:var(--juniper);border-color:var(--juniper);color:#fff}
 .pp-abv{display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--ink-soft)}
 .pp-abv b{font-size:18px;color:var(--ink)}
 .pp-abv a{font-size:12.5px}
@@ -2571,7 +2575,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.13.2</div>
+  <div class="splash-ver" id="splash-ver">v2.13.3</div>
 </div>
 
 <div class="wrap">
@@ -2609,7 +2613,7 @@ html.in-mappa #nav-indietro{display:none!important}
     <button data-tab="calcoli">🧮 I calcoli dell'alcol</button>
     <button data-tab="storia">📖 Storia del gin</button>
     <button data-tab="builder">🌿 Le botaniche (Gin Builder)</button>
-    <button data-tab="proporzioni">⚖️ Quanto gin e le quote</button>
+    <button data-tab="proporzioni">⚖️ Quote, quantità e grado</button>
     <button data-tab="ridondanza">🧬 Ridondanza e complementarietà</button>
     <button data-tab="prove">🧪 Schede di prova</button>
     <button data-tab="libreria">🌿 Botaniche e infusi</button>
@@ -3572,10 +3576,12 @@ html.in-mappa #nav-indietro{display:none!important}
         <p>Il radar di gusto e aroma comprende qui anche le botaniche base (ginepro, coriandolo, angelica), perché sono proprio le quote che stai variando. Stime orientative, da verificare all'assaggio.</p>
       </div>
     </details>
-    <h2 class="tappa-h"><span>4</span>Quanto gin e le quote</h2>
+    <h2 class="tappa-h" id="pp-h"><span>4</span>Quote, quantità e grado</h2>
     <div class="cond-box cond-compact pp-volbox">
       <label>Quanto gin vuoi fare (ml)<input type="number" id="pp-vol" min="50" step="50" inputmode="decimal"></label>
-      <div class="pp-abv">Gradazione finale<b id="pp-abv-txt"></b><a href="#" onclick="event.preventDefault();window._navDaMenu=true;showTab('grado')">cambia</a></div>
+      <label>Gradazione finale (% vol)<input type="number" id="pp-abv" min="37.5" max="70" step="0.5" inputmode="decimal"></label>
+      <div class="pp-gradi" id="pp-gradi"><button type="button" data-g="40">40%</button><button type="button" data-g="43">43%</button><button type="button" data-g="45">45%</button><button type="button" data-g="47">47%</button><button type="button" data-g="57">57% <small>Navy</small></button></div>
+      <span id="pp-abv-txt" hidden></span>
     </div>
     <div class="pp-head">
       <div class="pp-tit" id="pp-tit">—</div>
@@ -5526,7 +5532,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.13.2</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.13.3</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -10575,7 +10581,7 @@ function renderDosiGin(selects){
       '<div class="mix-line"><span>Acqua per portarli a ' + nf(abvF, 1) + '%</span><strong>' + nf(T.acqua, 0) + ' ml</strong></div>' +
       '<div class="mix-line"><span>Gin finito a ' + nf(abvF, 1) + '% vol</span><strong>' + nf(vol, 0) + ' ml · ' + nf(T.gTot / vol * 1000, 1) + ' g/l di botaniche</strong></div>' +
       (T.sotto.length ? '<div class="warn-box">' + T.sotto.join(', ') + ': infuso consigliato sotto la gradazione finale, non si può diluire.</div>' : '') +
-      '<div class="radar-nota">Ogni infuso, filtrato, si porta da solo a ' + nf(abvF, 1) + '% e poi si miscela: i millilitri accanto ai cursori sono quelli già diluiti. La quantità di gin e la gradazione si decidono nella tappa «Quanto gin e che grado».</div>';
+      '<div class="radar-nota">Ogni infuso, filtrato, si porta da solo a ' + nf(abvF, 1) + '% e poi si miscela: i millilitri accanto ai cursori sono quelli già diluiti. La quantità di gin e la gradazione si cambiano qui in alto.</div>';
     // quota di ginepro
     const gi = st.righe.findIndex(r => r.n === 'Bacche di ginepro'), pg = gi >= 0 ? st.q[gi] : 0;
     const col = pg >= 45 ? 'var(--green-sym, #2e7d32)' : (pg >= 30 ? 'var(--orange-sym, #b26a00)' : 'var(--red-sym, #c62828)');
@@ -10727,7 +10733,7 @@ document.getElementById('print-builder').addEventListener('click', () => {
 <script>
 /* ----- Aggiorna l'app (come in Che cucino?) -----
    VERSIONE_APP deve coincidere con VERSIONE in service-worker.js, NOME_VERSIONE con il suo NOME_VERSIONE. */
-var VERSIONE_APP = 'ginbuilder-v278', NOME_VERSIONE = '2.13.2';
+var VERSIONE_APP = 'ginbuilder-v279', NOME_VERSIONE = '2.13.3';
 var verOnline = '', verOnlineNome = '';
 function numVer(x){ return parseInt(String(x).replace(/\D/g, '')) || 0; }
 function etichettaVer(v){ return v === VERSIONE_APP ? 'v' + NOME_VERSIONE : (v && v === verOnline && verOnlineNome) ? 'v' + verOnlineNome : (v || ''); }
@@ -11995,10 +12001,9 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         { id:'l-radar',  tab:'lezione',    lez:'radar',      e:'📡', t:'Leggere il radar',             c:'#8A63B0', d:'profilo e potenza' },
         { id:'l-stili',  tab:'lezione',    lez:'stili',      e:'🎨', t:'Gli stili',                    c:'#B04A6B', d:'come lavorano le botaniche, e da dove partire' },
         { id:'scelta',   tab:'scelta',                       e:'🌿', t:'Le botaniche, ruolo per ruolo', c:'#4C7BB5' },
-        { id:'quote',    tab:'proporzioni',lez:'quote',      e:'⚖️', t:'Le quote nel mix',             c:'#B04A6B', d:'la percentuale di ogni infuso' },
-        { id:'grado',    tab:'grado',      lez:'diluizione', e:'📏', t:'Quanto gin e che grado',       c:'#C4803A' },
+        { id:'quote',    tab:'proporzioni',lez:'quote',      e:'⚖️', t:'Quote, quantità e grado',      c:'#B04A6B' },
         { id:'l-estr',   tab:'lezione',    lez:'estrazione', e:'⚗️', t:'Cosa si estrae e a che grado', c:'#2F8F8F', d:'una gradazione per botanica' },
-        { id:'spesa',    tab:'ricetta',                      e:'🛒', t:'La spesa',                     c:'#4C7BB5' },
+        { id:'spesa',    tab:'ricetta',    lez:'diluizione', e:'🛒', t:'La spesa',                     c:'#4C7BB5' },
         { id:'infusi',   tab:'ricetta',                      e:'🫙', t:'Prepara gli infusi',           c:'#8A63B0' },
         { id:'unisci',   tab:'ricetta',    lez:'filtrazione',e:'🧻', t:'Filtra, porta al grado, unisci', c:'#2F8F8F' },
         { id:'assaggio', tab:'prove',      lez:'degustare',  e:'👅', t:'Assaggio e correzioni',        c:'#B8921F' },
@@ -12194,7 +12199,18 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
   $('pp-vol').value = $('dosi-vol').value;
   $('pp-vol').addEventListener('input', () => { $('dosi-vol').value = $('pp-vol').value; $('dosi-vol').dispatchEvent(new Event('input')); });
   try { wrapStepper($('pp-vol'), 50); } catch(e){}
-  function syncPP(){ if (document.activeElement !== $('pp-vol')) $('pp-vol').value = $('dosi-vol').value; $('pp-abv-txt').textContent = nf(parseFloat($('dosi-abv').value) || 43, 1) + '% vol'; }
+  // la gradazione finale si sceglie qui, accanto al volume (in Fatti un gin non c'e' piu' una tappa a parte)
+  $('pp-abv').addEventListener('input', () => { const g = parseFloat(String($('pp-abv').value).replace(',', '.')); if (g >= 37.5 && g <= 70){ $('dosi-abv').value = g; $('dosi-abv').dispatchEvent(new Event('input')); syncPP(); } });
+  $('pp-gradi').querySelectorAll('button').forEach(b => b.addEventListener('click', () => { $('pp-abv').value = b.dataset.g; $('pp-abv').dispatchEvent(new Event('input')); }));
+  try { wrapStepper($('pp-abv'), 0.5); } catch(e){}
+  function syncPP(){
+    if (document.activeElement !== $('pp-vol')) $('pp-vol').value = $('dosi-vol').value;
+    const g = parseFloat(String($('dosi-abv').value).replace(',', '.')) || 43;
+    if (document.activeElement !== $('pp-abv')) $('pp-abv').value = g;
+    $('pp-gradi').querySelectorAll('button').forEach(b => b.classList.toggle('on', Math.abs(+b.dataset.g - g) < 0.01));
+    $('pp-abv-txt').textContent = nf(g, 1) + '% vol';
+    try { const i = posTappa('quote'); if (i >= 0) $('pp-h').querySelector('span').textContent = i + 1; } catch(e){}
+  }
 
   // ---------- la ricetta passo passo (Gin no problem!) ----------
   const f1 = x => nf(x, x < 10 ? 1 : 0), fg = x => x > 0 && x < 0.01 ? '< 0,01' : nf(x, x < 1 ? 2 : 1);
@@ -12262,7 +12278,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       (pers ? '<div class="rc-tab"><table><tr><th>Botanica</th><th>Quota</th><th>Al grado finale</th><th>Infuso filtrato</th><th>Da preparare</th></tr>' +
         R.righe.map(r => '<tr><td>' + iconaHtml(byName[r.n]) + ' ' + esc(r.n) + '</td><td>' + nf(r.quota * 100, 1) + '%</td><td>' + f1(r.mlFin) + ' ml a ' + A + '%</td><td>' + f1(r.mlConc) + ' ml a ' + r.abv + '%</td><td><b>' + f1(r.volInf) + ' ml</b> a ' + r.abv + '% · ' + fg(r.inf ? r.inf.g : r.g) + ' g</td></tr>').join('') +
         '</table></div>' : '');
-    if (R.sotto.length) h += '<div class="warn-box">' + R.sotto.map(esc).join(', ') + ': si estrae sotto ' + A + '% e non si può diluire fino alla gradazione finale. ' + (pers ? 'Scegli una gradazione finale più bassa (tappa «Quanto gin e che grado») o togli questa botanica.' : 'Con il Gin no problem! conviene scegliere una gradazione più bassa (tappa 2).') + '</div>';
+    if (R.sotto.length) h += '<div class="warn-box">' + R.sotto.map(esc).join(', ') + ': si estrae sotto ' + A + '% e non si può diluire fino alla gradazione finale. ' + (pers ? 'Scegli una gradazione finale più bassa (tappa delle quote) o togli questa botanica.' : 'Con il Gin no problem! conviene scegliere una gradazione più bassa (tappa 2).') + '</div>';
     // la spesa
     if (mostra('spesa')) h += '<section class="rc-sez" id="rc-spesa"><h3>🛒 La spesa</h3><p class="rc-sub">Quantità per gli infusi da preparare, che tengono conto di un 20% di perdita (liquido trattenuto dalla botanica e filtrazione).</p>' +
       R.righe.map(r => chk('sp-' + r.n, iconaHtml(byName[r.n]) + ' <b>' + esc(r.n) + '</b> ' + (r.parte ? '<small>(' + esc(r.parte) + ', ' + r.stato + ')</small> ' : '') + '— ' + fg(r.inf ? r.inf.g : r.g) + ' g')).join('') +
@@ -12379,7 +12395,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         case 'grado': return nf(parseFloat($('dosi-abv').value) || 43, 1) + '% vol';
         case 'scelta': { const n = new Set(tutteSel().map(s => s.value)).size; return n + ' botaniche'; }
         case 'bot': { const n = new Set(tutteSel().map(s => s.value)).size; return pr.fatte.bot ? n + ' botaniche' : 'tu scegli i ruoli'; }
-        case 'quote': return f1(parseFloat($('dosi-vol').value) || 700) + ' ml · quote degli infusi';
+        case 'quote': return f1(parseFloat($('dosi-vol').value) || 700) + ' ml a ' + nf(parseFloat($('dosi-abv').value) || 43, 1) + '% · quote degli infusi';
         case 'spesa': return 'botaniche, alcol, attrezzi';
         case 'infusi': { const n = diarioCarica().filter(x => !x.finito).length; return n ? n + ' in corso' : (pr.via === 'chiavi' ? 'dosi, gradazioni, tempi' : 'macerazione e diario'); }
         case 'unisci': return 'filtra, diluisci, riposa';
