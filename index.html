@@ -5721,6 +5721,32 @@ function apriInfusi(nome){
   setTimeout(v, 80); setTimeout(v, 360);
 }
 
+// «Prepara un infuso» dalla mappa: scegli la botanica e se è fresca o secca, poi si apre la sua scheda di preparazione.
+function prepInfusoVeloce(){
+  const nomi = Object.keys(byName).sort((a, b) => a.localeCompare(b, 'it'));
+  let stato = 'ref';
+  const esc = x => String(x).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
+  mostraAvviso('🫙 Prepara un infuso',
+    '<label style="display:block;font-weight:600;margin-bottom:6px">Quale botanica?' +
+    '<input type="text" id="piv-q" list="piv-lista" placeholder="es. limone" autocomplete="off" style="display:block;width:100%;margin-top:6px;font-size:16px;padding:10px;border-radius:10px;border:1px solid var(--line-strong)"></label>' +
+    '<datalist id="piv-lista">' + nomi.map(n => '<option value="' + esc(n) + '">').join('') + '</datalist>' +
+    '<p id="piv-msg" class="cond-hint" style="min-height:1.2em;margin:4px 0 10px"></p>' +
+    '<div style="font-weight:600;margin-bottom:6px">Com’è la botanica che hai?</div>' +
+    '<div class="pp-gradi" id="piv-stato"><button type="button" data-s="ref" class="on">Come da scheda</button><button type="button" data-s="secco">🍂 Secca o disidratata</button><button type="button" data-s="fresco">🌿 Fresca</button></div>' +
+    '<p class="cond-hint" style="margin-top:8px">Si apre la scheda della botanica su «Preparazione dell’infuso»: lì scegli quanto infuso fare e con che alcol, e l’app calcola grammi, acqua e tempi.</p>',
+    'Apri la scheda', () => {
+      const q = (document.getElementById('piv-q').value || '').trim().toLowerCase();
+      const n = nomi.find(x => x.toLowerCase() === q) || nomi.find(x => x.toLowerCase().startsWith(q)) || nomi.find(x => x.toLowerCase().includes(q));
+      if (!q || !n){ setTimeout(() => { prepInfusoVeloce(); const m = document.getElementById('piv-msg'); if (m) m.textContent = q ? 'Non trovo «' + q + '» fra le botaniche: prova con un altro nome.' : 'Scrivi il nome della botanica.'; }, 0); return; }
+      apriInfusi(n);
+      setTimeout(() => { const sel = document.getElementById('inf-stato'); if (sel && stato !== 'ref'){ sel.value = stato; sel.dispatchEvent(new Event('change', { bubbles: true })); } }, 150);
+    });
+  document.querySelectorAll('#piv-stato button').forEach(b => b.addEventListener('click', () => {
+    stato = b.dataset.s; document.querySelectorAll('#piv-stato button').forEach(x => x.classList.toggle('on', x === b)); }));
+  const inp = document.getElementById('piv-q'); setTimeout(() => inp && inp.focus(), 50);
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); document.getElementById('avviso-ok').click(); } });
+}
+
 // Dal Diario: apre Analisi sensoriale sulla procedura di assaggio degli infusi.
 function apriTecnicaAssaggio(){
   showTab('analisi');
@@ -8274,6 +8300,8 @@ function comeUsare(d, stato, K, abvEff){
     .replace(/ ?Il peso è a secco:[^.]*\./g, '').replace(/ ?Da fresco serve[^.]*\./g, '')
     .replace(/ ?Fresco e ricco d'acqua:[^.]*\./g, '').replace(/ ?Il peso è a secco\./g, '')
     .replace(/, e servirà più peso/g, '');
+  // agrumi: la buccia disidratata si prepara in un altro modo (niente pelapatate, niente fretta)
+  if (stato === 'secco' && d.categoria === 'Agrumi') t = 'Buccia disidratata di frutti non trattati: solo la parte colorata, senza la parte bianca (amara). Se è in pezzi grandi spezzettala a mano in frammenti di 1–2 cm, non in polvere (intorbida). Conservala chiusa e al buio fino al momento di usarla: gli oli residui sono pochi e preziosi. La buccia secca pesa circa un terzo della fresca: per questo la dose in grammi è più bassa.';
   if (stato === 'fresco') t = t.replace(/ ?\b(secca|secco|secche|secchi|essiccata|essiccato|essiccati)\b/g, '');
   if (stato === 'fresco') t += ` Peso riferito a botanica fresca, appena raccolta (circa ${K} volte il peso da secca). L'acqua che porta abbassa la gradazione a circa ${infFmt(abvEff)}°.`;
   else if (stato === 'secco') t += ' Peso riferito a botanica secca.';
@@ -12496,11 +12524,14 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     // la teoria appartiene solo alla strada del gin personalizzato: con il Gin no problem! si gioca, non si studia
     if (pr.via === 'pers') h += '<div class="mp-sez"><h3>📚 Capire perché</h3><p>La parte teorica, da consultare quando vuoi: le botaniche e la loro potenza, cosa si estrae e a che gradazione, i ruoli, le ridondanze, le leggi.</p>' +
         '<div class="mp-grid">' + tessere(CAPIRE, 2) + '</div></div>';
+    // scorciatoia sempre a portata di mano: l'infuso di una sola botanica, senza passare dal percorso
+    h += '<div class="mp-sez mp-sez-infuso"><div class="mp-grid" style="grid-template-columns:1fr"><button type="button" class="mp-tile" id="mp-infuso" style="--h:#8A63B0"><span class="mt-ic">🫙</span><span class="mt-l">Prepara un infuso<small style="display:block;font-weight:500;opacity:.9;margin-top:2px">una sola botanica, fresca o secca: dose, alcol, acqua e tempi</small></span></button></div></div>';
     h += '<button type="button" class="mp-ver" id="mp-ver" data-aggiorna>' + (window.testoVerMappa ? testoVerMappa() : '\ud83d\udd04 Controlla aggiornamenti') + '</button>';
     box.innerHTML = h;
     try { if (window.puntoStrumenti) window.puntoStrumenti(); } catch(e){}
     box.querySelectorAll('.mp-st').forEach(b => b.addEventListener('click', () => vaiTappa(b.dataset.id)));
-    box.querySelectorAll('.mp-tile').forEach(b => b.addEventListener('click', () => { window._tappa = null; showTab(b.dataset.tab); }));
+    box.querySelectorAll('.mp-tile[data-tab]').forEach(b => b.addEventListener('click', () => { window._tappa = null; showTab(b.dataset.tab); }));
+    const bi = document.getElementById('mp-infuso'); if (bi) bi.addEventListener('click', () => { window._tappa = null; prepInfusoVeloce(); });
     box.querySelectorAll('.mp-via').forEach(b => b.addEventListener('click', e => {
       if (e.target.closest('.mv-tondo')){ e.stopPropagation(); const t = e.target.closest('.mv-tondo'); suonaTondo(b.dataset.via);
         t.classList.remove('tocco'); void t.offsetWidth; t.classList.add('tocco'); return; }   // il tondo suona, la scheda sceglie
