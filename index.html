@@ -675,7 +675,11 @@ select.sel-fissa{opacity:1;cursor:default;background-image:none;-webkit-appearan
 .pp-val small{display:block;font-weight:400;color:var(--ink-soft);font-size:11.5px;}
 .pp-lock{background:none;border:1px solid var(--line);border-radius:10px;padding:4px 7px;font-size:15px;cursor:pointer;opacity:.55;}
 .pp-lock[aria-pressed="true"]{opacity:1;border-color:var(--juniper);}
-.pp-riga input[type=range]{grid-column:1/-1;width:100%;accent-color:var(--pc,var(--juniper));}
+.pp-riga input[type=range]{width:100%;min-width:0;accent-color:var(--pc,var(--juniper));}
+.pp-fine{grid-column:1/-1;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px}
+.pp-pm{width:36px;height:36px;border-radius:50%;border:1px solid var(--line-strong);background:var(--card);color:var(--ink);font:800 19px/1 'Inter',system-ui,sans-serif;cursor:pointer;touch-action:manipulation}
+.pp-pm:disabled{opacity:.35}
+.pp-passo{font-variant-numeric:tabular-nums}
 .pp-riga.ferma input[type=range]{opacity:.45;}
 .pp-totali{margin-top:10px;font-size:13.5px;}
 .pp-totali .mix-line{display:flex;justify-content:space-between;gap:10px;padding:4px 0;}
@@ -2567,7 +2571,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.13.1</div>
+  <div class="splash-ver" id="splash-ver">v2.13.2</div>
 </div>
 
 <div class="wrap">
@@ -3561,6 +3565,7 @@ html.in-mappa #nav-indietro{display:none!important}
         <ul>
           <li>Tappa 4 del progetto: scrivi quanto gin vuoi fare; la pagina parte dalle botaniche scelte nella tappa 3, con le quote di partenza dei loro ruoli. Le quote che scegli restano nel progetto.</li>
           <li>Sposta un cursore: quella botanica cambia e le altre si adeguano in proporzione, così il totale resta 100%. Il lucchetto 🔒 tiene ferma una botanica mentre muovi le altre.</li>
+          <li>Il cursore è per le regolazioni grosse; per la precisione usa i tasti <strong>−</strong> e <strong>+</strong>. Il tasto <strong>± 1%</strong> in alto cambia lo scatto a ogni tocco: 1%, 0,5%, 0,1%, 5%.</li>
           <li>In alto, in un'unica vista: la <strong>striscia delle quote</strong> (gli stessi colori dei cursori) e il radar: <strong>sapori</strong> in bocca e <strong>sentori</strong> al naso, oppure le <strong>sensazioni</strong> (pungente, rinfrescante, astringente, corpo, persistenza). La linea tratteggiata è la ricetta di partenza; sotto, le note che salgono e quelle che scendono. Due tasti accendono un radar alla volta: <em>Sapori e sentori</em> oppure <em>Sensazioni in bocca</em>. Su schermo largo compare anche la torta.</li>
           <li>Accanto a ogni cursore trovi i millilitri di infuso, già portato alla gradazione finale, per il volume di gin scelto; in fondo, quanti infusi filtrati e quanta acqua servono in tutto.</li>
         </ul>
@@ -3576,6 +3581,7 @@ html.in-mappa #nav-indietro{display:none!important}
       <div class="pp-tit" id="pp-tit">—</div>
       <div class="pp-azioni">
         <button type="button" class="ghost-btn" id="pp-ricarica" hidden>↻ Ricarica</button>
+        <button type="button" class="ghost-btn pp-passo" id="pp-passo" title="Scatto dei tasti − e +: tocca per cambiarlo">± 1%</button>
         <button type="button" class="ghost-btn" id="pp-reset">↺ Quote di partenza</button>
       </div>
     </div>
@@ -5520,7 +5526,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.13.1</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.13.2</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -10457,11 +10463,16 @@ function renderDosiGin(selects){
 (function(){
   const PAL = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C','#D9A441','#7A5A3A','#3FB0D6','#A3195B'];
   const st = { righe: [], rif: [], q: [], fermo: new Set(), stile: '', firma: '', grafico: 'torta' };
+  // lo scatto dei tasti − e +: un solo tasto che cambia scala a ogni tocco
+  const PASSI = [1, 0.5, 0.1, 5];
+  try { st.passo = +localStorage.getItem('gb-pp-passo') || 1; } catch(e){ st.passo = 1; }
+  if (PASSI.indexOf(st.passo) < 0) st.passo = 1;
   const $ = id => document.getElementById(id);
   // cursore non lineare: le quote piccole (tracce) restano regolabili con precisione
   const aPos = q => Math.round(Math.sqrt(Math.max(0, q) / 100) * 1000);
   const daPos = p => Math.pow(p / 1000, 2) * 100;
   const fq = q => q >= 10 ? nf(q, 0) : nf(q, 1);
+  const fqp = q => st.passo < 1 ? nf(q, 1) : fq(q);   // con gli scatti fini si vede il decimale
   function carica(){
     const sel = roleList.querySelectorAll('select:not(.role-label-input)');
     const R = dosiRicetta(sel);
@@ -10557,7 +10568,7 @@ function renderDosiGin(selects){
     st.righe.forEach((r, k) => {
       const x = parti[k], g = x.g;
       const row = box.querySelector('.pp-riga[data-k="' + k + '"]'); if (!row) return;
-      row.querySelector('.pp-val').innerHTML = fq(st.q[k]) + '%<small>' + m1(x.mlFin) + ' ml a ' + nf(abvF, 1) + '% · ' + (g > 0 && g < 0.01 ? '< 0,01' : nf(g, g < 1 ? 2 : 1)) + ' g</small>';
+      row.querySelector('.pp-val').innerHTML = fqp(st.q[k]) + '%<small>' + m1(x.mlFin) + ' ml a ' + nf(abvF, 1) + '% · ' + (g > 0 && g < 0.01 ? '< 0,01' : nf(g, g < 1 ? 2 : 1)) + ' g</small>';
       const rg = row.querySelector('input[type=range]'); if (document.activeElement !== rg) rg.value = aPos(st.q[k]);
     });
     $('pp-totali').innerHTML = '<div class="mix-line"><span>Infusi filtrati da usare</span><strong>' + nf(T.volConc, 0) + ' ml</strong></div>' +
@@ -10597,16 +10608,25 @@ function renderDosiGin(selects){
       '<span class="pp-nome">' + r.n + (r.tracce ? ' <em>(tracce)</em>' : '') + '<small>partenza ' + fq(st.rif[k]) + '% · infuso a ' + r.abv + '%</small></span>' +
       '<span class="pp-val"></span>' +
       '<button type="button" class="pp-lock" aria-pressed="' + st.fermo.has(k) + '" title="Tieni ferma questa botanica">' + (st.fermo.has(k) ? '🔒' : '🔓') + '</button>' +
+      '<div class="pp-fine"><button type="button" class="pp-pm" data-d="-1" aria-label="Meno"' + (st.fermo.has(k) ? ' disabled' : '') + '>−</button>' +
       '<input type="range" min="0" max="1000" step="1" value="' + aPos(st.q[k]) + '" aria-label="Quota di ' + r.n.replace(/"/g, '') + '"' + (st.fermo.has(k) ? ' disabled' : '') + '>' +
+      '<button type="button" class="pp-pm" data-d="1" aria-label="Più"' + (st.fermo.has(k) ? ' disabled' : '') + '>+</button></div>' +
       '</div>').join('');
     box.querySelectorAll('.pp-riga').forEach(row => {
       const k = +row.dataset.k;
       row.querySelector('input[type=range]').addEventListener('input', e => { imposta(k, daPos(+e.target.value)); aggiorna(); });
+      row.querySelectorAll('.pp-pm').forEach(b => b.addEventListener('click', () => {
+        const p = st.passo, v = Math.round((st.q[k] + (+b.dataset.d) * p) / p) * p;   // aggancia allo scatto scelto
+        imposta(k, Math.round(v * 1000) / 1000); aggiorna();
+      }));
       row.querySelector('.pp-lock').addEventListener('click', () => { if (st.fermo.has(k)) st.fermo.delete(k); else st.fermo.add(k); disegnaCursori(); aggiorna(); });
     });
   }
 
   $('pp-ricarica').addEventListener('click', carica);
+  const scrittaPasso = () => { $('pp-passo').textContent = '± ' + nf(st.passo, st.passo < 1 ? 1 : 0) + '%'; };
+  scrittaPasso();
+  $('pp-passo').addEventListener('click', () => { st.passo = PASSI[(PASSI.indexOf(st.passo) + 1) % PASSI.length]; try { localStorage.setItem('gb-pp-passo', st.passo); } catch(e){} scrittaPasso(); aggiorna(); });
   $('pp-reset').addEventListener('click', () => { st.q = st.rif.slice(); st.fermo = new Set(); disegnaCursori(); aggiorna(); });
   $('pp-banco').addEventListener('click', () => {
     if (!st.righe.length) return;
@@ -10707,7 +10727,7 @@ document.getElementById('print-builder').addEventListener('click', () => {
 <script>
 /* ----- Aggiorna l'app (come in Che cucino?) -----
    VERSIONE_APP deve coincidere con VERSIONE in service-worker.js, NOME_VERSIONE con il suo NOME_VERSIONE. */
-var VERSIONE_APP = 'ginbuilder-v277', NOME_VERSIONE = '2.13.1';
+var VERSIONE_APP = 'ginbuilder-v278', NOME_VERSIONE = '2.13.2';
 var verOnline = '', verOnlineNome = '';
 function numVer(x){ return parseInt(String(x).replace(/\D/g, '')) || 0; }
 function etichettaVer(v){ return v === VERSIONE_APP ? 'v' + NOME_VERSIONE : (v && v === verOnline && verOnlineNome) ? 'v' + verOnlineNome : (v || ''); }
