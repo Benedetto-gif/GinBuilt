@@ -2401,6 +2401,19 @@ details.howto-hero:not([open]){display:none}
 .lez-part{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px 12px;border:0;border-radius:14px;background:var(--c,#2F7259);color:#fff;font:700 15px/1.2 'Inter',system-ui,sans-serif;cursor:pointer;text-align:left}
 .lez-part small{font-weight:500;font-size:12px;opacity:.9}
 .lez-part.on{outline:4px solid var(--ink);outline-offset:2px}
+.gc-tasto{display:block;width:100%;margin:14px 0 8px;padding:12px 14px;border:0;border-radius:14px;background:#7A4E2D;color:#fff;font:700 15px/1.2 'Inter',system-ui,sans-serif;text-align:left;cursor:pointer}
+.gc-box{margin:0 0 14px}
+.gc-gin{border:1px solid var(--line,#ddd);border-radius:12px;margin:6px 0;background:var(--card,#fff)}
+.gc-gin>summary{padding:10px 12px;cursor:pointer;font-weight:700;list-style:none}
+.gc-gin>summary small{font-weight:500;opacity:.7}
+.gc-gin[open]>summary{border-bottom:1px solid var(--line,#ddd)}
+.gc-body{padding:8px 12px 12px}
+.gc-r{display:grid;grid-template-columns:auto 1fr 44px;gap:6px 8px;align-items:center;padding:4px 0;border-bottom:1px dashed var(--line,#e4e4e4);font-size:14px}
+.gc-r .gc-ru{font-size:12px;white-space:nowrap;opacity:.85}
+.gc-r .gc-pc{text-align:right;font-weight:700}
+.gc-bar{grid-column:2/4;height:5px;border-radius:3px;background:#C9A47A}
+.gc-gq{margin:8px 0;font-size:14px}
+.gc-gq b.v{color:#2F7259}.gc-gq b.a{color:#C4803A}.gc-gq b.r{color:#C0392B}
 .lez-estr{display:grid;gap:8px}
 .lez-estr-r{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:10px 12px;border-radius:12px;background:var(--card);box-shadow:0 0 0 1px var(--line)}
 .lez-gr{font-weight:800;color:var(--juniper)}.lez-tm{grid-column:2;font-size:13px;color:var(--ink-soft);text-align:right}
@@ -5532,7 +5545,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.13.3</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.14</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -12738,6 +12751,87 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       STYLES.map((s, k) => (s[3] && s[3].length) ? '<button type="button" class="lez-part' + (pr && pr.modello === s[0] ? ' on' : '') + '" data-m="' + k + '" style="--c:' + (STYLE_COLORS[s[0]] || ['#5D6F8C'])[0] + '">' + s[0] + '<small>come modello</small></button>' : '').join('') + '</div>' +
       '<p class="cond-hint">Partire da uno stile carica le sue botaniche come proposta: nella tappa successiva le cambi, le togli o ne aggiungi.</p>';
   }
+
+  // ---------- Lezione 4: gli stili dei gin commerciali ----------
+  // Ruoli IPOTIZZATI per i gin con lista di botaniche pubblica: i produttori non dichiarano dosi né ruoli.
+  // Ipotesi ragionata da: botaniche dichiarate, carattere noto del gin, potenza della botanica.
+  // Le percentuali seguono le stesse regole del Builder: dose di riferimento x frazione del ruolo.
+  const GIN_RUOLI = {
+    'Tanqueray London Dry Gin': { r:{'Bacche di ginepro':'Base','Coriandolo':'Freschezza','Angelica':'Base','Liquirizia':'Rifinitura'}, p:'Quattro sole botaniche: il ginepro domina, il coriandolo lo segue, l’angelica regge e la liquirizia arrotonda appena.' },
+    'Tanqueray No. Ten': { r:{'Bacche di ginepro':'Base','Coriandolo':'Freschezza','Pompelmo':'Identità','Lime':'Freschezza','Limone':'Freschezza','Arancia dolce':'Cuore','Camomilla':'Firma','Liquirizia':'Rifinitura'}, p:'Gli agrumi freschi sono il carattere del gin; la camomilla è la nota insolita che lo fa riconoscere.' },
+    "Gordon's London Dry Gin": { r:{'Bacche di ginepro':'Base','Coriandolo':'Freschezza','Angelica':'Base','Limone':'Freschezza','Arancia dolce':'Cuore','Liquirizia':'Rifinitura','Iris':'Rifinitura','Cassia':'Rifinitura'}, p:'Un London Dry classico, tutto sul ginepro: agrumi leggeri e radici e spezie solo in tracce.' },
+    'Beefeater London Dry Gin': { r:{'Bacche di ginepro':'Base','Coriandolo':'Freschezza','Angelica':'Base','Limone':'Freschezza','Arancia amara':'Identità','Iris':'Rifinitura','Mandorla dolce':'Rifinitura','Liquirizia':'Rifinitura'}, p:'L’arancia amara di Siviglia è il tratto che lo distingue dagli altri London Dry.' },
+    'Bombay Sapphire': { r:{'Bacche di ginepro':'Base','Coriandolo':'Freschezza','Angelica':'Base','Limone':'Freschezza','Cubebe':'Cuore','Grani del paradiso':'Firma','Cassia':'Rifinitura','Iris':'Rifinitura','Liquirizia':'Rifinitura','Mandorla dolce':'Rifinitura'}, p:'Un ginepro morbido con un cuore di spezie pepate (cubebe, grani del paradiso).' },
+    'Plymouth Gin': { r:{'Bacche di ginepro':'Base','Coriandolo':'Freschezza','Angelica':'Base','Iris':'Base','Limone':'Freschezza','Arancia dolce':'Cuore','Cardamomo verde':'Cuore'}, p:'Più rotondo dei London Dry: le radici (angelica e iris) pesano di più e il cardamomo scalda il centro.' },
+    "Seagram's Extra Dry Gin": { r:{'Bacche di ginepro':'Base','Coriandolo':'Freschezza','Angelica':'Base','Arancia dolce':'Freschezza','Cardamomo verde':'Cuore','Cassia':'Rifinitura'}, p:'Ginepro e arancia dolce in primo piano, il cardamomo al centro.' },
+    'Larios Dry Gin': { r:{'Bacche di ginepro':'Base','Limone':'Freschezza','Arancia dolce':'Identità'}, p:'Il produttore dichiara solo ginepro e agrumi: l’arancia mediterranea fa da carattere.' },
+    'Larios 12 Premium Gin': { r:{'Bacche di ginepro':'Base','Coriandolo':'Freschezza','Angelica':'Base','Limone':'Freschezza','Pompelmo':'Freschezza','Arancia dolce':'Identità','Mandarino':'Cuore','Clementina':'Cuore','Fiori d\'arancio':'Firma','Lime':'Rifinitura','Noce moscata':'Rifinitura'}, p:'Un gin di agrumi: tanti agrumi in ruoli diversi, e i fiori d’arancio come firma.' },
+    "Hendrick's Gin": { r:{'Bacche di ginepro':'Base','Coriandolo':'Freschezza','Angelica':'Base','Arancia dolce':'Freschezza','Limone':'Freschezza','Rosa':'Identità','Cetriolo':'Identità','Sambuco':'Cuore','Camomilla':'Rifinitura','Carvi':'Rifinitura','Achillea':'Rifinitura','Cubebe':'Rifinitura','Iris':'Rifinitura'}, p:'Rosa e cetriolo sono il suo carattere (il produttore li aggiunge alla fine, dopo la distillazione); le altre botaniche restano sullo sfondo.' },
+    'Gin Mare': { r:{'Bacche di ginepro':'Base','Oliva':'Identità','Arancia amara':'Freschezza','Basilico':'Cuore','Rosmarino':'Cuore','Timo':'Cuore','Lentisco':'Rifinitura','Camomilla':'Rifinitura','Cardamomo verde':'Rifinitura'}, p:'Un gin mediterraneo: l’oliva è l’identità, le erbe (basilico, rosmarino, timo) fanno il cuore.' },
+    'The Botanist Islay Dry Gin': { r:{'Bacche di ginepro':'Base','Coriandolo':'Freschezza','Angelica':'Base','Limone':'Freschezza','Menta d\'acqua':'Freschezza','Erica':'Identità','Trifoglio':'Cuore','Achillea':'Cuore','Liquirizia':'Rifinitura','Arancia dolce':'Rifinitura','Iris':'Rifinitura','Cassia':'Rifinitura','Cardamomo verde':'Rifinitura','Timo':'Rifinitura'}, p:'Le erbe raccolte sull’isola di Islay (erica, trifoglio, achillea) danno l’identità; le botaniche classiche restano in tracce.' },
+    'Monkey 47': { r:{'Bacche di ginepro':'Base','Pompelmo':'Freschezza','Mirtillo rosso':'Identità','Sambuco':'Cuore','Lamponi':'Rifinitura'}, p:'Il mirtillo rosso è il suo tratto più noto. Ma qui ci sono solo 5 botaniche su 47: è il ritratto più incompleto della lista.' },
+    'Bulldog Gin': { r:{'Bacche di ginepro':'Base','Coriandolo':'Freschezza','Angelica':'Base','Longan':'Identità','Lavanda':'Cuore','Foglie di loto':'Firma','Papavero':'Rifinitura','Mandorla dolce':'Rifinitura','Cassia':'Rifinitura','Liquirizia':'Rifinitura','Iris':'Rifinitura','Sandalo bianco':'Rifinitura'}, p:'Le botaniche orientali (longan, foglie di loto, papavero) gli danno il carattere; la lavanda ammorbidisce il centro.' },
+    'Gin No. 209': { r:{'Bacche di ginepro':'Base','Coriandolo':'Freschezza','Angelica':'Base','Limone':'Freschezza','Bergamotto':'Identità','Cardamomo verde':'Cuore','Arancia dolce':'Rifinitura','Cassia':'Rifinitura'}, p:'Bergamotto e cardamomo sono la coppia che lo distingue.' },
+    'Roku Japanese Craft Gin': { r:{'Bacche di ginepro':'Base','Coriandolo':'Freschezza','Angelica':'Base','Yuzu':'Freschezza','Limone':'Freschezza','Fiori di ciliegio':'Identità','Foglie di ciliegio':'Cuore','Tè verde':'Cuore','Gyokuro':'Cuore','Pepe sansho':'Firma','Semi di angelica':'Rifinitura','Cardamomo verde':'Rifinitura','Cannella Ceylon':'Rifinitura','Arancia amara':'Rifinitura'}, p:'Le sei botaniche giapponesi (ciliegio, tè, yuzu, sansho) danno il carattere; le classiche fanno da fondo.' },
+    'Etsu Japanese Gin': { r:{'Bacche di ginepro':'Base','Coriandolo':'Freschezza','Angelica':'Base','Arancia amara':'Freschezza','Yuzu':'Identità','Gyokuro':'Cuore','Pepe sansho':'Firma','Liquirizia':'Rifinitura','Fiori di ciliegio':'Rifinitura'}, p:'Lo yuzu è il carattere, il tè gyokuro il centro, il sansho la firma pungente.' },
+    'Ki No Bi Kyoto Dry Gin': { r:{'Bacche di ginepro':'Base','Iris':'Base','Limone':'Freschezza','Yuzu':'Identità','Gyokuro':'Cuore','Zenzero':'Cuore','Aghi di pino':'Cuore','Shiso rosso':'Firma','Foglie di bambù':'Rifinitura','Pepe sansho':'Rifinitura','Kinome':'Rifinitura'}, p:'Yuzu e tè di Kyoto in primo piano, lo shiso come firma; molte botaniche in tracce.' },
+    'Nikka Coffey Gin': { r:{'Bacche di ginepro':'Base','Kabosu':'Freschezza','Amanatsu':'Freschezza','Yuzu':'Identità','Shikuwasa':'Cuore','Mela':'Cuore','Pepe sansho':'Firma'}, p:'Gli agrumi giapponesi sono il carattere; la mela dà corpo, il sansho la firma.' },
+    'Black Tomato Gin': { r:{'Bacche di ginepro':'Base',"Datterino nero dell'Etna":'Identità'}, p:'Il pomodoro è il carattere; le altre botaniche non sono dichiarate.' },
+    'CilieGin Premium Sicilian Gin': { r:{'Bacche di ginepro':'Base',"Datterino nero dell'Etna":'Identità','Limone':'Freschezza'}, p:'Pomodoro e agrumi siciliani; le altre botaniche non sono dichiarate.' },
+    'Moletto Tomato Gin': { r:{'Bacche di ginepro':'Base',"Datterino nero dell'Etna":'Identità','Limone':'Freschezza','Basilico':'Cuore','Rosmarino':'Cuore','Menta':'Rifinitura'}, p:'Il pomodoro è l’identità, le erbe mediterranee il cuore.' }
+  };
+  // righe del gin: ruolo ipotizzato, peso (dose x frazione del ruolo) e percentuale sul totale delle botaniche
+  function ricettaGin(nome){
+    const g = GIN_RUOLI[nome]; if (!g) return null;
+    const righe = Object.keys(g.r).filter(n => byName[n]).map(n => { const r = g.r[n], d = doseLibreria(n) ?? byName[n].dose ?? 1; return { n, r, w: d * (RUOLO_DOSE[r] ?? 1), porz: RUOLO_DOSE[r] ?? 1 }; });
+    const tot = righe.reduce((a, x) => a + x.w, 0) || 1;
+    righe.forEach(x => x.pc = x.w / tot * 100);
+    righe.sort((a, b) => RUOLI.indexOf(a.r) - RUOLI.indexOf(b.r) || b.pc - a.pc);
+    return righe;
+  }
+  function schedaGin(nome){
+    const righe = ricettaGin(nome), G = GIN_LISTE[nome] || {}, ic = n => (byName[n] || {}).icona || '🌿';
+    if (!righe || !righe.length) return '';
+    const fmt = v => v < 1 ? '<1%' : Math.round(v) + '%';
+    let h = '<p class="cond-hint">' + GIN_RUOLI[nome].p + '</p>' + righe.map(x => '<div class="gc-r"><span class="gc-ru">' + RUOLI_IC[x.r] + ' ' + x.r + '</span><span>' + ic(x.n) + ' ' + x.n + '</span><span class="gc-pc">' + fmt(x.pc) + '</span><span class="gc-bar" style="width:' + Math.max(1, Math.round(x.pc)) + '%"></span></div>').join('');
+    const gq = (righe.find(x => x.n === 'Bacche di ginepro') || {}).pc || 0, cl = gq >= 45 ? 'v' : gq >= 30 ? 'a' : 'r';
+    h += '<p class="gc-gq">🫐 Quota di ginepro: <b class="' + cl + '">' + Math.round(gq) + '%</b> del peso delle botaniche.</p>';
+    const el = righe.filter(x => PROFILO8[x.n]).map(x => ({ n: x.n, w: x.porz }));
+    if (el.length){
+      const t = el.reduce((a, x) => a + x.w, 0), v = ASSI8.map((_, i) => el.reduce((a, x) => a + PROFILO8[x.n][i] * x.w, 0) / t), mx = Math.max.apply(null, v) || 1;
+      h += radarSVG([{ vals: v.map(x => Math.round(x / mx * 50) / 10), color: '#7A4E2D', label: nome, potenza: potenzaMedia(el) }], 260, {});
+    }
+    if (G.nota) h += '<p class="cond-hint">ℹ️ ' + G.nota + '</p>';
+    if (G.parziale) h += '<p class="cond-hint">⚠️ ' + G.parziale + '</p>';
+    const manca = [];
+    if (!righe.some(x => x.n === 'Coriandolo')) manca.push(['il coriandolo', 'il coriandolo (se vuoi, poi lo togli)']);
+    if (!righe.some(x => LEGANTI.includes(x.n))) manca.push(['un legante', 'l’angelica (un legante serve sempre)']);
+    if (manca.length) h += '<p class="cond-hint">➕ Questo gin non dichiara ' + manca.map(m => m[0]).join(' né ') + '. Se parti da qui, l’app aggiunge ' + manca.map(m => m[1]).join(' e ') + '.</p>';
+    h += '<button type="button" class="lez-part" data-g="' + nome.replace(/"/g, '&quot;') + '" style="--c:#7A4E2D;margin-top:8px">🧭 Parti da questo gin<small>carica le sue botaniche con questi ruoli</small></button>';
+    return h;
+  }
+  function ginCommercialiHtml(){
+    const aperto = !!window._lezGinAperto;
+    let h = '<button type="button" class="gc-tasto" id="gc-tasto">' + (aperto ? '▲ Chiudi i gin commerciali' : '🥃 Gli stili dei gin commerciali') + '</button>';
+    if (!aperto) return h;
+    const nomi = Object.keys(GIN_RUOLI).filter(n => GIN_LISTE[n] && GIN_LISTE[n].b.length);
+    h += '<div class="gc-box"><p>Questi sono i gin in commercio di cui conosciamo le <strong>botaniche</strong>. I produttori però non dicono <strong>quanto</strong> ne mettono: le dosi sono un segreto di fabbrica.</p>' +
+      '<p>Per ognuno trovi un’<strong>ipotesi</strong>: a ogni botanica è dato il ruolo che sembra avere, guardando il carattere noto del gin e la potenza della botanica. Dal ruolo vengono le percentuali, con le stesse regole del Builder. La percentuale è la parte di quella botanica sul peso di tutte le botaniche.</p>' +
+      '<p class="cond-hint">È una ricostruzione per imparare, non la ricetta vera: se parti da un gin, l’assaggio dirà quanto ci si avvicina.</p>' +
+      nomi.map(n => '<details class="gc-gin" data-gin="' + n.replace(/"/g, '&quot;') + '"' + (window._lezGinOpen === n ? ' open' : '') + '><summary>🥃 ' + n + ' <small>· ' + GIN_LISTE[n].b.length + ' botaniche</small></summary><div class="gc-body">' + (window._lezGinOpen === n ? schedaGin(n) : '') + '</div></details>').join('') + '</div>';
+    return h;
+  }
+  function agganciaGinCommerciali(){
+    const t = $('gc-tasto'); if (!t) return;
+    t.onclick = () => { window._lezGinAperto = !window._lezGinAperto; const w = $('gc-wrap'); if (w){ w.innerHTML = ginCommercialiHtml(); agganciaGinCommerciali(); } };
+    document.querySelectorAll('.gc-gin').forEach(d => d.addEventListener('toggle', () => {
+      const n = d.dataset.gin;
+      if (d.open){
+        document.querySelectorAll('.gc-gin[open]').forEach(o => { if (o !== d) o.open = false; });   // uno aperto alla volta
+        window._lezGinOpen = n; const b = d.querySelector('.gc-body'); if (!b.innerHTML) b.innerHTML = schedaGin(n); agganciaRuoli();
+      } else if (window._lezGinOpen === n) window._lezGinOpen = null;
+    }));
+  }
   // ---------- Lezione Gli stili ----------
   const ROSA = ['#C0583E', '#3E7FD9'];
   function ricettaStile(k){
@@ -12890,12 +12984,12 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     if (window._lezStile == null || !ok.includes(+window._lezStile)){ const m = pr && pr.modello ? STYLES.findIndex(s => s[0] === pr.modello) : -1; window._lezStile = m >= 0 ? m : ok[0]; }
     const opz = sel => ok.map(k => '<option value="' + k + '"' + (k === sel ? ' selected' : '') + '>' + STYLES[k][0] + '</option>').join('');
     return '<div class="lez-cfr"><label>Stile<select id="lez-st">' + opz(+window._lezStile) + '</select></label><label>Confronta con<select id="lez-st2"><option value="">nessuno</option>' + opz(window._lezStile2 === '' || window._lezStile2 == null ? -1 : +window._lezStile2) + '</select></label></div>' +
-      '<div id="lez-st-out">' + schedaStile(+window._lezStile, window._lezStile2) + '</div>' + partenzaHtml();
+      '<div id="lez-st-out">' + schedaStile(+window._lezStile, window._lezStile2) + '</div>' + '<div id="gc-wrap">' + ginCommercialiHtml() + '</div>' + partenzaHtml();
   }
   function agganciaStili(){
     const a = $('lez-st'), b = $('lez-st2'); if (!a || !b) return;
     const ag = () => { window._lezStile = +a.value; window._lezStile2 = b.value; $('lez-st-out').innerHTML = schedaStile(+a.value, b.value); costruisciAggancia(); };
-    a.onchange = ag; b.onchange = ag; costruisciAggancia();
+    a.onchange = ag; b.onchange = ag; costruisciAggancia(); agganciaGinCommerciali();
   }
   const normRuolo = r => /^Identit/.test(r) ? 'Identità' : /^Cuore/.test(r) ? 'Cuore' : /Firma/.test(r) ? 'Firma' : /^Rifinitura/.test(r) ? 'Rifinitura' : /^Freschezza/.test(r) ? 'Freschezza' : 'Base';
   // cambia il legante delle basi (angelica, iris o liquirizia) nella riga protetta del Builder
@@ -12907,23 +13001,25 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     sel._ok = true; sel.value = nuovo; sel.dispatchEvent(new Event('change'));
     return true;
   }
-  function partiDa(k){
+  function partiDa(k, g){
     const pr = att(); if (!pr) return;
     let righe = [];
-    if (k !== ''){ scegliStile(+k); righe = tutteSel().map(s => [normRuolo(s.dataset.role || ''), s.value, s.dataset.trace === '1']); }
+    if (g){ righe = (ricettaGin(g) || []).map(x => [x.r, x.n, false]); k = ''; }
+    else if (k !== ''){ scegliStile(+k); righe = tutteSel().map(s => [normRuolo(s.dataset.role || ''), s.value, s.dataset.trace === '1']); }
     scegliStile(idxPers());   // sempre Personalizzato: ginepro, angelica, coriandolo
     const leg = righe.find(([r, n]) => r === 'Base' && LEGANTI.includes(n) && n !== 'Angelica');
     if (leg) cambiaLegante(leg[1]);   // lo stile usa un altro legante (iris, liquirizia): prende il posto dell'angelica
     const gia = new Set(tutteSel().map(s => s.value));
     righe.forEach(([r, n, tr]) => { if (!gia.has(n) && byName[n]){ addCustomRoleRow(r, n, false, tr); gia.add(n); } });
     renderSummary();
-    pr.modello = k === '' ? null : STYLES[+k][0]; delete pr.fatte.scelta; aggiornaNome(pr); scriviP();
+    pr.modello = g ? g : k === '' ? null : STYLES[+k][0]; delete pr.fatte.scelta; aggiornaNome(pr); scriviP();
   }
   function agganciaRuoli(){
     document.querySelectorAll('.lez-part').forEach(b => b.onclick = () => {
-      const fare = () => { partiDa(b.dataset.m); renderLezione(); };
+      const g = b.dataset.g || null;
+      const fare = () => { partiDa(b.dataset.m || '', g); renderLezione(); };
       const pr = att(), n = tutteSel().length;
-      if (n > 3) mostraAvviso('Ricominci da qui?', '<p>Le botaniche scelte finora lasciano il posto a quelle ' + (b.dataset.m === '' ? 'delle sole basi' : 'dello stile <strong>' + STYLES[+b.dataset.m][0] + '</strong>') + '.</p>', 'Ricomincia', fare);
+      if (n > 3) mostraAvviso('Ricominci da qui?', '<p>Le botaniche scelte finora lasciano il posto a quelle ' + (g ? 'del gin <strong>' + g + '</strong>' : b.dataset.m === '' ? 'delle sole basi' : 'dello stile <strong>' + STYLES[+b.dataset.m][0] + '</strong>') + '.</p>', 'Ricomincia', fare);
       else fare();
     });
   }
@@ -12969,7 +13065,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     const sc = ruoliScelti(), quanti = Object.keys(sc).length;
     const prS = att();
     let h = (prS && prS.via === 'pers' ? '<div class="lez-da">' + (prS.modello
-      ? '🎨 Parti dallo stile <strong>' + prS.modello + '</strong>: le sue botaniche sono già al loro posto. Cambiale, toglile o aggiungine quante vuoi.'
+      ? (GIN_RUOLI[prS.modello] ? '🥃 Parti dal gin <strong>' : '🎨 Parti dallo stile <strong>') + prS.modello + '</strong>: le sue botaniche sono già al loro posto. Cambiale, toglile o aggiungine quante vuoi.'
       : '🫐 Parti dalle sole basi: scegli tu una botanica per ogni ruolo. In Base puoi aggiungere o cambiare il legante.') + ' <a href="#" onclick="event.preventDefault();vaiTappaId(\'l-stili\')">Cambia partenza</a></div>' : '') +
       '<p class="cond-hint sc-ripasso">I sei ruoli li hai visti nella <a href="#" onclick="event.preventDefault();vaiTappaId(\'l-ruoli\')">lezione 2</a>: qui sotto, per ciascuno, solo un promemoria e le botaniche da scegliere.</p>' +
       // la guida per leggere le schede, prima delle schede
