@@ -1381,6 +1381,11 @@ footer.note{
 .calc-row-disp{margin-bottom:6px;}
 .calc-disp-hint{display:block;margin-bottom:16px;font-size:12px;}
 .calc-vol-off{opacity:.45;}
+.calc-mode{display:flex;align-items:center;gap:10px;width:100%;max-width:520px;margin:0 0 6px;padding:12px 16px;border:2px solid var(--accent, #2e7d5b);border-radius:14px;background:var(--card, #fff);color:var(--ink);font:inherit;font-size:15px;font-weight:650;text-align:left;cursor:pointer;}
+.calc-mode .calc-mode-ico{font-size:26px;line-height:1;}
+.calc-mode small{display:block;font-weight:500;font-size:12px;color:var(--ink-faint);}
+.calc-mode[data-mode="alzare"]{border-color:#d9822b;}
+.calc-mode-hint{margin:0 0 14px;}
 .calc-check{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--ink-soft, var(--ink));margin:-4px 0 14px;line-height:1.35;}
 .calc-check input{margin-top:2px;flex:none;}
 .calc-result{
@@ -2970,6 +2975,7 @@ html.in-mappa #nav-indietro{display:none!important}
           <li><strong>Filtra ancora freddo.</strong> La filtrazione deve avvenire alla temperatura più bassa a cui il gin verrà tenuto o servito, altrimenti la velatura ricompare. Raffredda prima anche imbuto e beuta, copri e lavora in fretta: la condensa porta acqua. Le tecniche sono nella scheda successiva.</li>
           <li><strong>Riposo finale e imbottigliamento.</strong> Qualche giorno a riposo, poi bottiglie piene, ben chiuse, al buio e al fresco.</li>
         </ol>
+        <p><strong>Se resta torbido anche dopo la filtrazione a freddo</strong>: si può alzare un poco il grado alcolico (per esempio da 43° a 46–47°), perché più alcol tiene sciolti gli oli. Prova prima su un piccolo campione. Il conto di quanto alcol forte aggiungere lo fa il calcolatore in <a href="#" onclick="event.preventDefault();showTab('calcoli')">🧮 I calcoli dell'alcol</a> (tasto 🔥 «Alzare il grado»).</p>
         <p><strong>Se vuoi lasciare più corpo</strong>: salta la filtrazione fine, lascia riposare a freddo 24–48 ore e travasa con un sifone solo la parte limpida, senza smuovere il deposito. Togli il grosso degli oli ma mantieni più aroma.</p>
         <p><strong>Il colore.</strong> Viene soprattutto da clorofilla (verde, erbe e foglie), carotenoidi e curcuma (giallo), antociani (rosso-viola: ibisco, frutti rossi), tannini e ossidazione (bruno), vaniglia, cacao, caffè, liquirizia, cannella e tonka (ambra). Per limitarlo:</p>
         <ul>
@@ -3640,20 +3646,22 @@ html.in-mappa #nav-indietro{display:none!important}
     </details>
     <div class="calc-box" id="calc-box">
       <h3>Calcolatore: diluire o rinforzare l'alcol</h3>
+      <button type="button" class="calc-mode" id="calc-mode" data-mode="diluire"></button>
+      <div class="cond-hint calc-mode-hint" id="calc-mode-hint"></div>
       <div class="calc-row">
-        <label>Grado di partenza (°)<input type="number" id="calc-from" value="96" step="0.1"></label>
-        <label>Grado desiderato (°)<input type="number" id="calc-to" value="40" step="0.1"></label>
+        <label id="calc-from-l"><span>Grado di partenza (°)</span><input type="number" id="calc-from" value="96" step="0.1"></label>
+        <label id="calc-to-l"><span>Grado desiderato (°)</span><input type="number" id="calc-to" value="40" step="0.1"></label>
         <label>Volume finale (ml)<input type="number" id="calc-vol" value="100" step="1"></label>
         <label>Temperatura della soluzione (°C)<input type="number" id="calc-temp" value="20" step="0.5"></label>
       </div>
       <label class="calc-check"><input type="checkbox" id="calc-letto"> Il grado di partenza l'ho letto con l'alcolometro a questa temperatura (non è quello dell'etichetta)</label>
       <div class="calc-row calc-row-disp">
-        <label>Oppure: alcol che ho già, a grado di partenza<span class="calc-disp">
+        <label><span id="calc-disp-t">Oppure: alcol che ho già, a grado di partenza</span><span class="calc-disp">
           <input type="number" id="calc-disp" placeholder="quantità" step="0.1" min="0">
           <select id="calc-disp-u"><option value="g">gr</option><option value="ml">ml</option></select>
         </span></label>
       </div>
-      <div class="cond-hint calc-disp-hint">Se scrivi qui la quantità di alcol che possiedi (pesata in grammi o misurata in ml), il calcolatore ignora il volume finale e ti dice quanta acqua aggiungere e il volume massimo che ottieni al grado desiderato.</div>
+      <div class="cond-hint calc-disp-hint" id="calc-disp-hint">Se scrivi qui la quantità di alcol che possiedi (pesata in grammi o misurata in ml), il calcolatore ignora il volume finale e ti dice quanta acqua aggiungere e il volume massimo che ottieni al grado desiderato.</div>
       <div class="calc-row calc-row-forte" id="calc-forte-row" hidden>
         <label>Alcol più forte per alzare il grado (°)<input type="number" id="calc-forte" value="96" step="0.1" min="1" max="100"></label>
       </div>
@@ -7051,6 +7059,32 @@ const calcDispU = document.getElementById('calc-disp-u');
 
 const calcTemp = document.getElementById('calc-temp');
 const calcLetto = document.getElementById('calc-letto');
+// Un solo tasto che cambia modalità a ogni tocco: diluire (acqua) ↔ alzare il grado (alcol più forte)
+const calcMode = document.getElementById('calc-mode');
+function aggiornaModoCalc(){
+  const alza = calcMode.dataset.mode === 'alzare';
+  calcMode.innerHTML = alza
+    ? '<span class="calc-mode-ico">🔥</span><span>Alzare il grado con alcol più forte<small>Tocca per passare a: diluire con acqua 💧</small></span>'
+    : '<span class="calc-mode-ico">💧</span><span>Diluire con acqua<small>Tocca per passare a: alzare il grado con alcol più forte 🔥</small></span>';
+  document.getElementById('calc-mode-hint').textContent = alza
+    ? 'Per esempio: un gin a 43° torbido da portare a 47° con alcol a 96°. Scrivi quanto gin hai (in grammi o ml): l\'app ti dice quanto alcol forte aggiungere.'
+    : 'Per esempio: alcol a 96° da portare al grado di estrazione o al grado finale del gin, aggiungendo acqua demineralizzata.';
+  document.querySelector('#calc-from-l span').textContent = alza ? 'Grado del gin o alcol che hai (°)' : 'Grado di partenza (°)';
+  document.querySelector('#calc-to-l span').textContent = alza ? 'Grado da raggiungere (°)' : 'Grado desiderato (°)';
+  document.getElementById('calc-disp-t').textContent = alza ? 'Quantità di gin o alcol da correggere' : 'Oppure: alcol che ho già, a grado di partenza';
+  document.getElementById('calc-disp-hint').textContent = alza
+    ? 'Pesalo in grammi (più preciso) o misuralo in ml. Se lasci vuoto, il calcolo parte dal volume finale che vuoi ottenere.'
+    : 'Se scrivi qui la quantità di alcol che possiedi (pesata in grammi o misurata in ml), il calcolatore ignora il volume finale e ti dice quanta acqua aggiungere e il volume massimo che ottieni al grado desiderato.';
+}
+calcMode.addEventListener('click', () => {
+  calcMode.dataset.mode = calcMode.dataset.mode === 'alzare' ? 'diluire' : 'alzare';
+  const alza = calcMode.dataset.mode === 'alzare';
+  const f = parseFloat(calcFrom.value), t = parseFloat(calcTo.value);
+  // se i gradi scritti non vanno nel verso scelto, propone un esempio tipico
+  if (!(f && t) || (alza ? t <= f : t >= f)){ if (alza){ calcFrom.value = 43; calcTo.value = 47; } else { calcFrom.value = 96; calcTo.value = 40; } }
+  aggiornaModoCalc(); renderCalc();
+});
+aggiornaModoCalc();
 function renderCalc(){
   const from = parseFloat(calcFrom.value), to = parseFloat(calcTo.value), vol = parseFloat(calcVol.value);
   const disp = parseFloat(calcDisp.value), haDisp = disp > 0;
@@ -7061,6 +7095,8 @@ function renderCalc(){
   if (t < 0 || t > 40){ calcResult.textContent = 'La temperatura deve stare fra 0 e 40 °C (fuori da questo intervallo le tabelle alcolometriche non valgono).'; return; }
   const d = diluizioneT({ da: from, a: to, t, vol, q: haDisp ? disp : 0, unita: calcDispU.value, letto: calcLetto.checked });
   const forteRow = document.getElementById('calc-forte-row'); if (forteRow) forteRow.hidden = !(to > d.reale + 1e-9);
+  const modoGiusto = to > d.reale + 1e-9 ? 'alzare' : 'diluire';
+  if (calcMode.dataset.mode !== modoGiusto){ calcMode.dataset.mode = modoGiusto; aggiornaModoCalc(); }
   if (to > d.reale + 1e-9){
     // Alzare il grado: l'acqua non si toglie, si aggiunge un alcol più forte (bilancio dell'alcol in massa, densità OIML alla temperatura t)
     const forte = parseFloat(document.getElementById('calc-forte').value);
@@ -7071,7 +7107,7 @@ function renderCalc(){
     else { const M = vol * ry; Mf = M * (py - px) / (pf - px); Mw = M - Mf; }
     const M = Mw + Mf, X = nf(d.reale, 1);
     calcResult.innerHTML = '<div><strong>Per alzare il grado non si toglie acqua: si aggiunge alcol più forte.</strong></div>' +
-      '<div><strong>Alcol a ' + X + '° (quello che hai):</strong> ' + nf(Mw / rx, 1) + ' ml &nbsp;·&nbsp; ' + nf(Mw, 1) + ' gr</div>' +
+      '<div><strong>Gin o alcol a ' + X + '° (quello che hai):</strong> ' + nf(Mw / rx, 1) + ' ml &nbsp;·&nbsp; ' + nf(Mw, 1) + ' gr</div>' +
       '<div><strong>Alcol a ' + nf(forte, 1) + '° da aggiungere:</strong> ' + nf(Mf / rf, 1) + ' ml &nbsp;·&nbsp; ' + nf(Mf, 1) + ' gr</div>' +
       '<div>→ <strong>' + nf(M / ry, 1) + ' ml a ' + to + '°</strong> &nbsp;·&nbsp; peso totale ' + nf(M, 1) + ' gr</div>' +
       '<div style="font-size:12px;color:var(--ink-faint);margin-top:6px;">Calcolo sul peso dell\'alcol puro, con le densità alla temperatura indicata: i millilitri non si sommano esattamente (alcol e acqua si contraggono mescolandosi), i grammi sì.</div>';
@@ -10800,7 +10836,7 @@ document.getElementById('print-builder').addEventListener('click', () => {
 <script>
 /* ----- Aggiorna l'app (come in Che cucino?) -----
    VERSIONE_APP deve coincidere con VERSIONE in service-worker.js, NOME_VERSIONE con il suo NOME_VERSIONE. */
-var VERSIONE_APP = 'ginbuilder-v292', NOME_VERSIONE = '2.15.6';
+var VERSIONE_APP = 'ginbuilder-v293', NOME_VERSIONE = '2.15.7';
 // un solo punto da cambiare: animazione iniziale e menu leggono il numero da qui
 ['splash-ver','menu-ver'].forEach(function(id){ var e = document.getElementById(id); if (e) e.textContent = 'v' + NOME_VERSIONE; });
 var verOnline = '', verOnlineNome = '';

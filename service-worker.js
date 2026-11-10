@@ -8,9 +8,9 @@
  * l'app continua comunque a funzionare senza connessione.
  */
 
-const VERSIONE = 'ginbuilder-v292';
+const VERSIONE = 'ginbuilder-v293';
 // il nome della versione che vede l'utente: deve coincidere con NOME_VERSIONE in index.html
-const NOME_VERSIONE = '2.15.6';
+const NOME_VERSIONE = '2.15.7';
 
 const FILE = [
   './',
