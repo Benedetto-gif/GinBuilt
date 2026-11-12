@@ -2423,6 +2423,11 @@ details.howto-hero:not([open]){display:none}
 .lez-estr{display:grid;gap:8px}
 .lez-estr-r{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:10px 12px;border-radius:12px;background:var(--card);box-shadow:0 0 0 1px var(--line)}
 .lez-gr{font-weight:800;color:var(--juniper)}.lez-tm{grid-column:2;font-size:13px;color:var(--ink-soft);text-align:right}
+.lez-estr-sc{color:var(--ink-faint);font-size:12.5px}
+.lez-estr-pm{display:flex;align-items:center;gap:8px;justify-self:end}
+.lez-estr-pm .lez-gr{min-width:44px;text-align:center;font-size:16px}
+.lez-estr-nota{grid-column:1 / -1;font-style:normal;font-size:12.5px;color:#9A5B00}
+.lez-estr-nota:empty{display:none}
 .lez-estr-r small{grid-column:1 / -1;color:var(--ink-soft);font-size:12.5px;line-height:1.4}
 details.lez-carta{margin:0 0 14px;border-radius:16px;background:color-mix(in srgb,var(--juniper) 12%,var(--card));box-shadow:0 0 0 2px var(--juniper)}
 details.lez-carta > summary{padding:12px 14px;font-weight:800;cursor:pointer}
@@ -2594,7 +2599,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.15.6</div>
+  <div class="splash-ver" id="splash-ver">v2.16.0</div>
 </div>
 
 <div class="wrap">
@@ -4658,7 +4663,7 @@ function umamiInfo(){
 const NOTE_PAROLA = {
   libreria: ['📚','Libreria','<p>È l\u2019elenco di tutte le botaniche dell\u2019app.</p><p>La trovi nel menu, alla pagina «Botaniche e infusi».</p><p>Ogni botanica ha la sua <strong>scheda</strong>: una pagina con i suoi dati, dalla dose ai tempi di infusione.</p><p>La userai nel percorso quando sceglierai le botaniche, ruolo per ruolo.</p>'],
   stile: ['🎨','Stile','<p>Uno stile è una ricetta di partenza.</p><p>Mette una botanica in ogni ruolo e dà al gin un carattere che si riconosce: Marino, Agrumato, Floreale e così via.</p><p>Gli stili hanno una lezione tutta loro, «Gli stili», subito dopo quella sul radar.</p>'],
-  potenza: ['🔊','Potenza','<p>È la forza con cui una botanica si fa sentire, da 1 a 10.</p><p>Più è alta, meno botanica serve: il chiodo di garofano, a potenza 10, copre tutto anche in pochissima quantità.</p><p>Se ne parla per esteso nella lezione «Leggere il radar».</p>'],
+  potenza: ['🔊','Potenza','<p>È la forza con cui una botanica si fa sentire, da 1 a 10.</p><p>Unisce quanto è intensa la sua nota e quanto a lungo resta: il chiodo di garofano, a potenza 10, si impone su tutto. Non dice quanti grammi servono: quello lo dice la dose di riferimento.</p><p>Se ne parla per esteso nella lezione «Leggere il radar».</p>'],
   dose: ['⚖️','Dose di riferimento','<p>Sono i grammi di una botanica da mettere in 100 ml di infuso perché si senta al punto giusto.</p><p>Il ginepro ne vuole circa 7,5 g, la lavanda appena 0,3 g.</p><p>Ogni ruolo usa una parte di questa dose: la Base tutta, la Firma solo il 30%.</p><p>Se ne parla per esteso nella lezione «Leggere il radar».</p>'],
   funzione: ['🧾','Funzione operativa','<p>È una delle righe della scheda di ogni botanica, nella libreria.</p><p>Dice in quale ruolo quella botanica rende meglio.</p><p>È un consiglio da cui partire: nella tua ricetta puoi darle un altro ruolo.</p>']
 };
@@ -5555,7 +5560,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.15.6</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.16.0</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -10519,6 +10524,9 @@ function dosiRicetta(selects){
     const d = byName[r.n], st = infRif(d), est = estPer(d, st);
     r.quota = qg[k];                                                         // quota nella miscela di infusi
     r.abv = est ? Math.round((est.a[0] + est.a[1]) / 2) : REF_ABV;           // gradazione dell'infuso
+    // Fatti un gin: il grado scelto nella tappa «Cosa si estrae e a che grado», se dentro le soglie di sicurezza
+    const ov = (window._estrScelte ? window._estrScelte() : {})[r.n], lm = estLimiti(d);
+    if (typeof ov === 'number' && ov > 0 && (!lm || (ov >= lm.basso && ov <= lm.m))) r.abv = ov;
     const g100 = infusoRiga(d, r.abv, REF_TEMP, 100, 'tempo', st, false, ALCOL_PARTENZA);
     r.g100 = g100 && g100.g ? g100.g : (doseLibreria(r.n) || 0);           // g di botanica per 100 ml di infuso
   });
@@ -10537,7 +10545,8 @@ function porzioneInfuso(r, quota, vol, abvF){
   return { mlFin, mlConc, acquaDil: D ? D.acquaMl : 0, acquaDilG: D ? D.acquaG : 0, concG: D ? D.alcG : null, ml: mlConc, g: r.g100 * mlConc / 100, pctGin: quota * 100, sotto };
 }
 // l'infuso da preparare: quello che serve filtrato, piu' quanto se ne perde
-function volDaPreparare(mlConc){ return Math.max(20, Math.ceil(mlConc / (1 - PERDITA_INFUSO) / 5) * 5); }
+// almeno 50 ml: sotto, le dosi delle tracce scendono a pochi centesimi di grammo e non si pesano bene
+function volDaPreparare(mlConc){ return Math.max(50, Math.ceil(mlConc / (1 - PERDITA_INFUSO) / 5) * 5); }
 function totaliInfusi(righe, vol, abvF){
   const sum = k => righe.reduce((a, r) => a + (r[k] || 0), 0);
   return { righe, vol, abvF, volConc: sum('mlConc'), acqua: sum('acquaDil'), gTot: sum('g'), sotto: righe.filter(r => r.sotto).map(r => r.n) };
@@ -10665,9 +10674,10 @@ function renderDosiGin(selects){
     const parti = st.righe.map((r, k) => Object.assign({ n: r.n }, porzioneInfuso(r, st.q[k] / 100, vol, abvF)));
     const T = totaliInfusi(parti, vol, abvF), m1 = x => nf(x, x < 10 ? 1 : 0);
     st.righe.forEach((r, k) => {
-      const x = parti[k], g = x.g;
+      // gli stessi grammi della spesa: quelli dell'infuso da preparare, con la perdita del 20%
+      const x = parti[k], g = r.g100 * (x.sotto ? x.mlFin : volDaPreparare(x.mlConc)) / 100;
       const row = box.querySelector('.pp-riga[data-k="' + k + '"]'); if (!row) return;
-      row.querySelector('.pp-val').innerHTML = fqp(st.q[k]) + '%<small>' + m1(x.mlFin) + ' ml a ' + nf(abvF, 1) + '% · ' + (g > 0 && g < 0.01 ? '< 0,01' : nf(g, g < 1 ? 2 : 1)) + ' g</small>';
+      row.querySelector('.pp-val').innerHTML = fqp(st.q[k]) + '%<small>' + m1(x.mlFin) + ' ml a ' + nf(abvF, 1) + '% · ' + (g > 0 && g < 0.01 ? '< 0,01' : nf(g, g < 1 ? 2 : 1)) + ' g da pesare</small>';
       const rg = row.querySelector('input[type=range]'); if (document.activeElement !== rg) rg.value = aPos(st.q[k]);
     });
     $('pp-totali').innerHTML = '<div class="mix-line"><span>Infusi filtrati da usare</span><strong>' + nf(T.volConc, 0) + ' ml</strong></div>' +
@@ -10727,6 +10737,7 @@ function renderDosiGin(selects){
   }
 
   $('pp-ricarica').addEventListener('click', carica);
+  window.ppForzaRicarica = () => { st.firma = ''; };   // gradi di estrazione o quote cambiati altrove: alla prossima apertura si ricalcola
   const scrittaPasso = () => { $('pp-passo').textContent = '± ' + nf(st.passo, st.passo < 1 ? 1 : 0) + '%'; };
   scrittaPasso();
   $('pp-passo').addEventListener('click', () => { st.passo = PASSI[(PASSI.indexOf(st.passo) + 1) % PASSI.length]; try { localStorage.setItem('gb-pp-passo', st.passo); } catch(e){} scrittaPasso(); aggiorna(); });
@@ -10737,7 +10748,8 @@ function renderDosiGin(selects){
     $('tf-name').value = (st.stile || 'Ricetta') + ' — proporzioni';
     tfStyleSelect.value = st.stile || '';
     tfBotaniche.innerHTML = '';
-    const vP = parseFloat(document.getElementById('dosi-vol').value), aP = parseFloat(String(document.getElementById('dosi-abv').value).replace(',', '.'));
+    // dalla tappa dell'assaggio si lavora su un campione da 100 ml; dalla ricetta finita sul volume del gin
+    const vP = window._tappa === 'assaggio' ? 100 : parseFloat(document.getElementById('dosi-vol').value), aP = parseFloat(String(document.getElementById('dosi-abv').value).replace(',', '.'));
     if (vP > 0) tfVolumeInput.value = vP;
     if (aP >= 37.5) tfAbvInput.value = aP;
     st.righe.forEach((r, k) => addBotRow({ botanica: r.n, perc: Math.round(st.q[k] * 10) / 10 }));
@@ -10836,7 +10848,7 @@ document.getElementById('print-builder').addEventListener('click', () => {
 <script>
 /* ----- Aggiorna l'app (come in Che cucino?) -----
    VERSIONE_APP deve coincidere con VERSIONE in service-worker.js, NOME_VERSIONE con il suo NOME_VERSIONE. */
-var VERSIONE_APP = 'ginbuilder-v293', NOME_VERSIONE = '2.15.7';
+var VERSIONE_APP = 'ginbuilder-v294', NOME_VERSIONE = '2.16.0';
 // un solo punto da cambiare: animazione iniziale e menu leggono il numero da qui
 ['splash-ver','menu-ver'].forEach(function(id){ var e = document.getElementById(id); if (e) e.textContent = 'v' + NOME_VERSIONE; });
 var verOnline = '', verOnlineNome = '';
@@ -12106,13 +12118,13 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         { id:'l-radar',  tab:'lezione',    lez:'radar',      e:'📡', t:'Leggere il radar',             c:'#8A63B0', d:'profilo e potenza' },
         { id:'l-stili',  tab:'lezione',    lez:'stili',      e:'🎨', t:'Gli stili',                    c:'#B04A6B', d:'come lavorano le botaniche, e da dove partire' },
         { id:'scelta',   tab:'scelta',                       e:'🌿', t:'Le botaniche, ruolo per ruolo', c:'#4C7BB5' },
+        { id:'l-estr',   tab:'lezione',    lez:'estrazione', e:'⚗️', t:'Cosa si estrae e a che grado', c:'#2F8F8F' },
         { id:'quote',    tab:'proporzioni',lez:'quote',      e:'⚖️', t:'Quote, quantità e grado',      c:'#B04A6B' },
-        { id:'l-estr',   tab:'lezione',    lez:'estrazione', e:'⚗️', t:'Cosa si estrae e a che grado', c:'#2F8F8F', d:'una gradazione per botanica' },
         { id:'spesa',    tab:'ricetta',    lez:'diluizione', e:'🛒', t:'La spesa',                     c:'#4C7BB5' },
         { id:'infusi',   tab:'ricetta',                      e:'🫙', t:'Prepara gli infusi',           c:'#8A63B0' },
-        { id:'unisci',   tab:'ricetta',    lez:'filtrazione',e:'🧻', t:'Filtra, porta al grado, unisci', c:'#2F8F8F' },
+        { id:'filtra',   tab:'ricetta',    lez:'filtrazione',e:'🧻', t:'Filtra e porta al grado',      c:'#2F8F8F' },
         { id:'assaggio', tab:'prove',      lez:'degustare',  e:'👅', t:'Assaggio e correzioni',        c:'#B8921F' },
-        { id:'bottiglia',tab:'manuale',                      e:'🍾', t:'In bottiglia',                 c:'#2F8F8F' },
+        { id:'unisci',   tab:'ricetta',                      e:'🍾', t:'Unisci e imbottiglia',         c:'#2F8F8F' },
         { id:'servire',  tab:'servire',                      e:'🍸', t:'Servire',                      c:'#C0583E', d:'garnish, tonica, cocktail' }
       ] }
   };
@@ -12368,9 +12380,9 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     if (!R){ box.innerHTML = '<p class="tappa-intro">' + (pers ? 'Scegli prima le botaniche e le quote del tuo gin.' : 'Scegli prima lo stile (tappa 1).') + '</p>'; return; }
     const A = nf(R.abvF, 1), ps = pr ? pr.passi : {};
     // dentro il percorso ogni tappa mostra solo la sua parte; dal menu si vede la ricetta intera
-    const sez = ['spesa','infusi','unisci'].includes(window._tappa) ? window._tappa : null, mostra = k => !sez || sez === k;
+    const sez = ['spesa','infusi','filtra','unisci'].includes(window._tappa) ? window._tappa : null, mostra = k => !sez ? (pers || k !== 'filtra') : sez === k;
     const numT = id => { const i = posTappa(id); return i >= 0 ? String(i + 1) : ''; };
-    const TIT = pers ? { spesa:[numT('spesa'),'La spesa'], infusi:[numT('infusi'),'Prepara gli infusi'], unisci:[numT('unisci'),'Filtra, porta al grado, unisci'] }
+    const TIT = pers ? { spesa:[numT('spesa'),'La spesa'], infusi:[numT('infusi'),'Prepara gli infusi'], filtra:[numT('filtra'),'Filtra e porta al grado'], unisci:[numT('unisci'),'Unisci e imbottiglia'] }
       : { spesa:['3','La spesa'], infusi:['4','Gli infusi passo passo'], unisci:['5','Unisci e imbottiglia'] };
     $('ricetta-h').innerHTML = sez ? '<span>' + TIT[sez][0] + '</span>' + TIT[sez][1] : '<span>\ud83d\udccb</span>La ricetta passo passo';
     const chk = (k, html) => '<label class="rc-passo' + (ps[k] ? ' ok' : '') + '"><input type="checkbox" data-k="' + esc(k) + '"' + (ps[k] ? ' checked' : '') + '><span>' + html + '</span></label>';
@@ -12396,27 +12408,46 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         return '<div class="rc-inf"><div class="rc-inf-t">' + (k + 1) + '. ' + iconaHtml(byName[r.n]) + ' ' + esc(r.n) + (r.tracce ? ' <em>(tracce)</em>' : '') + '</div>' +
           chk('in-p-' + r.n, '⚖️ Pesa <b>' + fg(x.g != null ? x.g : r.g) + ' g</b> di ' + esc(r.n.toLowerCase()) + (r.parte && r.n.toLowerCase().indexOf(r.parte.split(/[\s\/]/)[0].toLowerCase()) < 0 ? ' (' + esc(r.parte) + (byName[r.n].categoria === 'Agrumi' && r.stato === 'fresca' ? ' fresca' : '') + ')' : '')) +
           chk('in-x-' + r.n, prepRicetta(byName[r.n], x.stato || (r.stato === 'fresca' ? 'fresco' : 'secco'))) +
-          chk('in-a-' + r.n, '🧪 Nel barattolo: <b>' + f1(dl.alcMl || 0) + ' ml</b> (' + fg(dl.alcG || 0) + ' g) <b>di alcol a 96%</b> + <b>' + f1(dl.acquaMl || 0) + ' ml</b> (' + fg(dl.acquaG || 0) + ' g) <b>d’acqua</b> = ' + f1(r.volInf) + ' ml a <b>' + r.abv + '%</b>' + (pers ? ' <small>(ne servono ' + f1(r.mlConc) + ' ml filtrati: il resto è la perdita)</small>' : '')) +
+          chk('in-a-' + r.n, '🧪 Nel barattolo: <b>' + f1(dl.alcMl || 0) + ' ml</b> (' + fg(dl.alcG || 0) + ' g) <b>di alcol a 96%</b> + <b>' + f1(dl.acquaMl || 0) + ' ml</b> (' + fg(dl.acquaG || 0) + ' g) <b>d’acqua</b> = ' + f1(r.volInf) + ' ml a <b>' + r.abv + '%</b>' + (r.volInf >= r.mlConc * 1.6 ? ' <small>(ne userai circa ' + f1(r.mlConc) + ' ml: una dose così piccola non si pesa bene, perciò si prepara di più e il resto si conserva per le correzioni)</small>' : '') + (pers && r.volInf < r.mlConc * 1.6 ? ' <small>(ne servono ' + f1(r.mlConc) + ' ml filtrati: il resto è la perdita)</small>' : '')) +
           chk('in-c-' + r.n, '🌑 Chiudi, scuoti ed etichetta; tieni al buio. Assaggia dopo <b>' + DUR(x.tmin) + '</b>' + (x.tmax != null ? ', filtra entro <b>' + DUR(x.tmax) + '</b>' : '')) +
           '</div>'; }).join('') +
       '<button type="button" class="primary-btn rc-diario">📓 Ricordami quando assaggiare</button></section>';
     // unisci e imbottiglia
-    if (mostra('unisci')) h += '<section class="rc-sez" id="rc-unisci"><h3>' + (pers ? '🧻 Filtra, porta al grado e unisci' : '🍾 Unisci e imbottiglia') + '</h3><p class="rc-sub">Quando tutti gli infusi sono pronti.</p>' +
-      chk('un-filtra', '🧻 <b>Filtra ogni infuso</b>: versalo in un imbuto con un filtro di carta (va bene quello da caffè) e raccogli il liquido limpido.') +
-      '<h4>Porta ogni infuso a ' + A + '% e versalo nella miscela</h4>' +
+    // Gin no problem!: filtra, diluisci, unisci e imbottiglia in un passo. Fatti un gin: prima filtra e porta al grado tenendo separati,
+    // poi l'assaggio su un campione (si possono ancora correggere le quote), infine unisci e imbottiglia.
+    const righeDil = () =>
       R.righe.map(r => chk('un-d-' + r.n, iconaHtml(byName[r.n]) + ' <b>' + esc(r.n) + '</b>: ' + (r.sotto ? '<b>' + f1(r.mlFin) + ' ml</b> di infuso filtrato (è già sotto ' + A + '%)' : '<b>' + f1(r.mlConc) + ' ml</b>' + (r.concG ? ' (' + fg(r.concG) + ' g)' : '') + ' di infuso filtrato a ' + r.abv + '% + <b>' + f1(r.acquaDil) + ' ml</b> (' + fg(r.acquaDilG || 0) + ' g) d’acqua = ' + f1(r.mlFin) + ' ml a ' + A + '%'))).join('') +
       '<p class="cond-hint">L’acqua è un po’ più della differenza fra i volumi: mescolando alcol e acqua il volume si contrae. Per la massima precisione pesa invece di misurare.</p>' +
-      chk('un-mix', '🥄 <b>Unisci</b> tutti gli infusi già a ' + A + '% in un solo contenitore: ' + f1(R.vol) + ' ml di gin.') +
-      (pers ? '<p class="cond-hint">Riposo, chiarificazione e bottiglia vengono dopo l’assaggio, nelle prossime tappe.</p>' : chk('un-riposo', '❄️ <b>Lascia riposare</b> la miscela al fresco e al buio per 24–48 ore, poi travasa solo la parte limpida senza smuovere il deposito.') +
+      '';
+    if (pers && mostra('filtra')) h += '<section class="rc-sez" id="rc-filtra"><h3>🧻 Filtra e porta al grado</h3><p class="rc-sub">Quando ogni infuso ha finito il suo tempo. Gli infusi restano separati: si uniscono solo dopo l’assaggio.</p>' +
+      chk('un-filtra', '🧻 <b>Filtra ogni infuso</b>: prima un colino o una garza per togliere la botanica, poi un filtro di carta (va bene quello da caffè). Raccogli il liquido limpido.') +
+      '<h4>Porta tutto l’infuso filtrato a ' + A + '%, ciascuno nella sua bottiglia</h4>' +
+      '<p class="cond-hint">Misura quanti ml hai filtrato e diluiscili tutti: all’assaggio potresti cambiare le quote, e la scorta serve proprio a questo.</p>' +
+      R.righe.map(r => {
+        if (r.sotto) return chk('fi-d-' + r.n, iconaHtml(byName[r.n]) + ' <b>' + esc(r.n) + '</b>: è già sotto ' + A + '%, non si diluisce.');
+        const T100 = 100 * r.abv / R.abvF, D = diluizione(R.abvF, T100, r.abv), att = r.volInf * (1 - PERDITA_INFUSO);
+        return chk('fi-d-' + r.n, iconaHtml(byName[r.n]) + ' <b>' + esc(r.n) + '</b> (a ' + r.abv + '%): per ogni <b>100 ml</b> di infuso filtrato aggiungi <b>' + f1(D.acquaMl) + ' ml</b> (' + fg(D.acquaG) + ' g) d’acqua → ' + f1(T100) + ' ml a ' + A + '%.' +
+          ' <small>Ti aspetti circa ' + f1(att) + ' ml filtrati; per il gin ne servono ' + f1(r.mlConc) + ' ml, cioè ' + f1(r.mlFin) + ' ml a ' + A + '%.</small>');
+      }).join('') +
+      '<p class="cond-hint">L’acqua è un po’ più della differenza fra i volumi: mescolando alcol e acqua il volume si contrae. Per la massima precisione pesa invece di misurare.</p>' +
+      chk('fi-etich', '🏷️ <b>Etichetta</b> ogni bottiglia con botanica e ' + A + '%. <b>Non unirli ancora</b>: nella prossima tappa ne prendi pochi ml per un campione e decidi le quote definitive.') + '</section>';
+    if (mostra('unisci')) h += '<section class="rc-sez" id="rc-unisci"><h3>🍾 Unisci e imbottiglia</h3><p class="rc-sub">' + (pers ? 'Con le quote ' + (pr.adottate ? 'corrette all’assaggio' : 'decise') + ': gli infusi sono già filtrati e a ' + A + '%.' : 'Quando tutti gli infusi sono pronti.') + '</p>' +
+      (pers ? '<h4>Versa gli infusi, già a ' + A + '%, in un solo contenitore</h4>' +
+          R.righe.map(r => chk('un-v-' + r.n, iconaHtml(byName[r.n]) + ' <b>' + esc(r.n) + '</b>: <b>' + f1(r.mlFin) + ' ml</b> <small>(' + nf(r.quota * 100, 1) + '%)</small>')).join('') +
+          '<p class="cond-hint">Se all’assaggio hai cambiato le quote e un infuso non basta, usa la scorta che ti è rimasta oppure fai un po’ meno gin: le quote contano più del volume.</p>'
+        : chk('un-filtra', '🧻 <b>Filtra ogni infuso</b>: versalo in un imbuto con un filtro di carta (va bene quello da caffè) e raccogli il liquido limpido.') +
+          '<h4>Porta ogni infuso a ' + A + '% e versalo nella miscela</h4>' + righeDil()) +
+      chk('un-mix', '🥄 <b>Mescola</b>: ' + f1(R.vol) + ' ml di gin a ' + A + '%.') +
+      chk('un-riposo', '❄️ <b>Lascia riposare</b> la miscela al fresco e al buio per 24–48 ore, poi travasa solo la parte limpida senza smuovere il deposito.') +
       chk('un-velo', '🌫️ Se il gin resta un po’ velato, <b>mettilo in frigo per una notte</b> e filtralo di nuovo, ancora freddo, con un filtro di carta.') +
       chk('un-bott', '🍾 <b>Imbottiglia</b> nel vetro scuro ed etichetta con nome, data e ' + A + '% vol.') +
-      chk('un-assaggio', '👅 <b>Assaggia e annota</b>: cosa togliere o aggiungere la prossima volta.')) +
-      '<button type="button" class="ghost-btn rc-scheda">🧪 Crea la scheda di prova di questa ricetta</button></section>';
+      (pers ? '<p class="cond-hint">📘 Lotti, potenza degli infusi e fogli di calcolo: li trovi nel manuale «Dal macerato alla bottiglia», in «Capire perché».</p>'
+        : chk('un-assaggio', '👅 <b>Assaggia e annota</b>: cosa togliere o aggiungere la prossima volta.') + '<button type="button" class="ghost-btn rc-scheda">🧪 Crea la scheda di prova di questa ricetta</button>') + '</section>';
     box.innerHTML = h;
     box.querySelectorAll('.rc-passo input').forEach(c => c.addEventListener('change', () => {
       const pr = att(); if (!pr) return; if (c.checked) pr.passi[c.dataset.k] = 1; else delete pr.passi[c.dataset.k]; scriviP();
       c.closest('.rc-passo').classList.toggle('ok', c.checked);
-      ['spesa','infusi','unisci'].forEach(id => { const s = $('rc-' + id); if (s){ const tutti = [...s.querySelectorAll('.rc-passo input')]; if (tutti.length && tutti.every(x => x.checked)) fatta(id); } });
+      ['spesa','infusi','filtra','unisci'].forEach(id => { const s = $('rc-' + id); if (s){ const tutti = [...s.querySelectorAll('.rc-passo input')]; if (tutti.length && tutti.every(x => x.checked)) fatta(id); } });
     }));
     const bd = box.querySelector('.rc-diario'); if (bd) bd.onclick = () => {
       // promemoria nel diario senza moduli da compilare: stessi volumi, gradi e tempi della ricetta
@@ -12456,7 +12487,8 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     if (!b){ b = document.createElement('div'); b.className = 'tappa-bar'; pan.appendChild(b); }
     const ok = pr.fatte[tp.id], dopo = T[i + 1], prima = T[i - 1];
     const extra = tp.id === 'infusi' && tab === 'diario' ? '<button type="button" class="primary-btn tb-x" data-x="infusi">🫙 Prepara gli infusi del progetto</button>'
-      : tp.id === 'assaggio' ? '<button type="button" class="primary-btn tb-x" data-x="scheda">🧪 Nuova scheda con le quote del progetto</button>' : '';
+      : tp.id === 'assaggio' ? '<button type="button" class="primary-btn tb-x" data-x="scheda">🧪 Campione da 100 ml con le quote del progetto</button>' +
+          (pr.via === 'pers' ? '<button type="button" class="ghost-btn tb-x2">✅ Adotta nel progetto le quote della scheda aperta</button>' : '') : '';
     b.style.setProperty('--tc', tp.c);
     b.innerHTML = '<div class="tb-tit"><span class="tb-e">' + tp.e + '</span>' + (tp.studio ? 'Per capire' : 'Tappa') + ' ' + (i + 1) + ' di ' + T.length + ' · ' + tp.t + (ok ? ' <span class="tb-ok">✓ ' + (tp.studio ? 'capito' : 'fatta') + '</span>' : '') +
       '<small>' + VIE[pr.via].e + ' ' + VIE[pr.via].t + ' \u00b7 ' + esc(pr.nome) + '</small></div>' + extra +
@@ -12472,6 +12504,23 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       if (x.dataset.x === 'infusi') preparaInfusiRicetta();
       else { window._navDaMenu = true; showTab('proporzioni'); window._tappa = 'assaggio'; $('pp-banco').click(); }
     };
+    const x2 = b.querySelector('.tb-x2'); if (x2) x2.onclick = adottaQuote;
+  }
+  // le quote corrette all'assaggio diventano quelle del progetto: unione e bottiglia le useranno
+  function adottaQuote(){
+    const pr = att(), R = dosiRicetta(tutteSel()); if (!pr || !R) return;
+    const perc = {};
+    document.querySelectorAll('#tf-botaniche .bot-row').forEach(row => { const n = row.querySelector('.bot-row-select').value, v = parseFloat(row.querySelector('.bot-row-perc').value); if (n && v > 0) perc[n] = (perc[n] || 0) + v; });
+    const nomi = R.righe.map(r => r.n), extra = Object.keys(perc).filter(n => !nomi.includes(n)), mancano = nomi.filter(n => !perc[n]);
+    if (!Object.keys(perc).length){ mostraAvviso('Nessuna scheda aperta', '<p>Apri prima un campione con le quote del progetto, assaggialo e correggi le percentuali nella scheda. Poi torna qui.</p>', '', null); return; }
+    if (extra.length || mancano.length){ mostraAvviso('Botaniche diverse', '<p>La scheda non ha le stesse botaniche del progetto' + (extra.length ? ' (in più: ' + extra.map(esc).join(', ') + ')' : '') + (mancano.length ? ' (mancano: ' + mancano.map(esc).join(', ') + ')' : '') + '.</p><p>Qui si cambiano solo le quote. Per aggiungere o togliere botaniche torna alla tappa «Le botaniche, ruolo per ruolo»: dovrai preparare i nuovi infusi.</p>', '', null); return; }
+    const T = nomi.reduce((a, n) => a + perc[n], 0);
+    const q = nomi.map(n => Math.round(perc[n] / T * 10000) / 100);
+    mostraAvviso('✅ Adotta queste quote?', '<p>' + nomi.map((n, k) => esc(n) + ': <b>' + nf(q[k], 1) + '%</b>').join('<br>') + '</p><p>Diventano le quote del progetto: l’unione e la bottiglia useranno queste.</p>', 'Adotta', () => {
+      pr.pp = { v: 2, firma: nomi.join('|'), q }; pr.adottate = Date.now(); scriviP();
+      try { if (window.ppForzaRicarica) window.ppForzaRicarica(); } catch(e){}
+      setTimeout(() => mostraAvviso('Fatto', '<p>Quote adottate. Prossima tappa: unisci e imbottiglia.</p>', '', null), 50);
+    });
   }
   function apriSezione(tp){
     if (tp.sez){ const s = $(tp.sez); if (s){ s.style.scrollMarginTop = '84px'; const v = () => s.scrollIntoView({ block: 'start' }); setTimeout(v, 60); setTimeout(v, 450); } }
@@ -12503,8 +12552,10 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         case 'quote': return f1(parseFloat($('dosi-vol').value) || 700) + ' ml a ' + nf(parseFloat($('dosi-abv').value) || 43, 1) + '% · quote degli infusi';
         case 'spesa': return 'botaniche, alcol, attrezzi';
         case 'infusi': { const n = diarioCarica().filter(x => !x.finito).length; return n ? n + ' in corso' : (pr.via === 'chiavi' ? 'dosi, gradazioni, tempi' : 'macerazione e diario'); }
-        case 'unisci': return 'filtra, diluisci, riposa';
-        case 'assaggio': { let n = 0; try { n = (JSON.parse(localStorage.getItem('erbario_test_sheets_v1')) || []).length; } catch(e){} return n ? n + ' schede' : 'schede di prova'; }
+        case 'unisci': return pr.via === 'pers' ? 'unisci, riposa, imbottiglia' : 'filtra, diluisci, riposa';
+        case 'filtra': return 'ogni infuso a parte, al grado finale';
+        case 'l-estr': { const n = Object.keys(pr.estr || {}).length; return n ? (n === 1 ? '1 grado scelto da te' : n + ' gradi scelti da te') : 'una gradazione per botanica'; }
+        case 'assaggio': if (pr.via === 'pers') return pr.adottate ? 'quote corrette adottate' : 'campione al banco, poi correggi'; { let n = 0; try { n = (JSON.parse(localStorage.getItem('erbario_test_sheets_v1')) || []).length; } catch(e){} return n ? n + ' schede' : 'schede di prova'; }
         case 'bottiglia': return 'filtrare, unire, imbottigliare';
       }
     } catch(e){}
@@ -12639,7 +12690,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         '<p class="lez-sub">🔎 <strong>Come si legge</strong></p>' +
         '<p>Qui sotto scegli uno stile e trovi tre cose:</p><ul><li>le sue <strong>botaniche, ruolo per ruolo</strong>;</li><li>il <strong>radar di che cosa aggiunge lo stile</strong>: mostra solo le botaniche messe accanto alle basi. Ginepro, legante e coriandolo ci sono in tutti gli stili, quindi non aiutano a distinguerli;</li><li>quali note le botaniche <strong>rafforzano insieme</strong> e quali porta <strong>una sola</strong>.</li></ul>' +
         '<p class="lez-sub">🥄 <strong>Le dosi dentro lo stile</strong></p>' +
-        '<p>Ogni infuso si prepara sempre a dose piena. Il ruolo decide quanta parte di gin occupa quell’infuso: Base e Freschezza una parte intera, Identità l’80 %, Cuore il 70 %, Firma il 30 %. Le botaniche «in tracce» e la Rifinitura circa il 15 %. Il ginepro, che deve prevalere, parte da metà del gin. Per questo una botanica di firma pesa poco sul radar anche se è molto potente: si sente, ma come un accento.</p>' +
+        '<p>Ogni infuso si prepara sempre a dose piena. Il ruolo decide quanta parte del gin occupa quell’infuso: molta per Base e Freschezza, poca per Firma e Rifinitura. Il ginepro, che deve prevalere, parte da metà del gin. Per questo una botanica di firma pesa poco sul radar anche se è molto potente: si sente, ma come un accento. I numeri esatti li vedrai nella tappa delle quote.</p>' +
         '<p class="lez-sub">🔺 <strong>Quando le note si sommano troppo</strong></p>' +
         '<p>Se molte botaniche insistono sulla stessa nota, quella nota cresce molto: è la <strong>ridondanza</strong>. A volte è voluta (uno stile agrumato vuole l’agrumato forte), altre volte è un eccesso che appiattisce il gin. Stili diversi distribuiscono le note in modo diverso: confrontane due sullo stesso radar.</p>' +
         '<p class="lez-sub">🧭 <strong>Poi scegli</strong></p>' +
@@ -12651,9 +12702,9 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         '<p class="lez-sub">🎯 <strong>Il carattere</strong></p>' +
         '<p>Sotto il radar trovi le note che prevalgono e il <strong>carattere</strong> della botanica. Il carattere dice se il profilo è raccolto su poche note o sparso su molte:</p><ul><li><em>equilibrato</em>: le note sono quasi tutte alla pari;</li><li><em>sfumato</em>: se ne sentono parecchie;</li><li><em>marcato</em>: due o tre si staccano dalle altre;</li><li><em>netto</em>: ne domina una sola.</li></ul>' +
         '<p class="lez-sub">🔊 <strong>La potenza</strong></p>' +
-        '<p>Il radar dice <em>quali</em> note ha una botanica. Non dice <em>quanto forte</em> si fa sentire. Per questo c’è la <strong>potenza</strong>, da 1 a 10. Il chiodo di garofano, a potenza 10, copre tutto anche in pochissima quantità. Una botanica a potenza bassa, come la fragola, va messa in quantità maggiore per farsi notare.</p>' +
+        '<p>Il radar dice <em>quali</em> note ha una botanica. Non dice <em>quanto forte</em> si fa sentire. Per questo c’è la <strong>potenza</strong>, da 1 a 10: unisce quanto è intensa la sua nota e quanto a lungo resta. Il chiodo di garofano, a potenza 10, si impone su tutto. La fragola, a potenza 4, resta in sottofondo.</p>' +
         '<p class="lez-sub">⚖️ <strong>La dose di riferimento</strong></p>' +
-        '<p>Ogni botanica ha una <strong>dose di riferimento</strong>: i grammi da mettere in 100 ml di infuso perché si senta al punto giusto. Più una botanica è potente, meno ne serve. Il ginepro ha una dose di circa 7,5 g, la lavanda di appena 0,3 g.</p>' +
+        '<p>Ogni botanica ha una <strong>dose di riferimento</strong>: i grammi da mettere in 100 ml di infuso perché si senta al punto giusto.</p><p>La dose non è la potenza. La potenza dice quanto si sente la nota; la dose dice quanti grammi servono per arrivarci, e dipende da quanto aroma libera un grammo di quella botanica. Ginepro e lavanda hanno tutti e due potenza 10, ma del ginepro servono circa 7,5 g, della lavanda appena 0,3 g.</p>' +
         '<p class="lez-sub">🔁 <strong>L’equivalente aromatico</strong></p>' +
         '<p>Se 0,3 g di lavanda si sentono quanto 7,5 g di ginepro, allora <strong>1 g di lavanda vale circa 25 g di ginepro</strong>. È l’<strong>equivalente aromatico</strong>: quanti grammi di una botanica servono per «suonare» forte come un grammo di un’altra.</p><p>Per questo i grammi di due botaniche diverse non si possono confrontare fra loro. Il motivo è nelle molecole: non conta solo quanta ce n’è, ma quanta poca ne basta perché il naso la senta. Il linalolo della lavanda si sente in quantità molto più piccole del pinene del ginepro.</p>' +
         '<p class="lez-sub">🥄 <strong>La porzione</strong></p>' +
@@ -12661,19 +12712,19 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         '<p class="lez-sub">➕ <strong>Due botaniche nello stesso gin</strong></p>' +
         '<p>Quando due botaniche entrano nello stesso gin, i loro radar si sommano asse per asse, ognuno in proporzione alle sue porzioni. Succedono due cose:</p><ul><li><strong>dove hanno la stessa nota, la nota si rafforza</strong> e il gin si sposta da quella parte;</li><li><strong>dove una ha una nota che all’altra manca, si completano</strong>.</li></ul><p>Alla fine la somma si riporta in scala, con la nota più alta a 5. Così il disegno mostra verso dove va il gin, non quanto è forte.</p><p>Quando sceglierai le botaniche, l’app guarderà le coppie e le segnerà con un colore:</p><ul><li>🔴 <strong>ridondanza</strong>: le due botaniche portano la stessa nota. Si sommano, e quella nota rischia di diventare troppa;</li><li>🟠 <strong>rischio</strong>: le due botaniche si somigliano in parte, oppure una va usata con cautela. Si possono tenere, con dosi attente;</li><li>🟢 <strong>complementari</strong>: portano note diverse che si completano. È il caso migliore.</li></ul>' +
         '<p class="lez-sub">👅 <strong>È una stima</strong></p>' +
-        '<p>Il palato non fa le somme come l’aritmetica. Raddoppiare una botanica non la fa sentire il doppio, ma solo un po’ di più. E una botanica molto potente può coprirne una delicata, anche se hanno note diverse. Anche le dosi di riferimento sono stime d’esperienza: se all’assaggio una botanica copre le altre, abbassa la sua dose nella taratura personale. L’ultima parola spetta sempre all’assaggio.</p>' +
+        '<p>Il palato non fa le somme come l’aritmetica. Raddoppiare una botanica non la fa sentire il doppio, ma solo un po’ di più. E una botanica molto potente può coprirne una delicata, anche se hanno note diverse. Anche le dosi di riferimento sono stime d’esperienza: se all’assaggio una botanica copre le altre, le abbasserai la quota. L’ultima parola spetta sempre all’assaggio.</p>' +
         '<p>Ora prova: scegli due botaniche e uniscile.</p>' +
         approf('che cosa si sente e perché', "showTab('matrice')") },
     estrazione: { e:'⚗️', t:'Cosa si estrae e a che grado',
       html: '<p>L’alcol non estrae tutto allo stesso modo. Più il grado è alto, più scioglie le sostanze che non amano l’acqua: gli <strong>oli essenziali</strong> e i terpeni, che portano il profumo. Più è basso, più passano le sostanze solubili in acqua: <strong>zuccheri, acidi, tannini</strong>.</p>' +
         '<p>Per questo ogni botanica ha la sua gradazione di estrazione. Troppo alta, e si estraggono anche clorofilla, resine e note amare o «verdi»; troppo bassa, e l’infuso resta acquoso e povero di profumo. Conta anche il tempo: oltre il limite escono le sostanze indesiderate.</p>' +
-        '<p>Ecco gradazione e tempo consigliati per le botaniche del tuo progetto: ognuna si mette in infusione da sola, alla sua gradazione.</p>' + noz('la solubilità selettiva', 'La solubilità selettiva') },
+        '<p>Qui sotto, per le botaniche del tuo progetto, il tempo e la gradazione consigliati. Ognuna si mette in infusione da sola, alla sua gradazione: scegli tu a quale, dentro i limiti.</p>' + noz('la solubilità selettiva', 'La solubilità selettiva') },
     diluizione: { e:'🌡️', t:'Diluire e rinforzare',
-      html: '<p>Ogni infuso si prepara alla sua gradazione e poi, filtrato, si porta con acqua demineralizzata alla gradazione finale che scegli qui. Diluire è semplice; alzare il grado invece richiede di aggiungere un alcol più forte, perché l’acqua non si toglie.</p>' +
+      html: '<p>Ogni infuso si prepara alla sua gradazione e poi, filtrato, si porta con acqua demineralizzata alla gradazione finale che hai scelto insieme alle quote. Diluire è semplice; alzare il grado invece richiede di aggiungere un alcol più forte, perché l’acqua non si toglie.</p>' +
         '<p>I conti si fanno sul peso dell’alcol: alcol e acqua, mescolandosi, si contraggono e i millilitri non si sommano esattamente.</p>' + approf('🧮 I calcoli dell’alcol', "showTab('calcoli')") },
     quote: { e:'⚖️', t:'Quote e potenza',
       html: '<p>La quota è la parte di gin occupata da ciascun infuso, già portato alla gradazione finale. Da sola non basta a giudicare: conta la potenza. Una botanica forte in una quota piccola può pesare più di una debole in una quota grande.</p>' +
-        '<p>Il ginepro deve restare la nota prevalente: per questo parte da <strong>metà del gin</strong> (50 % degli infusi). Le altre botaniche si dividono l’altra metà secondo i ruoli dello stile. Ogni infuso ha già la sua dose di botanica, quindi una botanica in Base o Freschezza prende una parte intera, in Identità l’80 %, in Cuore il 70 %, in Firma il 30 %, in tracce il 15 %.</p><p class="lez-sub">🧮 <strong>Un esempio: lo stile Mediterraneo</strong></p><p>Il ginepro prende metà del gin: 50 %. Resta l’altra metà, da dividere fra le altre botaniche.</p><p>Si contano le parti delle altre botaniche:</p><ul><li>angelica, coriandolo e bergamotto: 1 parte ciascuna, cioè 3;</li><li>finocchio di mare (Identità): 0,8;</li><li>lentisco (Cuore): 0,7;</li><li>elicriso (in tracce): 0,15;</li><li>rosmarino (in tracce): 0,15.</li></ul><p>In tutto fanno 4,8 parti.</p><p>Una parte vale quindi 50 % diviso 4,8, cioè circa 10,4 %. Il lentisco ne prende il 70 %: circa 7,3 % del gin. Vuol dire che il 70 % si riferisce a una botanica da una parte intera, come l’angelica, non al ginepro. Così il totale fa sempre 100 %.</p><p>Se sposti i cursori, tieni d’occhio il ginepro: la sua quota è verde dal 45 % in su, arancio fra 30 e 44%, rossa sotto il 30%: soglie di lavoro, non di legge. Muovi i cursori e guarda come cambia il radar.</p>' },
+        '<p>Il ginepro deve restare la nota prevalente: per questo parte da <strong>metà del gin</strong> (50 % degli infusi). Le altre botaniche si dividono l’altra metà secondo i ruoli dello stile. Ogni infuso ha già la sua dose di botanica, quindi una botanica in Base o Freschezza prende una parte intera, in Identità l’80 %, in Cuore il 70 %, in Firma il 30 %, in tracce il 15 %.</p><p>Anche il legante (angelica, iris, liquirizia) prende una parte intera. Non è un controsenso: profuma poco, e nel suo infuso la botanica è poca. Una quota grande serve a fargli fare il suo lavoro, trattenere gli aromi, non a farlo sentire.</p><p class="lez-sub">🧮 <strong>Un esempio: lo stile Mediterraneo</strong></p><p>Il ginepro prende metà del gin: 50 %. Resta l’altra metà, da dividere fra le altre botaniche.</p><p>Si contano le parti delle altre botaniche:</p><ul><li>angelica, coriandolo e bergamotto: 1 parte ciascuna, cioè 3;</li><li>finocchio di mare (Identità): 0,8;</li><li>lentisco (Cuore): 0,7;</li><li>elicriso (in tracce): 0,15;</li><li>rosmarino (in tracce): 0,15.</li></ul><p>In tutto fanno 4,8 parti.</p><p>Una parte vale quindi 50 % diviso 4,8, cioè circa 10,4 %. Il lentisco ne prende il 70 %: circa 7,3 % del gin. Vuol dire che il 70 % si riferisce a una botanica da una parte intera, come l’angelica, non al ginepro. Così il totale fa sempre 100 %.</p><p>Se sposti i cursori, tieni d’occhio il ginepro: la sua quota è verde dal 45 % in su, arancio fra 30 e 44%, rossa sotto il 30%: soglie di lavoro, non di legge. Muovi i cursori e guarda come cambia il radar.</p>' },
     filtrazione: { e:'🧻', t:'Macerare e filtrare',
       html: '<p>Ogni infuso macera al buio per il suo tempo. Quando è pronto si filtra: prima un colino o una garza per togliere le botaniche, poi un filtro di carta per le particelle fini.</p>' +
         '<p>Se dopo la diluizione compare una velatura, è l’<strong>effetto louche</strong>: gli oli essenziali non restano sciolti quando il grado scende. Si rimedia raffreddando e filtrando a freddo. Il diario ti ricorda quando assaggiare e quando filtrare.</p>' + noz('i metodi di filtrazione', 'Metodi di filtrazione') },
@@ -13119,13 +13170,38 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       else fare();
     });
   }
+  // il grado di estrazione di ogni infuso: parte dal centro del consigliato, si sceglie entro le soglie di sicurezza
+  window._estrScelte = () => { const pr = att(); return (pr && pr.via === 'pers' && pr.estr) ? pr.estr : {}; };
+  function gradoEstr(n){
+    const d = byName[n], E = estPer(d, infRif(d)), lm = estLimiti(d), pr = att(), v = pr && pr.estr ? pr.estr[n] : null;
+    const centro = E ? Math.round((E.a[0] + E.a[1]) / 2) : 60;
+    return { E, lm, min: lm ? lm.basso : 40, max: lm ? lm.m : 80, g: typeof v === 'number' ? v : centro, centro, scelto: typeof v === 'number' };
+  }
+  function notaEstr(n){
+    const G = gradoEstr(n); if (!G.E) return '';
+    if (G.g > G.E.a[1]) return '⚠️ Sopra il consigliato: ' + (G.lm ? G.lm.altoTxt : 'più note amare e verdi') + '.';
+    if (G.g < G.E.a[0]) return '⚠️ Sotto il consigliato: ' + (G.lm ? G.lm.bassoTxt : 'infuso più acquoso e meno profumato') + '.';
+    return G.scelto ? '✅ Dentro il consigliato.' : '';
+  }
   function tabellaEstrazione(){
     const nomi = [...new Set(tutteSel().map(s => s.value))].filter(n => byName[n]);
     if (!nomi.length) return '<p class="cond-hint">Non hai ancora scelto botaniche.</p>';
-    return '<div class="lez-estr">' + nomi.map(n => { const d = byName[n], E = estPer(d, infRif(d));
-      return '<div class="lez-estr-r"><b>' + (d.icona || '🌿') + ' ' + n + '</b><span class="lez-gr">' + (E ? estAbvTxt(E.a) : '—') + '</span><span class="lez-tm">' + (E && E.t ? '⏱️ ' + estTempoTxt(E.t) : '') + '</span>' +
+    return '<p class="cond-hint">L’app parte dal centro della gradazione consigliata. Puoi cambiarla con − e +, dentro le soglie oltre le quali escono sostanze indesiderate. Quote, spesa e infusi si ricalcolano da soli.</p>' +
+      '<div class="lez-estr">' + nomi.map(n => { const d = byName[n], G = gradoEstr(n), E = G.E;
+      return '<div class="lez-estr-r" data-n="' + esc(n) + '"><b>' + (d.icona || '🌿') + ' ' + n + '</b><span class="lez-tm">' + (E && E.t ? '⏱️ ' + estTempoTxt(E.t) : '') + '</span>' +
+        '<span class="lez-estr-sc">consigliato ' + (E ? estAbvTxt(E.a) : '—') + '</span>' +
+        '<span class="lez-estr-pm"><button type="button" class="pp-pm" data-d="-1" aria-label="Meno">−</button><b class="lez-gr">' + G.g + '%</b><button type="button" class="pp-pm" data-d="1" aria-label="Più">+</button></span>' +
+        '<em class="lez-estr-nota">' + notaEstr(n) + '</em>' +
         (MOLECOLE[n] ? '<small>' + MOLECOLE[n] + '</small>' : '') + '</div>'; }).join('') + '</div>';
   }
+  document.addEventListener('click', e => {
+    const b = e.target.closest('.lez-estr-pm .pp-pm'); if (!b) return;
+    const row = b.closest('.lez-estr-r'), n = row.dataset.n, pr = att(); if (!pr) return;
+    const G = gradoEstr(n), v = Math.max(G.min, Math.min(G.max, G.g + (+b.dataset.d)));
+    pr.estr = pr.estr || {}; if (v === G.centro) delete pr.estr[n]; else pr.estr[n] = v; scriviP();
+    row.querySelector('.lez-gr').textContent = v + '%'; row.querySelector('.lez-estr-nota').textContent = notaEstr(n);
+    try { if (window.ppForzaRicarica) window.ppForzaRicarica(); } catch(e){}
+  });
 
   // ---------- tappa: le botaniche, ruolo per ruolo ----------
   const FUNZ = {
@@ -13169,7 +13245,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         '<li><span class="sc-chip on sc-es">🍋 Limone</span> <b>verde</b>: è nel tuo gin. Toccala per toglierla.</li>' +
         '<li><span class="sc-chip sc-es">🍋 Limone</span> <b>scura</b>: non c’è. Toccala per aggiungerla.</li>' +
         '<li><span class="sc-chip altrove sc-es">🍋 Limone<em>in Cuore</em></span> <b>sbiadita</b>: è già nel gin con un altro ruolo. Toccala per spostarla qui.</li>' +
-        '<li><i class="sc-pot">●●●</i> <b>i pallini</b> sono la potenza: più sono, meno ne serve.</li>' +
+        '<li><i class="sc-pot">●●●</i> <b>i pallini</b> sono la potenza: quanto forte e quanto a lungo si sente la sua nota (non quanti grammi ne servono).</li>' +
         '<li><span class="sc-guida-i">i</span> mostra il radar e le molecole della botanica.</li>' +
         '<li>✨ e 🔍 aprono altre botaniche: prima le più originali, poi tutte le altre. ▲ le richiude (restano quelle già scelte).</li>' +
         '<li>🫐 Il ginepro non si toglie. I leganti (angelica, iris, liquirizia) si possono anche sommare, come nel Tanqueray: ne serve almeno uno.</li>' +
@@ -13187,7 +13263,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
             (altrove ? '<em>in ' + s.ruolo + '</em>' : '') + '<button type="button" class="sc-i" aria-label="Profilo di ' + d.botanica.replace(/"/g, '') + '">i</button></span>'; }).join('') + '</div>' +
         '<div class="sc-liv">' + (liv < 2 && nF ? '<button type="button" data-r="' + r + '" data-l="2">✨ + le più originali (' + nF + ')</button>' : '') + (liv < 3 && nA ? '<button type="button" data-r="' + r + '" data-l="3">🔍 + tutte le altre (' + nA + ')</button>' : '') + (liv > 1 ? '<button type="button" class="sc-chiudi" data-r="' + r + '" data-l="1">▲ Richiudi: solo le più usate</button>' : '') + '</div></section>';
     });
-    h += '<p class="cond-hint">Preferisci vedere tutto in una pagina, con dosi e ruoli da modificare a mano? <a href="#" onclick="event.preventDefault();showTab(\'builder\')">🎯 Apri il Builder completo</a></p>';
+    // niente uscita verso il Builder: dal percorso si torna sempre al percorso (il Builder resta in «Capire perché»)
     // il risultato delle scelte, in fondo: il radar del gin, l'ascolto e solo le coppie da tenere d'occhio
     h += '<div class="sc-gin"><div class="sc-gin-t">🍸 Il tuo gin finora · ' + quanti + ' botaniche</div>' + radarGin() + '<div id="sc-avvisi"></div></div>';
     box.innerHTML = h;
