@@ -2185,8 +2185,9 @@ details.howto-hero:not([open]){display:none}
 
 /* ===== v2.0 · il percorso a tappe ===== */
 #panel-mappa{max-width:520px;margin:0 auto}
-.rc-prezzo{display:inline-flex;align-items:center;gap:6px;margin-left:6px;font-size:12.5px;color:var(--ink-faint)}
-.rc-prezzo input{width:78px;font-size:15px;padding:4px 6px;border-radius:8px;border:1px solid var(--line-strong)}
+.rc-prezzo{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:13.5px;color:var(--ink-faint);flex-wrap:wrap}
+.rc-prezzo input{width:110px;min-width:110px;font-size:17px;padding:8px 10px;border-radius:10px;border:1px solid var(--line-strong);background:var(--card);color:var(--ink)}
+.rc-conto{display:block;color:var(--ink-faint);font-size:12.5px;margin-top:2px}
 .rc-compra{margin-left:6px;padding:3px 9px;border-radius:999px;border:1px solid var(--line-strong);background:var(--card);font-size:15px;cursor:pointer;vertical-align:middle}
 .rc-formato{padding:3px 10px;font-size:14px;vertical-align:middle}
 .rc-negozi{display:grid;gap:8px;margin:10px 0}
@@ -2522,7 +2523,7 @@ html.in-mappa #nav-indietro{display:none!important}
 .rc-sez h4{margin:14px 0 6px;font-size:15px}
 .rc-sub{margin:0 0 10px;color:var(--ink-soft);font-size:13.5px}
 .rc-passo{display:flex;gap:10px;align-items:flex-start;padding:8px 4px;border-bottom:1px solid var(--line);cursor:pointer;line-height:1.4}
-.rc-passo input{width:22px;height:22px;flex:none;margin-top:1px;accent-color:#2E9D5B}
+.rc-passo input[type=checkbox]{width:22px;height:22px;flex:none;margin-top:1px;accent-color:#2E9D5B}
 .rc-passo.ok span{opacity:.6;text-decoration:line-through;text-decoration-color:rgba(46,157,91,.7)}
 .rc-passo small{color:var(--ink-soft)}
 .rc-inf{margin:10px 0;padding:8px 10px;border-radius:12px;background:color-mix(in srgb,var(--c-erbaceo) 9%,transparent)}
@@ -2607,7 +2608,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.16.4</div>
+  <div class="splash-ver" id="splash-ver">v2.16.5</div>
 </div>
 
 <div class="wrap">
@@ -5568,7 +5569,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.16.4</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.16.5</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -10854,7 +10855,7 @@ document.getElementById('print-builder').addEventListener('click', () => {
 <script>
 /* ----- Aggiorna l'app (come in Che cucino?) -----
    VERSIONE_APP deve coincidere con VERSIONE in service-worker.js, NOME_VERSIONE con il suo NOME_VERSIONE. */
-var VERSIONE_APP = 'ginbuilder-v298', NOME_VERSIONE = '2.16.4';
+var VERSIONE_APP = 'ginbuilder-v299', NOME_VERSIONE = '2.16.5';
 // un solo punto da cambiare: animazione iniziale e menu leggono il numero da qui
 ['splash-ver','menu-ver'].forEach(function(id){ var e = document.getElementById(id); if (e) e.textContent = 'v' + NOME_VERSIONE; });
 var verOnline = '', verOnlineNome = '';
@@ -12422,9 +12423,11 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     if (mostra('spesa')){
       // i prezzi: € per 100 g per le botaniche (gli stessi della scheda botanica), € al litro per alcol e acqua
       const P = prezzi(), apri = !!window._rcPrezzi, eur = x => x.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
-      const campo = (k, v, u) => apri ? ' <label class="rc-prezzo">' + u + ' <input type="number" inputmode="decimal" step="0.01" min="0" data-prezzo="' + esc(k) + '" value="' + (v || '') + '"></label>' : '';
+      const campo = (k, v, u) => apri ? '<span class="rc-prezzo">Prezzo: <input type="text" inputmode="decimal" placeholder="0,00" data-prezzo="' + esc(k) + '" value="' + (v ? String(v).replace('.', ',') : '') + '"> ' + u + '</span>' : '';
       let costo = 0; const senza = [];
-      const vocePrezzo = (k, quanti, base) => { const v = P[k]; if (!(v > 0)) { senza.push(k); return ''; } const c = quanti / base * v; costo += c; return ' · <b>' + eur(c) + '</b>'; };
+      const vocePrezzo = (k, quanti, base) => { const v = P[k]; if (!(v > 0)) { senza.push(k); return ''; } const c = quanti / base * v; costo += c;
+        const u = base === 100 ? ' g × ' + eur(v) + ' ogni 100 g' : ' ml × ' + eur(v) + ' al litro';
+        return ' · <b>' + eur(c) + '</b><small class="rc-conto">' + nf(quanti, quanti < 10 ? 2 : 1) + u + ' = ' + eur(c) + '</small>'; };
       const alcComprare = Math.ceil(alcTot * 1.1 / 50) * 50;
       h += '<section class="rc-sez" id="rc-spesa"><h3>🛒 La spesa</h3><p class="rc-sub">Cosa comprare per ' + f1(R.vol) + ' ml di gin a ' + A + '%. Le botaniche bastano anche per la parte di infuso che si perde nel filtro.</p>' +
         R.righe.map(r => { const g = r.inf ? r.inf.g : r.g;
@@ -12488,17 +12491,19 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       try { localStorage.setItem('gb-bottiglia', nx); } catch(er){} const y = window.scrollY; renderRicetta(); window.scrollTo(0, y); });
     const pb = box.querySelector('.rc-prezzi-btn');
     if (pb) pb.onclick = () => { window._rcPrezzi = !window._rcPrezzi; const y = window.scrollY; renderRicetta(); window.scrollTo(0, y); };
+    box.querySelectorAll('.rc-prezzo').forEach(sp => sp.addEventListener('click', e => { if (e.target.tagName !== 'INPUT') e.preventDefault(); }));   // la scritta non spunta la riga
     box.querySelectorAll('[data-prezzo]').forEach(inp => {
       inp.addEventListener('click', e => e.stopPropagation());   // il campo sta dentro la riga da spuntare
-      inp.addEventListener('change', () => { const P = prezzi(), v = parseFloat(String(inp.value).replace(',', '.'));
+      inp.addEventListener('keydown', e => { if (e.key === 'Enter') inp.blur(); });
+      inp.addEventListener('change', () => { const P = prezzi(), v = parseFloat(String(inp.value).replace(/\s/g, '').replace(',', '.'));
         if (v > 0) P[inp.dataset.prezzo] = v; else delete P[inp.dataset.prezzo];
         try { localStorage.setItem('gb-prezzi', JSON.stringify(P)); } catch(e){}
         const y = window.scrollY; renderRicetta(); window.scrollTo(0, y); });
     });
-    box.querySelectorAll('.rc-passo input').forEach(c => c.addEventListener('change', () => {
+    box.querySelectorAll('.rc-passo input[type=checkbox]').forEach(c => c.addEventListener('change', () => {
       const pr = att(); if (!pr) return; if (c.checked) pr.passi[c.dataset.k] = 1; else delete pr.passi[c.dataset.k]; scriviP();
       c.closest('.rc-passo').classList.toggle('ok', c.checked);
-      ['spesa','infusi','filtra','unisci'].forEach(id => { const s = $('rc-' + id); if (s){ const tutti = [...s.querySelectorAll('.rc-passo input')]; if (tutti.length && tutti.every(x => x.checked)) fatta(id); } });
+      ['spesa','infusi','filtra','unisci'].forEach(id => { const s = $('rc-' + id); if (s){ const tutti = [...s.querySelectorAll('.rc-passo input[type=checkbox]')]; if (tutti.length && tutti.every(x => x.checked)) fatta(id); } });
     }));
     const bd = box.querySelector('.rc-diario'); if (bd) bd.onclick = () => {
       // promemoria nel diario senza moduli da compilare: stessi volumi, gradi e tempi della ricetta
