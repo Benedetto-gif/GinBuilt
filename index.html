@@ -2187,6 +2187,8 @@ details.howto-hero:not([open]){display:none}
 #panel-mappa{max-width:520px;margin:0 auto}
 .rc-prezzo{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:13.5px;color:var(--ink-faint);flex-wrap:wrap}
 .rc-prezzo input{width:110px;min-width:110px;font-size:17px;padding:8px 10px;border-radius:10px;border:1px solid var(--line-strong);background:var(--card);color:var(--ink)}
+.rc-rit{margin:2px 0 10px 34px;padding:8px 10px;border-radius:10px;background:var(--card);border:1px solid var(--line);font-size:13.5px}
+.rc-rit small{display:block;color:var(--ink-faint);margin-top:4px}
 .rc-conto{display:block;color:var(--ink-faint);font-size:12.5px;margin-top:2px}
 .rc-compra{margin-left:6px;padding:3px 9px;border-radius:999px;border:1px solid var(--line-strong);background:var(--card);font-size:15px;cursor:pointer;vertical-align:middle}
 .rc-formato{padding:3px 10px;font-size:14px;vertical-align:middle}
@@ -2608,7 +2610,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.16.5</div>
+  <div class="splash-ver" id="splash-ver">v2.17.0</div>
 </div>
 
 <div class="wrap">
@@ -5569,7 +5571,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.16.5</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.17.0</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -9544,7 +9546,7 @@ function preparaInfusiRicetta(){
   const righe = nomi.map((n, k) => '<label class="dia-chk"><input type="checkbox" class="pr-inf" data-n="' + diaEsc(n) + '" checked> ' + diaEsc(n) + ' <span class="cond-hint pr-dett" data-k="' + k + '"></span></label>').join('');
   const corpo = '<div class="dia-new">' +
     '<label>Volume di ogni infuso (ml)<input type="number" id="pr-vol" value="100" min="10" step="25"></label>' +
-    (window._dosiGin ? '<label class="dia-chk" style="grid-column:1/-1"><input type="checkbox" id="pr-dalgin"> Quanto serve per ' + nf(window._dosiGin.vol, 0) + ' ml di gin (con il 20% di perdita)</label>' : '') +
+    (window._dosiGin ? '<label class="dia-chk" style="grid-column:1/-1"><input type="checkbox" id="pr-dalgin"> Quanto serve per ' + nf(window._dosiGin.vol, 0) + ' ml di gin (con la scorta per il liquido trattenuto dalla botanica)</label>' : '') +
     '<label>Temperatura di conservazione, al buio (\u00b0C)<input type="number" id="pr-temp" value="20" min="0" max="60"></label>' +
     '<label>Alcol di partenza (\u00b0)<input type="number" id="pr-abvS" value="96" min="40" max="96" step="0.5"></label>' +
     '<label>Data e ora di inizio<input type="datetime-local" id="pr-quando" value="' + diaLocale(new Date()) + '"></label></div>' +
@@ -9554,7 +9556,7 @@ function preparaInfusiRicetta(){
     const volUnico = parseFloat(document.getElementById('pr-vol').value) || 100, temp = parseFloat(document.getElementById('pr-temp').value), abvS = parseFloat(document.getElementById('pr-abvS').value) || ALCOL_PARTENZA;
     return nomi.map(n => {
       const rg = daGin ? window._dosiGin.righe.find(x => x.n === n) : null;
-      const vol = rg ? volDaPreparare(rg.ml) : volUnico;
+      const vol = rg ? volDaPreparare(rg.ml, n, rg.g100) : volUnico;
       const d = byName[n], st = infRif(d), est = estPer(d, st), abv = est ? Math.round((est.a[0] + est.a[1]) / 2) : REF_ABV;
       return { n, d, abv, r: infusoRiga(d, abv, isNaN(temp) ? REF_TEMP : temp, vol, 'tempo', st, false, abvS), vol, temp: isNaN(temp) ? REF_TEMP : temp, abvS };
     });
@@ -10546,7 +10548,26 @@ function dosiRicetta(selects){
 // mlFin = infuso gia' alla gradazione finale da versare; mlConc + acqua = come ottenerlo dall'infuso filtrato.
 // L'acqua si calcola a peso (bilancio dell'alcol in massa): mescolando alcol e acqua il volume si contrae,
 // quindi l'acqua che serve e' un po' piu' della semplice differenza di volumi.
-const PERDITA_INFUSO = 0.20;   // parte dell'infuso persa fra liquido trattenuto dalla botanica e filtrazione
+// La scorta dell'infuso non è una percentuale fissa: quasi tutto il liquido perso è quello che la botanica trattiene,
+// quindi dipende dai grammi. In più un piccolo margine per il filtro (3% del volume + 5 ml).
+const FILTRO_PCT = 0.03, FILTRO_ML = 5;
+// ml di liquido trattenuti da 1 g di botanica secca, per tipo: stime prudenti, da correggere con la propria misura
+function ritenutaStima(d){
+  const p = String((d && d.parte) || '').toLowerCase(), c = (d && d.categoria) || '';
+  if (/foglie|fior|sommit|petal|capolin|calici|aghi|alga|tallo|biomassa|steli|germogli|gemme|coni|barba/.test(p)) return 3;
+  if (/radice|rizoma|cortecc|legno/.test(p)) return 1.5;
+  if (c === 'Agrumi' || /scorza/.test(p)) return 2;
+  if (/bacch|sem|frutt|chicc|fave|baccell|arill|pericarp|stimm|boccio|polpa|acini|galbul|cinorrod|spighe|essudato/.test(p)) return 1;
+  return 1.5;
+}
+function ritenutaMie(){ try { return JSON.parse(localStorage.getItem('gb-ritenuta') || '{}'); } catch(e){ return {}; } }
+// { k: ml per grammo, mia: true se misurata da te }
+function ritenuta(n){
+  const mia = ritenutaMie()[n]; if (mia > 0) return { k: mia, mia: true };
+  const d = byName[n]; let k = ritenutaStima(d);
+  try { if (infRif(d) === 'fresco') k = Math.max(0.5, k / 2); } catch(e){}   // la botanica fresca è già piena d'acqua: ne trattiene meno
+  return { k, mia: false };
+}
 function porzioneInfuso(r, quota, vol, abvF){
   const mlFin = vol * quota, sotto = r.abv < abvF;
   const D = (!sotto && mlFin > 0) ? diluizione(abvF, mlFin, r.abv) : null;
@@ -10554,8 +10575,16 @@ function porzioneInfuso(r, quota, vol, abvF){
   return { mlFin, mlConc, acquaDil: D ? D.acquaMl : 0, acquaDilG: D ? D.acquaG : 0, concG: D ? D.alcG : null, ml: mlConc, g: r.g100 * mlConc / 100, pctGin: quota * 100, sotto };
 }
 // l'infuso da preparare: quello che serve filtrato, piu' quanto se ne perde
-// almeno 50 ml: sotto, le dosi delle tracce scendono a pochi centesimi di grammo e non si pesano bene
-function volDaPreparare(mlConc){ return Math.max(50, Math.ceil(mlConc / (1 - PERDITA_INFUSO) / 5) * 5); }
+// infuso da preparare = quello che serve filtrato + quanto trattiene la botanica + margine del filtro.
+// La botanica cresce col volume (g100 per 100 ml), quindi si risolve: V = (serve + 5) / (1 − k·g100/100 − 3%).
+// Almeno 50 ml: sotto, le dosi delle tracce scendono a pochi centesimi di grammo e non si pesano bene.
+function volDaPreparare(mlConc, n, g100){
+  const k = n ? ritenuta(n).k : 1.5, gp = g100 > 0 ? g100 : (n && byName[n] ? (doseLibreria(n) || 0) : 0);
+  const den = Math.max(0.5, 1 - k * gp / 100 - FILTRO_PCT);
+  return Math.max(50, Math.ceil((mlConc + FILTRO_ML) / den / 5) * 5);
+}
+// quanto se ne perde, con quel volume
+function perditaPrevista(V, n, g100){ return ritenuta(n).k * g100 * V / 100 + FILTRO_PCT * V + FILTRO_ML; }
 function totaliInfusi(righe, vol, abvF){
   const sum = k => righe.reduce((a, r) => a + (r[k] || 0), 0);
   return { righe, vol, abvF, volConc: sum('mlConc'), acqua: sum('acquaDil'), gTot: sum('g'), sotto: righe.filter(r => r.sotto).map(r => r.n) };
@@ -10683,8 +10712,8 @@ function renderDosiGin(selects){
     const parti = st.righe.map((r, k) => Object.assign({ n: r.n }, porzioneInfuso(r, st.q[k] / 100, vol, abvF)));
     const T = totaliInfusi(parti, vol, abvF), m1 = x => nf(x, x < 10 ? 1 : 0);
     st.righe.forEach((r, k) => {
-      // gli stessi grammi della spesa: quelli dell'infuso da preparare, con la perdita del 20%
-      const x = parti[k], g = r.g100 * (x.sotto ? x.mlFin : volDaPreparare(x.mlConc)) / 100;
+      // gli stessi grammi della spesa: quelli dell'infuso da preparare, con la scorta
+      const x = parti[k], g = r.g100 * (x.sotto ? x.mlFin : volDaPreparare(x.mlConc, r.n, r.g100)) / 100;
       const row = box.querySelector('.pp-riga[data-k="' + k + '"]'); if (!row) return;
       row.querySelector('.pp-val').innerHTML = fqp(st.q[k]) + '%<small>' + m1(x.mlFin) + ' ml nel gin</small>';   // grammi, alcol e acqua: li dà la spesa
       const rg = row.querySelector('input[type=range]'); if (document.activeElement !== rg) rg.value = aPos(st.q[k]);
@@ -10855,7 +10884,7 @@ document.getElementById('print-builder').addEventListener('click', () => {
 <script>
 /* ----- Aggiorna l'app (come in Che cucino?) -----
    VERSIONE_APP deve coincidere con VERSIONE in service-worker.js, NOME_VERSIONE con il suo NOME_VERSIONE. */
-var VERSIONE_APP = 'ginbuilder-v299', NOME_VERSIONE = '2.16.5';
+var VERSIONE_APP = 'ginbuilder-v300', NOME_VERSIONE = '2.17.0';
 // un solo punto da cambiare: animazione iniziale e menu leggono il numero da qui
 ['splash-ver','menu-ver'].forEach(function(id){ var e = document.getElementById(id); if (e) e.textContent = 'v' + NOME_VERSIONE; });
 var verOnline = '', verOnlineNome = '';
@@ -12391,7 +12420,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     }
     R.righe.forEach(r => {
       const d = byName[r.n], st = infRif(d);
-      r.volInf = volDaPreparare(r.mlConc);                 // infuso da preparare: quello che serve filtrato, con il 20% di perdita
+      r.volInf = volDaPreparare(r.mlConc, r.n, r.g100);    // infuso da preparare: quello che serve filtrato + il liquido trattenuto dalla botanica
       r.inf = infusoRiga(d, r.abv, REF_TEMP, r.volInf, 'tempo', st, false, ALCOL_PARTENZA);
       r.stato = (r.inf && r.inf.stato === 'fresco') ? 'fresca' : 'secca';
       r.parte = d.parte || '';
@@ -12449,7 +12478,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         return '<div class="rc-inf"><div class="rc-inf-t">' + (k + 1) + '. ' + iconaHtml(byName[r.n]) + ' ' + esc(r.n) + (r.tracce ? ' <em>(tracce)</em>' : '') + '</div>' +
           chk('in-p-' + r.n, '⚖️ Pesa <b>' + fg(x.g != null ? x.g : r.g) + ' g</b> di ' + esc(r.n.toLowerCase()) + (r.parte && r.n.toLowerCase().indexOf(r.parte.split(/[\s\/]/)[0].toLowerCase()) < 0 ? ' (' + esc(r.parte) + (byName[r.n].categoria === 'Agrumi' && r.stato === 'fresca' ? ' fresca' : '') + ')' : '')) +
           chk('in-x-' + r.n, prepRicetta(byName[r.n], x.stato || (r.stato === 'fresca' ? 'fresco' : 'secco'))) +
-          chk('in-a-' + r.n, '🧪 Nel barattolo: <b>' + f1(dl.alcMl || 0) + ' ml</b> (' + fg(dl.alcG || 0) + ' g) <b>di alcol a 96%</b> + <b>' + f1(dl.acquaMl || 0) + ' ml</b> (' + fg(dl.acquaG || 0) + ' g) <b>d’acqua</b> = ' + f1(r.volInf) + ' ml a <b>' + r.abv + '%</b>' + (r.volInf >= r.mlConc * 1.6 ? ' <small>(ne userai circa ' + f1(r.mlConc) + ' ml: una dose così piccola non si pesa bene, perciò si prepara di più e il resto si conserva per le correzioni)</small>' : '') + (pers && r.volInf < r.mlConc * 1.6 ? ' <small>(ne servono ' + f1(r.mlConc) + ' ml filtrati: il resto è la perdita)</small>' : '')) +
+          chk('in-a-' + r.n, '🧪 Nel barattolo: <b>' + f1(dl.alcMl || 0) + ' ml</b> (' + fg(dl.alcG || 0) + ' g) <b>di alcol a 96%</b> + <b>' + f1(dl.acquaMl || 0) + ' ml</b> (' + fg(dl.acquaG || 0) + ' g) <b>d’acqua</b> = ' + f1(r.volInf) + ' ml a <b>' + r.abv + '%</b>' + (r.volInf >= r.mlConc * 1.6 ? ' <small>(ne userai circa ' + f1(r.mlConc) + ' ml: una dose così piccola non si pesa bene, perciò si prepara di più e il resto si conserva per le correzioni)</small>' : '') + (pers && r.volInf < r.mlConc * 1.6 ? ' <small>(ne servono ' + f1(r.mlConc) + ' ml filtrati: il resto lo trattiene la botanica o resta nel filtro)</small>' : '')) +
           chk('in-c-' + r.n, '🌑 Chiudi, scuoti ed etichetta; tieni al buio. Assaggia dopo <b>' + DUR(x.tmin) + '</b>' + (x.tmax != null ? ', filtra entro <b>' + DUR(x.tmax) + '</b>' : '')) +
           '</div>'; }).join('') +
       '<button type="button" class="primary-btn rc-diario">📓 Ricordami quando assaggiare</button></section>';
@@ -12466,9 +12495,13 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       '<p class="cond-hint">Misura quanti ml hai filtrato e diluiscili tutti: all’assaggio potresti cambiare le quote, e la scorta serve proprio a questo.</p>' +
       R.righe.map(r => {
         if (r.sotto) return chk('fi-d-' + r.n, iconaHtml(byName[r.n]) + ' <b>' + esc(r.n) + '</b>: è già sotto ' + A + '%, non si diluisce.');
-        const T100 = 100 * r.abv / R.abvF, D = diluizione(R.abvF, T100, r.abv), att = r.volInf * (1 - PERDITA_INFUSO);
+        const T100 = 100 * r.abv / R.abvF, D = diluizione(R.abvF, T100, r.abv), att = r.volInf - perditaPrevista(r.volInf, r.n, r.g100);
         return chk('fi-d-' + r.n, iconaHtml(byName[r.n]) + ' <b>' + esc(r.n) + '</b> (a ' + r.abv + '%): per ogni <b>100 ml</b> di infuso filtrato aggiungi <b>' + f1(D.acquaMl) + ' ml</b> (' + fg(D.acquaG) + ' g) d’acqua → ' + f1(T100) + ' ml a ' + A + '%.' +
-          ' <small>Ti aspetti circa ' + f1(att) + ' ml filtrati; per il gin ne servono ' + f1(r.mlConc) + ' ml, cioè ' + f1(r.mlFin) + ' ml a ' + A + '%.</small>');
+          ' <small>Ti aspetti circa ' + f1(att) + ' ml filtrati; per il gin ne servono ' + f1(r.mlConc) + ' ml, cioè ' + f1(r.mlFin) + ' ml a ' + A + '%.</small>') +
+          (() => { const RT = ritenuta(r.n), g = r.g100 * r.volInf / 100;
+            return '<div class="rc-rit">💧 ' + (RT.mia ? 'Secondo la tua misura' : 'Si stima che') + ' la botanica trattenga circa <b>' + nf(RT.k, 1) + ' ml per grammo</b>.' +
+              '<span class="rc-prezzo">Hai filtrato: <input type="text" inputmode="decimal" placeholder="ml" data-rit="' + esc(r.n) + '" data-vol="' + r.volInf + '" data-g="' + g + '"> ml su ' + f1(r.volInf) + '</span>' +
+              '<small>Scrivilo: l’app impara quanto trattiene questa botanica e la prossima volta calcola la scorta giusta.' + (RT.mia ? ' <a href="#" data-rit-via="' + esc(r.n) + '">Torna alla stima</a>' : '') + '</small></div>'; })();
       }).join('') +
       '<p class="cond-hint">L’acqua è un po’ più della differenza fra i volumi: mescolando alcol e acqua il volume si contrae. Per la massima precisione pesa invece di misurare.</p>' +
       chk('fi-etich', '🏷️ <b>Etichetta</b> ogni bottiglia con botanica e ' + A + '%. <b>Non unirli ancora</b>: nella prossima tappa ne prendi pochi ml per un campione e decidi le quote definitive.') + '</section>';
@@ -12491,6 +12524,20 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       try { localStorage.setItem('gb-bottiglia', nx); } catch(er){} const y = window.scrollY; renderRicetta(); window.scrollTo(0, y); });
     const pb = box.querySelector('.rc-prezzi-btn');
     if (pb) pb.onclick = () => { window._rcPrezzi = !window._rcPrezzi; const y = window.scrollY; renderRicetta(); window.scrollTo(0, y); };
+    box.querySelectorAll('[data-rit]').forEach(inp => {
+      inp.addEventListener('keydown', e => { if (e.key === 'Enter') inp.blur(); });
+      inp.addEventListener('change', () => {
+        const rec = parseFloat(String(inp.value).replace(',', '.')), V = +inp.dataset.vol, g = +inp.dataset.g;
+        if (!(rec > 0) || !(g > 0) || rec > V) return;
+        const k = Math.max(0.2, Math.min(8, (V - rec - FILTRO_PCT * V - FILTRO_ML) / g));
+        const M = ritenutaMie(); M[inp.dataset.rit] = Math.round(k * 10) / 10;
+        try { localStorage.setItem('gb-ritenuta', JSON.stringify(M)); } catch(e){}
+        mostraAvviso('💧 ' + inp.dataset.rit, '<p>Su ' + nf(V, 0) + ' ml ne hai recuperati ' + nf(rec, 0) + ': la botanica ne ha trattenuti circa <b>' + nf(k, 1) + ' ml per grammo</b>.</p><p>Da ora la scorta di questo infuso si calcola con la tua misura.</p>', '', null);
+        const y = window.scrollY; renderRicetta(); window.scrollTo(0, y);
+      });
+    });
+    box.querySelectorAll('[data-rit-via]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); const M = ritenutaMie(); delete M[a.dataset.ritVia];
+      try { localStorage.setItem('gb-ritenuta', JSON.stringify(M)); } catch(er){} const y = window.scrollY; renderRicetta(); window.scrollTo(0, y); }));
     box.querySelectorAll('.rc-prezzo').forEach(sp => sp.addEventListener('click', e => { if (e.target.tagName !== 'INPUT') e.preventDefault(); }));   // la scritta non spunta la riga
     box.querySelectorAll('[data-prezzo]').forEach(inp => {
       inp.addEventListener('click', e => e.stopPropagation());   // il campo sta dentro la riga da spuntare
