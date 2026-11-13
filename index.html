@@ -2610,7 +2610,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.17.0</div>
+  <div class="splash-ver" id="splash-ver">v2.17.1</div>
 </div>
 
 <div class="wrap">
@@ -5571,7 +5571,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.17.0</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.17.1</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -9872,6 +9872,7 @@ window.apriStrumenti = function(){
       (() => { const n = infusiDaControllare(), k = infusiInCorso();
         return '<button type="button" class="str-tile str-wide' + (n ? ' str-allarme' : '') + '" id="str-diario" style="--h:#B8921F"><span>' + (n ? '\ud83d\udd14' : '\ud83d\udcd3') + '</span><b>Diario degli infusi</b><small>' +
           (n ? n + (n === 1 ? ' infuso da controllare adesso' : ' infusi da controllare adesso') : k ? k + (k === 1 ? ' infuso in corso, nessun allarme' : ' infusi in corso, nessun allarme') : 'nessun infuso in corso') + '</small></button>'; })() +
+      '<button type="button" class="str-tile str-wide" id="str-infuso" style="--h:#8A63B0"><span>\ud83e\uded9</span><b>Prepara un infuso</b><small>una sola botanica, fresca o secca: dose, alcol, acqua e tempi</small></button>' +
       '<button type="button" class="str-tile" id="str-cond" style="--h:#2E9D5B"><span>\ud83d\udce4</span><b>Condividi l\u2019app</b><small>manda GinBuilder a un amico</small></button>' +
       '<button type="button" class="str-tile" id="str-luce" style="--h:#5D6F8C"><span>\ud83c\udf17</span><b>Luce e colori</b><small>sfondo chiaro o scuro</small></button>' +
       '<button type="button" class="str-tile" id="str-av" style="--h:#8A63B0"><span>\ud83e\uddf0</span><b>Strumenti avanzati</b><small>' + (av ? 'accesi: tocca per spegnerli' : 'spenti: tocca per accenderli') + '</small></button>' +
@@ -9887,6 +9888,7 @@ window.apriStrumenti = function(){
   ['avviso-annulla','avviso-ok'].forEach(id => document.getElementById(id).addEventListener('click', ripr, { once: true }));
   const chiudi = () => { chiudiAvviso(); ripr(); };
   document.getElementById('str-diario').onclick = () => { chiudi(); window._tappa = null; showTab('diario'); };
+  document.getElementById('str-infuso').onclick = () => { chiudi(); window._tappa = null; setTimeout(() => { if (typeof prepInfusoVeloce === 'function') prepInfusoVeloce(); }, 30); };
   document.getElementById('str-cond').onclick = () => { chiudi(); condividiApp(); };
   document.getElementById('str-luce').onclick = () => { chiudi(); const t = document.getElementById('theme-btn'); if (t) setTimeout(() => t.click(), 30); };
   document.getElementById('str-av').onclick = () => { chiudi(); if (window.toggleAvanzati) window.toggleAvanzati(); };
@@ -10884,7 +10886,7 @@ document.getElementById('print-builder').addEventListener('click', () => {
 <script>
 /* ----- Aggiorna l'app (come in Che cucino?) -----
    VERSIONE_APP deve coincidere con VERSIONE in service-worker.js, NOME_VERSIONE con il suo NOME_VERSIONE. */
-var VERSIONE_APP = 'ginbuilder-v300', NOME_VERSIONE = '2.17.0';
+var VERSIONE_APP = 'ginbuilder-v301', NOME_VERSIONE = '2.17.1';
 // un solo punto da cambiare: animazione iniziale e menu leggono il numero da qui
 ['splash-ver','menu-ver'].forEach(function(id){ var e = document.getElementById(id); if (e) e.textContent = 'v' + NOME_VERSIONE; });
 var verOnline = '', verOnlineNome = '';
@@ -12705,12 +12707,12 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     let h = '<div class="mp-barra"><button type="button" class="mp-prog" id="mp-prog">📁 <span>' + (haScelto(pr) ? esc(pr.nome) : 'I tuoi gin') + '</span> ▾</button>' +
       '</div>';
     if (!V){
+      // prima di partire, per chi vuole: da dove viene il gin (sopra le due strade)
+      h += (() => { const [ic] = nomeTab('storia'); return '<div class="mp-sez mp-sez-storia"><div class="mp-grid" style="grid-template-columns:1fr">' +
+          '<button type="button" class="mp-tile" data-tab="storia" style="--h:#B8921F"><span class="mt-ic">' + (ic || '📜') + '</span><span class="mt-l">Piccola storia del gin<small style="display:block;font-weight:500;opacity:.9;margin-top:2px">da rimedio di farmacia a distillato d’autore</small></span></button></div></div>'; })();
       h += '<h2 class="mp-tit">Come vuoi fare il tuo gin?</h2><p class="mp-sub">Due strade, secondo quanto vuoi metterci le mani. Puoi cambiarla in ogni momento.</p>' +
         '<div class="mp-bivio">' + Object.keys(VIE).map(k => '<button type="button" class="mp-via" data-via="' + k + '" style="--c:' + VIE[k].c + '"><span class="mv-tondo">' + TONDI[k] + '</span><b>' + VIE[k].t + '</b>' + (VIE[k].st ? '<i class="mv-sub">' + VIE[k].st + '</i>' : '') + '<span>' + VIE[k].d + '</span>' +
-          '<small>' + VIE[k].tappe.length + ' tappe' + (k === 'pers' ? ' · teoria e pratica insieme' : '') + '</small></button>').join('') + '</div>' +
-        // prima di partire, per chi vuole: da dove viene il gin
-        (() => { const [ic] = nomeTab('storia'); return '<div class="mp-sez mp-sez-storia"><div class="mp-grid" style="grid-template-columns:1fr">' +
-          '<button type="button" class="mp-tile" data-tab="storia" style="--h:#B8921F"><span class="mt-ic">' + (ic || '📜') + '</span><span class="mt-l">Piccola storia del gin<small style="display:block;font-weight:500;opacity:.9;margin-top:2px">da rimedio di farmacia a distillato d’autore</small></span></button></div></div>'; })();
+          '<small>' + VIE[k].tappe.length + ' tappe' + (k === 'pers' ? ' · teoria e pratica insieme' : '') + '</small></button>').join('') + '</div>' ;
     } else {
       h += '<div class="mp-tit-riga"><button type="button" class="mp-indietro" id="mp-cambia" aria-label="Torna alla scelta della strada" title="Torna alla scelta della strada">\u21a9\ufe0e</button><h2 class="mp-tit">' + V.e + ' ' + V.t + '</h2></div>' + (V.st ? '<p class="mp-st-sub">' + V.st + '</p>' : '') +
         '<p class="mp-sub">' + (pr.via === 'chiavi' ? 'Una ricetta codificata da seguire passo passo.' : 'Ogni tappa: una breve lezione e una prova.') + ' Tocca una tappa: quella che pulsa è la prossima.</p>' +
@@ -12721,14 +12723,12 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     // la teoria appartiene solo alla strada del gin personalizzato: con il Gin no problem! si gioca, non si studia
     if (pr.via === 'pers') h += '<div class="mp-sez"><h3>📚 Capire perché</h3><p>La parte teorica, da consultare quando vuoi: le botaniche e la loro potenza, cosa si estrae e a che gradazione, i ruoli, le ridondanze, le leggi.</p>' +
         '<div class="mp-grid">' + tessere(CAPIRE, 2) + '</div></div>';
-    // scorciatoia sempre a portata di mano: l'infuso di una sola botanica, senza passare dal percorso
-    h += '<div class="mp-sez mp-sez-infuso"><div class="mp-grid" style="grid-template-columns:1fr"><button type="button" class="mp-tile" id="mp-infuso" style="--h:#8A63B0"><span class="mt-ic">🫙</span><span class="mt-l">Prepara un infuso<small style="display:block;font-weight:500;opacity:.9;margin-top:2px">una sola botanica, fresca o secca: dose, alcol, acqua e tempi</small></span></button></div></div>';
+    // «Prepara un infuso» ora sta in ⚙️ Strumenti
     h += '<button type="button" class="mp-ver" id="mp-ver" data-aggiorna>' + (window.testoVerMappa ? testoVerMappa() : '\ud83d\udd04 Controlla aggiornamenti') + '</button>';
     box.innerHTML = h;
     try { if (window.puntoStrumenti) window.puntoStrumenti(); } catch(e){}
     box.querySelectorAll('.mp-st').forEach(b => b.addEventListener('click', () => vaiTappa(b.dataset.id)));
     box.querySelectorAll('.mp-tile[data-tab]').forEach(b => b.addEventListener('click', () => { window._tappa = null; showTab(b.dataset.tab); }));
-    const bi = document.getElementById('mp-infuso'); if (bi) bi.addEventListener('click', () => { window._tappa = null; prepInfusoVeloce(); });
     box.querySelectorAll('.mp-via').forEach(b => b.addEventListener('click', e => {
       if (e.target.closest('.mv-tondo')){ e.stopPropagation(); const t = e.target.closest('.mv-tondo'); suonaTondo(b.dataset.via);
         t.classList.remove('tocco'); void t.offsetWidth; t.classList.add('tocco'); return; }   // il tondo suona, la scheda sceglie
