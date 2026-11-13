@@ -2185,6 +2185,10 @@ details.howto-hero:not([open]){display:none}
 
 /* ===== v2.0 · il percorso a tappe ===== */
 #panel-mappa{max-width:520px;margin:0 auto}
+.rc-prezzo{display:inline-flex;align-items:center;gap:6px;margin-left:6px;font-size:12.5px;color:var(--ink-faint)}
+.rc-prezzo input{width:78px;font-size:15px;padding:4px 6px;border-radius:8px;border:1px solid var(--line-strong)}
+.rc-costo{margin:12px 0 8px;padding:10px 12px;border-radius:12px;background:var(--card);border:1px solid var(--line)}
+.rc-costo small{display:block;margin-top:4px;color:var(--ink-faint)}
 .rc-tab{overflow-x:auto;margin:8px 0 12px}.rc-tab table{border-collapse:collapse;width:100%;font-size:12.5px}.rc-tab th,.rc-tab td{padding:6px 5px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.rc-tab th{font-size:11.5px;color:var(--ink-faint);font-weight:700}
 .mp-ver{display:block;margin:22px auto 6px;padding:8px 14px;border:1px solid var(--line-strong);border-radius:999px;background:var(--card);color:var(--ink-faint);font:700 12.5px/1.2 'Inter',system-ui,sans-serif;cursor:pointer}
 .mp-ver.nuova{background:#2B7BB9;color:#fff;border-color:#2B7BB9;font-size:13.5px}
@@ -2599,7 +2603,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.16.1</div>
+  <div class="splash-ver" id="splash-ver">v2.16.2</div>
 </div>
 
 <div class="wrap">
@@ -5560,7 +5564,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.16.1</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.16.2</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -10846,7 +10850,7 @@ document.getElementById('print-builder').addEventListener('click', () => {
 <script>
 /* ----- Aggiorna l'app (come in Che cucino?) -----
    VERSIONE_APP deve coincidere con VERSIONE in service-worker.js, NOME_VERSIONE con il suo NOME_VERSIONE. */
-var VERSIONE_APP = 'ginbuilder-v295', NOME_VERSIONE = '2.16.1';
+var VERSIONE_APP = 'ginbuilder-v296', NOME_VERSIONE = '2.16.2';
 // un solo punto da cambiare: animazione iniziale e menu leggono il numero da qui
 ['splash-ver','menu-ver'].forEach(function(id){ var e = document.getElementById(id); if (e) e.textContent = 'v' + NOME_VERSIONE; });
 var verOnline = '', verOnlineNome = '';
@@ -12388,18 +12392,28 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     const acqInf = R.righe.reduce((a, r) => a + ((r.inf && r.inf.dil) ? r.inf.dil.acquaMl : 0), 0);
     const acqTot = acqInf + R.acqua;
     let h = !mostra('spesa') ? '<div class="rc-testa"><b>' + esc(currentStyleName) + '</b> \u00b7 ' + f1(R.vol) + ' ml a ' + A + '% vol</div>' : '<div class="rc-testa"><b>' + esc(currentStyleName) + '</b> · ' + f1(R.vol) + ' ml a ' + A + '% vol · ' + R.righe.length + ' botaniche</div>' +
-      '<p class="cond-hint">' + (pers ? 'Calcolata all’indietro dal gin che vuoi: ' + f1(R.vol) + ' ml a ' + A + '%, con le quote che hai deciso' + (R.quoteProgetto ? '' : ' (quote di partenza dei ruoli: non le hai ancora cambiate)') + '. Per ogni botanica: l’infuso al suo grado di estrazione, con il 20% in più per la perdita, poi filtrato e portato a ' + A + '%.'
-        : 'Ricetta codificata dallo stile, con le dosi e i tempi dell’erbario: sono punti di partenza, da confermare all’assaggio.') + ' Spunta ogni passo man mano che lo fai.</p>' +
-      (pers ? '<div class="rc-tab"><table><tr><th>Botanica</th><th>Quota</th><th>Al grado finale</th><th>Infuso filtrato</th><th>Da preparare</th></tr>' +
-        R.righe.map(r => '<tr><td>' + iconaHtml(byName[r.n]) + ' ' + esc(r.n) + '</td><td>' + nf(r.quota * 100, 1) + '%</td><td>' + f1(r.mlFin) + ' ml a ' + A + '%</td><td>' + f1(r.mlConc) + ' ml a ' + r.abv + '%</td><td><b>' + f1(r.volInf) + ' ml</b> a ' + r.abv + '% · ' + fg(r.inf ? r.inf.g : r.g) + ' g</td></tr>').join('') +
-        '</table></div>' : '');
+      '<p class="cond-hint">' + (pers ? 'Tutto è calcolato all’indietro dal gin che vuoi, ' + f1(R.vol) + ' ml a ' + A + '%, con le quote che hai deciso' + (R.quoteProgetto ? '' : ' (non le hai ancora cambiate: sono quelle di partenza)') + '.'
+        : 'Ricetta codificata dallo stile, con le dosi e i tempi dell’erbario: sono punti di partenza, da confermare all’assaggio.') + ' Spunta ogni passo man mano che lo fai.</p>';
     if (R.sotto.length) h += '<div class="warn-box">' + R.sotto.map(esc).join(', ') + ': si estrae sotto ' + A + '% e non si può diluire fino alla gradazione finale. ' + (pers ? 'Scegli una gradazione finale più bassa (tappa delle quote) o togli questa botanica.' : 'Con il Gin no problem! conviene scegliere una gradazione più bassa (tappa 2).') + '</div>';
     // la spesa
-    if (mostra('spesa')) h += '<section class="rc-sez" id="rc-spesa"><h3>🛒 La spesa</h3><p class="rc-sub">Quantità per gli infusi da preparare, che tengono conto di un 20% di perdita (liquido trattenuto dalla botanica e filtrazione).</p>' +
-      R.righe.map(r => chk('sp-' + r.n, iconaHtml(byName[r.n]) + ' <b>' + esc(r.n) + '</b> ' + (r.parte ? '<small>(' + esc(r.parte) + ', ' + r.stato + ')</small> ' : '') + '— ' + fg(r.inf ? r.inf.g : r.g) + ' g')).join('') +
-      chk('sp-alcol', '🧴 <b>Alcol buongusto a 96%</b> — ' + f1(alcTot) + ' ml <small>(circa ' + f1(Math.ceil(alcTot * 1.1 / 50) * 50) + ' ml con un po’ di margine)</small>') +
-      chk('sp-acqua', '💧 <b>Acqua demineralizzata potabile</b> — ' + f1(acqTot) + ' ml <small>(' + f1(acqInf) + ' per gli infusi, ' + f1(R.acqua) + ' per portarli a ' + A + '%)</small>') +
-      '<h4>L’attrezzatura</h4>' + ATTREZZI.map(([ic, n, d], k) => chk('at-' + k, ic + ' <b>' + n + '</b> <small>— ' + d + '</small>')).join('') + '</section>';
+    if (mostra('spesa')){
+      // i prezzi: € per 100 g per le botaniche (gli stessi della scheda botanica), € al litro per alcol e acqua
+      const P = prezzi(), apri = !!window._rcPrezzi, eur = x => x.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+      const campo = (k, v, u) => apri ? ' <label class="rc-prezzo">' + u + ' <input type="number" inputmode="decimal" step="0.01" min="0" data-prezzo="' + esc(k) + '" value="' + (v || '') + '"></label>' : '';
+      let costo = 0; const senza = [];
+      const vocePrezzo = (k, quanti, base) => { const v = P[k]; if (!(v > 0)) { senza.push(k); return ''; } const c = quanti / base * v; costo += c; return ' · <b>' + eur(c) + '</b>'; };
+      const alcComprare = Math.ceil(alcTot * 1.1 / 50) * 50;
+      h += '<section class="rc-sez" id="rc-spesa"><h3>🛒 La spesa</h3><p class="rc-sub">Cosa comprare per ' + f1(R.vol) + ' ml di gin a ' + A + '%. Le botaniche bastano anche per la parte di infuso che si perde nel filtro.</p>' +
+        R.righe.map(r => { const g = r.inf ? r.inf.g : r.g;
+          return chk('sp-' + r.n, iconaHtml(byName[r.n]) + ' <b>' + esc(r.n) + '</b> ' + (r.parte ? '<small>(' + esc(r.parte) + ', ' + r.stato + ')</small> ' : '') + '— ' + fg(g) + ' g' + vocePrezzo(r.n, g, 100) + campo(r.n, P[r.n], '€ / 100 g')); }).join('') +
+        chk('sp-alcol', '🧴 <b>Alcol buongusto a 96%</b> — ' + f1(alcTot) + ' ml <small>(comprane circa ' + f1(alcComprare) + ' ml)</small>' + vocePrezzo('__alcol96', alcTot, 1000) + campo('__alcol96', P.__alcol96, '€ / litro')) +
+        chk('sp-acqua', '💧 <b>Acqua demineralizzata potabile</b> — ' + f1(acqTot) + ' ml' + vocePrezzo('__acqua', acqTot, 1000) + campo('__acqua', P.__acqua, '€ / litro')) +
+        '<div class="rc-costo">' + (costo > 0
+          ? '💶 <b>Costo del gin: ' + eur(costo) + '</b> · per bottiglia da 70 cl: <b>' + eur(costo / R.vol * 700) + '</b>' + (senza.length ? '<small>Senza prezzo, non contati: ' + senza.map(k => k === '__alcol96' ? 'alcol' : k === '__acqua' ? 'acqua' : esc(k)).join(', ') + '.</small>' : '')
+          : '💶 Inserisci i prezzi per sapere quanto costa il tuo gin, in tutto e a bottiglia.') + '</div>' +
+        '<button type="button" class="ghost-btn rc-prezzi-btn">' + (apri ? '✓ Fatto, chiudi i prezzi' : '💶 ' + (costo > 0 ? 'Cambia i prezzi' : 'Inserisci i prezzi')) + '</button>' +
+        '<h4>L’attrezzatura</h4>' + ATTREZZI.map(([ic, n, d], k) => chk('at-' + k, ic + ' <b>' + n + '</b> <small>— ' + d + '</small>')).join('') + '</section>';
+    }
     // gli infusi
     if (mostra('infusi')) h += '<section class="rc-sez" id="rc-infusi"><h3>🫙 Gli infusi, uno per botanica</h3><p class="rc-sub">Ogni botanica ha il suo barattolo, la sua gradazione e il suo tempo. Conserva tutto al buio, intorno ai 20 °C.</p>' +
       R.righe.map((r, k) => { const x = r.inf || {}, dl = x.dil || {};
@@ -12442,6 +12456,15 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       (pers ? '<p class="cond-hint">📘 Lotti, potenza degli infusi e fogli di calcolo: li trovi nel manuale «Dal macerato alla bottiglia», in «Capire perché».</p>'
         : chk('un-assaggio', '👅 <b>Assaggia e annota</b>: cosa togliere o aggiungere la prossima volta.') + '<button type="button" class="ghost-btn rc-scheda">🧪 Crea la scheda di prova di questa ricetta</button>') + '</section>';
     box.innerHTML = h;
+    const pb = box.querySelector('.rc-prezzi-btn');
+    if (pb) pb.onclick = () => { window._rcPrezzi = !window._rcPrezzi; const y = window.scrollY; renderRicetta(); window.scrollTo(0, y); };
+    box.querySelectorAll('[data-prezzo]').forEach(inp => {
+      inp.addEventListener('click', e => e.stopPropagation());   // il campo sta dentro la riga da spuntare
+      inp.addEventListener('change', () => { const P = prezzi(), v = parseFloat(String(inp.value).replace(',', '.'));
+        if (v > 0) P[inp.dataset.prezzo] = v; else delete P[inp.dataset.prezzo];
+        try { localStorage.setItem('gb-prezzi', JSON.stringify(P)); } catch(e){}
+        const y = window.scrollY; renderRicetta(); window.scrollTo(0, y); });
+    });
     box.querySelectorAll('.rc-passo input').forEach(c => c.addEventListener('change', () => {
       const pr = att(); if (!pr) return; if (c.checked) pr.passi[c.dataset.k] = 1; else delete pr.passi[c.dataset.k]; scriviP();
       c.closest('.rc-passo').classList.toggle('ok', c.checked);
