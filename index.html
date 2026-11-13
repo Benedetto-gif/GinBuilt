@@ -2188,6 +2188,7 @@ details.howto-hero:not([open]){display:none}
 .rc-prezzo{display:inline-flex;align-items:center;gap:6px;margin-left:6px;font-size:12.5px;color:var(--ink-faint)}
 .rc-prezzo input{width:78px;font-size:15px;padding:4px 6px;border-radius:8px;border:1px solid var(--line-strong)}
 .rc-compra{margin-left:6px;padding:3px 9px;border-radius:999px;border:1px solid var(--line-strong);background:var(--card);font-size:15px;cursor:pointer;vertical-align:middle}
+.rc-formato{padding:3px 10px;font-size:14px;vertical-align:middle}
 .rc-negozi{display:grid;gap:8px;margin:10px 0}
 .rc-negozi a{display:block;text-align:left;text-decoration:none}
 .rc-costo{margin:12px 0 8px;padding:10px 12px;border-radius:12px;background:var(--card);border:1px solid var(--line)}
@@ -2606,7 +2607,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.16.3</div>
+  <div class="splash-ver" id="splash-ver">v2.16.4</div>
 </div>
 
 <div class="wrap">
@@ -5567,7 +5568,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.16.3</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.16.4</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -10853,7 +10854,7 @@ document.getElementById('print-builder').addEventListener('click', () => {
 <script>
 /* ----- Aggiorna l'app (come in Che cucino?) -----
    VERSIONE_APP deve coincidere con VERSIONE in service-worker.js, NOME_VERSIONE con il suo NOME_VERSIONE. */
-var VERSIONE_APP = 'ginbuilder-v297', NOME_VERSIONE = '2.16.3';
+var VERSIONE_APP = 'ginbuilder-v298', NOME_VERSIONE = '2.16.4';
 // un solo punto da cambiare: animazione iniziale e menu leggono il numero da qui
 ['splash-ver','menu-ver'].forEach(function(id){ var e = document.getElementById(id); if (e) e.textContent = 'v' + NOME_VERSIONE; });
 var verOnline = '', verOnlineNome = '';
@@ -12348,6 +12349,10 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     ['🍾', 'Bottiglia di vetro scuro con tappo', 'per il gin finito', 'bottiglie vetro ambrato 700 ml tappo'],
     ['🏷️', 'Etichette e pennarello', 'nome, data, gradazione', 'etichette adesive per bottiglie']
   ];
+  // formato della bottiglia, scelto dall'utente (ml)
+  const FORMATI = [700, 500, 1000, 350, 200];
+  const formato = () => { try { const v = +localStorage.getItem('gb-bottiglia'); return FORMATI.includes(v) ? v : 700; } catch(e){ return 700; } };
+  const cl = ml => nf(ml / 10, 0) + ' cl';
   // dove comprare un attrezzo: si sceglie il negozio, la ricerca si apre già fatta
   const NEGOZI = [
     ['🛒', 'Amazon', q => 'https://www.amazon.it/s?k=' + encodeURIComponent(q)],
@@ -12356,7 +12361,8 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     ['🔎', 'Tutti i negozi (Google Shopping)', q => 'https://www.google.com/search?tbm=shop&q=' + encodeURIComponent(q)]
   ];
   function dovComprare(k){
-    const [ic, n, , q] = ATTREZZI[k];
+    const [ic, n0, , q0] = ATTREZZI[k], bott = ic === '🍾';
+    const n = bott ? 'Bottiglie di vetro scuro da ' + cl(formato()) : n0, q = bott ? 'bottiglie vetro ambrato ' + formato() + ' ml tappo' : q0;
     mostraAvviso(ic + ' ' + n, '<p>Dove vuoi cercarlo? Si apre la ricerca già fatta.</p><div class="rc-negozi">' +
       NEGOZI.map(([i, nome, url]) => '<a class="ghost-btn" href="' + url(q) + '" target="_blank" rel="noopener">' + i + ' ' + nome + '</a>').join('') + '</div>' +
       '<p class="cond-hint">I prezzi cambiano spesso: confrontali prima di comprare.</p>', '', null);
@@ -12426,10 +12432,13 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         chk('sp-alcol', '🧴 <b>Alcol buongusto a 96%</b> — ' + f1(alcTot) + ' ml <small>(comprane circa ' + f1(alcComprare) + ' ml)</small>' + vocePrezzo('__alcol96', alcTot, 1000) + campo('__alcol96', P.__alcol96, '€ / litro')) +
         chk('sp-acqua', '💧 <b>Acqua demineralizzata potabile</b> — ' + f1(acqTot) + ' ml' + vocePrezzo('__acqua', acqTot, 1000) + campo('__acqua', P.__acqua, '€ / litro')) +
         '<div class="rc-costo">' + (costo > 0
-          ? '💶 <b>Costo del gin: ' + eur(costo) + '</b> · per bottiglia da 70 cl: <b>' + eur(costo / R.vol * 700) + '</b>' + (senza.length ? '<small>Senza prezzo, non contati: ' + senza.map(k => k === '__alcol96' ? 'alcol' : k === '__acqua' ? 'acqua' : esc(k)).join(', ') + '.</small>' : '')
+          ? '💶 <b>Costo del gin: ' + eur(costo) + '</b> · per bottiglia da ' + cl(formato()) + ': <b>' + eur(costo / R.vol * formato()) + '</b>' + (senza.length ? '<small>Senza prezzo, non contati: ' + senza.map(k => k === '__alcol96' ? 'alcol' : k === '__acqua' ? 'acqua' : esc(k)).join(', ') + '.</small>' : '')
           : '💶 Inserisci i prezzi per sapere quanto costa il tuo gin, in tutto e a bottiglia.') + '</div>' +
         '<button type="button" class="ghost-btn rc-prezzi-btn">' + (apri ? '✓ Fatto, chiudi i prezzi' : '💶 ' + (costo > 0 ? 'Cambia i prezzi' : 'Inserisci i prezzi')) + '</button>' +
-        '<h4>L’attrezzatura</h4><p class="cond-hint">Tocca 🛍️ accanto a un attrezzo per cercarlo nei negozi online.</p>' + ATTREZZI.map(([ic, n, d], k) => chk('at-' + k, ic + ' <b>' + n + '</b> <small>— ' + d + '</small> <button type="button" class="rc-compra" data-at="' + k + '" aria-label="Dove comprarlo">🛍️</button>')).join('') + '</section>';
+        '<h4>L’attrezzatura</h4><p class="cond-hint">Tocca 🛍️ accanto a un attrezzo per cercarlo nei negozi online.</p>' + ATTREZZI.map(([ic, n, d], k) => { const F = formato(), nb = Math.ceil(R.vol / F - 0.02);
+          if (ic === '🍾') return chk('at-' + k, ic + ' <b>Bottiglie di vetro scuro con tappo</b> <small>— per il gin finito: ' + (nb === 1 ? 'ne serve <b>1</b>' : 'ne servono <b>' + nb + '</b>') + ' da</small> <button type="button" class="ghost-btn rc-formato" aria-label="Cambia il formato della bottiglia">' + cl(F) + ' ↻</button> <button type="button" class="rc-compra" data-at="' + k + '" aria-label="Dove comprarle">🛍️</button>');
+          return chk('at-' + k, ic + ' <b>' + n + '</b> <small>— ' + d + '</small> <button type="button" class="rc-compra" data-at="' + k + '" aria-label="Dove comprarlo">🛍️</button>'); }).join('') +
+        '<p class="cond-hint">Il formato della bottiglia si cambia toccandolo: 70, 50, 100, 35 e 20 cl.</p></section>';
     }
     // gli infusi
     if (mostra('infusi')) h += '<section class="rc-sez" id="rc-infusi"><h3>🫙 Gli infusi, uno per botanica</h3><p class="rc-sub">Ogni botanica ha il suo barattolo, la sua gradazione e il suo tempo. Conserva tutto al buio, intorno ai 20 °C.</p>' +
@@ -12474,6 +12483,9 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         : chk('un-assaggio', '👅 <b>Assaggia e annota</b>: cosa togliere o aggiungere la prossima volta.') + '<button type="button" class="ghost-btn rc-scheda">🧪 Crea la scheda di prova di questa ricetta</button>') + '</section>';
     box.innerHTML = h;
     box.querySelectorAll('.rc-compra').forEach(b => b.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); dovComprare(+b.dataset.at); }));
+    const fb = box.querySelector('.rc-formato');
+    if (fb) fb.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); const F = formato(), nx = FORMATI[(FORMATI.indexOf(F) + 1) % FORMATI.length];
+      try { localStorage.setItem('gb-bottiglia', nx); } catch(er){} const y = window.scrollY; renderRicetta(); window.scrollTo(0, y); });
     const pb = box.querySelector('.rc-prezzi-btn');
     if (pb) pb.onclick = () => { window._rcPrezzi = !window._rcPrezzi; const y = window.scrollY; renderRicetta(); window.scrollTo(0, y); };
     box.querySelectorAll('[data-prezzo]').forEach(inp => {
