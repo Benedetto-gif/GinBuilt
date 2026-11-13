@@ -632,7 +632,7 @@ select.sel-fissa{opacity:1;cursor:default;background-image:none;-webkit-appearan
 .pp-tit{font-weight:700;font-size:16px;}
 .pp-azioni{display:flex;flex-wrap:wrap;gap:8px;}
 .pp-azioni[hidden]{display:none;}
-.pp-grafici{position:sticky;top:var(--pp-top,96px);z-index:5;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:8px 10px 6px;margin-bottom:12px;box-shadow:0 6px 16px rgba(0,0,0,.18);}
+.pp-grafici{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:8px 10px 6px;margin-bottom:12px;box-shadow:0 6px 16px rgba(0,0,0,.18);}
 .pp-scelta{display:flex;gap:6px;justify-content:center;margin-bottom:4px;}
 .pp-tab{flex:1;font:inherit;font-size:12.5px;font-weight:650;padding:5px 4px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink-soft);cursor:pointer;}
 .pp-tab[aria-pressed="true"]{background:var(--juniper);border-color:var(--juniper);color:#fff;}
@@ -2599,7 +2599,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.16.0</div>
+  <div class="splash-ver" id="splash-ver">v2.16.1</div>
 </div>
 
 <div class="wrap">
@@ -5560,7 +5560,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.16.0</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.16.1</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -10677,14 +10677,12 @@ function renderDosiGin(selects){
       // gli stessi grammi della spesa: quelli dell'infuso da preparare, con la perdita del 20%
       const x = parti[k], g = r.g100 * (x.sotto ? x.mlFin : volDaPreparare(x.mlConc)) / 100;
       const row = box.querySelector('.pp-riga[data-k="' + k + '"]'); if (!row) return;
-      row.querySelector('.pp-val').innerHTML = fqp(st.q[k]) + '%<small>' + m1(x.mlFin) + ' ml a ' + nf(abvF, 1) + '% · ' + (g > 0 && g < 0.01 ? '< 0,01' : nf(g, g < 1 ? 2 : 1)) + ' g da pesare</small>';
+      row.querySelector('.pp-val').innerHTML = fqp(st.q[k]) + '%<small>' + m1(x.mlFin) + ' ml nel gin</small>';   // grammi, alcol e acqua: li dà la spesa
       const rg = row.querySelector('input[type=range]'); if (document.activeElement !== rg) rg.value = aPos(st.q[k]);
     });
-    $('pp-totali').innerHTML = '<div class="mix-line"><span>Infusi filtrati da usare</span><strong>' + nf(T.volConc, 0) + ' ml</strong></div>' +
-      '<div class="mix-line"><span>Acqua per portarli a ' + nf(abvF, 1) + '%</span><strong>' + nf(T.acqua, 0) + ' ml</strong></div>' +
-      '<div class="mix-line"><span>Gin finito a ' + nf(abvF, 1) + '% vol</span><strong>' + nf(vol, 0) + ' ml · ' + nf(T.gTot / vol * 1000, 1) + ' g/l di botaniche</strong></div>' +
+    $('pp-totali').innerHTML = '<div class="mix-line"><span>Gin finito</span><strong>' + nf(vol, 0) + ' ml a ' + nf(abvF, 1) + '% vol</strong></div>' +
       (T.sotto.length ? '<div class="warn-box">' + T.sotto.join(', ') + ': infuso consigliato sotto la gradazione finale, non si può diluire.</div>' : '') +
-      '<div class="radar-nota">Ogni infuso, filtrato, si porta da solo a ' + nf(abvF, 1) + '% e poi si miscela: i millilitri accanto ai cursori sono quelli già diluiti. La quantità di gin e la gradazione si cambiano qui in alto.</div>';
+      '<div class="radar-nota">I millilitri accanto a ogni botanica sono quanto del suo infuso, già portato a ' + nf(abvF, 1) + '%, entra nel gin. Qui decidi solo le proporzioni: grammi di botanica, alcol e acqua li calcola la spesa, nella prossima tappa.</div>';
     // quota di ginepro
     const gi = st.righe.findIndex(r => r.n === 'Bacche di ginepro'), pg = gi >= 0 ? st.q[gi] : 0;
     const col = pg >= 45 ? 'var(--green-sym, #2e7d32)' : (pg >= 30 ? 'var(--orange-sym, #b26a00)' : 'var(--red-sym, #c62828)');
@@ -10718,7 +10716,7 @@ function renderDosiGin(selects){
     box.innerHTML = notaLucchetti + st.righe.map((r, k) =>
       '<div class="pp-riga' + (st.fermo.has(k) ? ' ferma' : '') + '" data-k="' + k + '" style="--pc:' + r.col + '">' +
       '<span class="pp-dot" style="background:' + r.col + '"></span>' +
-      '<span class="pp-nome">' + r.n + (r.tracce ? ' <em>(tracce)</em>' : '') + '<small>partenza ' + fq(st.rif[k]) + '% · infuso a ' + r.abv + '%</small></span>' +
+      '<span class="pp-nome">' + r.n + (r.tracce ? ' <em>(tracce)</em>' : '') + '<small>partenza ' + fq(st.rif[k]) + '%</small></span>' +
       '<span class="pp-val"></span>' +
       '<button type="button" class="pp-lock" aria-pressed="' + st.fermo.has(k) + '" title="Blocca o sblocca questa botanica">' + (st.fermo.has(k) ? '🔒' : '🔓') + '</button>' +
       '<div class="pp-fine"><button type="button" class="pp-pm" data-d="-1" aria-label="Meno"' + (st.fermo.has(k) ? ' disabled' : '') + '>−</button>' +
@@ -10848,7 +10846,7 @@ document.getElementById('print-builder').addEventListener('click', () => {
 <script>
 /* ----- Aggiorna l'app (come in Che cucino?) -----
    VERSIONE_APP deve coincidere con VERSIONE in service-worker.js, NOME_VERSIONE con il suo NOME_VERSIONE. */
-var VERSIONE_APP = 'ginbuilder-v294', NOME_VERSIONE = '2.16.0';
+var VERSIONE_APP = 'ginbuilder-v295', NOME_VERSIONE = '2.16.1';
 // un solo punto da cambiare: animazione iniziale e menu leggono il numero da qui
 ['splash-ver','menu-ver'].forEach(function(id){ var e = document.getElementById(id); if (e) e.textContent = 'v' + NOME_VERSIONE; });
 var verOnline = '', verOnlineNome = '';
