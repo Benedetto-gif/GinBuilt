@@ -2187,6 +2187,9 @@ details.howto-hero:not([open]){display:none}
 #panel-mappa{max-width:520px;margin:0 auto}
 .rc-prezzo{display:inline-flex;align-items:center;gap:6px;margin-left:6px;font-size:12.5px;color:var(--ink-faint)}
 .rc-prezzo input{width:78px;font-size:15px;padding:4px 6px;border-radius:8px;border:1px solid var(--line-strong)}
+.rc-compra{margin-left:6px;padding:3px 9px;border-radius:999px;border:1px solid var(--line-strong);background:var(--card);font-size:15px;cursor:pointer;vertical-align:middle}
+.rc-negozi{display:grid;gap:8px;margin:10px 0}
+.rc-negozi a{display:block;text-align:left;text-decoration:none}
 .rc-costo{margin:12px 0 8px;padding:10px 12px;border-radius:12px;background:var(--card);border:1px solid var(--line)}
 .rc-costo small{display:block;margin-top:4px;color:var(--ink-faint)}
 .rc-tab{overflow-x:auto;margin:8px 0 12px}.rc-tab table{border-collapse:collapse;width:100%;font-size:12.5px}.rc-tab th,.rc-tab td{padding:6px 5px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.rc-tab th{font-size:11.5px;color:var(--ink-faint);font-weight:700}
@@ -2603,7 +2606,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.16.2</div>
+  <div class="splash-ver" id="splash-ver">v2.16.3</div>
 </div>
 
 <div class="wrap">
@@ -5564,7 +5567,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.16.2</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.16.3</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -10850,7 +10853,7 @@ document.getElementById('print-builder').addEventListener('click', () => {
 <script>
 /* ----- Aggiorna l'app (come in Che cucino?) -----
    VERSIONE_APP deve coincidere con VERSIONE in service-worker.js, NOME_VERSIONE con il suo NOME_VERSIONE. */
-var VERSIONE_APP = 'ginbuilder-v296', NOME_VERSIONE = '2.16.2';
+var VERSIONE_APP = 'ginbuilder-v297', NOME_VERSIONE = '2.16.3';
 // un solo punto da cambiare: animazione iniziale e menu leggono il numero da qui
 ['splash-ver','menu-ver'].forEach(function(id){ var e = document.getElementById(id); if (e) e.textContent = 'v' + NOME_VERSIONE; });
 var verOnline = '', verOnlineNome = '';
@@ -12335,15 +12338,29 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
   const f1 = x => nf(x, x < 10 ? 1 : 0), fg = x => x > 0 && x < 0.01 ? '< 0,01' : nf(x, x < 1 ? 2 : 1);
   const DUR = h => h == null ? '' : (h >= 48 ? nf(h / 24, h % 24 ? 1 : 0) + ' giorni' : nf(h, 0) + ' ore');
   const ATTREZZI = [
-    ['⚖️', 'Bilancia di precisione (0,01 g)', 'per le botaniche: molte dosi stanno sotto il grammo'],
-    ['🫙', 'Barattoli di vetro a chiusura ermetica', 'uno per ogni botanica, con etichetta'],
-    ['🧪', 'Cilindro graduato o siringhe dosatrici', 'per misurare alcol, acqua e infusi'],
-    ['🌡️', 'Termometro', 'per misurare la temperatura della soluzione'],
-    ['📏', 'Alcolometro (facoltativo)', 'per controllare il grado'],
-    ['🧻', 'Imbuto e filtri (carta da caffè o filtri da laboratorio)', 'per filtrare gli infusi'],
-    ['🍾', 'Bottiglia di vetro scuro con tappo', 'per il gin finito'],
-    ['🏷️', 'Etichette e pennarello', 'nome, data, gradazione']
+    // quarto campo: le parole da cercare nei negozi online
+    ['⚖️', 'Bilancia di precisione (0,01 g)', 'per le botaniche: molte dosi stanno sotto il grammo', 'bilancia di precisione 0,01 g'],
+    ['🫙', 'Barattoli di vetro a chiusura ermetica', 'uno per ogni botanica, con etichetta', 'barattoli vetro chiusura ermetica'],
+    ['🧪', 'Cilindro graduato o siringhe dosatrici', 'per misurare alcol, acqua e infusi', 'cilindro graduato vetro 250 ml'],
+    ['🌡️', 'Termometro', 'per misurare la temperatura della soluzione', 'termometro digitale da cucina a sonda'],
+    ['📏', 'Alcolometro (facoltativo)', 'per controllare il grado', 'alcolometro 0-100 con cilindro'],
+    ['🧻', 'Imbuto e filtri (carta da caffè o filtri da laboratorio)', 'per filtrare gli infusi', 'filtri carta da laboratorio con imbuto'],
+    ['🍾', 'Bottiglia di vetro scuro con tappo', 'per il gin finito', 'bottiglie vetro ambrato 700 ml tappo'],
+    ['🏷️', 'Etichette e pennarello', 'nome, data, gradazione', 'etichette adesive per bottiglie']
   ];
+  // dove comprare un attrezzo: si sceglie il negozio, la ricerca si apre già fatta
+  const NEGOZI = [
+    ['🛒', 'Amazon', q => 'https://www.amazon.it/s?k=' + encodeURIComponent(q)],
+    ['🧧', 'AliExpress', q => 'https://it.aliexpress.com/wholesale?SearchText=' + encodeURIComponent(q)],
+    ['💰', 'Confronta prezzi (idealo)', q => 'https://www.idealo.it/prechcat.html?q=' + encodeURIComponent(q)],
+    ['🔎', 'Tutti i negozi (Google Shopping)', q => 'https://www.google.com/search?tbm=shop&q=' + encodeURIComponent(q)]
+  ];
+  function dovComprare(k){
+    const [ic, n, , q] = ATTREZZI[k];
+    mostraAvviso(ic + ' ' + n, '<p>Dove vuoi cercarlo? Si apre la ricerca già fatta.</p><div class="rc-negozi">' +
+      NEGOZI.map(([i, nome, url]) => '<a class="ghost-btn" href="' + url(q) + '" target="_blank" rel="noopener">' + i + ' ' + nome + '</a>').join('') + '</div>' +
+      '<p class="cond-hint">I prezzi cambiano spesso: confrontali prima di comprare.</p>', '', null);
+  }
   // come preparare la botanica nella ricetta: stato (fresca/secca) detto subito, poi il gesto
   const MORTAIO = '<svg class="ic-svg" viewBox="0 0 32 32" width="1em" height="1em" aria-hidden="true"><path d="M17 4l9-2 1.6 2.6-8.6 6.4z" fill="#A0806A"/><path d="M4 14h24c0 7-5 12-12 12S4 21 4 14z" fill="#9AA3A8"/><path d="M4 14h24" stroke="#6E777C" stroke-width="2" stroke-linecap="round"/><rect x="10" y="26" width="12" height="3" rx="1.2" fill="#6E777C"/></svg>';
   function prepRicetta(d, stato){
@@ -12412,7 +12429,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
           ? '💶 <b>Costo del gin: ' + eur(costo) + '</b> · per bottiglia da 70 cl: <b>' + eur(costo / R.vol * 700) + '</b>' + (senza.length ? '<small>Senza prezzo, non contati: ' + senza.map(k => k === '__alcol96' ? 'alcol' : k === '__acqua' ? 'acqua' : esc(k)).join(', ') + '.</small>' : '')
           : '💶 Inserisci i prezzi per sapere quanto costa il tuo gin, in tutto e a bottiglia.') + '</div>' +
         '<button type="button" class="ghost-btn rc-prezzi-btn">' + (apri ? '✓ Fatto, chiudi i prezzi' : '💶 ' + (costo > 0 ? 'Cambia i prezzi' : 'Inserisci i prezzi')) + '</button>' +
-        '<h4>L’attrezzatura</h4>' + ATTREZZI.map(([ic, n, d], k) => chk('at-' + k, ic + ' <b>' + n + '</b> <small>— ' + d + '</small>')).join('') + '</section>';
+        '<h4>L’attrezzatura</h4><p class="cond-hint">Tocca 🛍️ accanto a un attrezzo per cercarlo nei negozi online.</p>' + ATTREZZI.map(([ic, n, d], k) => chk('at-' + k, ic + ' <b>' + n + '</b> <small>— ' + d + '</small> <button type="button" class="rc-compra" data-at="' + k + '" aria-label="Dove comprarlo">🛍️</button>')).join('') + '</section>';
     }
     // gli infusi
     if (mostra('infusi')) h += '<section class="rc-sez" id="rc-infusi"><h3>🫙 Gli infusi, uno per botanica</h3><p class="rc-sub">Ogni botanica ha il suo barattolo, la sua gradazione e il suo tempo. Conserva tutto al buio, intorno ai 20 °C.</p>' +
@@ -12456,6 +12473,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       (pers ? '<p class="cond-hint">📘 Lotti, potenza degli infusi e fogli di calcolo: li trovi nel manuale «Dal macerato alla bottiglia», in «Capire perché».</p>'
         : chk('un-assaggio', '👅 <b>Assaggia e annota</b>: cosa togliere o aggiungere la prossima volta.') + '<button type="button" class="ghost-btn rc-scheda">🧪 Crea la scheda di prova di questa ricetta</button>') + '</section>';
     box.innerHTML = h;
+    box.querySelectorAll('.rc-compra').forEach(b => b.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); dovComprare(+b.dataset.at); }));
     const pb = box.querySelector('.rc-prezzi-btn');
     if (pb) pb.onclick = () => { window._rcPrezzi = !window._rcPrezzi; const y = window.scrollY; renderRicetta(); window.scrollTo(0, y); };
     box.querySelectorAll('[data-prezzo]').forEach(inp => {
