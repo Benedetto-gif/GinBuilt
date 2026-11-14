@@ -2692,6 +2692,10 @@ html.in-mappa #nav-indietro{display:none!important}
 .mp-benv-l li .mbi{font-style:normal;font-size:20px;line-height:1.1;flex:none;width:24px;text-align:center}
 .mp-benv-via{margin-top:12px !important}
 .mp-benv .mp-benv-nota{font-size:13px;color:var(--ink-faint);margin:0}
+
+.mp-benv-pag{position:relative;display:block;width:100%;text-align:left;padding:10px 32px 10px 12px;font:700 15px/1.2 'Inter',system-ui,sans-serif;color:var(--ink);cursor:pointer}
+.mp-benv-pag::after{content:"›";position:absolute;right:13px;top:50%;transform:translateY(-50%);opacity:.6;font-size:22px;line-height:1}
+.mp-benv-pag small{display:block;font:500 12.5px/1.3 'Inter',system-ui,sans-serif;color:var(--ink-soft);margin-top:2px}
 </style>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0C110E" id="meta-theme-color">
@@ -2771,7 +2775,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.19.2</div>
+  <div class="splash-ver" id="splash-ver">v2.19.3</div>
 </div>
 
 <div class="wrap">
@@ -5751,7 +5755,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.19.2</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.19.3</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -11163,7 +11167,7 @@ document.getElementById('print-builder').addEventListener('click', () => {
 <script>
 /* ----- Aggiorna l'app (come in Che cucino?) -----
    VERSIONE_APP deve coincidere con VERSIONE in service-worker.js, NOME_VERSIONE con il suo NOME_VERSIONE. */
-var VERSIONE_APP = 'ginbuilder-v312', NOME_VERSIONE = '2.19.2';
+var VERSIONE_APP = 'ginbuilder-v313', NOME_VERSIONE = '2.19.3';
 // un solo punto da cambiare: animazione iniziale e menu leggono il numero da qui
 ['splash-ver','menu-ver'].forEach(function(id){ var e = document.getElementById(id); if (e) e.textContent = 'v' + NOME_VERSIONE; });
 var verOnline = '', verOnlineNome = '';
@@ -13070,11 +13074,9 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
           '<li><i class="mbi">💧</i><span>acqua demineralizzata, oppure un\u2019acqua in bottiglia con <strong>residuo fisso sotto i 25 mg/L</strong>: è scritto sull\u2019etichetta</span></li>' +
           '<li><i class="mbi">🍾</i><span>una bottiglia di vetro scuro</span></li></ul></details>' +
         '<details class="mp-benv-d"><summary>⏳ Quanto tempo ci vuole</summary><p>Gli infusi restano in alcol da qualche ora a qualche giorno, secondo la botanica. Poi servono uno o due giorni di riposo. In tutto, di solito, meno di due settimane.</p></details>' +
+        '<button type="button" class="mp-benv-d mp-benv-pag" data-tab="storia">📖 Piccola storia del gin<small>da rimedio di farmacia a distillato d\u2019autore</small></button>' +
         '<p class="mp-benv-via"><strong>Da dove cominciare.</strong> Qui sotto ci sono due strade. Se vuoi solo provare, scegli <strong>Gin no problem!</strong>: l\u2019app ti dice cosa fare, un passo alla volta. Se vuoi capire come funziona, scegli <strong>Fatti un gin</strong>.</p>' +
         '<p class="mp-benv-nota">Il gin che prepari è per te e per i tuoi amici: per venderlo servono permessi.</p></div>';
-      // prima di partire, per chi vuole: da dove viene il gin (sopra le due strade)
-      h += (() => { const [ic] = nomeTab('storia'); return '<div class="mp-sez mp-sez-storia"><div class="mp-grid" style="grid-template-columns:1fr">' +
-          '<button type="button" class="mp-tile" data-tab="storia" style="--h:#B8921F"><span class="mt-ic">' + (ic || '📜') + '</span><span class="mt-l">Piccola storia del gin<small style="display:block;font-weight:500;opacity:.9;margin-top:2px">da rimedio di farmacia a distillato d’autore</small></span></button></div></div>'; })();
       h += '<h2 class="mp-tit">Come vuoi fare il tuo gin?</h2><p class="mp-sub">Due strade, secondo quanto vuoi metterci le mani. Puoi cambiarla in ogni momento.</p>' +
         '<div class="mp-bivio">' + Object.keys(VIE).map(k => '<button type="button" class="mp-via" data-via="' + k + '" style="--c:' + VIE[k].c + '"><span class="mv-tondo">' + TONDI[k] + '</span><b>' + VIE[k].t + '</b>' + (VIE[k].st ? '<i class="mv-sub">' + VIE[k].st + '</i>' : '') + '<span>' + VIE[k].d + '</span>' +
           '<small>' + VIE[k].tappe.length + ' tappe' + (k === 'pers' ? ' · teoria e pratica insieme' : '') + '</small></button>').join('') + '</div>' ;
@@ -13117,7 +13119,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       const an = $('avviso-annulla'); if (an) an.textContent = 'Chiudi';
       const icB = document.querySelector('.avviso-icona'); if (icB) icB.textContent = k === 'imbott' ? '🍾' : '🫙';
       document.querySelectorAll('.avviso [data-gin]').forEach(c => c.onclick = () => { chiudiAvviso(); setTimeout(() => schedaMioGin(c.dataset.gin), 30); }); }));
-    box.querySelectorAll('.mp-tile[data-tab]').forEach(b => b.addEventListener('click', () => { window._tappa = null; showTab(b.dataset.tab); }));
+    box.querySelectorAll('.mp-tile[data-tab], .mp-benv-pag[data-tab]').forEach(b => b.addEventListener('click', () => { window._tappa = null; showTab(b.dataset.tab); }));
     box.querySelectorAll('.mp-via').forEach(b => b.addEventListener('click', e => {
       if (e.target.closest('.mv-tondo')){ e.stopPropagation(); const t = e.target.closest('.mv-tondo'); suonaTondo(b.dataset.via);
         t.classList.remove('tocco'); void t.offsetWidth; t.classList.add('tocco'); return; }   // il tondo suona, la scheda sceglie
