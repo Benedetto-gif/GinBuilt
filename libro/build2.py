@@ -303,7 +303,7 @@ add('uso.xhtml', 'Come usare questo libro', USO, 1)
 stor = [t for t, _ in PAN['storia'] if t]
 add('cap1.xhtml', 'Capitolo 1 · Storia del gin', '<section epub:type="chapter"><h1>Capitolo 1<br/>Storia del gin</h1><ol class="indice">' +
     ''.join('<li><a href="#st-%s">%s</a></li>' % (slug(t), e(t)) for t in stor) + '</ol>' +
-    ''.join('<section id="st-%s"><h2>%s</h2>%s</section>' % (slug(t), e(t), sez('storia', t)) for t in stor) + '</section>', 1)
+    ''.join('<section id="st-%s"><h2>%s</h2>%s</section>' % (slug(t), e(t), sez('storia', t).replace('nella pagina <span>Leggi e regole</span>', 'nel <a href="cap8.xhtml">capitolo 8, Leggi e regole</a>')) for t in stor) + '</section>', 1)
 
 # ---------- 2. Le botaniche ----------
 add('cap2.xhtml', 'Capitolo 2 · Le botaniche', '''<section epub:type="chapter"><h1>Capitolo 2<br/>Le botaniche</h1>
