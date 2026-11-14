@@ -2706,6 +2706,16 @@ html.in-mappa #nav-indietro{display:none!important}
 .tc-car{display:block;font-style:italic;font-size:14px;line-height:1.35;margin:2px 0 4px;opacity:.95}
 
 .str-tile small.str-stato{font-weight:700;opacity:1;margin-top:2px}
+
+/* Guida della prima volta sulla strada */
+.mp-guida{position:relative;margin:4px 0 30px;padding:12px 14px 14px;border-radius:16px;background:#2B7BB9;color:#fff;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.mp-guida b{display:block;font:800 16px/1.2 'Inter',system-ui,sans-serif;margin:0 0 6px}
+.mp-guida p{margin:0 0 6px;font-size:14.5px;line-height:1.45;color:#fff}
+.mp-guida strong{color:#fff}
+.mp-guida .ghost-btn{margin-top:4px;background:#fff;color:#1F5E8E;border-color:#fff}
+.mp-guida-freccia{position:absolute;left:calc(25% - 13px);bottom:-30px;font-size:26px;animation:mp-giu 1.2s ease-in-out infinite}
+@keyframes mp-giu{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+@media (prefers-reduced-motion:reduce){.mp-guida-freccia{animation:none}}
 </style>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0C110E" id="meta-theme-color">
@@ -2785,7 +2795,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.20.2</div>
+  <div class="splash-ver" id="splash-ver">v2.20.3</div>
 </div>
 
 <div class="wrap">
@@ -5766,7 +5776,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.20.2</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.20.3</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -11183,7 +11193,7 @@ document.getElementById('print-builder').addEventListener('click', () => {
 <script>
 /* ----- Aggiorna l'app (come in Che cucino?) -----
    VERSIONE_APP deve coincidere con VERSIONE in service-worker.js, NOME_VERSIONE con il suo NOME_VERSIONE. */
-var VERSIONE_APP = 'ginbuilder-v318', NOME_VERSIONE = '2.20.2';
+var VERSIONE_APP = 'ginbuilder-v319', NOME_VERSIONE = '2.20.3';
 // un solo punto da cambiare: animazione iniziale e menu leggono il numero da qui
 ['splash-ver','menu-ver'].forEach(function(id){ var e = document.getElementById(id); if (e) e.textContent = 'v' + NOME_VERSIONE; });
 var verOnline = '', verOnlineNome = '';
@@ -13152,6 +13162,12 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         '<p class="mp-sub">' + (pr.via === 'chiavi' ? 'Una ricetta codificata da seguire passo passo.' : 'Ogni tappa: una breve lezione e una prova.') + ' Tocca una tappa: quella che pulsa è la prossima.</p>' +
         '<button type="button" class="mp-gin-aperto" data-gin="' + pr.id + '" aria-label="Il gin che stai preparando: ' + esc(pr.nome) + '. Tocca per cambiargli nome o iniziarne un altro">' +
           '<small>Il gin che stai preparando</small><span class="mga-r"><b>' + esc(pr.nome) + '</b><i>✏️ nome · altro gin</i></span></button>' +
+        (() => { let vista = false; try { vista = localStorage.getItem('gb-guida-' + pr.via) === '1'; } catch(e){}
+          if (vista || Object.keys(pr.fatte).length) return '';
+          return '<div class="mp-guida" id="mp-guida"><b>👋 Si comincia da qui</b>' +
+            '<p>Tocca la tappa che <strong>pulsa</strong>: è la prima. Dentro trovi che cosa fare.</p>' +
+            '<p>Quando hai finito, tocca <strong>«Fatto · torna alla mappa»</strong>: torni qui, la tappa prende la spunta verde e comincia a pulsare la successiva.</p>' +
+            '<button type="button" class="ghost-btn" id="mp-guida-ok">Ho capito</button><span class="mp-guida-freccia">👇</span></div>'; })() +
         strada(V.tappe, pr.fatte, (() => {
           const alt = altriGin(), inf = alt.filter(x => statoGin(x) === 'infuso'), imb = P.lista.filter(x => !vuoto(x) && statoGin(x) === 'imbott' && x.id !== pr.id)
             .sort((a, b) => (b.imbott || b.agg || 0) - (a.imbott || a.agg || 0));
@@ -13171,7 +13187,10 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     h += '<button type="button" class="mp-ver" id="mp-ver" data-aggiorna>' + (window.testoVerMappa ? testoVerMappa() : '\ud83d\udd04 Controlla aggiornamenti') + '</button>';
     box.innerHTML = h;
     try { if (window.puntoStrumenti) window.puntoStrumenti(); } catch(e){}
-    box.querySelectorAll('.mp-st').forEach(b => b.addEventListener('click', () => vaiTappa(b.dataset.id)));
+    // la guida della prima volta si chiude con «Ho capito» o toccando una tappa, e non torna più su quella strada
+    const guidaVista = () => { try { localStorage.setItem('gb-guida-' + pr.via, '1'); } catch(e){} };
+    const gOk = $('mp-guida-ok'); if (gOk) gOk.onclick = () => { guidaVista(); const g = $('mp-guida'); if (g) g.remove(); };
+    box.querySelectorAll('.mp-st').forEach(b => b.addEventListener('click', () => { if (pr.via) guidaVista(); vaiTappa(b.dataset.id); }));
     box.querySelectorAll('[data-gin]').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); schedaMioGin(b.dataset.gin); }));
     box.querySelectorAll('[data-tutti]').forEach(b => b.addEventListener('click', e => { e.stopPropagation();
       const k = b.dataset.tutti, l = P.lista.filter(x => !vuoto(x) && x.id !== P.att && statoGin(x) === k);
