@@ -2722,7 +2722,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.18.1</div>
+  <div class="splash-ver" id="splash-ver">v2.18.2</div>
 </div>
 
 <div class="wrap">
@@ -3075,6 +3075,21 @@ html.in-mappa #nav-indietro{display:none!important}
           <li>I valori sono intervalli orientativi da tarare con prove: la stessa famiglia di molecole si comporta in modo diverso secondo la parte di pianta (buccia secca, radice dura, foglia fresca).</li>
           <li>La riga in rosso (la clorofilla, in fondo alla tabella) non è un obiettivo: indica le condizioni da evitare.</li>
         </ul>
+      </div>
+    </details>
+    <details class="howto" id="insieme-noz">
+      <summary>Perché ogni botanica ha il suo infuso, e non tutte insieme</summary>
+      <div class="howto-body">
+        <p>Il modo più semplice sembra mettere tutte le botaniche nello stesso barattolo, nello stesso alcol, per lo stesso tempo. Funziona male, per due motivi.</p>
+        <p><strong>Una sola gradazione.</strong> Nel barattolo comune il grado alcolico è uno solo. Le scorze di agrumi lavorano meglio a 65–75% vol, i fiori a 45–55% vol: qualunque grado si scelga, una parte delle botaniche è fuori dalla sua zona e non estrae le sostanze giuste.</p>
+        <p><strong>Un solo tempo.</strong> Le botaniche non cedono il profumo alla stessa velocità. Scorze, fiori e foglie fresche danno il meglio in poche ore o in un giorno. Radici, cortecce e semi duri hanno bisogno di diversi giorni.</p>
+        <ul>
+          <li>Se si filtra presto, le botaniche lente restano indietro: nel gin si sentono meno di quanto prevede la ricetta.</li>
+          <li>Se si aspetta che le lente siano pronte, le veloci superano il loro limite: escono le note amare, «verdi» o cotte che si volevano evitare.</li>
+        </ul>
+        <p><strong>Nessuna correzione.</strong> Quando tutto macera insieme, non si può più correggere una botanica sola. Se il limone è troppo forte, bisogna rifare tutto.</p>
+        <p>Per questo GinBuilder fa un infuso per ogni botanica. Ognuna macera alla sua gradazione e per il suo tempo. Poi si filtra, si porta alla gradazione finale del gin e si unisce alle altre a percentuale. Così ogni infuso si assaggia da solo e si dosa senza toccare il resto.</p>
+        <p class="cond-hint">Nel gin distillato invece si macera spesso tutto insieme: lì è la distillazione a separare il profumo, che passa nel vapore, dalle sostanze pesanti, che restano nell'alambicco.</p>
       </div>
     </details>
 
@@ -5681,7 +5696,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.18.1</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.18.2</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -11093,7 +11108,7 @@ document.getElementById('print-builder').addEventListener('click', () => {
 <script>
 /* ----- Aggiorna l'app (come in Che cucino?) -----
    VERSIONE_APP deve coincidere con VERSIONE in service-worker.js, NOME_VERSIONE con il suo NOME_VERSIONE. */
-var VERSIONE_APP = 'ginbuilder-v306', NOME_VERSIONE = '2.18.1';
+var VERSIONE_APP = 'ginbuilder-v307', NOME_VERSIONE = '2.18.2';
 // un solo punto da cambiare: animazione iniziale e menu leggono il numero da qui
 ['splash-ver','menu-ver'].forEach(function(id){ var e = document.getElementById(id); if (e) e.textContent = 'v' + NOME_VERSIONE; });
 var verOnline = '', verOnlineNome = '';
@@ -13028,7 +13043,8 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     estrazione: { e:'⚗️', t:'Cosa si estrae e a che grado',
       html: '<p>L’alcol non estrae tutto allo stesso modo. Più il grado è alto, più scioglie le sostanze che non amano l’acqua: gli <strong>oli essenziali</strong> e i terpeni, che portano il profumo. Più è basso, più passano le sostanze solubili in acqua: <strong>zuccheri, acidi, tannini</strong>.</p>' +
         '<p>Per questo ogni botanica ha la sua gradazione di estrazione. Troppo alta, e si estraggono anche clorofilla, resine e note amare o «verdi»; troppo bassa, e l’infuso resta acquoso e povero di profumo. Conta anche il tempo: oltre il limite escono le sostanze indesiderate.</p>' +
-        '<p>Qui sotto, per le botaniche del tuo progetto, il tempo e la gradazione consigliati. Ognuna si mette in infusione da sola, alla sua gradazione: scegli tu a quale, dentro i limiti.</p>' + noz('la solubilità selettiva', 'La solubilità selettiva') },
+        '<p>Qui sotto, per le botaniche del tuo progetto, il tempo e la gradazione consigliati. Ognuna si mette in infusione da sola, alla sua gradazione: scegli tu a quale, dentro i limiti.</p>' +
+        '<p><strong>Perché non tutte insieme?</strong> Nello stesso barattolo ci sarebbero un solo grado alcolico e un solo tempo per tutte. Le botaniche veloci, come scorze e fiori, supererebbero il loro limite. Quelle lente, come radici e semi, resterebbero indietro.</p>' + noz('la solubilità selettiva', 'La solubilità selettiva') + noz('perché ogni botanica ha il suo infuso', 'Perché ogni botanica ha il suo infuso') },
     diluizione: { e:'🌡️', t:'Diluire e rinforzare',
       html: '<p>Ogni infuso si prepara alla sua gradazione e poi, filtrato, si porta con acqua demineralizzata alla gradazione finale che hai scelto insieme alle quote. Diluire è semplice; alzare il grado invece richiede di aggiungere un alcol più forte, perché l’acqua non si toglie.</p>' +
         '<p>I conti si fanno sul peso dell’alcol: alcol e acqua, mescolandosi, si contraggono e i millilitri non si sommano esattamente.</p>' + approf('🧮 I calcoli dell’alcol', "showTab('calcoli')") },
