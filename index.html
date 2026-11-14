@@ -2795,7 +2795,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.20.4</div>
+  <div class="splash-ver" id="splash-ver">v2.20.5</div>
 </div>
 
 <div class="wrap">
@@ -5776,7 +5776,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.20.4</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.20.5</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -11193,7 +11193,7 @@ document.getElementById('print-builder').addEventListener('click', () => {
 <script>
 /* ----- Aggiorna l'app (come in Che cucino?) -----
    VERSIONE_APP deve coincidere con VERSIONE in service-worker.js, NOME_VERSIONE con il suo NOME_VERSIONE. */
-var VERSIONE_APP = 'ginbuilder-v320', NOME_VERSIONE = '2.20.4';
+var VERSIONE_APP = 'ginbuilder-v321', NOME_VERSIONE = '2.20.5';
 // un solo punto da cambiare: animazione iniziale e menu leggono il numero da qui
 ['splash-ver','menu-ver'].forEach(function(id){ var e = document.getElementById(id); if (e) e.textContent = 'v' + NOME_VERSIONE; });
 var verOnline = '', verOnlineNome = '';
@@ -13160,8 +13160,9 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     } else {
       h += '<div class="mp-tit-riga"><button type="button" class="mp-indietro" id="mp-cambia" aria-label="Torna alla scelta della strada" title="Torna alla scelta della strada">\u21a9\ufe0e</button><h2 class="mp-tit">' + V.e + ' ' + V.t + '</h2></div>' + (V.st ? '<p class="mp-st-sub">' + V.st + '</p>' : '') +
         '<p class="mp-sub">' + (pr.via === 'chiavi' ? 'Una ricetta codificata da seguire passo passo.' : 'Ogni tappa: una breve lezione e una prova.') + ' Tocca una tappa: quella che pulsa è la prossima.</p>' +
-        '<button type="button" class="mp-gin-aperto" data-gin="' + pr.id + '" aria-label="Il gin che stai preparando: ' + esc(pr.nome) + '. Tocca per cambiargli nome o iniziarne un altro">' +
-          '<small>Il gin che stai preparando</small><span class="mga-r"><b>' + esc(pr.nome) + '</b><i>✏️ nome · altro gin</i></span></button>' +
+        // il nome del gin compare solo quando il gin esiste davvero: dopo la prima tappa fatta, o se gli hai dato un nome
+        ((pr.nomeLibero || Object.keys(pr.fatte).length) ? '<button type="button" class="mp-gin-aperto" data-gin="' + pr.id + '" aria-label="Il gin che stai preparando: ' + esc(pr.nome) + '. Tocca per cambiargli nome o iniziarne un altro">' +
+          '<small>Il gin che stai preparando</small><span class="mga-r"><b>' + esc(pr.nome) + '</b><i>✏️ nome · altro gin</i></span></button>' : '') +
         (() => { let vista = false; try { vista = localStorage.getItem('gb-guida-' + pr.via) === '1'; } catch(e){}
           if (vista || Object.keys(pr.fatte).length) return '';
           return '<div class="mp-guida" id="mp-guida"><b>👋 Si comincia da qui</b>' +
