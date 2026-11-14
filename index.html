@@ -2722,7 +2722,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.18.2</div>
+  <div class="splash-ver" id="splash-ver">v2.18.3</div>
 </div>
 
 <div class="wrap">
@@ -2874,16 +2874,22 @@ html.in-mappa #nav-indietro{display:none!important}
         <strong>cardamomo</strong>, <strong>cannella</strong>, <strong>semi di finocchio</strong>, <strong>cubebe</strong>.</p>
 
       <h3>Distillato o compound</h3>
-      <p>Esistono due modi di fare gin, ed è bene non confonderli.</p>
+      <p>Ci sono due modi per dare al gin il profumo delle botaniche: due metodi diversi, non uno migliore dell'altro.</p>
+      <p>Nella <strong>macerazione a freddo</strong> le botaniche restano nell'alcol e gli cedono il loro profumo. Il gin fatto così si chiama <em>compound</em>. Un tempo era il <em>bathtub gin</em>, il gin «della vasca da bagno», sinonimo di scorciatoia.</p>
+      <p>Nella <strong>distillazione</strong> le botaniche si scaldano con l'alcol in un alambicco. Il vapore porta via il profumo e poi, raffreddandosi, torna liquido. In una variante il vapore attraversa un cesto pieno di botaniche (<em>vapour infusion</em>).</p>
+      <p><strong>Che cosa sa fare meglio la macerazione</strong></p>
       <ul>
-        <li><strong>Distillazione</strong> — le botaniche macerano nell'alcol e vengono ridistillate, oppure si aromatizza
-          il vapore facendolo passare attraverso un cesto (<em>vapour infusion</em>). Il calore fissa l'equilibrio una volta
-          per tutte: il risultato è limpido e stabile, ma per correggere un dosaggio bisogna rifare la distillazione.</li>
-        <li><strong>Compound</strong> — si parte da alcol neutro e si aggiungono infusi, senza ridistillare. Storicamente
-          era il <em>bathtub gin</em>, sinonimo di scorciatoia. Lavorando però per <strong>infusi singoli</strong> — una
-          botanica per volta, ciascuna con il proprio tempo e la propria dose — il compound diventa esattamente il contrario:
-          il metodo più controllabile che esista.</li>
+        <li><strong>Controllo.</strong> Con un infuso per botanica, ognuna macera alla sua gradazione e per il suo tempo. Poi si dosa a percentuale. Se una nota è troppo forte, si corregge solo quella.</li>
+        <li><strong>Note delicate.</strong> Senza calore, i profumi più fragili restano vicini alla pianta fresca. È il caso di fiori, scorze ed erbe verdi.</li>
       </ul>
+      <p><strong>Che cosa sa fare meglio la distillazione</strong></p>
+      <ul>
+        <li><strong>Pulizia.</strong> Nel vapore passa solo ciò che evapora. Colore, zuccheri, tannini e clorofilla restano nell'alambicco. Il compound invece trattiene tutto ciò che l'alcol ha sciolto, e per questo va filtrato con cura.</li>
+        <li><strong>Stabilità.</strong> Un distillato resta limpido nel tempo. Un compound invece può velarsi quando si diluisce (è l'effetto louche), fare deposito o cambiare colore alla luce.</li>
+        <li><strong>Armonia.</strong> Il calore fonde gli aromi in un profilo unico. Nel compound le note restano più separate e riconoscibili. È un carattere diverso, non un difetto.</li>
+      </ul>
+      <p><strong>Che cosa dice la legge.</strong> Nell'Unione Europea il compound si chiama semplicemente «gin». «Gin distillato» e «London gin» sono categorie a parte, riservate a chi ridistilla l'alcol con le botaniche. In tutte il ginepro deve essere la nota principale, e il grado alcolico non scende sotto il 37,5% vol. I dettagli sono nella pagina <a href="#" onclick="showTab('leggi');return false;">Leggi e regole</a>.</p>
+      <p><strong>In sintesi.</strong> La qualità non dipende dal metodo, ma da come si lavora. Un compound curato può essere migliore di un distillato fatto male, e viceversa. Il compound fatto per infusi singoli ha un pregio preciso: è il metodo più controllabile che esista.</p>
       <div class="pull">Ogni infuso si assaggia da solo, si dosa a percentuale e si corregge senza rifare nulla del resto.
         È su questo metodo che è costruita quest'applicazione.</div>
 
@@ -5696,7 +5702,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.18.2</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.18.3</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -11108,7 +11114,7 @@ document.getElementById('print-builder').addEventListener('click', () => {
 <script>
 /* ----- Aggiorna l'app (come in Che cucino?) -----
    VERSIONE_APP deve coincidere con VERSIONE in service-worker.js, NOME_VERSIONE con il suo NOME_VERSIONE. */
-var VERSIONE_APP = 'ginbuilder-v307', NOME_VERSIONE = '2.18.2';
+var VERSIONE_APP = 'ginbuilder-v308', NOME_VERSIONE = '2.18.3';
 // un solo punto da cambiare: animazione iniziale e menu leggono il numero da qui
 ['splash-ver','menu-ver'].forEach(function(id){ var e = document.getElementById(id); if (e) e.textContent = 'v' + NOME_VERSIONE; });
 var verOnline = '', verOnlineNome = '';
