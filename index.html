@@ -2644,12 +2644,35 @@ html.in-mappa #nav-indietro{display:none!important}
 #panel-erbario .erb-vicini{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;}
 #panel-erbario .erb-vicini button{font:14px 'Public Sans',sans-serif;padding:6px 11px;border-radius:999px;border:1px solid var(--filo);background:var(--carta-2);color:var(--inch);cursor:pointer;}
 
-/* Piccola storia del gin sulla prima pagina: tessera ampia, ora che «I tuoi gin» sta in Strumenti */
+/* Piccola storia del gin sulla prima pagina: tessera ampia, i gin cominciati stanno sotto le due strade */
 .mp-sez-storia{margin-top:6px}
 .mp-sez-storia .mp-tile{min-height:84px;padding:16px 18px;gap:14px;border-radius:18px}
 .mp-sez-storia .mp-tile .mt-ic{font-size:34px}
 .mp-sez-storia .mp-tile .mt-l{font-size:18px;line-height:1.2}
 .mp-sez-storia .mp-tile .mt-l small{font-size:14px !important;margin-top:4px !important}
+
+/* I gin sul percorso: il nome del gin aperto, i rami «In infusione» e «Imbottigliati», «Riprendi un gin» */
+.mp-gin-aperto{display:flex;align-items:center;gap:6px;margin:2px auto 6px;padding:6px 14px;border-radius:999px;border:1px solid var(--line-strong);
+  background:var(--card);color:var(--ink);font:600 14px/1.2 'Inter',system-ui,sans-serif;cursor:pointer;max-width:92%}
+.mp-gin-aperto b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mp-gin-aperto span{opacity:.7;font-size:13px}
+.mp-ramo{position:absolute;transform:translate(-50%,-50%);width:44%;max-width:170px;padding:5px 6px 6px;border-radius:14px;z-index:2;
+  background:var(--paper);box-shadow:0 0 0 2px var(--rc),0 4px 12px rgba(0,0,0,.25);display:flex;flex-direction:column;gap:4px}
+.mp-ramo-t{font:800 12px/1.1 'Inter',system-ui,sans-serif;color:var(--rc);text-align:center}
+.mp-ramo-t .mp-gin-altri{font:800 12px/1.1 'Inter',system-ui,sans-serif;text-decoration:underline;text-underline-offset:2px}
+.mp-gin{display:flex;flex-direction:column;align-items:flex-start;gap:1px;width:100%;padding:5px 8px;border:0;border-radius:10px;cursor:pointer;
+  background:color-mix(in srgb, var(--rc, #5D6F8C) 16%, var(--card));color:var(--ink);text-align:left;font:inherit}
+.mp-gin b{font:700 12.5px/1.15 'Inter',system-ui,sans-serif;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mp-gin small{font-size:11px;line-height:1.2;color:var(--ink-soft)}
+.mp-gin-altri{border:0;background:none;color:var(--rc);font:700 12px/1.2 'Inter',system-ui,sans-serif;cursor:pointer;padding:0 2px}
+.mp-riprendi h3{margin:0 0 8px;font-size:17px}
+.mp-rip-g{margin:0 0 10px}
+.mp-rip-t{font:700 13px/1.2 'Inter',system-ui,sans-serif;color:var(--ink-soft);margin:0 0 5px}
+.mp-rip-l{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:7px}
+.mp-rip-l .mp-gin{--rc:#5D6F8C;padding:8px 10px}
+.mp-rip-l .mp-gin b{font-size:14px}.mp-rip-l .mp-gin small{font-size:12px}
+.pj-azioni{display:flex;flex-direction:column;gap:8px;margin:6px 0 12px}
+.pj-elimina{margin-top:10px}
 </style>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0C110E" id="meta-theme-color">
@@ -2729,7 +2752,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.18.4</div>
+  <div class="splash-ver" id="splash-ver">v2.19.0</div>
 </div>
 
 <div class="wrap">
@@ -5709,7 +5732,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.18.4</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.19.0</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -10010,8 +10033,6 @@ window.apriStrumenti = function(){
       (() => { const n = infusiDaControllare(), k = infusiInCorso();
         return '<button type="button" class="str-tile str-wide' + (n ? ' str-allarme' : '') + '" id="str-diario" style="--h:#B8921F"><span>' + (n ? '\ud83d\udd14' : '\ud83d\udcd3') + '</span><b>Diario degli infusi</b><small>' +
           (n ? n + (n === 1 ? ' infuso da controllare adesso' : ' infusi da controllare adesso') : k ? k + (k === 1 ? ' infuso in corso, nessun allarme' : ' infusi in corso, nessun allarme') : 'nessun infuso in corso') + '</small></button>'; })() +
-      (() => { const ng = window.nomeGinAttivo ? window.nomeGinAttivo() : '';
-        return '<button type="button" class="str-tile str-wide" id="str-progetti" style="--h:#5D6F8C"><span>\ud83d\udcc1</span><b>I tuoi gin</b><small>' + (ng ? 'aperto: ' + String(ng).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])) + ' \u00b7 tocca per cambiarlo o crearne uno nuovo' : 'lavora a più gin e riprendili quando vuoi') + '</small></button>'; })() +
       '<button type="button" class="str-tile str-wide" id="str-infuso" style="--h:#8A63B0"><span>\ud83e\uded9</span><b>Prepara un infuso</b><small>una sola botanica, fresca o secca: dose, alcol, acqua e tempi</small></button>' +
       '<button type="button" class="str-tile str-wide" id="str-erbario" style="--h:#8A5A2B"><span>\ud83d\udcda</span><b>Libreria delle botaniche</b><small>tutte le schede da consultare, famiglia per famiglia, come nel libro</small></button>' +
       '<button type="button" class="str-tile" id="str-cond" style="--h:#2E9D5B"><span>\ud83d\udce4</span><b>Condividi l\u2019app</b><small>manda GinBuilder a un amico</small></button>' +
@@ -10030,11 +10051,6 @@ window.apriStrumenti = function(){
   const chiudi = () => { chiudiAvviso(); ripr(); };
   document.getElementById('str-diario').onclick = () => { chiudi(); window._tappa = null; showTab('diario'); };
   document.getElementById('str-infuso').onclick = () => { chiudi(); window._tappa = null; setTimeout(() => { if (typeof prepInfusoVeloce === 'function') prepInfusoVeloce(); }, 30); };
-  document.getElementById('str-progetti').onclick = () => { chiudi(); if (window.apriProgetti) setTimeout(() => { window.apriProgetti();
-    // il titolo ha già la sua icona 📁: nascondo quella generica del riquadro, e la rimetto alla chiusura
-    const ic2 = document.querySelector('.avviso-icona'); if (!ic2) return; ic2.style.display = 'none';
-    ['avviso-annulla','avviso-ok'].forEach(id => { const el = document.getElementById(id); if (el) el.addEventListener('click', () => { ic2.style.display = ''; }, { once: true }); });
-  }, 30); };
   document.getElementById('str-erbario').onclick = () => { chiudi(); window._tappa = null; if (window.apriErbario) window.apriErbario(); };
   document.getElementById('str-cond').onclick = () => { chiudi(); condividiApp(); };
   document.getElementById('str-luce').onclick = () => { chiudi(); const t = document.getElementById('theme-btn'); if (t) setTimeout(() => t.click(), 30); };
@@ -11128,7 +11144,7 @@ document.getElementById('print-builder').addEventListener('click', () => {
 <script>
 /* ----- Aggiorna l'app (come in Che cucino?) -----
    VERSIONE_APP deve coincidere con VERSIONE in service-worker.js, NOME_VERSIONE con il suo NOME_VERSIONE. */
-var VERSIONE_APP = 'ginbuilder-v309', NOME_VERSIONE = '2.18.4';
+var VERSIONE_APP = 'ginbuilder-v310', NOME_VERSIONE = '2.19.0';
 // un solo punto da cambiare: animazione iniziale e menu leggono il numero da qui
 ['splash-ver','menu-ver'].forEach(function(id){ var e = document.getElementById(id); if (e) e.textContent = 'v' + NOME_VERSIONE; });
 var verOnline = '', verOnlineNome = '';
@@ -12472,7 +12488,72 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
   }
   const idxPers = () => STYLES.findIndex(s => s[0] === 'Personalizzato');
   function scegliStile(i){ const b = document.querySelectorAll('.style-btn')[i]; if (b) b.click(); }
-  function fatta(id, v){ const pr = att(); if (!pr || !id) return; if (v === false) delete pr.fatte[id]; else pr.fatte[id] = 1; scriviP(); }
+  function fatta(id, v){ const pr = att(); if (!pr || !id) return; if (v === false) delete pr.fatte[id]; else { pr.fatte[id] = 1; if (id === 'unisci' && !pr.imbott) pr.imbott = Date.now(); } scriviP(); }
+  // ---------- dove sta ogni gin sul percorso: idea, in infusione, imbottigliato ----------
+  const diaDi = x => { try { const ora = Date.now(), l = diarioCarica().filter(d => d.prog === x.id && !d.finito); return { k: l.length, n: l.filter(d => d.allarme && d.allarme <= ora).length }; } catch(e){ return { k: 0, n: 0 }; } };
+  const vuoto = x => !x.via && !x.nomeLibero && !Object.keys(x.fatte || {}).length;   // appena creato, strada ancora da scegliere
+  function statoGin(x){
+    if (x.fatte && x.fatte.unisci) return 'imbott';
+    if ((x.fatte && x.fatte.infusi) || diaDi(x).k) return 'infuso';
+    return 'idea';
+  }
+  const dataIt = t => new Date(t).toLocaleDateString('it-IT', { day: 'numeric', month: 'short', year: 'numeric' });
+  function sottoGin(x){
+    const st = statoGin(x);
+    if (st === 'imbott') return '🍾 ' + dataIt(x.imbott || x.agg || x.creato);
+    if (st === 'infuso'){ const d = diaDi(x); return d.n ? '🔔 ' + d.n + (d.n === 1 ? ' da controllare' : ' da controllare') : d.k ? d.k + (d.k === 1 ? ' infuso in corso' : ' infusi in corso') : 'infusi pronti da filtrare'; }
+    const T = tappeDi(x), n = T.filter(t => x.fatte[t.id]).length; return T.length ? n + '/' + T.length + ' tappe' : 'strada da scegliere';
+  }
+  // apre un gin: quello aperto viene salvato; un gin vuoto appena creato si toglie, non serve tenerlo
+  function apriGinId(id){
+    const x = P.lista.find(y => y.id === id); if (!x || x.id === P.att) return;
+    const cur = att(); if (cur){ cattura(cur); if (vuoto(cur)) P.lista = P.lista.filter(y => y.id !== cur.id); }
+    P.att = x.id; scriviP(); applica(x); vaiMappa(); window.scrollTo(0, 0);
+  }
+  // la scheda di un gin: riprendilo, rifallo, rinominalo, eliminalo
+  function schedaMioGin(id){
+    const x = P.lista.find(y => y.id === id); if (!x) return;
+    aggiornaNome(x);
+    const st = statoGin(x), aperto = x.id === P.att, V = VIE[x.via], d = diaDi(x);
+    const info = [V ? V.e + ' ' + V.t : null, x.stile && x.stile !== 'Personalizzato' ? 'stile ' + x.stile : (x.modello ? 'su modello ' + x.modello : null),
+      (x.vol ? nf(parseFloat(x.vol) || 700, 0) + ' ml' : null), (x.abv ? nf(parseFloat(x.abv) || 43, 1) + '% vol' : null)].filter(Boolean).join(' · ');
+    const stato = st === 'imbott' ? '🍾 Imbottigliato il ' + dataIt(x.imbott || x.agg || x.creato) + '.'
+      : st === 'infuso' ? '🫙 In infusione' + (d.k ? ': ' + d.k + (d.k === 1 ? ' infuso in corso' : ' infusi in corso') + (d.n ? ', ' + d.n + ' da controllare adesso' : '') : ': infusi pronti, da filtrare e portare al grado') + '.'
+      : '💭 ' + sottoGin(x) + '.';
+    mostraAvviso(x.nome,
+      '<p class="cond-hint" style="margin-top:0">' + esc(info) + '</p><p>' + stato + (aperto ? ' È il gin aperto adesso.' : '') + '</p>' +
+      '<div class="pj-azioni">' +
+        (!aperto ? '<button type="button" class="primary-btn" id="sg-apri">' + (st === 'imbott' ? '📋 Apri la ricetta' : '▶️ Riprendi questo gin') + '</button>' : '') +
+        (st === 'imbott' ? '<button type="button" class="ghost-btn" id="sg-rifai">🔁 Rifallo: un nuovo gin con la stessa ricetta</button>' : '') +
+        (aperto ? '<button type="button" class="ghost-btn" id="sg-nuovo">➕ Inizia un altro gin (questo resta salvato)</button>' : '') +
+      '</div>' +
+      '<label class="pj-lab">Nome<span class="pj-in"><input type="text" id="sg-nome" value="' + esc(x.nome) + '"><button type="button" class="ghost-btn" id="sg-rin">✏️ Rinomina</button></span></label>' +
+      '<button type="button" class="ghost-btn pj-elimina" id="sg-del">🗑️ Elimina questo gin</button>' +
+      '<p class="cond-hint">Schede di prova e diario degli infusi restano anche se elimini il gin.</p>', '', null);
+    const an = $('avviso-annulla'); if (an) an.textContent = 'Chiudi';
+    const icA = document.querySelector('.avviso-icona'); if (icA) icA.textContent = st === 'imbott' ? '🍾' : st === 'infuso' ? '🫙' : '📁';
+    const sa = $('sg-apri'); if (sa) sa.onclick = () => { chiudiAvviso(); apriGinId(x.id); if (st === 'imbott') setTimeout(() => vaiTappa('unisci'), 60); };
+    const sr = $('sg-rifai'); if (sr) sr.onclick = () => {
+      chiudiAvviso(); const cur = att(); if (cur) cattura(cur);
+      const y = nuovoProgetto(x.nome + ' · di nuovo'); y.nomeLibero = true; y.via = x.via; y.modello = x.modello || null; y.vol = x.vol; y.abv = x.abv; y.pp = x.pp ? JSON.parse(JSON.stringify(x.pp)) : null;
+      y.builder = x.builder ? JSON.parse(JSON.stringify(x.builder)) : null; y.stile = x.stile;
+      P.lista.push(y); P.att = y.id; scriviP(); applica(y); vaiMappa(); window.scrollTo(0, 0); };
+    const sn = $('sg-nuovo'); if (sn) sn.onclick = () => {
+      chiudiAvviso(); cattura(x); const y = nuovoProgetto('Nuovo gin'); y.vol = '700'; y.abv = '43';
+      P.lista.push(y); P.att = y.id; scriviP(); applica(y); vaiMappa(); window.scrollTo(0, 0); };   // la mappa chiede subito quale strada
+    $('sg-rin').onclick = () => { const v = $('sg-nome').value.trim(); if (!v) return; x.nome = v; x.nomeLibero = true; scriviP(); chiudiAvviso(); renderMappa(); };
+    $('sg-del').onclick = () => {
+      mostraAvviso('Eliminare questo gin?', '<p>Il gin <strong>' + esc(x.nome) + '</strong> verrà eliminato. Schede di prova e diario restano.</p>', 'Elimina', () => {
+        P.lista = P.lista.filter(y => y.id !== x.id);
+        if (P.att === x.id){ const altro = P.lista.slice().sort((a, b) => (b.agg || b.creato) - (a.agg || a.creato))[0]; if (altro){ P.att = altro.id; scriviP(); applica(altro); } else { P.att = null; scriviP(); } }
+        else scriviP();
+        renderMappa();
+      });
+    };
+  }
+  // un gruppetto di gin come tondini da toccare
+  const chipGin = x => '<button type="button" class="mp-gin" data-gin="' + x.id + '"><b>' + esc(x.nome) + '</b><small>' + esc(sottoGin(x)) + '</small></button>';
+  const altriGin = () => P.lista.filter(x => x.id !== P.att && !vuoto(x)).sort((a, b) => (b.agg || b.creato) - (a.agg || a.creato));
 
   // il Builder e le dosi salvano anche nel progetto attivo
   const prevSalva = window.salvaStatoBuilder;
@@ -12913,16 +12994,25 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     return lista.map((t, k) => { const [ic, lab] = nomeTab(t);
       return '<button type="button" class="mp-tile" data-tab="' + t + '" style="--h:' + HUES[(k + h0) % HUES.length] + '"><span class="mt-ic">' + ic + '</span><span class="mt-l">' + esc(lab) + '</span></button>'; }).join('');
   }
-  function strada(T, ok){
+  function strada(T, ok, rami){
+    rami = rami || {};
     const X = [92, 268], Y0 = 74, DY = 112, nStudio = T.filter(t => t.studio).length;
-    const pos = T.map((t, i) => ({ x: X[i % 2], y: Y0 + i * DY + (nStudio && !t.studio ? 84 : 0) }));
+    // dopo una tappa con un ramo laterale la strada si allunga un po', così il riquadro del ramo non copre la tappa seguente
+    let extra = 0;
+    const pos = T.map((t, i) => { if (i > 0 && rami[T[i - 1].id]) extra += 46; return { x: X[i % 2], y: Y0 + i * DY + extra + (nStudio && !t.studio ? 84 : 0) }; });
     const H = pos[pos.length - 1].y + 74;
     let d = 'M ' + pos[0].x + ' ' + pos[0].y;
     for (let i = 1; i < pos.length; i++){ const a = pos[i - 1], b = pos[i], my = (a.y + b.y) / 2; d += ' C ' + a.x + ' ' + my + ', ' + b.x + ' ' + my + ', ' + b.x + ' ' + b.y; }
     const pct = (v, t) => (v / t * 100).toFixed(2) + '%', prossima = T.findIndex(t => !ok[t.id]);
     const cart = nStudio ? '<div class="mp-cartello" style="top:' + pct((pos[nStudio - 1].y + pos[nStudio].y) / 2 + 12, H) + '">📐 Ora sai perché · progetta il tuo gin</div>' : '';
+    // i rami: un sentiero tratteggiato esce dalla tappa verso il lato libero, dove stanno i gin che sono lì
+    let sent = '', boxR = '';
+    T.forEach((t, i) => { const r = rami[t.id]; if (!r) return;
+      const ox = pos[i].x === X[0] ? X[1] + 8 : X[0] - 8, y = pos[i].y + 26;   // nel lato libero, fra l'etichetta di sopra e il tondo di sotto
+      sent += '<path d="M ' + pos[i].x + ' ' + pos[i].y + ' C ' + ((pos[i].x + ox) / 2) + ' ' + pos[i].y + ', ' + ((pos[i].x + ox) / 2) + ' ' + y + ', ' + ox + ' ' + y + '" fill="none" stroke="#C9B98F" stroke-width="7" stroke-linecap="round" stroke-dasharray="2 9"/>';
+      boxR += '<div class="mp-ramo" style="left:' + pct(ox, 360) + ';top:' + pct(y, H) + ';--rc:' + r.c + '"><div class="mp-ramo-t">' + r.t + '</div>' + r.h + '</div>'; });
     return '<div class="mp-mappa" style="aspect-ratio:360/' + H + '">' +
-      '<svg class="mp-strada" viewBox="0 0 360 ' + H + '" preserveAspectRatio="none" aria-hidden="true">' +
+      '<svg class="mp-strada" viewBox="0 0 360 ' + H + '" preserveAspectRatio="none" aria-hidden="true">' + sent +
         '<path d="' + d + '" fill="none" stroke="rgba(0,0,0,.18)" stroke-width="30" stroke-linecap="round" transform="translate(0,4)"/>' +
         '<path d="' + d + '" fill="none" stroke="#7E8C7A" stroke-width="28" stroke-linecap="round"/>' +
         '<path d="' + d + '" fill="none" stroke="#9DAE97" stroke-width="22" stroke-linecap="round"/>' +
@@ -12930,7 +13020,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       '</svg>' + cart +
       T.map((t, i) => '<button type="button" class="mp-st' + (t.studio ? ' mp-studio' : '') + '" data-id="' + t.id + '" style="left:' + pct(pos[i].x, 360) + ';top:' + pct(pos[i].y, H) + ';--pc:' + t.c + '">' +
         '<span class="mp-cerchio' + (i === prossima ? ' mp-prossima' : '') + '"><span class="mp-em">' + t.e + '</span><span class="mp-num">' + (i + 1) + '</span>' + (ok[t.id] ? '<span class="mp-ok">✓</span>' : '') + '</span>' +
-        '<span class="mp-et"><b>' + t.t + '</b><small>' + esc(sotto(t)) + '</small></span></button>').join('') +
+        '<span class="mp-et"><b>' + t.t + '</b><small>' + esc(sotto(t)) + '</small></span></button>').join('') + boxR +
     '</div>';
   }
   // Il nome del progetto nasce dalle scelte (stile o modello e data), finché l'utente non gliene dà uno suo.
@@ -12946,7 +13036,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     const box = $('mappa-box'); if (!box) return;
     if (!att()){ const pr = nuovoProgetto(); P.lista.push(pr); P.att = pr.id; cattura(pr); scriviP(); }
     const pr = att(), V = VIE[pr.via]; aggiornaNome(pr);
-    let h = '';   // «I tuoi gin» ora sta in ⚙️ Strumenti
+    let h = '';   // i gin cominciati stanno sul percorso: rami della strada e «Riprendi un gin»
     if (!V){
       // prima di partire, per chi vuole: da dove viene il gin (sopra le due strade)
       h += (() => { const [ic] = nomeTab('storia'); return '<div class="mp-sez mp-sez-storia"><div class="mp-grid" style="grid-template-columns:1fr">' +
@@ -12954,10 +13044,26 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       h += '<h2 class="mp-tit">Come vuoi fare il tuo gin?</h2><p class="mp-sub">Due strade, secondo quanto vuoi metterci le mani. Puoi cambiarla in ogni momento.</p>' +
         '<div class="mp-bivio">' + Object.keys(VIE).map(k => '<button type="button" class="mp-via" data-via="' + k + '" style="--c:' + VIE[k].c + '"><span class="mv-tondo">' + TONDI[k] + '</span><b>' + VIE[k].t + '</b>' + (VIE[k].st ? '<i class="mv-sub">' + VIE[k].st + '</i>' : '') + '<span>' + VIE[k].d + '</span>' +
           '<small>' + VIE[k].tappe.length + ' tappe' + (k === 'pers' ? ' · teoria e pratica insieme' : '') + '</small></button>').join('') + '</div>' ;
+      // i gin già cominciati: quelli ancora da decidere restano fuori dalla strada, qui sotto
+      const alt = altriGin();
+      if (alt.length){
+        const gr = [['idea', '💭 Ancora da decidere'], ['infuso', '🫙 In infusione'], ['imbott', '🍾 Imbottigliati']]
+          .map(([k, t]) => { const l = alt.filter(x => statoGin(x) === k); return l.length ? '<div class="mp-rip-g"><div class="mp-rip-t">' + t + '</div><div class="mp-rip-l">' + l.map(chipGin).join('') + '</div></div>' : ''; }).join('');
+        h += '<div class="mp-sez mp-riprendi"><h3>📁 Riprendi un gin</h3>' + gr + '</div>';
+      }
     } else {
       h += '<div class="mp-tit-riga"><button type="button" class="mp-indietro" id="mp-cambia" aria-label="Torna alla scelta della strada" title="Torna alla scelta della strada">\u21a9\ufe0e</button><h2 class="mp-tit">' + V.e + ' ' + V.t + '</h2></div>' + (V.st ? '<p class="mp-st-sub">' + V.st + '</p>' : '') +
         '<p class="mp-sub">' + (pr.via === 'chiavi' ? 'Una ricetta codificata da seguire passo passo.' : 'Ogni tappa: una breve lezione e una prova.') + ' Tocca una tappa: quella che pulsa è la prossima.</p>' +
-        strada(V.tappe, pr.fatte) +
+        '<button type="button" class="mp-gin-aperto" data-gin="' + pr.id + '">📁 <b>' + esc(pr.nome) + '</b> <span>✏️</span></button>' +
+        strada(V.tappe, pr.fatte, (() => {
+          const alt = altriGin(), inf = alt.filter(x => statoGin(x) === 'infuso'), imb = P.lista.filter(x => !vuoto(x) && statoGin(x) === 'imbott' && x.id !== pr.id)
+            .sort((a, b) => (b.imbott || b.agg || 0) - (a.imbott || a.agg || 0));
+          const corto = l => chipGin(l[0]);
+          const r = {};
+          const tit = (t, l, k) => l.length > 1 ? '<button type="button" class="mp-gin-altri" data-tutti="' + k + '">' + t + ' · ' + l.length + ' ▸</button>' : t;
+          if (inf.length) r.infusi = { t: tit('🫙 In infusione', inf, 'infuso'), c: '#8A63B0', h: corto(inf) };
+          if (imb.length) r.unisci = { t: tit('🍾 Imbottigliati', imb, 'imbott'), c: '#2F8F8F', h: corto(imb) };
+          return r; })()) +
         (completo(pr) ? '<div class="mp-fine"><b>\ud83c\udfc1 Strada completata</b><div><button type="button" id="mp-affianca">\u2795 Affianca un nuovo gin</button><button type="button" id="mp-ricomincia">\ud83d\udd04 Azzera e ricomincia</button></div></div>'
           : '<button type="button" class="mp-ricomincia" id="mp-ricomincia">\ud83d\udd04 Ricomincia da capo</button>');
     }
@@ -12969,6 +13075,13 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     box.innerHTML = h;
     try { if (window.puntoStrumenti) window.puntoStrumenti(); } catch(e){}
     box.querySelectorAll('.mp-st').forEach(b => b.addEventListener('click', () => vaiTappa(b.dataset.id)));
+    box.querySelectorAll('[data-gin]').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); schedaMioGin(b.dataset.gin); }));
+    box.querySelectorAll('[data-tutti]').forEach(b => b.addEventListener('click', e => { e.stopPropagation();
+      const k = b.dataset.tutti, l = P.lista.filter(x => !vuoto(x) && x.id !== P.att && statoGin(x) === k);
+      mostraAvviso(k === 'imbott' ? 'Imbottigliati' : 'In infusione', '<div class="mp-rip-l">' + l.map(chipGin).join('') + '</div>', '', null);
+      const an = $('avviso-annulla'); if (an) an.textContent = 'Chiudi';
+      const icB = document.querySelector('.avviso-icona'); if (icB) icB.textContent = k === 'imbott' ? '🍾' : '🫙';
+      document.querySelectorAll('.avviso [data-gin]').forEach(c => c.onclick = () => { chiudiAvviso(); setTimeout(() => schedaMioGin(c.dataset.gin), 30); }); }));
     box.querySelectorAll('.mp-tile[data-tab]').forEach(b => b.addEventListener('click', () => { window._tappa = null; showTab(b.dataset.tab); }));
     box.querySelectorAll('.mp-via').forEach(b => b.addEventListener('click', e => {
       if (e.target.closest('.mv-tondo')){ e.stopPropagation(); const t = e.target.closest('.mv-tondo'); suonaTondo(b.dataset.via);
@@ -13669,7 +13782,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     mostraAvviso('\ud83d\udd04 Ricomincia da capo?',
       '<p>Il gin <strong>' + esc(pr.nome) + '</strong> torna all\u2019inizio della strada <strong>' + VIE[pr.via].e + ' ' + VIE[pr.via].t + '</strong>: si azzerano stile, gradazione, quantità, botaniche, quote e tutte le spunte.</p>' +
       (nDia ? '<label class="dia-chk"><input type="checkbox" id="rc-dia" checked> Togli dal diario anche i ' + nDia + ' infusi annotati da questo gin</label>' : '') +
-      '<p class="cond-hint">Le schede di prova restano. Per tenere questo gin e provarne un altro, usa invece \u00ab\ud83d\udcc1 I tuoi gin\u00bb \u2192 Inizia un nuovo gin.</p>', 'Ricomincia', () => {
+      '<p class="cond-hint">Le schede di prova restano. Per tenere questo gin e provarne un altro, tocca invece il suo nome sopra la strada \u2192 Inizia un altro gin.</p>', 'Ricomincia', () => {
         azzera(pr, nDia && document.getElementById('rc-dia') && document.getElementById('rc-dia').checked);
       });
   }
@@ -13701,7 +13814,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     mostraAvviso('\ud83c\udf89 Il tuo gin è fatto!',
       '<p>Hai completato tutta la strada <strong>' + VIE[pr.via].e + ' ' + VIE[pr.via].t + '</strong> con <strong>' + esc(pr.nome) + '</strong>. E adesso?</p>' +
       '<div class="fine-scelte">' +
-        '<button type="button" class="fine-btn" id="fine-affianca" style="--c:#2E9D5B"><span>\u2795</span><b>Affianca un nuovo gin</b><small>questo resta salvato in \ud83d\udcc1 I tuoi gin, con le sue scelte; il nuovo parte dalla stessa strada</small></button>' +
+        '<button type="button" class="fine-btn" id="fine-affianca" style="--c:#2E9D5B"><span>\u2795</span><b>Affianca un nuovo gin</b><small>questo resta salvato fra gli imbottigliati, con la sua ricetta; il nuovo parte dalla stessa strada</small></button>' +
         '<button type="button" class="fine-btn" id="fine-azzera" style="--c:#C4803A"><span>\ud83d\udd04</span><b>Azzera e ricomincia</b><small>le scelte di questo gin si cancellano e la strada riparte dall\u2019inizio</small></button>' +
       '</div>' +
       (nDia ? '<label class="dia-chk"><input type="checkbox" id="fine-dia"> Se azzeri, togli dal diario anche i ' + nDia + ' infusi ancora aperti di questo gin</label>' : '') +
@@ -13714,7 +13827,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     const pr = att(), altra = pr.via === 'chiavi' ? 'pers' : 'chiavi';
     mostraAvviso('Cambi strada?', '<p>Passi a <strong>' + VIE[altra].e + ' ' + VIE[altra].t + '</strong>. ' +
       (altra === 'pers' ? 'Le botaniche ripartono dal solo ginepro (stile Personalizzato).' : 'Si riparte da una ricetta codificata: scegli lo stile.') +
-      ' Le spunte della strada precedente si azzerano; se vuoi tenerle, inizia invece un nuovo gin (📁 in alto).</p>', 'Cambia strada', () => {
+      ' Le spunte della strada precedente si azzerano; se vuoi tenerle, inizia invece un altro gin (tocca il nome del gin sopra la strada).</p>', 'Cambia strada', () => {
         pr.fatte = {}; pr.passi = {}; pr.pp = null; pr.builder = null; scegliVia(altra);
       });
   }
