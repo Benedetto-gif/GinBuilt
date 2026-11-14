@@ -2729,14 +2729,23 @@ html.in-mappa #nav-indietro{display:none!important}
 .mp-rileggi{display:block;margin:18px auto 6px;padding:10px 18px}
 .mp-dacosa{margin:4px 2px 12px !important;font-size:15px;line-height:1.5}
 /* Piccola storia del gin in risalto: un piccolo «libro» color avorio */
-.mp-storia-btn{display:flex;align-items:center;gap:14px;width:100%;margin:6px 0 14px;padding:16px 16px;border-radius:16px;cursor:pointer;text-align:left;
+.mp-storia-btn{display:flex;align-items:center;gap:10px;width:100%;margin:4px 0 10px;padding:10px 12px;border-radius:16px;cursor:pointer;text-align:left;
   background:#F5EEDC;color:#3A3026;border:1px solid rgba(90,70,45,.25);box-shadow:0 4px 14px rgba(0,0,0,.22), inset 6px 0 0 #8A5A2B}
-.mp-storia-btn .msb-ic{font-size:38px;line-height:1;flex:none;margin-left:4px}
+.mp-storia-btn .msb-ic{font-size:28px;line-height:1;flex:none;margin-left:4px}
 .mp-storia-btn .msb-t{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
 .mp-storia-btn small{font:600 11.5px/1.2 'Inter',system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#85745F}
-.mp-storia-btn b{font:600 21px/1.15 'Fraunces',Georgia,serif;color:#3A3026}
+.mp-storia-btn b{font:600 18px/1.15 'Fraunces',Georgia,serif;color:#3A3026}
 .mp-storia-btn i{font:italic 14px/1.3 Georgia,serif;color:#5A4C3D}
-.mp-storia-btn .msb-leggi{flex:none;font:700 14px/1 'Inter',system-ui,sans-serif;color:#fff;background:#8A5A2B;padding:9px 12px;border-radius:999px}
+.mp-storia-btn .msb-leggi{flex:none;font:700 13px/1 'Inter',system-ui,sans-serif;color:#fff;background:#8A5A2B;padding:8px 11px;border-radius:999px}
+
+/* benvenuto più compatto: «Iniziamo» resta dentro lo schermo di un telefono medio */
+.mp-benv{padding:14px 16px 10px !important;margin-bottom:10px !important}
+.mp-benv h2{font-size:21px !important;margin-bottom:8px !important}
+.mp-benv p{font-size:14.5px !important;line-height:1.5 !important;margin-bottom:8px !important}
+.mp-benv-d{margin-bottom:6px !important}
+.mp-benv-d summary{padding:8px 12px !important;font-size:14.5px !important}
+.mp-iniziamo{margin:2px 0 8px !important;padding:13px 18px !important}
+.mp-nota-fuori{text-align:center;font-size:12.5px;color:var(--ink-faint);margin:0 0 12px}
 </style>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0C110E" id="meta-theme-color">
@@ -2816,7 +2825,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.23.0</div>
+  <div class="splash-ver" id="splash-ver">v2.24.0</div>
 </div>
 
 <div class="wrap">
@@ -4898,7 +4907,7 @@ function umamiInfo(){
 }
 // Note al clic sulle parole che il percorso spiega più avanti (approfondimento dei sei ruoli)
 const NOTE_PAROLA = {
-  libreria: ['📚','Libreria','<p>È l\u2019elenco di tutte le botaniche dell\u2019app.</p><p>È la pagina «Botaniche e infusi»: la trovi sulla mappa della strada «Fatti un gin», in «Capire perché».</p><p>Ogni botanica ha la sua <strong>scheda</strong>: una pagina con i suoi dati, dalla dose ai tempi di infusione.</p><p>La userai nel percorso quando sceglierai le botaniche, ruolo per ruolo.</p>'],
+  libreria: ['📚','Libreria','<p>È l\u2019elenco di tutte le botaniche dell\u2019app.</p><p>È la pagina «Botaniche e infusi»: la trovi in ⚙️ Strumenti → Approfondimenti, e le lezioni ti ci portano quando serve.</p><p>Ogni botanica ha la sua <strong>scheda</strong>: una pagina con i suoi dati, dalla dose ai tempi di infusione.</p><p>La userai nel percorso quando sceglierai le botaniche, ruolo per ruolo.</p>'],
   stile: ['🎨','Stile','<p>Uno stile è una ricetta di partenza.</p><p>Mette una botanica in ogni ruolo e dà al gin un carattere che si riconosce: Marino, Agrumato, Floreale e così via.</p><p>Gli stili hanno una lezione tutta loro, «Gli stili», subito dopo quella sul radar.</p>'],
   potenza: ['🔊','Potenza','<p>È la forza con cui una botanica si fa sentire, da 1 a 10.</p><p>Unisce quanto è intensa la sua nota e quanto a lungo resta: il chiodo di garofano, a potenza 10, si impone su tutto. Non dice quanti grammi servono: quello lo dice la dose di riferimento.</p><p>Se ne parla per esteso nella lezione «Leggere il radar».</p>'],
   dose: ['⚖️','Dose di riferimento','<p>Sono i grammi di una botanica da mettere in 100 ml di infuso perché si senta al punto giusto.</p><p>Il ginepro ne vuole circa 7,5 g, la lavanda appena 0,3 g.</p><p>Ogni ruolo usa una parte di questa dose: la Base tutta, la Firma solo il 30%.</p><p>Se ne parla per esteso nella lezione «Leggere il radar».</p>'],
@@ -5798,7 +5807,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.23.0</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.24.0</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -10108,6 +10117,7 @@ window.apriStrumenti = function(){
       (window.contaMieiGin && window.contaMieiGin() ? '<button type="button" class="str-tile str-wide" id="str-miei" style="--h:#5D6F8C"><span>\ud83d\udcc1</span><b>I tuoi gin</b><small>i gin che hai cominciato: tocca per riprenderne uno</small><small class="str-stato">' + window.contaMieiGin() + ' gin salvati' + '</small></button>' : '') +
       '<button type="button" class="str-tile str-wide" id="str-infuso" style="--h:#8A63B0"><span>\ud83e\uded9</span><b>Prepara un infuso</b><small>metti in alcol una sola botanica, anche fuori da una ricetta: l\u2019app ti dice dose, alcol, acqua e tempi</small></button>' +
       '<button type="button" class="str-tile str-wide" id="str-erbario" style="--h:#8A5A2B"><span>\ud83d\udcda</span><b>Libreria delle botaniche</b><small>tutte le piante che puoi usare, ognuna con la sua scheda, divise per famiglia</small></button>' +
+      '<button type="button" class="str-tile str-wide" id="str-approf" style="--h:#3E7C6B"><span>\ud83d\udd2c</span><b>Approfondimenti</b><small>per chi vuole capire il perché: botaniche, calcoli, ridondanze, aromi, assaggio, leggi, i gin del commercio e il manuale</small></button>' +
       '<button type="button" class="str-tile" id="str-cond" style="--h:#2E9D5B"><span>\ud83d\udce4</span><b>Condividi l\u2019app</b><small>manda GinBuilder a un amico</small></button>' +
       '<button type="button" class="str-tile" id="str-luce" style="--h:#5D6F8C"><span>\ud83c\udf17</span><b>Luce e colori</b><small>sfondo chiaro o scuro</small></button>' +
     '<button type="button" class="str-tile str-wide" data-aggiorna style="--h:#2B7BB9"><span>\ud83d\udd04</span><b>Aggiorna l\u2019app</b><small>' + (window.testoAggiorna ? testoAggiorna() : 'tocca per controllare') + '</small></button>' +
@@ -10124,6 +10134,7 @@ window.apriStrumenti = function(){
   document.getElementById('str-diario').onclick = () => { chiudi(); window._tappa = null; showTab('diario'); };
   document.getElementById('str-infuso').onclick = () => { chiudi(); window._tappa = null; setTimeout(() => { if (typeof prepInfusoVeloce === 'function') prepInfusoVeloce(); }, 30); };
   { const sm = document.getElementById('str-miei'); if (sm) sm.onclick = () => { chiudi(); setTimeout(() => window.apriMieiGin(), 30); }; }
+  document.getElementById('str-approf').onclick = () => { chiudi(); setTimeout(() => { if (window.apriApprofondimenti) window.apriApprofondimenti(); }, 30); };
   document.getElementById('str-erbario').onclick = () => { chiudi(); window._tappa = null; if (window.apriErbario) window.apriErbario(); };
   document.getElementById('str-cond').onclick = () => { chiudi(); condividiApp(); };
   document.getElementById('str-luce').onclick = () => { chiudi(); const t = document.getElementById('theme-btn'); if (t) setTimeout(() => t.click(), 30); };
@@ -11217,7 +11228,7 @@ document.getElementById('print-builder').addEventListener('click', () => {
 <script>
 /* ----- Aggiorna l'app (come in Che cucino?) -----
    VERSIONE_APP deve coincidere con VERSIONE in service-worker.js, NOME_VERSIONE con il suo NOME_VERSIONE. */
-var VERSIONE_APP = 'ginbuilder-v326', NOME_VERSIONE = '2.23.0';
+var VERSIONE_APP = 'ginbuilder-v327', NOME_VERSIONE = '2.24.0';
 // un solo punto da cambiare: animazione iniziale e menu leggono il numero da qui
 ['splash-ver','menu-ver'].forEach(function(id){ var e = document.getElementById(id); if (e) e.textContent = 'v' + NOME_VERSIONE; });
 var verOnline = '', verOnlineNome = '';
@@ -12239,13 +12250,13 @@ if ("serviceWorker" in navigator) {
 // e i suoi riquadri prendono tinte diverse, a giro, partendo dal colore della pagina.
 (function(){
   const PAGINE = {
-    storia:      { c:'--c-mediterraneo', k:'Capire perché' },
-    leggi:       { c:'--c-secco',        k:'Capire perché' },
+    storia:      { c:'--c-mediterraneo', k:'Approfondimento' },
+    leggi:       { c:'--c-secco',        k:'Approfondimento' },
     diario:      { c:'--yellow-sym',     k:'Il lavoro in corso',
                    s:'Gli infusi in macerazione, con i promemoria per controllarli e filtrarli al momento giusto.' },
-    libreria:    { c:'--c-erbaceo',      k:'Capire perché',
+    libreria:    { c:'--c-erbaceo',      k:'Approfondimento',
                    s:'Le schede delle botaniche, dalle più usate alle più originali: profilo aromatico, radar, molecole da estrarre e la preparazione dell’infuso.' },
-    calcoli:     { c:'--c-siciliano',    k:'Capire perché',
+    calcoli:     { c:'--c-siciliano',    k:'Approfondimento',
                    s:'Diluire o rinforzare l’alcol fino al grado voluto, in millilitri e in grammi, alla temperatura della soluzione.' },
     proporzioni: { c:'--c-mediterraneo', k:'Il progetto',
                    s:'Quanto gin vuoi fare e la quota di ogni infuso: la torta, il radar di gusto e aroma e quello delle sensazioni cambiano insieme.' },
@@ -12253,18 +12264,18 @@ if ("serviceWorker" in navigator) {
                    s:'Assegna le botaniche ai sei ruoli: base, freschezza, identità, cuore, firma, rifinitura.' },
     prove:       { c:'--c-siciliano',    k:'Il progetto',
                    s:'Il registro delle miscele: percentuali degli infusi, valutazione all’assaggio e correzioni per la volta successiva.' },
-    ridondanza:  { c:'--c-agrumato',     k:'Capire perché',
+    ridondanza:  { c:'--c-agrumato',     k:'Approfondimento',
                    s:'Il tavolo di lavoro per combinare tre o quattro botaniche e vedere dove i profili si sommano e dove si completano.' },
-    nozioni:     { c:'--c-marino',       k:'Capire perché' },
-    analisi:     { c:'--c-speziato',     k:'Capire perché' },
-    altrigin:    { c:'--c-dolce',        k:'Capire perché' },
+    nozioni:     { c:'--c-marino',       k:'Approfondimento' },
+    analisi:     { c:'--c-speziato',     k:'Approfondimento' },
+    altrigin:    { c:'--c-dolce',        k:'Approfondimento' },
     cocktail:    { c:'--c-floreale',     k:'Servire',
                    s:'Venti classici a base gin con le dosi standard, e i tuoi cocktail sperimentali con un’ipotesi da verificare all’assaggio.' },
     garnish:     { c:'--c-agrumato',     k:'Servire',
                    s:'Quale guarnizione mettere in base allo stile del gin, e perché: rinforzo di una nota o contrasto a un eccesso.' },
     toniche:     { c:'--c-marino',       k:'Servire',
                    s:'Le acque toniche in commercio, le loro caratteristiche e con quali gin abbinarle, e perché.' },
-    matrice:     { c:'--c-marino',       k:'Capire perché',
+    matrice:     { c:'--c-marino',       k:'Approfondimento',
                    s:'Che cosa si sente e perché: la ruota degli aromi e, per ogni sentore, le molecole, le botaniche che le portano e i recettori che le leggono.' },
     special:     { c:'--c-viola',        k:'Servire',
                    s:'Ricetta inversa, gemello commerciale, gin alla cieca, gin di un paesaggio, calendario delle raccolte, etichetta e gin a tavola.' }
@@ -12528,7 +12539,14 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       '<path d="M12 28 h2 M12 33 h2 M12 38 h2 M12 43 h2" stroke="#fff" stroke-width="1.2"/></g>' +
       '</svg>'
   };
-  const CAPIRE = ['libreria','calcoli','ridondanza','matrice','nozioni','analisi','leggi','manuale','storia','altrigin'];
+  const CAPIRE = ['libreria','calcoli','ridondanza','matrice','nozioni','analisi','leggi','manuale','altrigin'];
+  // elenco degli approfondimenti, da ⚙️ Strumenti
+  window.apriApprofondimenti = function(){
+    mostraAvviso('Approfondimenti', '<p class="cond-hint" style="margin-top:0">La parte teorica, da consultare quando vuoi. Le lezioni di «Fatti un gin» ti portano qui nel punto in cui serve.</p><div class="mp-grid" style="grid-template-columns:1fr;gap:8px">' + tessere(CAPIRE, 2) + '</div>', '', null);
+    const ic = document.querySelector('.avviso-icona'); if (ic) ic.textContent = '🔬';
+    const an = $('avviso-annulla'); if (an) an.textContent = 'Chiudi';
+    document.querySelectorAll('.avviso .mp-tile[data-tab]').forEach(b => b.onclick = () => { chiudiAvviso(); window._tappa = null; showTab(b.dataset.tab); });
+  };
   const SERVIRE = ['garnish','toniche','cocktail','special'];
   const HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
 
@@ -12952,7 +12970,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       chk('un-riposo', '❄️ <b>Lascia riposare</b> la miscela al fresco e al buio per 24–48 ore, poi travasa solo la parte limpida senza smuovere il deposito.') +
       chk('un-velo', '🌫️ Se il gin resta un po’ velato, <b>mettilo in frigo per una notte</b> e filtralo di nuovo, ancora freddo, con un filtro di carta.') +
       chk('un-bott', '🍾 <b>Imbottiglia</b> nel vetro scuro ed etichetta con nome, data e ' + A + '% vol.') +
-      (pers ? '<p class="cond-hint">📘 Lotti, potenza degli infusi e fogli di calcolo: li trovi nel manuale «Dal macerato alla bottiglia», in «Capire perché».</p>'
+      (pers ? '<p class="cond-hint">📘 Lotti, potenza degli infusi e fogli di calcolo: li trovi nel manuale <a href="#" onclick="event.preventDefault();showTab(\'manuale\')">«Dal macerato alla bottiglia»</a>.</p>'
         : chk('un-assaggio', '👅 <b>Assaggia e annota</b>: cosa togliere o aggiungere la prossima volta.') + '<button type="button" class="ghost-btn rc-scheda">🧪 Crea la scheda di prova di questa ricetta</button>') + '</section>';
     box.innerHTML = h;
     box.querySelectorAll('.rc-compra').forEach(b => b.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); dovComprare(+b.dataset.at); }));
@@ -13159,7 +13177,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       h += '<div class="mp-benv"><h2>Benvenuto in GinBuilder</h2>' +
         '<p>Il <strong>gin</strong> è un distillato aromatizzato soprattutto con le bacche di <strong>ginepro</strong>, a cui si aggiungono altre piante: scorze di agrumi, spezie, erbe, fiori. Queste piante si chiamano <strong>botaniche</strong>.</p>' +
         '<p>Con questa app il gin lo fai a casa, <strong>senza alambicco</strong>. Ogni botanica resta per un po\u2019 di tempo in alcol alimentare e gli cede il suo profumo: questo liquido profumato è l\u2019<strong>infuso</strong>. Alla fine gli infusi si uniscono, e il gin è pronto. Il gin fatto così si chiama <strong>compound</strong>.</p>' +
-        '<button type="button" class="mp-storia-btn" data-tab="storia"><span class="msb-ic">📜</span><span class="msb-t"><small>Prima di cominciare, se ti va</small><b>Piccola storia del gin</b><i>da rimedio di farmacia a distillato d\u2019autore</i></span><span class="msb-leggi">Leggi ›</span></button>' +
+        '<button type="button" class="mp-storia-btn" data-tab="storia"><span class="msb-ic">📜</span><span class="msb-t"><b>Piccola storia del gin</b><i>da rimedio di farmacia a distillato d\u2019autore</i></span><span class="msb-leggi">Leggi ›</span></button>' +
         '<details class="mp-benv-d"><summary>🧰 Che cosa ti serve</summary><ul class="mp-benv-l">' +
           '<li><i class="mbi">🧪</i><span>alcol alimentare a 95–96°, quello che si compra al supermercato per i liquori</span></li>' +
           '<li><i class="mbi">🌿</i><span>le botaniche: le prime le trovi in cucina o al mercato (ginepro, limone, coriandolo)</span></li>' +
@@ -13181,8 +13199,9 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
           '<li><i class="mbi">🔍</i><span><strong>Le parole sottolineate a puntini</strong> hanno una spiegazione: toccale.</span></li>' +
           '<li><i class="mbi">⚙️</i><span><strong>In Strumenti</strong>, in alto a destra, trovi anche il Diario degli infusi, che ti ricorda quando assaggiarli, la Libreria delle botaniche, la luce chiara o scura e gli aggiornamenti dell\u2019app.</span></li>' +
           '<li><i class="mbi">📱</i><span><strong>I tuoi dati</strong> restano solo su questo telefono. Nessuno li vede.</span></li></ul></details>' +
-        '<p class="mp-benv-nota">Il gin che prepari è per te e per i tuoi amici: per venderlo servono permessi.</p></div>' +
-        '<button type="button" class="primary-btn mp-iniziamo" id="mp-iniziamo">Iniziamo →</button>';
+        '</div>' +
+        '<button type="button" class="primary-btn mp-iniziamo" id="mp-iniziamo">Iniziamo →</button>' +
+        '<p class="mp-benv-nota mp-nota-fuori">Il gin che prepari è per te e per i tuoi amici: per venderlo servono permessi.</p>';
     } else if (!V){
       // seconda schermata: la scelta della strada
       h += '<h2 class="mp-tit">Come vuoi fare il tuo gin?</h2><p class="mp-sub mp-dacosa">Due strade. Se vuoi solo provare, scegli <strong>Gin no problem!</strong>: l\u2019app ti dice cosa fare, un passo alla volta. Se vuoi capire come funziona, scegli <strong>Fatti un gin</strong>. Puoi cambiare strada in ogni momento.</p>' +
@@ -13220,9 +13239,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         (completo(pr) ? '<div class="mp-fine"><b>\ud83c\udfc1 Strada completata</b><div><button type="button" id="mp-affianca">\u2795 Affianca un nuovo gin</button><button type="button" id="mp-ricomincia">\ud83d\udd04 Azzera e ricomincia</button></div></div>'
           : '<button type="button" class="mp-ricomincia" id="mp-ricomincia">\ud83d\udd04 Ricomincia da capo</button>');
     }
-    // la teoria appartiene solo alla strada del gin personalizzato: con il Gin no problem! si gioca, non si studia
-    if (pr.via === 'pers') h += '<div class="mp-sez"><h3>📚 Capire perché</h3><p>La parte teorica, da consultare quando vuoi: le botaniche e la loro potenza, cosa si estrae e a che gradazione, i ruoli, le ridondanze, le leggi.</p>' +
-        '<div class="mp-grid">' + tessere(CAPIRE, 2) + '</div></div>';
+    // gli approfondimenti non stanno più in fondo alla mappa: si aprono dalle lezioni, nel punto in cui servono, e da ⚙️ Strumenti → Approfondimenti
     // «Prepara un infuso» ora sta in ⚙️ Strumenti
     h += '<button type="button" class="mp-ver" id="mp-ver" data-aggiorna>' + (window.testoVerMappa ? testoVerMappa() : '\ud83d\udd04 Controlla aggiornamenti') + '</button>';
     box.innerHTML = h;
@@ -13294,7 +13311,8 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     basi: { e:'🫐', t:'Il ginepro e i suoi compagni',
       html: '<p class="lez-sub">⚖️ <strong>Che cos’è un gin</strong></p>' +
         '<p>Per la legge europea (Reg. UE 2019/787) il gin è una bevanda alcolica aromatizzata con le bacche di <strong>ginepro</strong> (<em>Juniperus communis</em>). Il sapore del ginepro deve restare <strong>prevalente</strong>. La gradazione minima è 37,5 % vol. La legge chiede solo questo: tutto il resto lo sceglie chi fa il gin.</p>' +
-        '<p>Accanto al ginepro, quasi tutti i gin hanno altre due presenze: il coriandolo e un legante. Eccole una per una.</p>' },
+        '<p>Accanto al ginepro, quasi tutti i gin hanno altre due presenze: il coriandolo e un legante. Eccole una per una.</p>' +
+        approf('le regole del gin in Europa e in Italia', "showTab('leggi')") },
     ruoli: { e:'🧭', t:'I sei ruoli delle botaniche',
       html: '<p>In un gin ogni botanica ha un compito. Pensare per ruoli aiuta a non mettere tutto insieme: un gin riuscito si riconosce in due o tre note, non in venti.</p>' +
         '<p>Ogni ruolo ha una <strong>prova del ruolo</strong>: una domanda da farsi immaginando di <em>togliere</em> quella botanica dal gin. Se togliendola il gin perde qualcosa di importante, la botanica sta facendo il suo lavoro; se non cambierebbe niente, è superflua o è nel ruolo sbagliato. Si usa quando scegli le botaniche e di nuovo all\u2019assaggio.</p>' + approf('i sei ruoli nel dettaglio, con esempi e da che cosa dipendono', 'apriRuoliNozioni()') },
@@ -13309,7 +13327,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         '<p>Se molte botaniche insistono sulla stessa nota, quella nota cresce molto: è la <strong>ridondanza</strong>. A volte è voluta (uno stile agrumato vuole l’agrumato forte), altre volte è un eccesso che appiattisce il gin. Stili diversi distribuiscono le note in modo diverso: confrontane due sullo stesso radar.</p>' +
         '<p class="lez-sub">🧭 <strong>Poi scegli</strong></p>' +
         '<p>In fondo alla pagina scegli da dove partire: <strong>uno stile come modello</strong>, oppure <strong>le sole basi</strong> (ginepro, coriandolo e un legante a scelta) per costruire un gin tutto tuo. Nella tappa successiva potrai cambiare, togliere o aggiungere ogni botanica.</p>' +
-        approf('ridondanza e complementarietà', "showTab('ridondanza')") },
+        approf('ridondanza e complementarietà', "showTab('ridondanza')") + approf('i gin del commercio e le loro botaniche', "showTab('altrigin')") },
     radar: { e:'📡', t:'Leggere il radar e la potenza',
       html: '<p class="lez-sub">📡 <strong>Il radar</strong></p>' +
         '<p>Il radar disegna il profilo di una botanica su dieci assi. Quattro sono <strong>gusti</strong>, che si sentono in bocca: dolce, amaro, acido, salino (per i più curiosi c\'è anche un quinto gusto, l\'<button type="button" class="lez-pop" onclick="umamiInfo()">umami ⓘ</button>). Sei sono famiglie di <strong>aromi</strong>, che arrivano al naso: agrumato, floreale, fruttato, erbaceo, resinoso, speziato. Ogni asse va da 0 (la nota non c’è) a 5 (la nota domina).</p>' +
@@ -13333,7 +13351,8 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       html: '<p>L’alcol non estrae tutto allo stesso modo. Più il grado è alto, più scioglie le sostanze che non amano l’acqua: gli <strong>oli essenziali</strong> e i terpeni, che portano il profumo. Più è basso, più passano le sostanze solubili in acqua: <strong>zuccheri, acidi, tannini</strong>.</p>' +
         '<p>Per questo ogni botanica ha la sua gradazione di estrazione. Troppo alta, e si estraggono anche clorofilla, resine e note amare o «verdi»; troppo bassa, e l’infuso resta acquoso e povero di profumo. Conta anche il tempo: oltre il limite escono le sostanze indesiderate.</p>' +
         '<p>Qui sotto, per le botaniche del tuo progetto, il tempo e la gradazione consigliati. Ognuna si mette in infusione da sola, alla sua gradazione: scegli tu a quale, dentro i limiti.</p>' +
-        '<p><strong>Perché non tutte insieme?</strong> Nello stesso barattolo ci sarebbero un solo grado alcolico e un solo tempo per tutte. Le botaniche veloci, come scorze e fiori, supererebbero il loro limite. Quelle lente, come radici e semi, resterebbero indietro.</p>' + noz('la solubilità selettiva', 'La solubilità selettiva') + noz('perché ogni botanica ha il suo infuso', 'Perché ogni botanica ha il suo infuso') },
+        '<p><strong>Perché non tutte insieme?</strong> Nello stesso barattolo ci sarebbero un solo grado alcolico e un solo tempo per tutte. Le botaniche veloci, come scorze e fiori, supererebbero il loro limite. Quelle lente, come radici e semi, resterebbero indietro.</p>' + noz('la solubilità selettiva', 'La solubilità selettiva') + noz('perché ogni botanica ha il suo infuso', 'Perché ogni botanica ha il suo infuso') +
+        approf('le schede di tutte le botaniche, con gradazione e tempi', "showTab('libreria')") },
     diluizione: { e:'🌡️', t:'Diluire e rinforzare',
       html: '<p>Ogni infuso si prepara alla sua gradazione e poi, filtrato, si porta con acqua demineralizzata alla gradazione finale che hai scelto insieme alle quote. Diluire è semplice; alzare il grado invece richiede di aggiungere un alcol più forte, perché l’acqua non si toglie.</p>' +
         '<p>I conti si fanno sul peso dell’alcol: alcol e acqua, mescolandosi, si contraggono e i millilitri non si sommano esattamente.</p>' + approf('🧮 I calcoli dell’alcol', "showTab('calcoli')") },
@@ -13352,7 +13371,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
           '<li>Se una nota è troppo forte o troppo debole, cambia le percentuali nella scheda e prova un altro campione.</li>' +
           '<li>Quando il campione ti piace, tocca nella scheda <strong>«✅ Mi piace: adotta queste quote nel progetto»</strong>: la scheda si salva e l\u2019unione userà quelle quote.</li>' +
           '<li>Se ti piace già il primo campione, non serve cambiare nulla: tocca solo <strong>«Fatto»</strong>.</li></ol>' +
-        approf('la procedura di assaggio', 'apriTecnicaAssaggio()') + approf('la taratura del palato', 'apriTaratura()') }
+        approf('la procedura di assaggio', 'apriTecnicaAssaggio()') + approf('la taratura del palato', 'apriTaratura()') + approf('l\u2019analisi sensoriale e le schede di assaggio', "showTab('analisi')") }
   };
   // la scheda «La lezione» in cima alle pagine di lavoro, quando ci si arriva dal percorso
   function cartaLezione(tab, tp){
