@@ -2531,6 +2531,58 @@ html.in-mappa #nav-indietro{display:none!important}
 .rc-inf{margin:10px 0;padding:8px 10px;border-radius:12px;background:color-mix(in srgb,var(--c-erbaceo) 9%,transparent)}
 .rc-inf-t{font-weight:800;margin-bottom:2px}
 .rc-sez .primary-btn,.rc-sez .ghost-btn{width:100%;margin-top:12px}
+
+/* ============================================================
+   Piccola storia del gin: pagina da libro, per riposare gli occhi.
+   Carta color avorio, inchiostro seppia, carattere con grazie,
+   niente riquadri vivaci. Col tema scuro: carta seppia di notte.
+   ============================================================ */
+#panel-storia{
+  --carta:#F5EEDC; --carta-2:#EFE6CF; --inch:#3A3026; --inch-2:#5A4C3D; --inch-3:#85745F;
+  --filo:rgba(90,70,45,.22); --accento:#8A5A2B;
+}
+:root[data-theme="dark"] #panel-storia{
+  --carta:#29241D; --carta-2:#231F19; --inch:#E8DEC9; --inch-2:#D2C5AC; --inch-3:#A8997F;
+  --filo:rgba(232,222,201,.16); --accento:#D2A86E;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) #panel-storia{
+  --carta:#29241D; --carta-2:#231F19; --inch:#E8DEC9; --inch-2:#D2C5AC; --inch-3:#A8997F;
+  --filo:rgba(232,222,201,.16); --accento:#D2A86E;
+} }
+#panel-storia .storia{
+  background:var(--carta) !important; color:var(--inch) !important;
+  border-radius:14px; padding:26px 22px 30px; border:1px solid var(--filo);
+  box-shadow:0 1px 3px rgba(0,0,0,.18);
+  --ink:var(--inch); --ink-soft:var(--inch-2); --ink-faint:var(--inch-3);
+  --surface:var(--carta); --surface-2:var(--carta-2); --line:var(--filo);
+}
+#panel-storia .storia :is(.page-hero, .pg-sez, details.howto, .pull){
+  background:transparent !important; border:0 !important; box-shadow:none !important;
+  color:var(--inch) !important; padding-left:0 !important; padding-right:0 !important;
+  --ink:var(--inch); --ink-soft:var(--inch-2); --ink-faint:var(--inch-3);
+  --surface:var(--carta); --surface-2:var(--carta-2); --line:var(--filo);
+}
+#panel-storia .storia .page-hero{text-align:center;padding:4px 0 18px !important;margin-bottom:8px;border-bottom:1px solid var(--filo) !important;border-radius:0;}
+#panel-storia .storia .page-hero::after, #panel-storia .storia .page-hero .ph-icon{display:none !important;}
+#panel-storia .storia .page-hero .ph-kicker{color:var(--inch-3) !important;padding:0;letter-spacing:.18em;font-size:11px;font-family:inherit;}
+#panel-storia .storia h2{color:var(--inch) !important;padding:0 !important;font-family:'Fraunces',Georgia,serif;font-weight:600;}
+#panel-storia .storia .storia-sub{color:var(--inch-2) !important;font-family:'Fraunces',Georgia,serif;font-style:italic;max-width:none;}
+#panel-storia .storia .pg-sez{margin:0 !important;padding-top:6px !important;border-radius:0 !important;}
+#panel-storia .storia h3{
+  color:var(--accento) !important;font-family:'Fraunces',Georgia,serif;font-weight:600;text-align:center;
+  padding:0 !important;margin:30px 0 14px !important;font-size:22px;
+}
+#panel-storia .storia h3::before{display:none !important;}
+#panel-storia .storia h3::after{content:"❦";display:block;font-size:14px;color:var(--inch-3);margin-top:6px;}
+#panel-storia .storia :is(p, li){
+  font-family:Georgia,'Fraunces','Times New Roman',serif;font-size:17.5px;line-height:1.75;color:var(--inch) !important;
+  text-align:left;hyphens:manual;
+}
+#panel-storia .storia :is(strong, em){color:var(--inch) !important;}
+#panel-storia .storia strong{font-weight:700;}
+#panel-storia .storia .pull{border-left:2px solid var(--accento) !important;padding:2px 0 2px 16px !important;font-style:italic;}
+#panel-storia .storia a{color:var(--accento);}
+#panel-storia .storia .storia-actions{border-top-color:var(--filo);}
 </style>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0C110E" id="meta-theme-color">
@@ -2610,7 +2662,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.17.1</div>
+  <div class="splash-ver" id="splash-ver">v2.17.2</div>
 </div>
 
 <div class="wrap">
@@ -5571,7 +5623,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.17.1</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.17.2</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -10886,7 +10938,7 @@ document.getElementById('print-builder').addEventListener('click', () => {
 <script>
 /* ----- Aggiorna l'app (come in Che cucino?) -----
    VERSIONE_APP deve coincidere con VERSIONE in service-worker.js, NOME_VERSIONE con il suo NOME_VERSIONE. */
-var VERSIONE_APP = 'ginbuilder-v301', NOME_VERSIONE = '2.17.1';
+var VERSIONE_APP = 'ginbuilder-v302', NOME_VERSIONE = '2.17.2';
 // un solo punto da cambiare: animazione iniziale e menu leggono il numero da qui
 ['splash-ver','menu-ver'].forEach(function(id){ var e = document.getElementById(id); if (e) e.textContent = 'v' + NOME_VERSIONE; });
 var verOnline = '', verOnlineNome = '';
