@@ -8,7 +8,7 @@ INTRO = '''<section epub:type="foreword"><h1>Introduzione</h1>
 <p class="firma">Benedetto Daniele Sgroi</p></section>'''
 
 USO = '''<section><h1>Come usare questo libro</h1>
-<p>Il libro raccoglie i contenuti dell'app GinBuilder, che si apre gratuitamente nel browser all'indirizzo <a href="https://benedetto-gif.github.io/GinBuilt/">benedetto-gif.github.io/GinBuilt</a> e si può installare sul telefono come un'app. Gli strumenti di lavoro (il Gin Builder, le schede di prova, il diario degli infusi, i calcolatori) restano nell'app: qui si trovano le conoscenze su cui si basano.</p>
+<p>Il libro raccoglie i contenuti dell'app GinBuilder, che si apre gratuitamente nel browser all'indirizzo <a href="https://benedetto-gif.github.io/GinBuilt/">benedetto-gif.github.io/GinBuilt</a> e si può installare sul telefono come un'app. Gli strumenti di lavoro (il percorso a tappe, le schede di prova, il diario degli infusi, i calcolatori) restano nell'app: qui si trovano le conoscenze su cui si basano.</p>
 <p>Alcune pagine sono <strong>interattive</strong> nei lettori che eseguono JavaScript, come Kotobee Reader: sotto i radar delle botaniche e dei gin si può sovrapporre un profilo vicino, la matrice dei sentori si filtra toccando la griglia, il calendario delle raccolte si apre sul mese scelto. Negli altri lettori il libro resta completo: i radar sono immagini e tutto il testo è visibile.</p>
 <p>I collegamenti fra le pagine sono attivi: dalla matrice dei sentori si salta alla scheda della botanica, dalle schede ai capitoli che le spiegano.</p>
 <p class="nota">I profili radar, le dosi e i tempi sono stime orientative da verificare all'assaggio. Le fonti delle informazioni scientifiche sono elencate in appendice, in <a href="app-fonti.xhtml">Fonti e bibliografia</a>.</p></section>'''
@@ -211,5 +211,5 @@ MISCELA = '''<section><h1>Dagli infusi al gin: diluire e miscelare</h1>
 <tr><td><strong>Totale</strong></td><td>100%</td><td><strong>700 ml</strong></td><td>circa 504 + 195 ml</td></tr>
 </tbody></table>
 <p>Per le tracce conviene diluire una quantità più grande (per esempio 20 ml) e prelevarne la parte che serve con una siringa graduata: pochi millilitri si misurano male.</p>
-<p class="nota">Nell'app GinBuilder questi conti si fanno da soli: nel Gin Builder, in «Dosi per il tuo gin», si sceglie il volume e la gradazione finali; nella pagina «Proporzioni della ricetta» si spostano le quote con i cursori e si vede come cambiano il profilo e i millilitri.</p>
+<p class="nota">Nell'app GinBuilder questi conti si fanno da soli: nella tappa «Quote, quantità e grado» si scelgono il volume e la gradazione finali, si spostano le quote con i cursori e si vede come cambiano il profilo e i millilitri.</p>
 </section>'''

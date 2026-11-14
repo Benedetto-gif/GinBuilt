@@ -456,7 +456,7 @@ def parse_ruolo(testo):
         if prof(nome): out.append((nome, tracce))
     return out
 GARN = D.get('GARN') or {}
-stili = '<section><h1>Gli stili</h1><p>Gli stili di partenza del Gin Builder. Per ogni stile: l\'intensità, i ruoli con le botaniche proposte e il radar della firma, cioè del profilo senza le basi (ginepro, coriandolo e il legante dello stile), pesato sulle porzioni: la quota di ogni ruolo, con ogni botanica che alla sua dose di riferimento conta una porzione (la dose tiene già conto della potenza).</p>'
+stili = '<section><h1>Gli stili</h1><p>Gli stili di partenza dell\'app GinBuilder. Per ogni stile: l\'intensità, i ruoli con le botaniche proposte e il radar della firma, cioè del profilo senza le basi (ginepro, coriandolo e il legante dello stile), pesato sulle porzioni: la quota di ogni ruolo, con ogni botanica che alla sua dose di riferimento conta una porzione (la dose tiene già conto della potenza).</p>'
 for nome, inten, maxb, ruoli in D['STYLES']:
     if not ruoli: continue
     el = []
@@ -548,7 +548,7 @@ DILUIZIONE = ('<section><h1>Il calcolatore della diluizione</h1>'
     '<h2>Tabella pronta: alcol a 96°, a 20 °C</h2>'
     '<p>Acqua da aggiungere e volume massimo ottenibile, partendo da 100 gr oppure da 100 ml di alcol a 96°. Per altre quantità basta moltiplicare in proporzione.</p>'
     '<table class="mol"><thead><tr><th>Grado finale</th><th>Da 100 gr: acqua · volume</th><th>Da 100 ml: acqua · volume</th></tr></thead><tbody>' + dl_righe + '</tbody></table>'
-    '<p class="nota">Le due tabelle usano le stesse densità dell\'app GinBuilder, dove lo stesso calcolatore è nella pagina Schede di prova.</p>'
+    '<p class="nota">Le due tabelle usano le stesse densità dell\'app GinBuilder, dove lo stesso calcolatore è nella pagina «I calcoli dell\'alcol».</p>'
     '<p class="naviga"><a href="cap4.xhtml">Capitolo 4</a> · <a href="cap4-miscela.xhtml">Dagli infusi al gin: diluire e miscelare</a></p></section>')
 add('cap4-diluizione.xhtml', 'Il calcolatore della diluizione', DILUIZIONE, 2, True)
 # ---------- pagina interattiva: proporzioni ----------
