@@ -2746,6 +2746,13 @@ html.in-mappa #nav-indietro{display:none!important}
 .mp-benv-d summary{padding:8px 12px !important;font-size:14.5px !important}
 .mp-iniziamo{margin:2px 0 8px !important;padding:13px 18px !important}
 .mp-nota-fuori{text-align:center;font-size:12.5px;color:var(--ink-faint);margin:0 0 12px}
+
+/* fisarmonica delle tappe fatte: si ripiegano sotto la prima, restano toccabili */
+.mp-piegata .mp-et{display:none}
+.mp-piegata .mp-cerchio{width:46px;height:46px;opacity:.92;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.mp-piegata .mp-em{font-size:16px}
+.mp-piegata .mp-num{font-size:10px}
+.mp-et .mp-pieghe{display:block;margin-top:2px;font-weight:700;opacity:.85}
 </style>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0C110E" id="meta-theme-color">
@@ -2825,7 +2832,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.24.1</div>
+  <div class="splash-ver" id="splash-ver">v2.25.0</div>
 </div>
 
 <div class="wrap">
@@ -5807,7 +5814,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.24.1</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.25.0</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -11228,7 +11235,7 @@ document.getElementById('print-builder').addEventListener('click', () => {
 <script>
 /* ----- Aggiorna l'app (come in Che cucino?) -----
    VERSIONE_APP deve coincidere con VERSIONE in service-worker.js, NOME_VERSIONE con il suo NOME_VERSIONE. */
-var VERSIONE_APP = 'ginbuilder-v328', NOME_VERSIONE = '2.24.1';
+var VERSIONE_APP = 'ginbuilder-v329', NOME_VERSIONE = '2.25.0';
 // un solo punto da cambiare: animazione iniziale e menu leggono il numero da qui
 ['splash-ver','menu-ver'].forEach(function(id){ var e = document.getElementById(id); if (e) e.textContent = 'v' + NOME_VERSIONE; });
 var verOnline = '', verOnlineNome = '';
@@ -13132,8 +13139,22 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     rami = rami || {};
     const X = [92, 268], Y0 = 74, DY = 112, nStudio = T.filter(t => t.studio).length;
     // dopo una tappa con un ramo laterale la strada si allunga un po', così il riquadro del ramo non copre la tappa seguente
-    let extra = 0;
-    const pos = T.map((t, i) => { if (i > 0 && rami[T[i - 1].id]) extra += 46; return { x: X[i % 2], y: Y0 + i * DY + extra + (nStudio && !t.studio ? 84 : 0) }; });
+    // fisarmonica: dalla seconda tappa fatta di fila in poi, le tappe fatte si ripiegano sotto la prima
+    // e la strada si accorcia, così le tappe da fare salgono verso l'alto
+    const piegata = T.map((t, i) => i > 0 && !!ok[t.id] && !!ok[T[i - 1].id]);
+    const DYP = 26, pos = [];
+    let anc = 0;
+    T.forEach((t, i) => {
+      if (!piegata[i]) anc = i;
+      if (i === 0){ pos.push({ x: X[0], y: Y0 + (nStudio && !t.studio ? 84 : 0) }); return; }
+      const pr0 = pos[i - 1];
+      // la prima ripiegata va sotto l'etichetta della tappa che le fa da copertina, le altre a pochi millimetri l'una dall'altra
+      let y = pr0.y + (piegata[i] ? (piegata[i - 1] ? DYP : 104) : (piegata[i - 1] ? 72 : DY));
+      if (rami[T[i - 1].id]) y += 46;
+      if (nStudio && !t.studio && T[i - 1].studio) y += 84;
+      // le tappe da fare continuano a zig-zag: sempre dal lato opposto alla tappa (o alla pila) di prima
+      pos.push({ x: piegata[i] ? pos[anc].x : (pos[i - 1].x === X[0] ? X[1] : X[0]), y });
+    });
     const H = pos[pos.length - 1].y + 74;
     let d = 'M ' + pos[0].x + ' ' + pos[0].y;
     for (let i = 1; i < pos.length; i++){ const a = pos[i - 1], b = pos[i], my = (a.y + b.y) / 2; d += ' C ' + a.x + ' ' + my + ', ' + b.x + ' ' + my + ', ' + b.x + ' ' + b.y; }
@@ -13152,9 +13173,10 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         '<path d="' + d + '" fill="none" stroke="#9DAE97" stroke-width="22" stroke-linecap="round"/>' +
         '<path d="' + d + '" fill="none" stroke="#F3EFD8" stroke-width="2.6" stroke-dasharray="11 11" stroke-linecap="round"/>' +
       '</svg>' + cart +
-      T.map((t, i) => '<button type="button" class="mp-st' + (t.studio ? ' mp-studio' : '') + '" data-id="' + t.id + '" style="left:' + pct(pos[i].x, 360) + ';top:' + pct(pos[i].y, H) + ';--pc:' + t.c + '">' +
+      T.map((t, i) => '<button type="button" class="mp-st' + (t.studio ? ' mp-studio' : '') + (piegata[i] ? ' mp-piegata' : '') + '" data-id="' + t.id + '"' + (piegata[i] ? ' aria-label="' + (i + 1) + ' ' + t.t + ', fatta"' : '') + ' style="left:' + pct(pos[i].x, 360) + ';top:' + pct(pos[i].y, H) + ';--pc:' + t.c + ';z-index:' + (piegata[i] ? 40 - i : 50) + '">' +
         '<span class="mp-cerchio' + (i === prossima ? ' mp-prossima' : '') + '"><span class="mp-em">' + t.e + '</span><span class="mp-num">' + (i + 1) + '</span>' + (ok[t.id] ? '<span class="mp-ok">✓</span>' : '') + '</span>' +
-        '<span class="mp-et"><b>' + t.t + '</b><small>' + esc(sotto(t)) + '</small></span></button>').join('') + boxR +
+        '<span class="mp-et"><b>' + t.t + '</b><small>' + esc(sotto(t)) + '</small>' + (() => { if (piegata[i] || !piegata[i + 1]) return ''; let n = 0; for (let j = i + 1; j < T.length && piegata[j]; j++) n++;
+          return '<small class="mp-pieghe">+ ' + n + (n === 1 ? ' tappa fatta, qui sotto' : ' tappe fatte, qui sotto') + '</small>'; })() + '</span></button>').join('') + boxR +
     '</div>';
   }
   // Il nome del progetto nasce dalle scelte (stile o modello e data), finché l'utente non gliene dà uno suo.
