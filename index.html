@@ -2758,8 +2758,8 @@ html.in-mappa #nav-indietro{display:none!important}
 .mp-em .ic-inline{width:1.45em;height:1.45em;vertical-align:-.25em}
 .tb-e .ic-inline{width:1.1em;height:1.1em;vertical-align:-.15em}
 
-.str-sez{margin:16px 2px 8px;font:800 13px/1.2 'Inter',system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft)}
-.str-sez:first-of-type{margin-top:4px}
+.str-sez{margin:18px 2px 10px;padding-top:14px;border-top:2px solid color-mix(in srgb, var(--ink-soft) 45%, transparent);font:800 13px/1.2 'Inter',system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft)}
+.str-sez:first-of-type{margin-top:4px;padding-top:0;border-top:0}
 
 .str-grid.str-due{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .str-due .str-tile{padding:10px 10px 12px;min-height:0}
@@ -2845,7 +2845,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.26.0</div>
+  <div class="splash-ver" id="splash-ver">v2.26.1</div>
 </div>
 
 <div class="wrap">
@@ -5830,7 +5830,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.26.0</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.26.1</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -11260,7 +11260,7 @@ document.getElementById('print-builder').addEventListener('click', () => {
 <script>
 /* ----- Aggiorna l'app (come in Che cucino?) -----
    VERSIONE_APP deve coincidere con VERSIONE in service-worker.js, NOME_VERSIONE con il suo NOME_VERSIONE. */
-var VERSIONE_APP = 'ginbuilder-v334', NOME_VERSIONE = '2.26.0';
+var VERSIONE_APP = 'ginbuilder-v335', NOME_VERSIONE = '2.26.1';
 // un solo punto da cambiare: animazione iniziale e menu leggono il numero da qui
 ['splash-ver','menu-ver'].forEach(function(id){ var e = document.getElementById(id); if (e) e.textContent = 'v' + NOME_VERSIONE; });
 var verOnline = '', verOnlineNome = '';
