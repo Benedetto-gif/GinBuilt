@@ -2652,10 +2652,12 @@ html.in-mappa #nav-indietro{display:none!important}
 .mp-sez-storia .mp-tile .mt-l small{font-size:14px !important;margin-top:4px !important}
 
 /* I gin sul percorso: il nome del gin aperto, i rami «In infusione» e «Imbottigliati», «Riprendi un gin» */
-.mp-gin-aperto{display:flex;align-items:center;gap:6px;margin:2px auto 6px;padding:6px 14px;border-radius:999px;border:1px solid var(--line-strong);
+.mp-gin-aperto{display:flex;flex-direction:column;align-items:center;gap:2px;margin:4px auto 8px;padding:7px 16px 8px;border-radius:16px;border:1px solid var(--line-strong);
   background:var(--card);color:var(--ink);font:600 14px/1.2 'Inter',system-ui,sans-serif;cursor:pointer;max-width:92%}
-.mp-gin-aperto b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mp-gin-aperto span{opacity:.7;font-size:13px}
+.mp-gin-aperto small{font-size:11.5px;font-weight:600;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em}
+.mp-gin-aperto .mga-r{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:4px 8px;max-width:100%}
+.mp-gin-aperto b{font-size:16px;text-align:center;overflow-wrap:anywhere}
+.mp-gin-aperto i{font-style:normal;font-size:12px;color:var(--ink-soft);white-space:nowrap;padding:2px 8px;border-radius:999px;border:1px solid var(--line)}
 .mp-ramo{position:absolute;transform:translate(-50%,-50%);width:44%;max-width:170px;padding:5px 6px 6px;border-radius:14px;z-index:2;
   background:var(--paper);box-shadow:0 0 0 2px var(--rc),0 4px 12px rgba(0,0,0,.25);display:flex;flex-direction:column;gap:4px}
 .mp-ramo-t{font:800 12px/1.1 'Inter',system-ui,sans-serif;color:var(--rc);text-align:center}
@@ -2752,7 +2754,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.19.0</div>
+  <div class="splash-ver" id="splash-ver">v2.19.1</div>
 </div>
 
 <div class="wrap">
@@ -5732,7 +5734,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.19.0</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.19.1</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -11144,7 +11146,7 @@ document.getElementById('print-builder').addEventListener('click', () => {
 <script>
 /* ----- Aggiorna l'app (come in Che cucino?) -----
    VERSIONE_APP deve coincidere con VERSIONE in service-worker.js, NOME_VERSIONE con il suo NOME_VERSIONE. */
-var VERSIONE_APP = 'ginbuilder-v310', NOME_VERSIONE = '2.19.0';
+var VERSIONE_APP = 'ginbuilder-v311', NOME_VERSIONE = '2.19.1';
 // un solo punto da cambiare: animazione iniziale e menu leggono il numero da qui
 ['splash-ver','menu-ver'].forEach(function(id){ var e = document.getElementById(id); if (e) e.textContent = 'v' + NOME_VERSIONE; });
 var verOnline = '', verOnlineNome = '';
@@ -13054,7 +13056,8 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     } else {
       h += '<div class="mp-tit-riga"><button type="button" class="mp-indietro" id="mp-cambia" aria-label="Torna alla scelta della strada" title="Torna alla scelta della strada">\u21a9\ufe0e</button><h2 class="mp-tit">' + V.e + ' ' + V.t + '</h2></div>' + (V.st ? '<p class="mp-st-sub">' + V.st + '</p>' : '') +
         '<p class="mp-sub">' + (pr.via === 'chiavi' ? 'Una ricetta codificata da seguire passo passo.' : 'Ogni tappa: una breve lezione e una prova.') + ' Tocca una tappa: quella che pulsa è la prossima.</p>' +
-        '<button type="button" class="mp-gin-aperto" data-gin="' + pr.id + '">📁 <b>' + esc(pr.nome) + '</b> <span>✏️</span></button>' +
+        '<button type="button" class="mp-gin-aperto" data-gin="' + pr.id + '" aria-label="Il gin che stai preparando: ' + esc(pr.nome) + '. Tocca per cambiargli nome o iniziarne un altro">' +
+          '<small>Il gin che stai preparando</small><span class="mga-r"><b>' + esc(pr.nome) + '</b><i>✏️ nome · altro gin</i></span></button>' +
         strada(V.tappe, pr.fatte, (() => {
           const alt = altriGin(), inf = alt.filter(x => statoGin(x) === 'infuso'), imb = P.lista.filter(x => !vuoto(x) && statoGin(x) === 'imbott' && x.id !== pr.id)
             .sort((a, b) => (b.imbott || b.agg || 0) - (a.imbott || a.agg || 0));
