@@ -2583,6 +2583,66 @@ html.in-mappa #nav-indietro{display:none!important}
 #panel-storia .storia .pull{border-left:2px solid var(--accento) !important;padding:2px 0 2px 16px !important;font-style:italic;}
 #panel-storia .storia a{color:var(--accento);}
 #panel-storia .storia .storia-actions{border-top-color:var(--filo);}
+
+/* ============================================================
+   Libreria delle botaniche da consultare, come nel libro «Gin in provetta»:
+   stessa carta della Piccola storia del gin.
+   ============================================================ */
+#panel-erbario{
+  --carta:#F5EEDC; --carta-2:#EFE6CF; --inch:#3A3026; --inch-2:#5A4C3D; --inch-3:#85745F;
+  --filo:rgba(90,70,45,.22); --accento:#8A5A2B;
+}
+:root[data-theme="dark"] #panel-erbario{
+  --carta:#29241D; --carta-2:#231F19; --inch:#E8DEC9; --inch-2:#D2C5AC; --inch-3:#A8997F;
+  --filo:rgba(232,222,201,.16); --accento:#D2A86E;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) #panel-erbario{
+  --carta:#29241D; --carta-2:#231F19; --inch:#E8DEC9; --inch-2:#D2C5AC; --inch-3:#A8997F;
+  --filo:rgba(232,222,201,.16); --accento:#D2A86E;
+} }
+#panel-erbario .erb-libro{
+  background:var(--carta);color:var(--inch);border-radius:14px;padding:22px 20px 28px;border:1px solid var(--filo);
+  box-shadow:0 1px 3px rgba(0,0,0,.18);font-family:Georgia,'Fraunces','Times New Roman',serif;
+  --ink:var(--inch); --ink-soft:var(--inch-2); --ink-faint:var(--inch-3); --line:var(--filo); --surface:var(--carta); --surface-2:var(--carta-2);
+}
+#panel-erbario .erb-kick{font-family:'Public Sans',sans-serif;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--inch-3);text-align:center;margin:0 0 6px;}
+#panel-erbario h2{font-family:'Fraunces',Georgia,serif;font-weight:600;color:var(--inch);text-align:center;margin:0 0 6px;font-size:26px;}
+#panel-erbario h3{font-family:'Fraunces',Georgia,serif;font-weight:600;color:var(--accento);font-size:19px;margin:24px 0 10px;text-align:center;}
+#panel-erbario .erb-sub{text-align:center;font-style:italic;color:var(--inch-2);margin:0 0 16px;font-size:16px;line-height:1.5;}
+#panel-erbario p, #panel-erbario li, #panel-erbario td, #panel-erbario th{font-size:16.5px;line-height:1.65;color:var(--inch);}
+#panel-erbario .erb-nota{font-size:14px;color:var(--inch-3);text-align:center;margin:6px 0 12px;}
+#panel-erbario .erb-cerca{display:block;width:100%;box-sizing:border-box;margin:4px 0 14px;padding:10px 12px;border-radius:10px;
+  border:1px solid var(--filo);background:var(--carta-2);color:var(--inch);font:16px Georgia,serif;}
+#panel-erbario .erb-indice{list-style:none;padding:0;margin:0;border-top:1px solid var(--filo);}
+#panel-erbario .erb-indice li{border-bottom:1px solid var(--filo);margin:0;}
+#panel-erbario .erb-indice button{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:10px;width:100%;padding:11px 4px;cursor:pointer;
+  font:17px Georgia,serif;color:var(--inch);}
+#panel-erbario .erb-indice button .erb-n{margin-left:auto;font-size:14px;color:var(--inch-3);}
+#panel-erbario .erb-indice button:active{background:var(--carta-2);}
+#panel-erbario .erb-pall{width:11px;height:11px;border-radius:50%;flex:none;box-shadow:0 0 0 1px rgba(0,0,0,.15);}
+#panel-erbario .erb-ic{width:24px;text-align:center;flex:none;font-size:19px;}
+#panel-erbario .erb-naviga{display:flex;justify-content:space-between;gap:8px;font:14px 'Public Sans',sans-serif;margin:0 0 14px;flex-wrap:wrap;}
+#panel-erbario .erb-naviga button{all:unset;cursor:pointer;color:var(--accento);padding:4px 0;}
+#panel-erbario .erb-naviga .erb-vuoto{color:var(--inch-3);padding:4px 0;}
+#panel-erbario .erb-naviga.erb-fondo{margin:22px 0 0;padding-top:12px;border-top:1px solid var(--filo);}
+#panel-erbario .erb-tit{font-size:24px;margin-top:4px;}
+#panel-erbario .erb-tit .erb-ic{font-size:26px;width:auto;margin-right:6px;}
+#panel-erbario .erb-tasti{display:flex;justify-content:center;gap:8px;margin:10px 0 2px;}
+#panel-erbario .erb-tasti button{font:14px 'Public Sans',sans-serif;padding:7px 12px;border-radius:999px;border:1px solid var(--filo);background:transparent;color:var(--inch-2);cursor:pointer;}
+#panel-erbario .erb-tasti button[aria-pressed="true"]{background:var(--accento);border-color:var(--accento);color:var(--carta);}
+#panel-erbario .erb-radar{max-width:340px;margin:0 auto;}
+#panel-erbario .erb-radar .radar8{background:transparent !important;--ink:var(--inch) !important;--ink-soft:var(--inch-2) !important;--ink-faint:var(--inch-3) !important;--line:var(--filo) !important;}
+#panel-erbario .erb-radar .radar8 text{fill:var(--inch-2) !important;}
+#panel-erbario .erb-radar .radar-box{background:transparent !important;border:0 !important;box-shadow:none !important;padding:0 !important;}
+#panel-erbario .erb-radar .radar-title{display:none;}
+#panel-erbario .erb-radar .radar-nota{font-size:14px;color:var(--inch-2);text-align:center;}
+#panel-erbario table.erb-campi{width:100%;border-collapse:collapse;margin:10px 0 4px;}
+#panel-erbario table.erb-campi th{text-align:left;vertical-align:top;font-weight:600;color:var(--inch-2);padding:7px 10px 7px 0;width:38%;font-size:15px;border-bottom:1px solid var(--filo);}
+#panel-erbario table.erb-campi td{padding:7px 0;border-bottom:1px solid var(--filo);font-size:15.5px;}
+#panel-erbario .erb-avviso{border-left:3px solid #B4442F;padding:6px 0 6px 12px;margin:12px 0;font-size:15.5px;}
+#panel-erbario .erb-avviso.erb-poco{border-left-color:#B8862F;}
+#panel-erbario .erb-vicini{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;}
+#panel-erbario .erb-vicini button{font:14px 'Public Sans',sans-serif;padding:6px 11px;border-radius:999px;border:1px solid var(--filo);background:var(--carta-2);color:var(--inch);cursor:pointer;}
 </style>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0C110E" id="meta-theme-color">
@@ -2662,7 +2722,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.17.4</div>
+  <div class="splash-ver" id="splash-ver">v2.18.0</div>
 </div>
 
 <div class="wrap">
@@ -2699,6 +2759,7 @@ html.in-mappa #nav-indietro{display:none!important}
     <button data-tab="scelta">🌿 Le botaniche, ruolo per ruolo</button>
     <button data-tab="calcoli">🧮 I calcoli dell'alcol</button>
     <button data-tab="storia">📖 Storia del gin</button>
+    <button data-tab="erbario">📚 Libreria delle botaniche</button>
     <button data-tab="builder">🌿 Le botaniche (Gin Builder)</button>
     <button data-tab="proporzioni">⚖️ Quote, quantità e grado</button>
     <button data-tab="ridondanza">🧬 Ridondanza e complementarietà</button>
@@ -2860,6 +2921,10 @@ html.in-mappa #nav-indietro{display:none!important}
   </section>
 
   <!-- BOTANICHE -->
+  <section class="panel" id="panel-erbario">
+    <div class="erb-libro" id="erb-libro"></div>
+  </section>
+
   <section class="panel" id="panel-diario">
     <div id="diario-slot">
     <details class="howto diario-box" id="diario-box" open>
@@ -3558,7 +3623,7 @@ html.in-mappa #nav-indietro{display:none!important}
           (il valore più basso delle due) e l'ingombro totale (il più alto). La somiglianza è la somma delle parti in comune divisa per
           l'ingombro totale: in pratica quanta parte delle due aree si sovrappone. Esempio: liquirizia e angelica condividono solo lo speziato,
           38 %; il dolce della liquirizia bilancia invece l'amaro dell'angelica, quindi sono complementari per gusto pur avendo la stessa funzione di leganti.
-          La soglia oltre cui due botaniche contano come simili si regola con il cursore qui sotto (visibile con gli strumenti avanzati accesi, da ⚙️ Strumenti): l'app ricalcola subito tabella, schede e Builder.</p>
+          La soglia oltre cui due botaniche contano come simili si regola con il cursore qui sotto (visibile con gli strumenti avanzati accesi, da ⚙️ Strumenti): l'app ricalcola subito tabella, schede e la tua ricetta.</p>
         <p>Sotto il tavolo di lavoro, per ogni botanica scelta trovi:</p>
         <ul>
           <li><strong>Simili</strong> — accanto a ciascuna c'è la percentuale di somiglianza del profilo. In grassetto quelle sopra la soglia: occupano lo stesso spazio aromatico e si sommano. In grigio, con «funzione», quelle che l'app accosta per famiglia o funzione (per esempio le radici leganti) ma che al gusto sono diverse.</li>
@@ -3588,7 +3653,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </section>
 
   <!-- GIN BUILDER -->
-  <section class="panel" id="panel-builder">
+  <section class="panel" id="panel-builder" hidden aria-hidden="true"><!-- vecchio Gin Builder: non si apre più, resta solo come motore dei calcoli della ricetta -->
     <details class="howto">
       <summary>Come si usa</summary>
       <div class="howto-body">
@@ -5616,7 +5681,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.17.4</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.18.0</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -9918,6 +9983,7 @@ window.apriStrumenti = function(){
         return '<button type="button" class="str-tile str-wide' + (n ? ' str-allarme' : '') + '" id="str-diario" style="--h:#B8921F"><span>' + (n ? '\ud83d\udd14' : '\ud83d\udcd3') + '</span><b>Diario degli infusi</b><small>' +
           (n ? n + (n === 1 ? ' infuso da controllare adesso' : ' infusi da controllare adesso') : k ? k + (k === 1 ? ' infuso in corso, nessun allarme' : ' infusi in corso, nessun allarme') : 'nessun infuso in corso') + '</small></button>'; })() +
       '<button type="button" class="str-tile str-wide" id="str-infuso" style="--h:#8A63B0"><span>\ud83e\uded9</span><b>Prepara un infuso</b><small>una sola botanica, fresca o secca: dose, alcol, acqua e tempi</small></button>' +
+      '<button type="button" class="str-tile str-wide" id="str-erbario" style="--h:#8A5A2B"><span>\ud83d\udcda</span><b>Libreria delle botaniche</b><small>tutte le schede da consultare, famiglia per famiglia, come nel libro</small></button>' +
       '<button type="button" class="str-tile" id="str-cond" style="--h:#2E9D5B"><span>\ud83d\udce4</span><b>Condividi l\u2019app</b><small>manda GinBuilder a un amico</small></button>' +
       '<button type="button" class="str-tile" id="str-luce" style="--h:#5D6F8C"><span>\ud83c\udf17</span><b>Luce e colori</b><small>sfondo chiaro o scuro</small></button>' +
       '<button type="button" class="str-tile" id="str-av" style="--h:#8A63B0"><span>\ud83e\uddf0</span><b>Strumenti avanzati</b><small>' + (av ? 'accesi: tocca per spegnerli' : 'spenti: tocca per accenderli') + '</small></button>' +
@@ -9934,12 +10000,108 @@ window.apriStrumenti = function(){
   const chiudi = () => { chiudiAvviso(); ripr(); };
   document.getElementById('str-diario').onclick = () => { chiudi(); window._tappa = null; showTab('diario'); };
   document.getElementById('str-infuso').onclick = () => { chiudi(); window._tappa = null; setTimeout(() => { if (typeof prepInfusoVeloce === 'function') prepInfusoVeloce(); }, 30); };
+  document.getElementById('str-erbario').onclick = () => { chiudi(); window._tappa = null; if (window.apriErbario) window.apriErbario(); };
   document.getElementById('str-cond').onclick = () => { chiudi(); condividiApp(); };
   document.getElementById('str-luce').onclick = () => { chiudi(); const t = document.getElementById('theme-btn'); if (t) setTimeout(() => t.click(), 30); };
   document.getElementById('str-av').onclick = () => { chiudi(); if (window.toggleAvanzati) window.toggleAvanzati(); };
   document.getElementById('str-esci').onclick = () => { chiudi(); if (window.esciApp) window.esciApp(); };
 };
 setTimeout(() => { try { window.puntoStrumenti(); } catch(e){} }, 600);
+
+// ---------- Libreria delle botaniche da consultare, come nel libro «Gin in provetta» ----------
+// Indice delle famiglie -> elenco della famiglia -> scheda, con «precedente / successiva» dentro la famiglia.
+(function(){
+  const esc = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  let vista = { tipo: 'indice' }, radarK = 'gusto';
+  const famiglie = () => { const o = []; MASTER.forEach(d => { if (!o.includes(d.categoria)) o.push(d.categoria); }); return o; };
+  const diFam = c => MASTER.filter(d => d.categoria === c);
+  const prof = n => PROFILO8[n] || PROFILO8[n + ' foglie'] || null;
+  const sens = n => SENS5[n] || SENS5[n + ' foglie'] || null;
+  const pot = n => { try { return potenzaDi(n) || null; } catch(e){ return null; } };
+  const pall = n => { const p = pot(n); return '<span class="erb-pall" style="background:' + (p ? potColore(p) : '#cccccc') + '" title="Potenza ' + (p ? String(p).replace('.', ',') : '—') + '/10"></span>'; };
+  const cos = (a, b) => { let x = 0, y = 0, z = 0; for (let i = 0; i < a.length; i++){ x += a[i] * b[i]; y += a[i] * a[i]; z += b[i] * b[i]; } return y && z ? x / Math.sqrt(y * z) : 0; };
+  const voce = d => '<li><button type="button" data-bot="' + esc(d.botanica) + '">' + pall(d.botanica) + '<span class="erb-ic">' + (d.icona || '🌿') + '</span>' + esc(d.botanica) + '</button></li>';
+  function indice(q){
+    q = (q || '').trim().toLowerCase();
+    let h = '<p class="erb-kick">Consultazione</p><h2>Libreria delle botaniche</h2>' +
+      '<p class="erb-sub">Le ' + MASTER.length + ' botaniche di GinBuilder, divise in ' + famiglie().length + ' famiglie, come nel libro «Gin in provetta».</p>' +
+      '<input type="search" class="erb-cerca" id="erb-cerca" placeholder="Cerca una botanica per nome" value="' + esc(q) + '" aria-label="Cerca una botanica per nome">';
+    if (q){
+      const tr = MASTER.filter(d => d.botanica.toLowerCase().includes(q) || String(d.nome_botanico || '').toLowerCase().includes(q))
+        .sort((a, b) => (b.botanica.toLowerCase().startsWith(q) - a.botanica.toLowerCase().startsWith(q)) || a.botanica.localeCompare(b.botanica, 'it'));
+      h += tr.length ? '<ul class="erb-indice">' + tr.map(voce).join('') + '</ul>' : '<p class="erb-nota">Nessuna botanica con questo nome.</p>';
+    } else {
+      h += '<p class="erb-nota">Tocca una famiglia per vedere le sue botaniche.</p><ul class="erb-indice">' +
+        famiglie().map(c => '<li><button type="button" data-fam="' + esc(c) + '">' + esc(c) + '<span class="erb-n">' + diFam(c).length + '</span></button></li>').join('') + '</ul>';
+    }
+    return h;
+  }
+  function famiglia(c){
+    const f = diFam(c);
+    return '<div class="erb-naviga"><button type="button" data-vai="indice">← Tutte le famiglie</button></div>' +
+      '<h2>' + esc(c) + '</h2><p class="erb-nota">' + f.length + ' botaniche · tocca una botanica per aprirne la scheda. Il pallino colorato è la potenza: blu le più delicate, rosso e porpora le più potenti.</p>' +
+      '<ul class="erb-indice">' + f.map(voce).join('') + '</ul>';
+  }
+  function limiti(d){
+    const l = estLimiti(d); if (!l) return '—';
+    return 'sotto ' + l.basso + '% vol: ' + esc(l.bassoTxt) + '; sopra ' + l.m + '% vol: ' + esc(l.altoTxt) + '.';
+  }
+  function scheda(n){
+    const d = MASTER.find(x => x.botanica === n); if (!d) return indice('');
+    const f = diFam(d.categoria), k = f.indexOf(d), prev = f[k - 1], next = f[k + 1];
+    const naviga = cl => '<div class="erb-naviga' + (cl || '') + '">' +
+      (prev ? '<button type="button" data-bot="' + esc(prev.botanica) + '">← ' + esc(prev.botanica) + '</button>' : '<span class="erb-vuoto">inizio famiglia</span>') +
+      '<button type="button" data-fam="' + esc(d.categoria) + '">' + esc(d.categoria) + '</button>' +
+      (next ? '<button type="button" data-bot="' + esc(next.botanica) + '">' + esc(next.botanica) + ' →</button>' : '<span class="erb-vuoto">fine famiglia</span>') + '</div>';
+    const v = prof(n), s5 = sens(n), p = pot(n), col = p ? potColore(p) : 'var(--accento)';
+    let E = null; try { E = estPer(d); } catch(e){}
+    const ds = DOSE[n] || {}, ng = NOTA_GIN[n];
+    const sic = d.sicurezza && !/verificare/i.test(d.sicurezza) ? d.sicurezza : 'nessuna avvertenza particolare';
+    const campi = [
+      ['Nome botanico', '<em>' + esc(d.nome_botanico || '—') + '</em>'], ['Parte usata', esc(d.parte || '—')],
+      ['Profilo aromatico', esc(d.profilo || '—')], ['Carattere', esc(d.carattere || '—')], ['Funzione', esc(d.funzione_op || '—')],
+      ['Potenza', (p ? String(p).replace('.', ',') : '—') + '/10 (intensità ' + (d.intensita ?? '—') + '/5, persistenza ' + (d.persistenza ?? '—') + '/5)'],
+      ['Dose', typeof ds.test === 'number' ? String(ds.test).replace('.', ',') + ' g per 100 ml di infuso' : '—'],
+      ['Grado alcolico consigliato', E ? estAbvTxt(E.a) : '—'], ['Tempo di infusione', E ? estTempoTxt(E.t) : '—'],
+      ['Limiti del grado alcolico', limiti(d)],
+      ['Raccolta', esc(d.periodo_raccolta || '—')], ['Zone in Italia', esc(d.zone_italia || '—')], ['Sicurezza', esc(sic)]];
+    const vic = v ? MASTER.filter(x => x.botanica !== n && prof(x.botanica)).map(x => [x.botanica, cos(v, prof(x.botanica))]).sort((a, b) => b[1] - a[1]).slice(0, 4) : [];
+    let radar = '';
+    if (v){
+      const tasti = s5 ? '<div class="erb-tasti" role="group" aria-label="Quale radar">' + [['gusto','Gusto e aroma'],['bocca','Sensazioni in bocca']].map(([q, t]) =>
+        '<button type="button" data-radar="' + q + '" aria-pressed="' + (radarK === q) + '">' + t + '</button>').join('') + '</div>' : '';
+      radar = tasti + '<div class="erb-radar">' + (radarK === 'bocca' && s5 ? sensBox(SENS5[n] ? n : n + ' foglie')
+        : radarSVG([{ vals: v, color: col, label: n, potenza: p || undefined }], 300, {})) + '</div>' +
+        (radarK === 'bocca' && s5 ? '' : '<p class="erb-nota">Il colore dell’area è la potenza. Il radar si disegna senza le basi: mostra ciò che la botanica aggiunge.</p>');
+    }
+    const mol = MOLECOLE[n] || (n === 'Mirto' ? MOLECOLE['Mirto foglie'] : '');
+    return naviga() +
+      '<h2 class="erb-tit"><span class="erb-ic">' + (d.icona || '🌿') + '</span>' + esc(n) + '</h2>' +
+      '<p class="erb-sub"><em>' + esc(d.nome_botanico || '—') + '</em> · ' + esc(d.categoria) + ' · ' + esc(d.parte || '—') + '</p>' +
+      (ng ? '<div class="erb-avviso' + (ng.t === 'p' ? '' : ' erb-poco') + '"><strong>' + (ng.t === 'p' ? '☠️ Pericolosa.' : '🚫 Poco utile nel gin.') + '</strong> ' + esc(ng.n) + ' La scheda resta solo per sapere che esiste.</div>' : '') +
+      radar +
+      '<h3>La scheda</h3><table class="erb-campi"><tbody>' + campi.map(([a, b]) => '<tr><th>' + a + '</th><td>' + b + '</td></tr>').join('') + '</tbody></table>' +
+      (mol ? '<h3>Molecole da estrarre</h3><p>' + esc(mol) + '</p>' : '') +
+      (vic.length ? '<h3>Profili più vicini</h3><div class="erb-vicini">' + vic.map(([x, c]) => '<button type="button" data-bot="' + esc(x) + '">' + esc(x) + ' · ' + Math.round(c * 100) + '%</button>').join('') + '</div>' : '') +
+      naviga(' erb-fondo');
+  }
+  function disegna(){
+    const box = document.getElementById('erb-libro'); if (!box) return;
+    box.innerHTML = vista.tipo === 'fam' ? famiglia(vista.c) : vista.tipo === 'bot' ? scheda(vista.n) : indice(vista.q);
+    box.querySelectorAll('[data-fam]').forEach(b => b.onclick = () => vai({ tipo: 'fam', c: b.dataset.fam }));
+    box.querySelectorAll('[data-bot]').forEach(b => b.onclick = () => vai({ tipo: 'bot', n: b.dataset.bot }));
+    box.querySelectorAll('[data-vai="indice"]').forEach(b => b.onclick = () => vai({ tipo: 'indice' }));
+    box.querySelectorAll('[data-radar]').forEach(b => b.onclick = () => { radarK = b.dataset.radar; disegna(); });
+    const c = document.getElementById('erb-cerca');
+    if (c) c.oninput = () => { vista = { tipo: 'indice', q: c.value }; const pos = c.selectionStart; disegna(); const c2 = document.getElementById('erb-cerca'); if (c2){ c2.focus(); try { c2.setSelectionRange(pos, pos); } catch(e){} } };
+  }
+  function vai(v){ vista = v; disegna(); try { window.scrollTo(0, 0); } catch(e){} }
+  window.apriErbario = function(){ vista = { tipo: 'indice' }; showTab('erbario'); disegna(); };
+  // aperta dal menu o da un rimando: se è vuota, parte dall'indice
+  const st0 = window.showTab;
+  window.showTab = function(name){ const r = st0.apply(this, arguments); if (name === 'erbario' && !document.querySelector('#erb-libro > *')) disegna(); return r; };
+})();
+
 
 // ---------- Riaprire dove eri rimasto ----------
 // Si ricordano l'ultima pagina, la botanica aperta e la ricetta del Builder (stile e scelte, anche nel Personalizzato).
@@ -10061,7 +10223,7 @@ window.toggleAvanzati = function(){
   if (!on){ window.radarFase = 'tutto'; window.radarInsieme = 0; }
   aggiornaTileAvanzati(); ridisegnaRadar();
   mostraAvviso(on ? '\ud83e\uddf0 Strumenti avanzati accesi' : 'Modalit\u00e0 semplice',
-    on ? '<p>Sui radar compaiono di nuovo: <strong>Testa / Cuore / Coda</strong>, la <strong>soglia di somiglianza</strong> e, nel Builder, <strong>macerano tutte insieme</strong>.</p>'
+    on ? '<p>Sui radar compaiono di nuovo: <strong>Testa / Cuore / Coda</strong> e la <strong>soglia di somiglianza</strong>.</p>'
        : '<p>Sui radar restano il profilo, il confronto e le botaniche base. Gli strumenti avanzati si riaccendono da \u2699\ufe0f Strumenti, in alto.</p>', '', null);
 };
 try { if (localStorage.getItem('gb-avanzati')) document.documentElement.classList.add('avanzato'); else { window.radarFase = 'tutto'; window.radarInsieme = 0; } } catch(e){}
@@ -10931,7 +11093,7 @@ document.getElementById('print-builder').addEventListener('click', () => {
 <script>
 /* ----- Aggiorna l'app (come in Che cucino?) -----
    VERSIONE_APP deve coincidere con VERSIONE in service-worker.js, NOME_VERSIONE con il suo NOME_VERSIONE. */
-var VERSIONE_APP = 'ginbuilder-v304', NOME_VERSIONE = '2.17.4';
+var VERSIONE_APP = 'ginbuilder-v305', NOME_VERSIONE = '2.18.0';
 // un solo punto da cambiare: animazione iniziale e menu leggono il numero da qui
 ['splash-ver','menu-ver'].forEach(function(id){ var e = document.getElementById(id); if (e) e.textContent = 'v' + NOME_VERSIONE; });
 var verOnline = '', verOnlineNome = '';
@@ -11333,7 +11495,7 @@ if ("serviceWorker" in navigator) {
     roleList.innerHTML = '';
     addCustomRoleRow('Base', 'Bacche di ginepro', true);
     righe.filter(([, b]) => b !== 'Bacche di ginepro').forEach(([r, b]) => addCustomRoleRow(r, b, false));
-    renderSummary(); showTab('builder');
+    renderSummary(); showTab('scelta');   // il vecchio Gin Builder non si apre più: si va alla tappa delle botaniche
   }
   window.spPortaNelBuilder = portaNelBuilder;
 
@@ -11398,7 +11560,7 @@ if ("serviceWorker" in navigator) {
       const found = t.some(x => x > 0) ? cerca(t, nBot) : [];
       let h = '<div class="inv-grid">' + sl + '</div>' +
         '<div class="inv-ctrl">Botaniche di carattere: ' + [3, 4, 5].map(k => '<button type="button" class="conf-chip' + (k === nBot ? ' on' : '') + '" data-k="' + k + '">' + k + '</button>').join(' ') +
-        ' <button type="button" class="conf-chip" data-pre="builder">Dal Builder</button> <button type="button" class="conf-chip" data-pre="zero">Azzera</button></div>';
+        ' <button type="button" class="conf-chip" data-pre="builder">Dalla tua ricetta</button> <button type="button" class="conf-chip" data-pre="zero">Azzera</button></div>';
       if (!found.length){ box.innerHTML = h + '<div class="radar-nota">Alza almeno un asse per cominciare.</div>'; aggancia(); return; }
       const v = profilo(found), sim = Math.round(coseno(v, t) * 100);
       const tot = found.reduce((a, x) => a + x.w, 0);
@@ -11406,7 +11568,7 @@ if ("serviceWorker" in navigator) {
         '<div class="gin-leg"><span><i style="background:transparent;border:1.5px dashed #C0733A"></i>Desiderato</span><span><i style="background:var(--juniper)"></i>Ricetta trovata</span></div>' +
         '<div class="radar-nota">Somiglianza di forma con il profilo desiderato: <strong>' + sim + '%</strong>.</div>' +
         '<ol class="inv-lista">' + found.map((x, j) => '<li><strong>' + esc(x.n) + '</strong> · ' + Math.round(x.w / tot * 100) + '% della parte di carattere · ruolo ' + RUOLI_RANGO[j] + '</li>').join('') + '</ol>' +
-        '<div class="radar-nota">A queste si aggiungono le botaniche base: ginepro e angelica (Base) e coriandolo (Freschezza). Le percentuali dicono quanto pesa ciascuna nel profilo, non i grammi: nel Builder il ruolo assegna la dose.</div>' +
+        '<div class="radar-nota">A queste si aggiungono le botaniche base: ginepro e angelica (Base) e coriandolo (Freschezza). Le percentuali dicono quanto pesa ciascuna nel profilo, non i grammi: nella tua ricetta il ruolo assegna la dose.</div>' +
         '<button type="button" class="primary-btn inv-porta" style="margin-top:8px;">🎯 Usala nel tuo progetto</button>';
       box.innerHTML = h; aggancia(found);
     }
@@ -11442,7 +11604,7 @@ if ("serviceWorker" in navigator) {
       '<div class="radar-nota">Rispetto a ' + esc(breveGin(best.n)) + ' la tua ricetta è ' + (piu.length ? 'più ' + piu.join(', ') : '') + (piu.length && meno.length ? ' e ' : '') + (meno.length ? 'meno ' + meno.join(', ') : (piu.length ? '' : 'quasi identica sui dieci assi')) + '.</div>' +
       '<div class="radar-nota">Seguono: ' + lista.slice(1, 4).map(g => esc(breveGin(g.n)) + ' ' + g.c + '%').join(', ') + '. Il più lontano: ' + esc(breveGin(lista[lista.length - 1].n)) + ' ' + lista[lista.length - 1].c + '%.</div>' +
       '<div class="radar-nota">Confronto sulla sola firma (senza ginepro, coriandolo e angelica), con lo stesso metodo della pagina Gli altri gin: conta quanto i due profili si scostano dal gin medio nella stessa direzione.</div>' +
-      '<div class="gar-azioni"><button type="button" class="ghost-btn sp-gem-agg">↻ Aggiorna dal Builder</button><button type="button" class="ghost-btn" onclick="showTab(\'altrigin\')">🥃 Gli altri gin</button></div>';
+      '<div class="gar-azioni"><button type="button" class="ghost-btn sp-gem-agg">↻ Aggiorna dalla tua ricetta</button><button type="button" class="ghost-btn" onclick="showTab(\'altrigin\')">🥃 Gli altri gin</button></div>';
     box.querySelector('.sp-gem-agg').onclick = gemello;
   }
 
