@@ -1165,10 +1165,13 @@ ul.prova3 li{margin:3px 0;}
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .radar8{background:#F1F5EF;border-radius:18px;padding:6px 0;--line:rgba(23,40,31,.22);--ink-soft:#3F5046;--ink:#16211B;--juniper:#2F7259;} }
 :root[data-theme="dark"] .radar8{background:#F1F5EF;border-radius:18px;padding:6px 0;--line:rgba(23,40,31,.22);--ink-soft:#3F5046;--ink:#16211B;--juniper:#2F7259;}
 .radar-wrap{position:relative;}
-/* Modalita' semplice: strumenti avanzati nascosti, radar sempre nella vista intera */
-html:not(.avanzato) .fase-sel, html:not(.avanzato) .soglia-box,
-html:not(.avanzato) .soglia-slot, html:not(.avanzato) .radar-insieme{display:none !important;}
-html:not(.avanzato) .radar-wrap .r-norm{display:revert !important;}
+/* I comandi in più dei radar (Testa/Cuore/Coda, buccia, gusto o bocca, soglia di somiglianza) stanno solo
+   nelle pagine di «Capire perché», dove entra chi ha scelto di approfondire. Fuori, il radar è sempre intero. */
+.fase-sel, .soglia-box, .soglia-slot, .radar-insieme{display:none !important;}
+.radar-wrap .r-norm{display:revert !important;}
+:is(#panel-libreria, #panel-ridondanza, #panel-matrice, #panel-nozioni, #panel-analisi) .fase-sel{display:flex !important;}
+:is(#panel-libreria, #panel-ridondanza, #panel-matrice, #panel-nozioni, #panel-analisi) :is(.soglia-box, .soglia-slot){display:block !important;}
+:is(#panel-libreria, #panel-ridondanza, #panel-matrice, #panel-nozioni, #panel-analisi) .radar-wrap .r-norm{display:unset !important;}
 .radar-base-btn{display:block;width:100%;margin:6px 0 10px;font-size:14px;font-weight:600;color:var(--juniper);border:1.5px solid var(--juniper);background:transparent;padding:9px 14px;}
 .radar-base-btn[aria-pressed="true"]{background:var(--juniper);color:var(--surface);}
 .fase-sel{display:flex;gap:6px;justify-content:center;margin:6px 0 8px;}
@@ -2799,7 +2802,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.22.0</div>
+  <div class="splash-ver" id="splash-ver">v2.22.1</div>
 </div>
 
 <div class="wrap">
@@ -3721,7 +3724,7 @@ html.in-mappa #nav-indietro{display:none!important}
           (il valore più basso delle due) e l'ingombro totale (il più alto). La somiglianza è la somma delle parti in comune divisa per
           l'ingombro totale: in pratica quanta parte delle due aree si sovrappone. Esempio: liquirizia e angelica condividono solo lo speziato,
           38 %; il dolce della liquirizia bilancia invece l'amaro dell'angelica, quindi sono complementari per gusto pur avendo la stessa funzione di leganti.
-          La soglia oltre cui due botaniche contano come simili si regola con il cursore qui sotto (visibile con gli strumenti avanzati accesi, da ⚙️ Strumenti): l'app ricalcola subito tabella, schede e la tua ricetta.</p>
+          La soglia oltre cui due botaniche contano come simili si regola con il cursore qui sotto: l'app ricalcola subito tabella, schede e la tua ricetta.</p>
         <p>Sotto il tavolo di lavoro, per ogni botanica scelta trovi:</p>
         <ul>
           <li><strong>Simili</strong> — accanto a ciascuna c'è la percentuale di somiglianza del profilo. In grassetto quelle sopra la soglia: occupano lo stesso spazio aromatico e si sommano. In grigio, con «funzione», quelle che l'app accosta per famiglia o funzione (per esempio le radici leganti) ma che al gusto sono diverse.</li>
@@ -5000,7 +5003,7 @@ function potControllo(nome){
     '<input type="range" class="pot-range" style="--pc:' + potColore(p) + '" min="1" max="10" step="0.5" value="' + p + '" oninput="potAnteprima(this)" aria-label="Potenza di ' + n.replace(/"/g, '&quot;') + '">' +
     '<div class="pot-tua-b"><button type="button" class="ghost-btn" onclick="potFissa(this)">📌 Fissa</button>' +
     (u ? '<button type="button" class="ghost-btn" onclick="potRipristina(this)">↺ Valore di libreria</button>' : '') + '</div>' +
-    '<div class="radar-nota">Se la tua botanica è più debole o più forte del previsto (raccolta, varietà, freschezza), sposta il cursore e fissala: il colore, la potenza media del Builder e quella dei confronti useranno il tuo valore. Resta salvato su questo telefono ed entra nel backup completo.</div></div>';
+    '<div class="radar-nota">Se la tua botanica è più debole o più forte del previsto (raccolta, varietà, freschezza), sposta il cursore e fissala: il colore, la potenza media del tuo gin e quella dei confronti useranno il tuo valore. Resta salvato su questo telefono ed entra nel backup completo.</div></div>';
 }
 // anteprima mentre si trascina: ricolora l'area del radar e sposta la tacca, senza salvare
 window.potAnteprima = function(inp){
@@ -5781,7 +5784,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.22.0</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.22.1</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -10093,7 +10096,6 @@ window.apriStrumenti = function(){
       '<button type="button" class="str-tile str-wide" id="str-erbario" style="--h:#8A5A2B"><span>\ud83d\udcda</span><b>Libreria delle botaniche</b><small>tutte le piante che puoi usare, ognuna con la sua scheda, divise per famiglia</small></button>' +
       '<button type="button" class="str-tile" id="str-cond" style="--h:#2E9D5B"><span>\ud83d\udce4</span><b>Condividi l\u2019app</b><small>manda GinBuilder a un amico</small></button>' +
       '<button type="button" class="str-tile" id="str-luce" style="--h:#5D6F8C"><span>\ud83c\udf17</span><b>Luce e colori</b><small>sfondo chiaro o scuro</small></button>' +
-      '<button type="button" class="str-tile" id="str-av" style="--h:#8A63B0"><span>\ud83e\uddf0</span><b>Strumenti avanzati</b><small>dettagli in più sui grafici, per chi ha già esperienza</small><small class="str-stato">' + (av ? 'accesi: tocca per spegnerli' : 'spenti: tocca per accenderli') + '</small></button>' +
     '<button type="button" class="str-tile str-wide" data-aggiorna style="--h:#2B7BB9"><span>\ud83d\udd04</span><b>Aggiorna l\u2019app</b><small>' + (window.testoAggiorna ? testoAggiorna() : 'tocca per controllare') + '</small></button>' +
     '<button type="button" class="str-tile str-wide" id="str-esci" style="--h:#7A867F"><span>\u23cf\ufe0f</span><b>Ho finito · esci</b><small>torna alla prima pagina; quello che hai fatto resta salvato</small></button>' +
     '</div>' +
@@ -10111,7 +10113,6 @@ window.apriStrumenti = function(){
   document.getElementById('str-erbario').onclick = () => { chiudi(); window._tappa = null; if (window.apriErbario) window.apriErbario(); };
   document.getElementById('str-cond').onclick = () => { chiudi(); condividiApp(); };
   document.getElementById('str-luce').onclick = () => { chiudi(); const t = document.getElementById('theme-btn'); if (t) setTimeout(() => t.click(), 30); };
-  document.getElementById('str-av').onclick = () => { chiudi(); if (window.toggleAvanzati) window.toggleAvanzati(); };
   document.getElementById('str-esci').onclick = () => { chiudi(); if (window.esciApp) window.esciApp(); };
 };
 setTimeout(() => { try { window.puntoStrumenti(); } catch(e){} }, 600);
@@ -10335,7 +10336,7 @@ window.toggleAvanzati = function(){
     on ? '<p>Sui radar compaiono di nuovo: <strong>Testa / Cuore / Coda</strong> e la <strong>soglia di somiglianza</strong>.</p>'
        : '<p>Sui radar restano il profilo, il confronto e le botaniche base. Gli strumenti avanzati si riaccendono da \u2699\ufe0f Strumenti, in alto.</p>', '', null);
 };
-try { if (localStorage.getItem('gb-avanzati')) document.documentElement.classList.add('avanzato'); else { window.radarFase = 'tutto'; window.radarInsieme = 0; } } catch(e){}
+document.documentElement.classList.add('avanzato'); window.radarFase = window.radarFase || 'tutto'; window.radarInsieme = 0;   // i comandi in più si vedono solo in «Capire perché» (vedi CSS)
 aggiornaTileAvanzati(); ridisegnaRadar();
 window.apriDati = function(){ window.apriStrumenti(); return; showTab('home'); renderDati(); setTimeout(() => { const b = document.getElementById('home-dati'); if (b){ b.style.scrollMarginTop = '84px'; b.scrollIntoView({block: 'start'}); } }, 80); };
 renderDati();
@@ -11202,7 +11203,7 @@ document.getElementById('print-builder').addEventListener('click', () => {
 <script>
 /* ----- Aggiorna l'app (come in Che cucino?) -----
    VERSIONE_APP deve coincidere con VERSIONE in service-worker.js, NOME_VERSIONE con il suo NOME_VERSIONE. */
-var VERSIONE_APP = 'ginbuilder-v324', NOME_VERSIONE = '2.22.0';
+var VERSIONE_APP = 'ginbuilder-v325', NOME_VERSIONE = '2.22.1';
 // un solo punto da cambiare: animazione iniziale e menu leggono il numero da qui
 ['splash-ver','menu-ver'].forEach(function(id){ var e = document.getElementById(id); if (e) e.textContent = 'v' + NOME_VERSIONE; });
 var verOnline = '', verOnlineNome = '';
