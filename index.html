@@ -2753,6 +2753,10 @@ html.in-mappa #nav-indietro{display:none!important}
 .mp-piega-ora{animation:mp-piega .7s ease-out both}
 @keyframes mp-piega{from{transform:translate(-50%,-50%) perspective(420px) rotateX(0deg)}to{transform:translate(-50%,-50%) perspective(420px) rotateX(58deg)}}
 @media (prefers-reduced-motion:reduce){.mp-piega-ora{animation:none}}
+
+.ic-inline{width:1.15em;height:1.15em;vertical-align:-.22em;display:inline-block}
+.mp-em .ic-inline{width:1.45em;height:1.45em;vertical-align:-.25em}
+.tb-e .ic-inline{width:1.1em;height:1.1em;vertical-align:-.15em}
 </style>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0C110E" id="meta-theme-color">
@@ -2832,7 +2836,7 @@ html.in-mappa #nav-indietro{display:none!important}
   </svg>
   <div class="splash-firma">GinBuilder</div>
   <div class="splash-autore">di Benedetto Daniele Sgroi</div>
-  <div class="splash-ver" id="splash-ver">v2.25.1</div>
+  <div class="splash-ver" id="splash-ver">v2.25.2</div>
 </div>
 
 <div class="wrap">
@@ -4615,6 +4619,9 @@ html.in-mappa #nav-indietro{display:none!important}
     let v = localStorage.getItem(k), w = v; for (const o in NOMI) w = w.split(JSON.stringify(o).slice(1, -1)).join(NOMI[o]);
     if (w !== v) localStorage.setItem(k, w); } } catch (e) {} })();
 const DATA = JSON.parse(document.getElementById('payload-data').textContent);
+// icone disegnate (non esistono emoji adatte): filtro Büchner sulla beuta da vuoto, imbuto con filtro di carta
+const IC_BUCHNER = '<svg class="ic-inline" viewBox="0 0 40 40" aria-hidden="true"><path d="M13.5 22h13l9.5 14.5a1.5 1.5 0 0 1-1.3 2.3H5.3A1.5 1.5 0 0 1 4 36.5L13.5 22z" fill="#E8F1EE" stroke="#5B7A72" stroke-width="1.4" stroke-linejoin="round"/><path d="M8.2 31.5h23.6l3.4 5.2a1 1 0 0 1-.9 1.5H5.7a1 1 0 0 1-.9-1.5z" fill="#F2C94C" opacity=".9"/><rect x="16" y="19.5" width="8" height="4" rx="1" fill="#6B4F3A"/><path d="M25.5 25.5l8.5-2.2" stroke="#5B7A72" stroke-width="2.2" stroke-linecap="round"/><path d="M8 4h24v6.5c0 1.2-.8 2-2 2.3L22 15v6h-4v-6l-8-2.2c-1.2-.3-2-1.1-2-2.3z" fill="#FFFFFF" stroke="#5B7A72" stroke-width="1.4" stroke-linejoin="round"/><path d="M9.5 8.5h21" stroke="#9FB8B1" stroke-width="1.2"/><g fill="#9FB8B1"><circle cx="13" cy="6.3" r=".8"/><circle cx="16.5" cy="6.3" r=".8"/><circle cx="20" cy="6.3" r=".8"/><circle cx="23.5" cy="6.3" r=".8"/><circle cx="27" cy="6.3" r=".8"/></g><path d="M20 23v3" stroke="#F2C94C" stroke-width="1.4" stroke-linecap="round" stroke-dasharray="1.2 1.6"/></svg>';
+const IC_IMBUTO = '<svg class="ic-inline" viewBox="0 0 40 40" aria-hidden="true"><path d="M6 6h28L23 21v12l-6 3V21z" fill="#FFFFFF" stroke="#5B7A72" stroke-width="1.6" stroke-linejoin="round"/><path d="M10 8h20l-8.5 10.5h-3z" fill="#F3E3C3" stroke="#B89B6A" stroke-width="1"/><path d="M20 37v2" stroke="#F2C94C" stroke-width="1.6" stroke-linecap="round"/></svg>';
 const MASTER = DATA.master;
 const REDUND = DATA.redund;
 const DOSE = DATA.dose;
@@ -5814,7 +5821,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   const nav = document.querySelector('nav.tabs'); if (!nav) return;
   const btns = [...nav.querySelectorAll('button')], HUES = ['#2F7259','#C4803A','#4C7BB5','#B04A6B','#8A63B0','#B8921F','#2F8F8F','#6F8A2E','#C0583E','#5D6F8C'];
   const bar = document.createElement('div'); bar.className = 'menu-bar';
-  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.25.1</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
+  bar.innerHTML = '<button type="button" class="menu-btn" id="menu-btn" aria-label="Torna alla mappa"><span class="menu-ic">🗺️</span><b class="menu-map">Mappa</b><span class="menu-cur" id="menu-cur"></span><span class="menu-ver" id="menu-ver" hidden>v2.25.2</span></button><div class="menu-pop" id="menu-pop" hidden></div>';
   nav.parentNode.insertBefore(bar, nav);
   const pop = bar.querySelector('#menu-pop'), btn = bar.querySelector('#menu-btn'), cur = bar.querySelector('#menu-cur');
   const IN_HOME = [];   // già raggiungibili dalla prima pagina
@@ -11235,7 +11242,7 @@ document.getElementById('print-builder').addEventListener('click', () => {
 <script>
 /* ----- Aggiorna l'app (come in Che cucino?) -----
    VERSIONE_APP deve coincidere con VERSIONE in service-worker.js, NOME_VERSIONE con il suo NOME_VERSIONE. */
-var VERSIONE_APP = 'ginbuilder-v330', NOME_VERSIONE = '2.25.1';
+var VERSIONE_APP = 'ginbuilder-v331', NOME_VERSIONE = '2.25.2';
 // un solo punto da cambiare: animazione iniziale e menu leggono il numero da qui
 ['splash-ver','menu-ver'].forEach(function(id){ var e = document.getElementById(id); if (e) e.textContent = 'v' + NOME_VERSIONE; });
 var verOnline = '', verOnlineNome = '';
@@ -12514,7 +12521,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
         { id:'quote',    tab:'proporzioni',lez:'quote',      e:'⚖️', t:'Quote, quantità e grado',      c:'#B04A6B' },
         { id:'spesa',    tab:'ricetta',    lez:'diluizione', e:'🛒', t:'La spesa',                     c:'#4C7BB5' },
         { id:'infusi',   tab:'ricetta',                      e:'🫙', t:'Prepara gli infusi',           c:'#8A63B0' },
-        { id:'filtra',   tab:'ricetta',    lez:'filtrazione',e:'🧻', t:'Filtra e porta al grado',      c:'#2F8F8F' },
+        { id:'filtra',   tab:'ricetta',    lez:'filtrazione',e:IC_BUCHNER, t:'Filtra e porta al grado',      c:'#2F8F8F' },
         { id:'assaggio', tab:'prove',      lez:'degustare',  e:'👅', t:'Assaggio e correzioni',        c:'#B8921F' },
         { id:'unisci',   tab:'ricetta',                      e:'🍾', t:'Unisci e imbottiglia',         c:'#2F8F8F' },
         { id:'servire',  tab:'servire',                      e:'🍸', t:'Servire',                      c:'#C0583E', d:'garnish, tonica, cocktail' }
@@ -12837,7 +12844,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     ['🧪', 'Cilindro graduato o siringhe dosatrici', 'per misurare alcol, acqua e infusi', 'cilindro graduato vetro 250 ml'],
     ['🌡️', 'Termometro', 'per misurare la temperatura della soluzione', 'termometro digitale da cucina a sonda'],
     ['📏', 'Alcolometro (facoltativo)', 'per controllare il grado', 'alcolometro 0-100 con cilindro'],
-    ['🧻', 'Imbuto e filtri (carta da caffè o filtri da laboratorio)', 'per filtrare gli infusi', 'filtri carta da laboratorio con imbuto'],
+    [IC_IMBUTO, 'Imbuto e filtri (carta da caffè o filtri da laboratorio)', 'per filtrare gli infusi', 'filtri carta da laboratorio con imbuto'],
     ['🍾', 'Bottiglia di vetro scuro con tappo', 'per il gin finito', 'bottiglie vetro ambrato 700 ml tappo'],
     ['🏷️', 'Etichette e pennarello', 'nome, data, gradazione', 'etichette adesive per bottiglie']
   ];
@@ -12855,7 +12862,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
   function dovComprare(k){
     const [ic, n0, , q0] = ATTREZZI[k], bott = ic === '🍾';
     const n = bott ? 'Bottiglie di vetro scuro da ' + cl(formato()) : n0, q = bott ? 'bottiglie vetro ambrato ' + formato() + ' ml tappo' : q0;
-    mostraAvviso(ic + ' ' + n, '<p>Dove vuoi cercarlo? Si apre la ricerca già fatta.</p><div class="rc-negozi">' +
+    mostraAvviso((String(ic).charAt(0) === '<' ? '' : ic + ' ') + n, '<p>Dove vuoi cercarlo? Si apre la ricerca già fatta.</p><div class="rc-negozi">' +
       NEGOZI.map(([i, nome, url]) => '<a class="ghost-btn" href="' + url(q) + '" target="_blank" rel="noopener">' + i + ' ' + nome + '</a>').join('') + '</div>' +
       '<p class="cond-hint">I prezzi cambiano spesso: confrontali prima di comprare.</p>', '', null);
   }
@@ -12951,8 +12958,8 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       R.righe.map(r => chk('un-d-' + r.n, iconaHtml(byName[r.n]) + ' <b>' + esc(r.n) + '</b>: ' + (r.sotto ? '<b>' + f1(r.mlFin) + ' ml</b> di infuso filtrato (è già sotto ' + A + '%)' : '<b>' + f1(r.mlConc) + ' ml</b>' + (r.concG ? ' (' + fg(r.concG) + ' g)' : '') + ' di infuso filtrato a ' + r.abv + '% + <b>' + f1(r.acquaDil) + ' ml</b> (' + fg(r.acquaDilG || 0) + ' g) d’acqua = ' + f1(r.mlFin) + ' ml a ' + A + '%'))).join('') +
       '<p class="cond-hint">L’acqua è un po’ più della differenza fra i volumi: mescolando alcol e acqua il volume si contrae. Per la massima precisione pesa invece di misurare.</p>' +
       '';
-    if (pers && mostra('filtra')) h += '<section class="rc-sez" id="rc-filtra"><h3>🧻 Filtra e porta al grado</h3><p class="rc-sub">Quando ogni infuso ha finito il suo tempo. Gli infusi restano separati: si uniscono solo dopo l’assaggio.</p>' +
-      chk('un-filtra', '🧻 <b>Filtra ogni infuso</b>: prima un colino o una garza per togliere la botanica, poi un filtro di carta (va bene quello da caffè). Raccogli il liquido limpido.') +
+    if (pers && mostra('filtra')) h += '<section class="rc-sez" id="rc-filtra"><h3>' + IC_BUCHNER + ' Filtra e porta al grado</h3><p class="rc-sub">Quando ogni infuso ha finito il suo tempo. Gli infusi restano separati: si uniscono solo dopo l’assaggio.</p>' +
+      chk('un-filtra', IC_BUCHNER + ' <b>Filtra ogni infuso</b>: prima un colino o una garza per togliere la botanica, poi un filtro di carta (va bene quello da caffè). Raccogli il liquido limpido.') +
       '<h4>Porta tutto l’infuso filtrato a ' + A + '%, ciascuno nella sua bottiglia</h4>' +
       '<p class="cond-hint">Misura quanti ml hai filtrato e diluiscili tutti: all’assaggio potresti cambiare le quote, e la scorta serve proprio a questo.</p>' +
       R.righe.map(r => {
@@ -12971,7 +12978,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
       (pers ? '<h4>Versa gli infusi, già a ' + A + '%, in un solo contenitore</h4>' +
           R.righe.map(r => chk('un-v-' + r.n, iconaHtml(byName[r.n]) + ' <b>' + esc(r.n) + '</b>: <b>' + f1(r.mlFin) + ' ml</b> <small>(' + nf(r.quota * 100, 1) + '%)</small>')).join('') +
           '<p class="cond-hint">Se all’assaggio hai cambiato le quote e un infuso non basta, usa la scorta che ti è rimasta oppure fai un po’ meno gin: le quote contano più del volume.</p>'
-        : chk('un-filtra', '🧻 <b>Filtra ogni infuso</b>: versalo in un imbuto con un filtro di carta (va bene quello da caffè) e raccogli il liquido limpido.') +
+        : chk('un-filtra', IC_BUCHNER + ' <b>Filtra ogni infuso</b>: versalo in un imbuto con un filtro di carta (va bene quello da caffè) e raccogli il liquido limpido.') +
           '<h4>Porta ogni infuso a ' + A + '% e versalo nella miscela</h4>' + righeDil()) +
       chk('un-mix', '🥄 <b>Mescola</b>: ' + f1(R.vol) + ' ml di gin a ' + A + '%.') +
       chk('un-riposo', '❄️ <b>Lascia riposare</b> la miscela al fresco e al buio per 24–48 ore, poi travasa solo la parte limpida senza smuovere il deposito.') +
@@ -13382,7 +13389,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     quote: { e:'⚖️', t:'Quote e potenza',
       html: '<p>La quota è la parte di gin occupata da ciascun infuso, già portato alla gradazione finale. Da sola non basta a giudicare: conta la potenza. Una botanica forte in una quota piccola può pesare più di una debole in una quota grande.</p>' +
         '<p>Il ginepro deve restare la nota prevalente: per questo parte da <strong>metà del gin</strong> (50 % degli infusi). Le altre botaniche si dividono l’altra metà secondo i ruoli dello stile. Ogni infuso ha già la sua dose di botanica, quindi una botanica in Base o Freschezza prende una parte intera, in Identità l’80 %, in Cuore il 70 %, in Firma il 30 %, in tracce il 15 %.</p><p>Anche il legante (angelica, iris, liquirizia) prende una parte intera. Non è un controsenso: profuma poco, e nel suo infuso la botanica è poca. Una quota grande serve a fargli fare il suo lavoro, trattenere gli aromi, non a farlo sentire.</p><p class="lez-sub">🧮 <strong>Un esempio: lo stile Mediterraneo</strong></p><p>Il ginepro prende metà del gin: 50 %. Resta l’altra metà, da dividere fra le altre botaniche.</p><p>Si contano le parti delle altre botaniche:</p><ul><li>angelica, coriandolo e bergamotto: 1 parte ciascuna, cioè 3;</li><li>finocchio di mare (Identità): 0,8;</li><li>lentisco (Cuore): 0,7;</li><li>elicriso (in tracce): 0,15;</li><li>rosmarino (in tracce): 0,15.</li></ul><p>In tutto fanno 4,8 parti.</p><p>Una parte vale quindi 50 % diviso 4,8, cioè circa 10,4 %. Il lentisco ne prende il 70 %: circa 7,3 % del gin. Vuol dire che il 70 % si riferisce a una botanica da una parte intera, come l’angelica, non al ginepro. Così il totale fa sempre 100 %.</p><p>Se sposti i cursori, tieni d’occhio il ginepro: la sua quota è verde dal 45 % in su, arancio fra 30 e 44%, rossa sotto il 30%: soglie di lavoro, non di legge. Muovi i cursori e guarda come cambia il radar.</p>' },
-    filtrazione: { e:'🧻', t:'Macerare e filtrare',
+    filtrazione: { e:IC_BUCHNER, t:'Macerare e filtrare',
       html: '<p>Ogni infuso macera al buio per il suo tempo. Quando è pronto si filtra: prima un colino o una garza per togliere le botaniche, poi un filtro di carta per le particelle fini.</p>' +
         '<p>Se dopo la diluizione compare una velatura, è l’<strong>effetto louche</strong>: gli oli essenziali non restano sciolti quando il grado scende. Si rimedia raffreddando e filtrando a freddo. Il diario ti ricorda quando assaggiare e quando filtrare.</p>' + noz('i metodi di filtrazione', 'Metodi di filtrazione') },
     degustare: { e:'👅', t:'Degustare',
@@ -13519,7 +13526,7 @@ const SIGLE_FORME = {"kcnk":["KCNK18","KCNK3","KCNK9","KCNK"],"trpv1":["TRPV1"],
     const box = $('lez-box'); if (!tp || !box) return;
     const L = LEZ[tp.lez], i = T.indexOf(tp);
     $('lez-h').innerHTML = '<span>' + (i + 1) + '</span>' + L.t;
-    if (window.menuCapitolo) menuCapitolo('lezione', (L.e || '📖') + ' Lezione ' + (i + 1) + ' · ' + L.t);
+    if (window.menuCapitolo) menuCapitolo('lezione', (L.e && String(L.e).charAt(0) !== '<' ? L.e : '📖') + ' Lezione ' + (i + 1) + ' · ' + L.t);
     let pr = '';
     if (tp.lez === 'basi') pr = '<div class="lez-bots">' + ['Bacche di ginepro', 'Coriandolo'].map(n => schedaBase(n)).join('') + '</div>' +
       '<p class="lez-sub">🔗 <strong>Il legante, uno a scelta</strong></p>' +
